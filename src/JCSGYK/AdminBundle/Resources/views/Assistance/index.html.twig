@@ -1,0 +1,18 @@
+{% extends 'JCSGYKAdminBundle::layout.html.twig' %}
+
+{% block title %}Családsegítő Admin{% endblock %}
+
+{% block content %}
+<h1>Családsegítő Admin</h1>
+
+<ul class="inquiry">
+{% for item in inquiry_types %}
+    <li><a href="{{ path('jcsgyk_admin_register_inquiry', {'type': item.id}) }}">{{ item.name }}</a></li>
+{% endfor %}
+</ul>
+
+<form action="" method="get" name="quick_search">
+    <input type="text" name="q" value="">
+    
+</form>
+{% endblock %}

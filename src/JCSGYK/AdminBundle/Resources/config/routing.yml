@@ -1,0 +1,9 @@
+jcsgyk_admin_homepage:
+    pattern:  /
+    defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
+
+jcsgyk_admin_register_inquiry:
+    pattern: /register_inquiry/{type}
+    defaults: { _controller: JCSGYKAdminBundle:Assistance:registerInquiry }
+    requirements:
+        type: \d+
