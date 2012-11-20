@@ -7,6 +7,25 @@ use Symfony\Component\Security\Core\SecurityContext;
 
 class SecurityController extends Controller
 {
+    /**
+     * Redirects the user based on her roles (assistance, user or admin)
+     */
+    public function loginRedirectorAction()
+    {
+        $sec = $this->get('security.context');
+        if ($sec->isGranted('ROLE_ADMIN')) {
+            return $this->redirect($this->generateUrl('admin_home'), 301);
+        } 
+        elseif ($sec->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('user_home'), 301);
+        } 
+        elseif ($sec->isGranted('ROLE_ASSISTANCE')) {
+            return $this->redirect($this->generateUrl('home'), 301);
+        }
+
+
+    }
+
     public function loginAction()
     {
         $request = $this->getRequest();

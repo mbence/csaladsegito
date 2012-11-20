@@ -1,7 +1,19 @@
 home:
     pattern:  /
     defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
-
+    
+user_home:
+    pattern:  /user
+    defaults: { _controller: JCSGYKAdminBundle:User:index }
+    
+admin_home:    
+    pattern:  /admin
+    defaults: { _controller: JCSGYKAdminBundle:Admin:index }
+    
+login_redirector:
+    pattern:   /loginredirector
+    defaults: { _controller: JCSGYKAdminBundle:Security:loginRedirector }
+    
 #login:
 #    pattern:  /login
 #    defaults: { _controller: JCSGYKAdminBundle:Security:login }
