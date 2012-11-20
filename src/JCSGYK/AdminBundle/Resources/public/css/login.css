@@ -1,0 +1,75 @@
+.login {
+    margin: auto;
+    padding: 84px 0 0;
+    width: 360px;
+}
+.login #logo {
+    height: 100px;
+    width: 210px;
+    margin: 30px auto 20px;
+    background: url('/bundles/jcsgykadmin/images/logo1.png') no-repeat left top;
+}
+.login H1 {
+    font-size: 26px;
+    text-align: center;
+    font-family: "Optima Regular", "Optima Regular IE";
+    color: #705533;
+}
+.login form {
+    background-color: #e9e0d7;
+    border: 1px solid #c2b39f;
+    box-shadow: 0 4px 10px -1px #e3d9cb;
+    font-weight: normal;
+    margin: 4px 0 0 0;
+    border-radius: 3px;
+    padding: 30px 34px 24px;
+}
+.login form .input, .login form input[type="text"] {
+    background-color: #FBFBFB;
+    border: 1px solid #c2b39f;
+    border-radius: 3px;
+    box-shadow: 1px 1px 2px rgba(200, 200, 200, 0.8) inset;
+    color: #555555;
+    font-size: 20px;
+    font-weight: 200;
+    line-height: 1;
+    margin:2px 0 5px 0px;
+    outline: 0 none;
+    padding: 3px;
+    width: 282px;
+}
+.login form label {
+    color: #555;
+    font-size: 15px;
+}
+.login form #_submit {
+    background-color: #eec123;
+    /*background-image: -moz-linear-gradient(center top , #1E8CBE 0%, #0074A2 100%);*/
+    border: 0 none !important;
+    border-radius: 2px 2px 2px 2px !important;
+    box-shadow: 0 2px 0 #ffc700 inset;
+    color: #fff;
+    display: block;
+    /*float: left;*/
+    font-size: 14px;
+    font-weight: bold;
+    height: auto !important;
+    letter-spacing: 1px;
+    margin: 16px 0 20px 0px;
+    padding: 4px 15px;
+    text-shadow: none;
+    text-transform: uppercase;    
+}
+.login form #_submit:hover {
+    color: #000;
+    cursor: pointer;
+}
+.login form #remember_me {
+    /*margin: 0 0 0 10px;*/
+}
+.login .error {
+    color: #f33636;
+    text-align: center;
+    margin: -20px 0 4px 0;
+    /*font-weight: bold;*/
+}

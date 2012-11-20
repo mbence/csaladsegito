@@ -25,3 +25,6 @@ _configurator:
 
 _main:
     resource: routing.yml
+
+livephp_monitor:
+    resource: "@LivePHPBundle/Resources/config/routing.yml"    

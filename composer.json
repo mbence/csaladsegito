@@ -19,7 +19,9 @@
         "jms/security-extra-bundle": "1.2.*",
         "jms/di-extra-bundle": "1.1.*",
         "stof/doctrine-extensions-bundle": "dev-master",
-        "jdorn/sql-formatter": "1.0.x-dev"
+        "jdorn/sql-formatter": "*",
+        "friendsofsymfony/user-bundle": "*",
+        "mbence/livephp-bundle": "*"
     },
     "scripts": {
         "post-install-cmd": [

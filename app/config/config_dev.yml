@@ -11,10 +11,10 @@ web_profiler:
 
 monolog:
     handlers:
-        main:
-            type:  stream
-            path:  %kernel.logs_dir%/%kernel.environment%.log
-            level: debug
+#        main:
+#            type:  stream
+#            path:  %kernel.logs_dir%/%kernel.environment%.log
+#            level: debug
         firephp:
             type:  firephp
             level: info
@@ -24,3 +24,8 @@ assetic:
 
 #swiftmailer:
 #    delivery_address: me@example.com
+    
+live_php:
+    dirs: [., ../src, ../web]
+    ignore: [logs, cache]
+    timelimit: 125

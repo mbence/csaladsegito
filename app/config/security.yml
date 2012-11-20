@@ -4,6 +4,7 @@ jms_security_extra:
 
 security:
     encoders:
+        FOS\UserBundle\Model\UserInterface: sha512
         Symfony\Component\Security\Core\User\User: plaintext
 
     role_hierarchy:
@@ -16,28 +17,35 @@ security:
                 users:
                     user:  { password: userpass, roles: [ 'ROLE_USER' ] }
                     admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
-
+        fos_userbundle:
+            id: fos_user.user_provider.username
+            
     firewalls:
+#        login_firewall:
+#            pattern:    ^/login$|^/register$
+#            anonymous:  ~
+
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        login:
-            pattern:  ^/demo/secured/login$
-            security: false
-
-        secured_area:
-            pattern:    ^/demo/secured/
+        main:
+            anonymous:  ~
+            pattern:    ^/
             form_login:
-                check_path: /demo/secured/login_check
-                login_path: /demo/secured/login
+                provider: fos_userbundle
+                csrf_provider: form.csrf_provider              
+#                login_path:  /login
+#                check_path:  /login_check
             logout:
-                path:   /demo/secured/logout
-                target: /demo/
-            #anonymous: ~
-            #http_basic:
-            #    realm: "Secured Demo Area"
+                path:   /logout
+                target: /
 
     access_control:
+        - { path: ^/livephpmonitor, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, role: IS_AUTHENTICATED_FULLY }      
         #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         #- { path: ^/_internal/secure, roles: IS_AUTHENTICATED_ANONYMOUSLY, ip: 127.0.0.1 }

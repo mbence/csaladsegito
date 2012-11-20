@@ -26,7 +26,7 @@ class AssistanceController extends Controller
         $em->persist($inquiry);
         $em->flush();
         
-        return $this->redirect($this->generateUrl('jcsgyk_admin_homepage'));
+        return $this->redirect($this->generateUrl('home'));
     }
     
 }

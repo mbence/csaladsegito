@@ -1,7 +1,48 @@
-body {
-    /*background-color: purple;*/
+@charset "utf-8";
+@font-face {
+	font-family: "Optima Regular";
+	src: url("/bundles/jcsgykadmin/images/font/optimah_regular-webfont.ttf");
 }
+@font-face {
+	font-family: "Optima Regular IE";
+	src: url("/bundles/jcsgykadmin/images/font/optimah_regular-webfont.eot");
+} /* IE */
+@font-face {
+	font-family: "Optima Bold";
+	src: url("/bundles/jcsgykadmin/images/font/optimah_bold-webfont.ttf");
+}
+@font-face {
+	font-family: "Optima Bold IE";
+	src: url("/bundles/jcsgykadmin/images/font/optimah_bold-webfont.eot");
+} /* IE */
+@font-face {
+	font-family: "Optima Italic";
+	src: url("/bundles/jcsgykadmin/images/font/optimah_italic-webfont.ttf");
+}
+@font-face {
+	font-family: "Optima Italic IE";
+	src: url("/bundles/jcsgykadmin/images/font/optimah_italic_webfont.eot");
+} /* IE */
+@font-face {
+	font-family: "Optima Bold Italic";
+	src: url("/bundles/jcsgykadmin/images/font/optimah_bold_italic-webfont.ttf");
+}
+@font-face {
+	font-family: "Optima Bold Italic IE";
+	src: url("/bundles/jcsgykadmin/images/font/optimah_bold_italic-webfont.eot");
+} /* IE */
 
+body {
+    background-color: #FFF;
+    font-family: "Trebuchet MS";
+    /*font-family: "Optima Regular", "Optima Regular IE";*/
+}
+a {
+    text-decoration: none;
+}
+.clear {
+    clear:both;
+}
 .inquiry {
     float: right;
     width: 300px;

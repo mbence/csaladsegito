@@ -7,7 +7,7 @@
 
 <ul class="inquiry">
 {% for item in inquiry_types %}
-    <li><a href="{{ path('jcsgyk_admin_register_inquiry', {'type': item.id}) }}">{{ item.name }}</a></li>
+    <li><a href="{{ path('register_inquiry', {'type': item.id}) }}">{{ item.name }}</a></li>
 {% endfor %}
 </ul>
 
