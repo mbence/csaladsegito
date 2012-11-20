@@ -1,9 +1,12 @@
-web/bundles/
-app/bootstrap.php.cache
-app/cache/*
-app/logs/*
-build/
-vendor
-bin
+# Bootstrap
+app/bootstrap*
+
+# Symfony directories
+vendor/*
+*/logs/*
+*/cache/*
+web/uploads/*
+web/bundles/*
 composer.phar
-/nbproject
+/nbproject# Configuration files
+app/config/parameters.ini
