@@ -9,6 +9,9 @@ class AdminController extends Controller
 {
     public function indexAction()
     {
+        $ph = $this->get('jcsgyk_admin.page_header');
+        $header_vars = $ph->getVars($this->getRequest());
+        
         if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
             $this->get('logger')->info('ROLE_ADMIN');
         }

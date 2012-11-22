@@ -4,9 +4,31 @@
         <meta charset="UTF-8" />
         <title>{% block title %}Családsegítő Admin{% endblock %}</title>
         <link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
-        <link rel="stylesheet" href="{{ asset('bundles/jcsgykadmin/css/style.css') }}" />
+         {% stylesheets 
+            '@JCSGYKAdminBundle/Resources/public/css/reset.css'
+            '@JCSGYKAdminBundle/Resources/public/css/style.css'            
+            '@JCSGYKAdminBundle/Resources/public/css/login.css' 
+        %}
+            <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
     </head>
     <body>
+        <div id="header">
+            <div id="logo">
+                <a href="{{ path('home') }}">{{ 'Családsegítő admin'|trans() }}</a>
+            </div>
+            <div class="quicksearch">
+                <form action="" method="get" name="quick_search">
+                    <input type="text" name="q" value="" >
+                    <button type="submit" class="searchbutton"><span class="searchicon"></span></button>
+                </form>
+            </div>
+            <div class="headright">
+                {{ app.user.username }}
+            </div>
+        </div>
+            
+        <div class="clear"></div>
         {% block content %}
         {% endblock %}
             

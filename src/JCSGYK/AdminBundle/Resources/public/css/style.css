@@ -47,3 +47,63 @@ a {
     float: right;
     width: 300px;
 }
+#header {
+    height: 70px;
+    background-color: #e9e0d7;    
+    border-bottom: 1px solid #c2b39f;
+}
+#header #logo {
+    float: left;
+    width: 210px;
+    height: 70px;
+    background: url('/bundles/jcsgykadmin/images/logo1b.png') no-repeat 0 3px;
+}
+#header #logo a {
+    display: block;
+    height: 70px;
+    overflow: hidden;
+    text-indent: -500px;
+}
+#header .quicksearch {
+    float: left;
+    padding: 19px 0 0 30px;
+    height: 51px;
+}
+#header .quicksearch input[type=text] {
+    width: 400px;
+    height: 28px;
+    background-color: #FBFBFB;
+    border: 1px solid #c2b39f;
+    border-radius: 3px;
+    box-shadow: 1px 1px 2px rgba(200, 200, 200, 0.8) inset;
+    font-size: 19px;
+    font-weight: normal;
+    padding: 1px 10px;
+    margin: 0;
+    float: left;
+}
+#header .quicksearch button.searchbutton {
+    width: 80px;
+    height: 32px;
+    border: 1px solid #c2b39f;
+    border-radius: 2px;
+    box-shadow: 0 2px 0 #ffc700 inset;
+    background-color: #eec123;
+    text-align: center;
+    margin: 0 0 0 16px;
+    padding: 0;
+    display: inline-block;
+    float: left;
+}
+#header .quicksearch .searchbutton span.searchicon {
+    background: url('/bundles/jcsgykadmin/images/sprs.png') no-repeat 0 0;
+    width: 13px;
+    height: 13px;
+    display: inline-block;
+}
+#header .quicksearch .searchbutton:hover span.searchicon {
+    background: url('/bundles/jcsgykadmin/images/sprs.png') no-repeat -34px 0;}
+#header .headright {
+    float: right;
+    padding: 10px 10px 0 0;
+}
