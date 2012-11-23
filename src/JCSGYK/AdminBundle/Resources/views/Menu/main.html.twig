@@ -1,0 +1,22 @@
+<div class="menu">
+    {% for menu in menu_items %}
+        {% if is_granted(menu.role) %}
+            <div class="mi">
+                <a href="{{ path(menu.route) }}">{{ menu.label|trans() }}</a>
+            </div>
+            {% if menu.submenu is defined %}
+                {% for sub in menu.submenu %}
+                    {% if is_granted(sub.role) %}
+                        <div class="misub">
+                            <a href="{{ path(sub.route) }}">{{ sub.label|trans() }}</a>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    <div class="menudivider"></div>
+    <div class="mi">
+        <a href="{{ path('fos_user_security_logout') }}">{{ 'Kilépés'|trans() }}</a>
+    </div>
+</div>

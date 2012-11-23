@@ -22,4 +22,9 @@ class AdminController extends Controller
         
         return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', array('inquiry_types' => $inquiry_types));
     }
+    
+    public function usersAction()
+    {
+        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', array('inquiry_types' => $inquiry_types));
+    }    
 }

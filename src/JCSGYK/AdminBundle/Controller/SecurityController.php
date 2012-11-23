@@ -22,8 +22,6 @@ class SecurityController extends Controller
         elseif ($sec->isGranted('ROLE_ASSISTANCE')) {
             return $this->redirect($this->generateUrl('home'), 301);
         }
-
-
     }
 
     public function loginAction()
