@@ -1,0 +1,56 @@
+Users:
+    type: entity
+    table: Users
+    fields:
+        ujfk:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: UJFK
+            generator:
+                strategy: IDENTITY
+        pjfig:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: PJFIG
+        ikfl:
+            type: text
+            nullable: false
+            column: IKFL
+        vhrd:
+            type: text
+            nullable: false
+            column: VHRD
+        dfgf:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: DFGF
+        rghi:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: RGHI
+        llt:
+            type: float
+            nullable: true
+            column: LLT
+        llT:
+            type: text
+            nullable: true
+            column: LL_T
+        xdf:
+            type: float
+            nullable: true
+            column: XDF
+        xdT:
+            type: text
+            nullable: true
+            column: XD_T
+        hnm:
+            type: text
+            nullable: true
+            column: HNM
+    lifecycleCallbacks: {  }

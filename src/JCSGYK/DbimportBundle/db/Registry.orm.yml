@@ -1,0 +1,108 @@
+Registry:
+    type: entity
+    table: Registry
+    fields:
+        regId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Reg_ID
+            generator:
+                strategy: IDENTITY
+        direction:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Direction
+        seqyear:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: SeqYear
+        seqnum:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: SeqNum
+        addresstext:
+            type: text
+            nullable: false
+            column: AddressText
+        addressId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Address_ID
+        regdate:
+            type: float
+            nullable: true
+            column: RegDate
+        regdateT:
+            type: text
+            nullable: true
+            column: RegDate_T
+        subject:
+            type: text
+            nullable: false
+            column: Subject
+        description:
+            type: text
+            nullable: true
+            column: Description
+        regsign:
+            type: text
+            nullable: true
+            column: RegSign
+        docfile:
+            type: text
+            nullable: true
+            column: DocFile
+        handled:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Handled
+        handledon:
+            type: float
+            nullable: true
+            column: HandledOn
+        handledtoId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: HandledTo_ID
+        handledfromId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: HandledFrom_ID
+        openedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: OpenedBy_ID
+        createdon:
+            type: float
+            nullable: true
+            column: CreatedOn
+        createdbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: CreatedBy_ID
+        modifiedon:
+            type: float
+            nullable: true
+            column: ModifiedOn
+        modifiedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: ModifiedBy_ID
+        validitem:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: ValidItem
+    lifecycleCallbacks: {  }

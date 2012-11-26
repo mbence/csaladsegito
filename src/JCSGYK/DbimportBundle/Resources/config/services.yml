@@ -1,0 +1,7 @@
+parameters:
+#    jcsgyk_dbimport.example.class: JCSGYK\DbimportBundle\Example
+
+services:
+#    jcsgyk_dbimport.example:
+#        class: %jcsgyk_dbimport.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

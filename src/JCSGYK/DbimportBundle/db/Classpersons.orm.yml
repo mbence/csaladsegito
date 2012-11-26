@@ -1,0 +1,28 @@
+Classpersons:
+    type: entity
+    table: ClassPersons
+    fields:
+        cpId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: true
+            column: CP_ID
+            generator:
+                strategy: IDENTITY
+        classId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Class_ID
+        personId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Person_ID
+        visitstate:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: VisitState
+    lifecycleCallbacks: {  }

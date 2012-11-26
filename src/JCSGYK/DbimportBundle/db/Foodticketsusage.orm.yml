@@ -1,0 +1,41 @@
+Foodticketsusage:
+    type: entity
+    table: FoodTicketsUsage
+    fields:
+        usageId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Usage_ID
+            generator:
+                strategy: IDENTITY
+        foodticketId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: FoodTicket_ID
+        clientId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Client_ID
+        employeId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Employe_ID
+        opcode:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: OpCode
+        opdate:
+            type: float
+            nullable: false
+            column: OpDate
+        opdateT:
+            type: text
+            nullable: true
+            column: OpDate_T
+    lifecycleCallbacks: {  }

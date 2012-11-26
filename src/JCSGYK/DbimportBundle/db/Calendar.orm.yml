@@ -1,0 +1,37 @@
+Calendar:
+    type: entity
+    table: Calendar
+    fields:
+        calendarId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Calendar_ID
+            generator:
+                strategy: IDENTITY
+        employeId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Employe_ID
+        clientId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Client_ID
+        problemId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Problem_ID
+        edate:
+            type: float
+            nullable: false
+            column: EDate
+        status:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Status
+    lifecycleCallbacks: {  }

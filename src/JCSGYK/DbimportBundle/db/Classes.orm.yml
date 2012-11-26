@@ -1,0 +1,67 @@
+Classes:
+    type: entity
+    table: Classes
+    fields:
+        classId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Class_ID
+            generator:
+                strategy: IDENTITY
+        note:
+            type: text
+            nullable: true
+            column: Note
+        classdate:
+            type: text
+            nullable: true
+            column: ClassDate
+        classdateT:
+            type: text
+            nullable: true
+            column: ClassDate_T
+        heldby1Id:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: HeldBy1_ID
+        heldby2Id:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: HeldBy2_ID
+        status:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Status
+        createdon:
+            type: float
+            nullable: true
+            column: CreatedOn
+        createdbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: CreatedBy_ID
+        modifiedon:
+            type: float
+            nullable: true
+            column: ModifiedOn
+        modifiedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: ModifiedBy_ID
+        openedbyId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: OpenedBy_ID
+        docfile:
+            type: text
+            nullable: true
+            column: DocFile
+    lifecycleCallbacks: {  }

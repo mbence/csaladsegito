@@ -1,0 +1,196 @@
+Persons:
+    type: entity
+    table: Persons
+    fields:
+        personId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Person_ID
+            generator:
+                strategy: IDENTITY
+        title:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: Title
+        name1:
+            type: text
+            nullable: true
+            column: Name1
+        name2:
+            type: text
+            nullable: true
+            column: Name2
+        type:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Type
+        mobilenum:
+            type: text
+            nullable: true
+            column: MobileNum
+        phonenum:
+            type: text
+            nullable: true
+            column: PhoneNum
+        faxnum:
+            type: text
+            nullable: true
+            column: FaxNum
+        email:
+            type: text
+            nullable: true
+            column: Email
+        addressId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Address_ID
+        locationId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Location_ID
+        martialstatus:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: MartialStatus
+        educationcode:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: EducationCode
+        note:
+            type: text
+            nullable: true
+            column: Note
+        birthdate:
+            type: float
+            nullable: true
+            column: BirthDate
+        familysize:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: FamilySize
+        ecactivity:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: EcActivity
+        createdon:
+            type: float
+            nullable: true
+            column: CreatedOn
+        createdbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: CreatedBy_ID
+        modifiedon:
+            type: float
+            nullable: true
+            column: ModifiedOn
+        modifiedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: ModifiedBy_ID
+        openedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: OpenedBy_ID
+        docfile:
+            type: text
+            nullable: true
+            column: DocFile
+        jobtype:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: JobType
+        mothername1:
+            type: text
+            nullable: true
+            column: MotherName1
+        mothername2:
+            type: text
+            nullable: true
+            column: MotherName2
+        childname1:
+            type: text
+            nullable: true
+            column: ChildName1
+        childname2:
+            type: text
+            nullable: true
+            column: ChildName2
+        delegateneeded:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: DelegateNeeded
+        delegatename1:
+            type: text
+            nullable: true
+            column: DelegateName1
+        delegatename2:
+            type: text
+            nullable: true
+            column: DelegateName2
+        fieldnum:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: FieldNum
+        fieldtext:
+            type: text
+            nullable: true
+            column: FieldText
+        gendertype:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: GenderType
+        gazmuveknum:
+            type: text
+            nullable: true
+            column: GazmuvekNum
+        elmunum:
+            type: text
+            nullable: true
+            column: ElmuNum
+        jvknum:
+            type: text
+            nullable: true
+            column: JVKNum
+        fotavnum:
+            type: text
+            nullable: true
+            column: FotavNum
+        dijbeszedonum:
+            type: text
+            nullable: true
+            column: DijbeszedoNum
+        tarsazonjel:
+            type: text
+            nullable: true
+            column: TarsAzonJel
+        szemszam:
+            type: text
+            nullable: true
+            column: SzemSzam
+        szemigszam:
+            type: text
+            nullable: true
+            column: SzemIgSzam
+        birthplace:
+            type: text
+            nullable: true
+            column: BirthPlace
+    lifecycleCallbacks: {  }

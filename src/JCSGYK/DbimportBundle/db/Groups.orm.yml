@@ -1,0 +1,108 @@
+Groups:
+    type: entity
+    table: Groups
+    fields:
+        groupId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Group_ID
+            generator:
+                strategy: IDENTITY
+        name:
+            type: text
+            nullable: false
+            column: Name
+        topic:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: Topic
+        desc:
+            type: text
+            nullable: true
+            column: Desc
+        note:
+            type: text
+            nullable: true
+            column: Note
+        leader1Id:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Leader1_ID
+        leader2Id:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Leader2_ID
+        timetable:
+            type: text
+            nullable: true
+            column: TimeTable
+        maxsize:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: MaxSize
+        status:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Status
+        createdon:
+            type: float
+            nullable: true
+            column: CreatedOn
+        createdbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: CreatedBy_ID
+        modifiedon:
+            type: float
+            nullable: true
+            column: ModifiedOn
+        modifiedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: ModifiedBy_ID
+        startedon:
+            type: float
+            nullable: true
+            column: StartedOn
+        startedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: StartedBy_ID
+        finishedon:
+            type: float
+            nullable: true
+            column: FinishedOn
+        finishedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: FinishedBy_ID
+        openedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: OpenedBy_ID
+        docfile:
+            type: text
+            nullable: true
+            column: DocFile
+        fieldtext:
+            type: text
+            nullable: true
+            column: FieldText
+        fieldnum:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: FieldNum
+    lifecycleCallbacks: {  }

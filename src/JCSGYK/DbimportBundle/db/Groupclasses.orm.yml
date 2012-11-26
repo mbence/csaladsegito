@@ -1,0 +1,23 @@
+Groupclasses:
+    type: entity
+    table: GroupClasses
+    fields:
+        gcId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: GC_ID
+            generator:
+                strategy: IDENTITY
+        groupId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Group_ID
+        classId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Class_ID
+    lifecycleCallbacks: {  }

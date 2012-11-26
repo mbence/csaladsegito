@@ -1,0 +1,3 @@
+jcsgyk_dbimport_homepage:
+    pattern:  /dbimport/{run}
+    defaults: { _controller: JCSGYKDbimportBundle:Import:index, run: false }

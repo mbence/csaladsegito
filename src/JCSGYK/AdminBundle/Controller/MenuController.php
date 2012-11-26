@@ -20,6 +20,9 @@ class MenuController extends Controller
         return $this->render('JCSGYKAdminBundle:Menu:main.html.twig', array('menu_items' => $menu_items));
     }
     
+    /**
+     * Redirects the user based on her roles (assistance, user or admin)
+     */
     public function loginRedirectorAction()
     {
         $sec = $this->get('security.context');

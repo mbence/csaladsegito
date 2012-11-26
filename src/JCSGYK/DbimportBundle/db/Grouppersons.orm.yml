@@ -1,0 +1,28 @@
+Grouppersons:
+    type: entity
+    table: GroupPersons
+    fields:
+        gpId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: GP_ID
+            generator:
+                strategy: IDENTITY
+        groupId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Group_ID
+        personId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Person_ID
+        assigmenttype:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: AssigmentType
+    lifecycleCallbacks: {  }

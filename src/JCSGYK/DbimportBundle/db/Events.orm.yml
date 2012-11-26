@@ -1,0 +1,96 @@
+Events:
+    type: entity
+    table: Events
+    fields:
+        eventId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Event_ID
+            generator:
+                strategy: IDENTITY
+        title:
+            type: text
+            nullable: true
+            column: Title
+        desciption:
+            type: text
+            nullable: true
+            column: Desciption
+        type:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: Type
+        createdon:
+            type: float
+            nullable: true
+            column: CreatedOn
+        createdbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: CreatedBy_ID
+        modifiedon:
+            type: float
+            nullable: true
+            column: ModifiedOn
+        modifiedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: ModifiedBy_ID
+        titlecode:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: TitleCode
+        forwardcode:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: ForwardCode
+        groupcode:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: GroupCode
+        activitycode:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: ActivityCode
+        eventdate:
+            type: float
+            nullable: false
+            column: EventDate
+        clientvisit:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: ClientVisit
+        clientcancel:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: ClientCancel
+        openedbyId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: OpenedBy_ID
+        docfile:
+            type: text
+            nullable: true
+            column: DocFile
+        fieldtext:
+            type: text
+            nullable: true
+            column: FieldText
+        fieldnum:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: FieldNum
+    lifecycleCallbacks: {  }

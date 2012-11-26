@@ -1,0 +1,21 @@
+Sysmetadata:
+    type: entity
+    table: SysMetaData
+    fields:
+        sysId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: SYS_ID
+            generator:
+                strategy: IDENTITY
+        metainfokey:
+            type: text
+            nullable: false
+            column: MetaInfoKey
+        metainfovalue:
+            type: text
+            nullable: false
+            column: MetaInfoValue
+    lifecycleCallbacks: {  }

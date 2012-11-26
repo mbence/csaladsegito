@@ -33,7 +33,7 @@ class Inquiry
      * @ORM\Column(type="datetime")
      */
     protected $created_at;
-
+   
     /**
      * Get id
      *

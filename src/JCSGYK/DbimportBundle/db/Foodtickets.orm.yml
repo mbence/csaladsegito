@@ -1,0 +1,23 @@
+Foodtickets:
+    type: entity
+    table: FoodTickets
+    fields:
+        foodticketId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: FoodTicket_ID
+            generator:
+                strategy: IDENTITY
+        ticketnum:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: TicketNum
+        opcode:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: OpCode
+    lifecycleCallbacks: {  }

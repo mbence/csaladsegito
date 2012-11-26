@@ -4,7 +4,7 @@ home:
     
 assistance_home:
     pattern:  /asszisztencia
-    defaults: { _controller: JCSGYKAdminBundle:User:index }
+    defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
 
 family_home:
     pattern:  /csaladsegito

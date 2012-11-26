@@ -1,0 +1,23 @@
+Problemproblems:
+    type: entity
+    table: ProblemProblems
+    fields:
+        ppId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: PP_ID
+            generator:
+                strategy: IDENTITY
+        rootproblemId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: RootProblem_ID
+        subproblemId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: SubProblem_ID
+    lifecycleCallbacks: {  }

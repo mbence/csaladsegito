@@ -12,7 +12,6 @@ class AssistanceController extends Controller
         if ($this->get('security.context')->isGranted('ROLE_ASSISTANCE')) {
             $this->get('logger')->info('ROLE_ASSISTANCE');
         }
-        
         $inquiry_types = $this->getDoctrine()
             ->getRepository('JCSGYKAdminBundle:InquiryType')
             ->findAllOrderedByName();

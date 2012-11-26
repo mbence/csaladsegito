@@ -1,0 +1,27 @@
+Publicfoodtending:
+    type: entity
+    table: PublicFoodTending
+    fields:
+        pftId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: PFT_ID
+            generator:
+                strategy: IDENTITY
+        problemId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Problem_ID
+        yearmonth:
+            type: float
+            nullable: false
+            column: YearMonth
+        personcnt:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: PersonCnt
+    lifecycleCallbacks: {  }

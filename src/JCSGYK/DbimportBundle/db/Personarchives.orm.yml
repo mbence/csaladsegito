@@ -1,0 +1,23 @@
+Personarchives:
+    type: entity
+    table: PersonArchives
+    fields:
+        paId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: PA_ID
+            generator:
+                strategy: IDENTITY
+        personId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Person_ID
+        archiveId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Archive_ID
+    lifecycleCallbacks: {  }

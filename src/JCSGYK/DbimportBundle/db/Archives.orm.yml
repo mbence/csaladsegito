@@ -1,0 +1,35 @@
+Archives:
+    type: entity
+    table: Archives
+    fields:
+        archiveId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Archive_ID
+            generator:
+                strategy: IDENTITY
+        status:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: Status
+        reason:
+            type: text
+            nullable: true
+            column: Reason
+        archivedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: ArchivedBy_ID
+        archivedon:
+            type: float
+            nullable: false
+            column: ArchivedOn
+        archivedonT:
+            type: text
+            nullable: false
+            column: ArchivedOn_T
+    lifecycleCallbacks: {  }

@@ -1,0 +1,23 @@
+Problemevents:
+    type: entity
+    table: ProblemEvents
+    fields:
+        peId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: PE_ID
+            generator:
+                strategy: IDENTITY
+        problemId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Problem_ID
+        eventId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Event_ID
+    lifecycleCallbacks: {  }

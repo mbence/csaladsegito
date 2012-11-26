@@ -1,0 +1,45 @@
+History:
+    type: entity
+    table: History
+    fields:
+        historyId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: History_ID
+            generator:
+                strategy: IDENTITY
+        objectcode:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: ObjectCode
+        actioncode:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: ActionCode
+        objectId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: Object_ID
+        deletedbyId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: DeletedBy_ID
+        deletedbyT:
+            type: text
+            nullable: false
+            column: DeletedBy_T
+        deletedonT:
+            type: text
+            nullable: false
+            column: DeletedOn_T
+        description:
+            type: text
+            nullable: false
+            column: Description
+    lifecycleCallbacks: {  }
