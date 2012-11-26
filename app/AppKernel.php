@@ -23,6 +23,7 @@ class AppKernel extends Kernel
             new JCSGYK\AdminBundle\JCSGYKAdminBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new MBence\LivePHPBundle\LivePHPBundle(),
+            new JCSGYK\DbimportBundle\JCSGYKDbimportBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

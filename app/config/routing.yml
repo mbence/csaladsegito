@@ -1,3 +1,7 @@
+jcsgyk_dbimport:
+    resource: "@JCSGYKDbimportBundle/Resources/config/routing.yml"
+    prefix:   /
+
 jcsgyk_admin:
     resource: "@JCSGYKAdminBundle/Resources/config/routing.yml"
     prefix:   /

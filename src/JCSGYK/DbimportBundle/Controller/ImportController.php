@@ -9,8 +9,10 @@ class ImportController extends Controller
 {
     public function indexAction($run = false)
     {
+        $this->truncate('person');
+        
         $db = $this->get('doctrine.dbal.csaszir_connection'); 
-        $persons = $db->fetchAll("SELECT * FROM persons LIMIT 10");
+        $persons = $db->fetchAll("SELECT * FROM persons WHERE Title != 1 LIMIT 10");
         
         $field_map = [
             'Id' => 'Person_ID',
@@ -46,8 +48,9 @@ class ImportController extends Controller
             'DelegateName' => ['DelegateName1', 'DelegateName2']
         ];
         
-        $datefields = ['BirthDate', 'CreatedAt', 'ModifiedAt'];
+        $date_fields = ['BirthDate', 'CreatedAt', 'ModifiedAt'];
         $titles = [1 => '', 2 => 'dr.', 3 => 'özv.', 4 => 'id.', 5=> 'ifj.'];
+        $phone_fields = ['Mobile', 'Phone', 'Fax'];
         
         $em = $this->getDoctrine()->getManager();
         
@@ -56,8 +59,11 @@ class ImportController extends Controller
             foreach ($field_map as $to => $from) {
                 $setter = 'Set' . $to;
                 // check and convert date fields
-                if (in_array($to, $datefields)) {
-                    $val = new \DateTime();
+                if (in_array($to, $date_fields)) {
+                    $val = $this->getDate($imp[$from]);
+                }
+                elseif (in_array($to, $phone_fields)) {
+                    
                 }
                 elseif ('Title' == $to) {
                     $val = $titles[$imp[$from]];
@@ -81,18 +87,25 @@ class ImportController extends Controller
             $em->persist($p);
             $em->flush();
         }
-            
-        
-        
-        
-        
         //var_dump($persons);
         
         return $this->render('JCSGYKDbimportBundle:Default:index.html.twig');
     }
     
-    public function conv($in)
+    protected function conv($in)
     {
         return mb_convert_encoding($in, 'UTF-8', 'ISO-8859-2');
+    }
+    
+    protected function truncate($table)
+    {
+        $db = $this->get('doctrine.dbal.default_connection'); 
+        $db->query("TRUNCATE TABLE ". $table);
+        unset($db);
+    }
+    
+    protected function getDate($date)
+    {
+        return new \DateTime(date('r', ((($date > 25568) ? $date : 25569) * 86400) - ((70 * 365 + 19) * 86400)));
     }
 }
