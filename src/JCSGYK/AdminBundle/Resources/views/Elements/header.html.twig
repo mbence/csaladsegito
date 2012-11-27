@@ -1,7 +1,7 @@
 <header id="header" role="banner">
     <div class="quicksearch">
-        <form action="" method="get" name="quick_search">
-            <input type="text" name="q" value="" placeholder="{{ 'gyorskereső'|trans() }}">
+        <form action="{{ path('quick_search') }}" method="get" name="quick_search" id="quick_search">
+            <input type="text" name="q" id="q" value="" placeholder="{{ 'gyorskereső'|trans() }}">
             <button type="submit" class="searchbutton"><span class="searchicon"></span></button>
         </form>
     </div>

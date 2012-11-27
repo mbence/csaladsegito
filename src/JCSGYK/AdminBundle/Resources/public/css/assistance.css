@@ -29,3 +29,14 @@
 .inquiry a:hover {
     color: #000;
 }
+.inquiry a:active {
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d3a70e), to(#eec123));
+    background: -webkit-linear-gradient(bottom, #eec123, #d3a70e);
+    background: -moz-linear-gradient(bottom, #eec123, #d3a70e);
+    background: -ms-linear-gradient(bottom, #eec123, #d3a70e);
+    background: -o-linear-gradient(bottom, #eec123, #d3a70e);
+}
+.inquiry a.disabled {
+    color: #ccc;
+    cursor: wait;
+}

@@ -218,17 +218,17 @@ footer#colophon .credits a:hover {
     margin: 4px 0 10px 0;
     border-bottom: 1px solid #c2b39f;
 }
-.flashbag {
+.flashbag, .ajaxbag {
     position: relative;
     text-align: center;
 }
-.flashbag div {
+.flashbag div, .ajaxbag div {
     padding: 5px 30px;
     border-radius: 3px;
     position: absolute;
     top: 60px;
-    display: inline-block;
     z-index: 1000;
+    left: 50%;
 }
 .flash-notice, .ajax-notice {
     color: #fff;

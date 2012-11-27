@@ -10,11 +10,20 @@ class AssistanceController extends Controller
 {
     public function indexAction()
     {
-        if ($this->get('security.context')->isGranted('ROLE_ASSISTANCE')) {
-            $this->get('logger')->info('ROLE_ASSISTANCE');
-        }
+//        $q = "Laka Ild'sel";
+//        $db = $this->get('doctrine.dbal.default_connection'); 
+//        $qr = $db->quote('+' . implode('* +', explode(' ', $q)) . '*');
+//        
+//        $sql = "SELECT title, firstname, lastname FROM person2 WHERE MATCH (title, firstname, lastname) AGAINST ({$qr} IN BOOLEAN MODE)";
+//        $res = $db->fetchAll($sql);
+//        var_dump($res);
+        
+//        if ($this->get('security.context')->isGranted('ROLE_ASSISTANCE')) {
+//            $this->get('logger')->info('ROLE_ASSISTANCE');
+//        }
+        //$this->get('session')->getFlashBag()->set('notice', 'Érdeklődés elmentve');
         $inquiry_types = $this->getInquiryTypes();
-
+                
         return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', array('inquiry_types' => $inquiry_types));
     }
 
@@ -31,10 +40,11 @@ class AssistanceController extends Controller
             $em->persist($inquiry);
             $em->flush();
 
-            //$inquiry_types = $this->getInquiryTypes();
-            //$this->get('session')->getFlashBag()->set('notice', 'Érdeklődés elmentve');
-        
-            return new Response('Érdeklődés elmentve');
+            $re = $this->getDoctrine()->getEntityManager()
+                ->createQuery("SELECT p FROM JCSGYKAdminBundle:InquiryType p WHERE p.id={$type} ORDER BY p.name ASC")
+                ->getResult();
+            
+            return new Response($re[0]->getName() . ' regisztrálva');
         }
         
         return $this->redirect($this->generateUrl('assistance_home'));

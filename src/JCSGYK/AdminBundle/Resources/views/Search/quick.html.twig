@@ -1,0 +1,6 @@
+{% for p in persons %}
+<div>
+    {% if p.title %}{{ p.title }}{% endif %}
+    {{ p.lastname }} {{ p.firstname }}
+</div>
+{% endfor %}

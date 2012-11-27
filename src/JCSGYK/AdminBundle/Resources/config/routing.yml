@@ -1,13 +1,17 @@
 home:
     pattern:  /
     defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
+
+quick_search:
+    pattern:  /quicksearch
+    defaults: { _controller: JCSGYKAdminBundle:Search:quick }
     
 assistance_home:
     pattern:  /asszisztencia
     defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
 
 register_inquiry:
-    pattern: /asszisztencia/erdreg/{type}
+    pattern: /asszisztencia/reg/{type}
     defaults: { _controller: JCSGYKAdminBundle:Assistance:registerInquiry }
     requirements:
         type: \d+
