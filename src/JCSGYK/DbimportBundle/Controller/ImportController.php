@@ -4,16 +4,40 @@ namespace JCSGYK\DbimportBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use JCSGYK\AdminBundle\Entity\Person;
+use Symfony\Component\HttpFoundation\Request;
 
 class ImportController extends Controller
 {
-    public function indexAction($run = false)
+    public function indexAction(Request $request)
     {
-        $this->truncate('person');
+        $session = $this->get('session');
+        $results = [
+            'person' => ''
+        ];
+
+        if ($request->isMethod('POST')) {
+            
+            $table = $request->get('import');
+            
+            if ('person' == $table || 'all' == $table || 'person100' == $table) {
+                $limit = 'person100' == $table ? 100 : 0;
+                
+                $results['person'] = $this->importPerson($limit);
+            }
+            $session->set('results', $results);
+            
+            return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
+        }
+        $r = $session->get('results', $results);
+        $session->remove('results');
         
-        $db = $this->get('doctrine.dbal.csaszir_connection'); 
-        $persons = $db->fetchAll("SELECT * FROM persons WHERE Title != 1 LIMIT 10");
-        
+        return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);        
+    }
+    
+    protected function importPerson($limit = 100)
+    {
+        $n = 0;
+
         $field_map = [
             'Id' => 'Person_ID',
             'Name' => ['Name1', 'Name2'],
@@ -52,18 +76,32 @@ class ImportController extends Controller
         $titles = [1 => '', 2 => 'dr.', 3 => 'özv.', 4 => 'id.', 5=> 'ifj.'];
         $phone_fields = ['Mobile', 'Phone', 'Fax'];
         
+        $this->truncate('person');
+
+        $db = $this->get('doctrine.dbal.csaszir_connection'); 
+        $sql = "SELECT * FROM persons WHERE Type=1";
+        if ($limit) {
+            $sql .= ' LIMIT ' . $limit;
+        }
+        $persons = $db->fetchAll($sql);
+
         $em = $this->getDoctrine()->getManager();
         
         foreach ($persons as $imp) {
             $p = new Person();
             foreach ($field_map as $to => $from) {
+                $val = null;
                 $setter = 'Set' . $to;
                 // check and convert date fields
                 if (in_array($to, $date_fields)) {
                     $val = $this->getDate($imp[$from]);
                 }
                 elseif (in_array($to, $phone_fields)) {
-                    
+                    $val = (int) preg_replace("/[^0-9,.]/", "", $imp[$from]);
+                    //$val = $imp[$from];
+                    if (strlen($val) == 7) {
+                        $val = '1' . $val;
+                    }
                 }
                 elseif ('Title' == $to) {
                     $val = $titles[$imp[$from]];
@@ -75,26 +113,37 @@ class ImportController extends Controller
                         // concatenate multi fields
                         $val = [];
                         foreach ($from as $f) {
-                            $val[] = $imp[$f];
+                            $val[] = trim($imp[$f]);
                         }
                         $val = implode(' ', $val);
                     }
                     $val = $this->conv($val);
                 }
+                if ($val === 0 || $val === '0' || $val === '00000000000' || $val === '000000000' || $val === '' || $val === 'nincs megadva' || $val === '?') {
+                   $val = null;
+                }
+                if ($to == 'birthName' && empty($val)) {
+                    $val = $p->getName();
+                }
                 $p->$setter($val);                
             }
-            var_dump($p);
             $em->persist($p);
-            $em->flush();
+            
+            if ($em->getUnitOfWork()->size() >= 100) {
+                $em->flush();
+                $em->clear();
+            }
+            
+            $n++;            
         }
-        //var_dump($persons);
+        $em->flush();
         
-        return $this->render('JCSGYKDbimportBundle:Default:index.html.twig');
+        return $n;
     }
     
     protected function conv($in)
     {
-        return mb_convert_encoding($in, 'UTF-8', 'ISO-8859-2');
+        return trim(mb_convert_encoding($in, 'UTF-8', 'ISO-8859-2'));
     }
     
     protected function truncate($table)
@@ -106,6 +155,6 @@ class ImportController extends Controller
     
     protected function getDate($date)
     {
-        return new \DateTime(date('r', ((($date > 25568) ? $date : 25569) * 86400) - ((70 * 365 + 19) * 86400)));
+        return new \DateTime(date('r', ($date  * 86400) - ((70 * 365 + 19) * 86400)));
     }
 }

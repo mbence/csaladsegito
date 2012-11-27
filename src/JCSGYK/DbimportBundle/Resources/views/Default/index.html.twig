@@ -1,6 +1,16 @@
 {% extends 'JCSGYKDbimportBundle::layout.html.twig' %}
 
 {% block content %}
-<h1>BD Import</h1>
-hello
+<h1>DB Import </h1>
+<form action="" method="POST" name="start">
+    Person <button type="submit" name="import" value="person100">Import 100</button>
+    <button type="submit" name="import" value="person">Import All</button>
+    {% if results.person %}
+        Succesfully imported {{ results.person }}
+    {% endif %} 
+    <br>
+    
+    <br>
+    <button type="submit" name="import" value="all">Import All Tables</button>
+</form>        
 {% endblock %}
