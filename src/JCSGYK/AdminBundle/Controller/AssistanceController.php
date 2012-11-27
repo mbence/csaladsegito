@@ -3,6 +3,7 @@
 namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 use JCSGYK\AdminBundle\Entity\Inquiry;
 
 class AssistanceController extends Controller
@@ -21,16 +22,20 @@ class AssistanceController extends Controller
     {        
         $user = $this->get('security.context')->getToken()->getUser();
                 
-        $inquiry = new Inquiry();
-        $inquiry->setInquiryTypeId($type);
-        $inquiry->setUserId($user->getId());
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $inquiry = new Inquiry();
+            $inquiry->setInquiryTypeId($type);
+            $inquiry->setUserId($user->getId());
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($inquiry);
+            $em->flush();
+
+            //$inquiry_types = $this->getInquiryTypes();
+            //$this->get('session')->getFlashBag()->set('notice', 'Érdeklődés elmentve');
         
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($inquiry);
-        $em->flush();
-        
-        $inquiry_types = $this->getInquiryTypes();
-        $this->get('session')->getFlashBag()->set('notice', 'Érdeklődés elmentve');
+            return new Response('Érdeklődés elmentve');
+        }
         
         return $this->redirect($this->generateUrl('assistance_home'));
     }

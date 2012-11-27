@@ -230,7 +230,7 @@ footer#colophon .credits a:hover {
     display: inline-block;
     z-index: 1000;
 }
-.flash-notice {
+.flash-notice, .ajax-notice {
     color: #fff;
     background-color: #33e620;
 }
