@@ -1,0 +1,14 @@
+<header id="header" role="banner">
+    <div class="quicksearch">
+        <form action="" method="get" name="quick_search">
+            <input type="text" name="q" value="" placeholder="{{ 'gyorskereső'|trans() }}">
+            <button type="submit" class="searchbutton"><span class="searchicon"></span></button>
+        </form>
+    </div>
+    <div class="headright">
+        {% if app.user %}
+            {{ 'Bejelentkezve:'|trans() }} <span class="username">{{ app.user.username }}</span>
+        {% endif %}
+    </div>
+    <div class="clear"></div>
+</header>

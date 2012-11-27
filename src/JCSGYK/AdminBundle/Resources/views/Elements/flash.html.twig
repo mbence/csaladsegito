@@ -1,0 +1,7 @@
+{% for msgType, msgs in app.session.flashbag.all %}
+    <div class="flashbag">
+    {% for flashMessage in msgs %}
+        <div class="flash-{{ msgType }}">{{ flashMessage|trans }}</div>
+    {% endfor %}
+    </div>
+{% endfor %}

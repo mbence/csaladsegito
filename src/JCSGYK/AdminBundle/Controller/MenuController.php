@@ -6,18 +6,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class MenuController extends Controller
 {
-    public function mainAction()
-    {
-        $menu_items = [
+    protected $menu = [
             ['route' => 'assistance_home', 'label' => 'Asszisztencia', 'role' => 'ROLE_ASSISTANCE'],
             ['route' => 'family_home', 'label' => 'Családsegítő', 'role' => 'ROLE_FAMILY_SUPPORT'],
             ['route' => 'child_home', 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE'],
             ['route' => 'admin_home', 'label' => 'Admin', 'role' => 'ROLE_ADMIN', 'submenu' => [
-                ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN']
+                ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
+                ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_ADMIN'],
             ]],
-        ];
-        
-        return $this->render('JCSGYKAdminBundle:Menu:main.html.twig', array('menu_items' => $menu_items));
+        ];    
+    
+    public function mainAction()
+    {
+        return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', array('menu_items' => $this->menu));
     }
     
     /**
@@ -41,4 +42,46 @@ class MenuController extends Controller
         }
     }
     
+    /**
+     * Renders the breadcrumb element
+     */
+    public function breadcrumbAction()
+    {
+        $router = $this->get("router");
+        $route = $router->match($this->getRequest()->getPathInfo());
+        
+        $path = $this->findPath($route['_route'], $this->menu);
+        
+        // Add the homepage element
+        array_unshift($path, ['route' => 'home', 'label' => 'Főoldal']);
+        
+        return $this->render('JCSGYKAdminBundle:Elements:breadcrumb.html.twig', array('breadcrumb' => $path));
+    }
+    
+    /**
+     * Finds the given route in the menu recursively
+     * 
+     * @param string $route the route to find
+     * @param array $menu menu items and submenu
+     * @return array the route and label of the matched path
+     */
+    protected function findPath($route, $menu)
+    {
+        foreach ($menu as $m) {
+            if ($m['route'] == $route) {
+
+                return [['route' => $m['route'], 'label' => $m['label']]];
+            }
+            elseif (isset($m['submenu'])) {
+                $re = $this->findPath($route, $m['submenu']);
+                if (!empty($re)) {
+                    array_unshift($re, ['route' => $m['route'], 'label' => $m['label']]);
+                            
+                    return $re;
+                }                
+            }
+        } 
+        
+        return [];
+    }
 }

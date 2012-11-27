@@ -1,16 +1,18 @@
-{% extends 'JCSGYKDbimportBundle::layout.html.twig' %}
+{% extends 'JCSGYKAdminBundle::layout.html.twig' %}
 
 {% block content %}
 <h1>DB Import </h1>
+<br>
+<br>
 <form action="" method="POST" name="start">
-    Person <button type="submit" name="import" value="person100">Import 100</button>
-    <button type="submit" name="import" value="person">Import All</button>
+    Person <button type="submit" name="import" value="person100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
+    <button type="submit" name="import" value="person" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
     {% if results.person %}
         Succesfully imported {{ results.person }}
     {% endif %} 
     <br>
     
     <br>
-    <button type="submit" name="import" value="all">Import All Tables</button>
+    <button type="submit" name="import" value="all" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import All Tables</button>
 </form>        
 {% endblock %}

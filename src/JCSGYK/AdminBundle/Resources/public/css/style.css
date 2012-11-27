@@ -48,14 +48,39 @@ a {
     clear:both;
 }
 
+#main {
+    background-color: #e9e0d7;    
+    height: 100%;
+    margin: 0 0 -28px 0;
+}
+#mainlogin {
+    height: 100%;
+    margin: 0 0 -28px 0;
+}
 #leftcol {
     height: 100%;
     float: left;
     width: 210px;
     background-color: #e9e0d7;    
+    border-right: 1px solid #c2b39f;    
+    margin: 0 0 -28px 0;
 }
 #rightcol {
-    margin: 0 0 0 210px;
+    margin: 0 0 -28px 210px;
+    background-color: #fff;    
+    height: 100%;
+}
+footer#colophon {
+    height: 22px;
+    text-align: center;
+    padding: 6px 0 0 0;
+}
+footer#colophon .credits, footer#colophon .credits a {
+    font: 12px "Optima Regular", "Optima Regular IE";
+    color: #888;
+}
+footer#colophon .credits a:hover {
+    color: #333;
 }
 #leftcol .logo {
     width: 210px;
@@ -68,17 +93,19 @@ a {
     overflow: hidden;
     text-indent: -500px;
 }
-#header {
+#rightcol #header {
     height: 53px;
     background-color: #e9e0d7;    
-    /*border-bottom: 1px solid #c2b39f;*/
+    border-bottom: 1px solid #c2b39f;
+    margin: 0 0 0 -1px;
+    position: relative;
 }
-#header .quicksearch {
+#rightcol #header .quicksearch {
     float: left;
     padding: 12px 0 0 30px;
     height: 36px;
 }
-#header .quicksearch input[type=text] {
+#rightcol #header .quicksearch input[type=text] {
     width: 400px;
     height: 26px;
     background-color: #FBFBFB;
@@ -91,20 +118,20 @@ a {
     margin: 0;
     float: left;
 }
-#header .quicksearch input:-ms-input-placeholder {
+#rightcol #header .quicksearch input:-ms-input-placeholder {
     color: #bbb;
     font-style: italic;
 }
-#header .quicksearch input:-moz-placeholder {
+#rightcol #header .quicksearch input:-moz-placeholder {
     color: #bbb;
     font-style: italic;
 }
-#header .quicksearch input::-webkit-input-placeholder
+#rightcol #header .quicksearch input::-webkit-input-placeholder
 {
     color: #bbb;
     font-style: italic;
 }
-#header .quicksearch button.searchbutton {
+#rightcol #header .quicksearch button.searchbutton {
     width: 80px;
     height: 30px;
     border: 1px solid #c2b39f;
@@ -116,24 +143,30 @@ a {
     padding: 0;
     display: inline-block;
     float: left;
+
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: -o-linear-gradient(top, #eec123, #d3a70e);    
 }
-#header .quicksearch .searchbutton span.searchicon {
+#rightcol #header .quicksearch .searchbutton span.searchicon {
     background: url('/bundles/jcsgykadmin/images/sprs.png') no-repeat 0 0;
     width: 13px;
     height: 13px;
     display: inline-block;
 }
-#header .quicksearch .searchbutton:hover span.searchicon {
+#rightcol #header .quicksearch .searchbutton:hover span.searchicon {
     background: url('/bundles/jcsgykadmin/images/sprs.png') no-repeat -34px 0;}
-#header .headright {
+#rightcol #header .headright {
     float: right;
     padding: 18px 25px 0 0;
     color: #888;
 }
-#header .headright .username {
+#rightcol #header .headright .username {
     color: #555;
 }
-#header .headright .username:hover {
+#rightcol #header .headright .username:hover {
     /*background-color: #c2b39f;*/
 }
 
@@ -151,7 +184,7 @@ a {
 #leftcol .menu a {
     display: block;
     padding: 4px 10px;
-    color: #000;
+    color: #333;
 }
 #leftcol .menu .misub a {
     color: #666;
@@ -159,6 +192,7 @@ a {
 }
 #leftcol .menu a:hover {
     background-color: #c2b39f;
+    color: #000;
 }
 
 #leftcol .menudivider {
@@ -170,11 +204,33 @@ a {
 
 #content {
     background-color: #fff;
-    border-left: 1px solid #c2b39f;
-    border-top: 1px solid #c2b39f;
+    padding: 0px 20px 20px;
 }
-
-.inquiry {
-    float: right;
-    width: 300px;
+#content .breadcrumb, #content .breadcrumb a {
+    font: 14px "Optima Regular", "Optima Regular IE";
+    color: #666;
+}
+#content .breadcrumb a:hover {
+    color: #000;
+} 
+#content .breadcrumb {
+    display: inline-block;
+    margin: 4px 0 10px 0;
+    border-bottom: 1px solid #c2b39f;
+}
+.flashbag {
+    position: relative;
+    text-align: center;
+}
+.flashbag div {
+    padding: 5px 30px;
+    border-radius: 3px;
+    position: absolute;
+    top: 60px;
+    display: inline-block;
+    z-index: 1000;
+}
+.flash-notice {
+    color: #fff;
+    background-color: #33e620;
 }

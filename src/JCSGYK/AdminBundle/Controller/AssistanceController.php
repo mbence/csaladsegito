@@ -12,24 +12,34 @@ class AssistanceController extends Controller
         if ($this->get('security.context')->isGranted('ROLE_ASSISTANCE')) {
             $this->get('logger')->info('ROLE_ASSISTANCE');
         }
-        $inquiry_types = $this->getDoctrine()
-            ->getRepository('JCSGYKAdminBundle:InquiryType')
-            ->findAllOrderedByName();
-        
+        $inquiry_types = $this->getInquiryTypes();
+
         return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', array('inquiry_types' => $inquiry_types));
     }
 
     public function registerInquiryAction($type)
     {        
+        $user = $this->get('security.context')->getToken()->getUser();
+                
         $inquiry = new Inquiry();
         $inquiry->setInquiryTypeId($type);
-        $inquiry->setUserId(1);
+        $inquiry->setUserId($user->getId());
         
         $em = $this->getDoctrine()->getManager();
         $em->persist($inquiry);
         $em->flush();
         
-        return $this->redirect($this->generateUrl('home'));
+        $inquiry_types = $this->getInquiryTypes();
+        $this->get('session')->getFlashBag()->set('notice', 'Érdeklődés elmentve');
+        
+        return $this->redirect($this->generateUrl('assistance_home'));
+    }
+    
+    protected function getInquiryTypes()
+    {
+        return $this->getDoctrine()
+            ->getRepository('JCSGYKAdminBundle:InquiryType')
+            ->findAllOrderedByName();
     }
     
 }

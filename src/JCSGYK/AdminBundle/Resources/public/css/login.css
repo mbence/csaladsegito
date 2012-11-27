@@ -47,7 +47,7 @@
     /*background-image: -moz-linear-gradient(center top , #1E8CBE 0%, #0074A2 100%);*/
     border: 0 none !important;
     border-radius: 2px 2px 2px 2px !important;
-    box-shadow: 0 2px 0 #ffc700 inset;
+    box-shadow: 0 2px 1px #eedea3 inset;
     color: #fff;
     display: block;
     /*float: left;*/
@@ -56,9 +56,15 @@
     height: auto !important;
     letter-spacing: 1px;
     margin: 16px 0 20px 0px;
-    padding: 4px 15px;
+    padding: 8px 15px 6px;
     text-shadow: none;
     text-transform: uppercase;    
+
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: -o-linear-gradient(top, #eec123, #d3a70e);    
 }
 .login form #_submit:hover {
     color: #000;

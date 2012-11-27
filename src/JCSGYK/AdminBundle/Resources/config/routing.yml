@@ -6,6 +6,12 @@ assistance_home:
     pattern:  /asszisztencia
     defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
 
+register_inquiry:
+    pattern: /asszisztencia/erdreg/{type}
+    defaults: { _controller: JCSGYKAdminBundle:Assistance:registerInquiry }
+    requirements:
+        type: \d+
+
 family_home:
     pattern:  /csaladsegito
     defaults: { _controller: JCSGYKAdminBundle:User:index }
@@ -34,8 +40,3 @@ login_redirector:
 #logout:
 #    pattern:  /logout
     
-register_inquiry:
-    pattern: /register_inquiry/{type}
-    defaults: { _controller: JCSGYKAdminBundle:Assistance:registerInquiry }
-    requirements:
-        type: \d+

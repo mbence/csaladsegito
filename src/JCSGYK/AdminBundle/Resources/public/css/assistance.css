@@ -1,0 +1,31 @@
+.inquiry {
+    float: right;
+    width: 300px;
+}
+.inquiry h2 {
+    text-align: center;
+    font: 16px "Optima Regular", "Optima Regular IE";
+    margin: 30px 0 0 0;
+    border-bottom: 1px solid #c2b39f;    
+}
+.inquiry a {
+    display: block;
+    margin: 20px 0 0 0;
+    height: 50px;
+    padding: 12px 0 0 0;
+    text-align: center;
+    font: 30px "Optima Regular", "Optima Regular IE";
+    color: #fff;
+    background-color: blue;
+    border-radius: 5px;
+    box-shadow: 0 4px 1px #ffc700 inset;
+
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: -o-linear-gradient(top, #eec123, #d3a70e);    
+}
+.inquiry a:hover {
+    color: #000;
+}

@@ -1,0 +1,8 @@
+<div class="breadcrumb">
+{% for item in breadcrumb %}
+    <a href="{{ path(item.route) }}">{{ item.label|trans }}</a> 
+    {% if not loop.last %}
+        &raquo;
+    {% endif %}
+{% endfor %}
+</div>

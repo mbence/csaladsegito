@@ -4,43 +4,46 @@
         <meta charset="UTF-8" />
         <title>{% block title %}Családsegítő Admin{% endblock %}</title>
         <link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
          {% stylesheets 
             '@JCSGYKAdminBundle/Resources/public/css/reset.css'
             '@JCSGYKAdminBundle/Resources/public/css/style.css'            
-            '@JCSGYKAdminBundle/Resources/public/css/login.css' 
+            '@JCSGYKAdminBundle/Resources/public/css/assistance.css' 
         %}
             <link rel="stylesheet" href="{{ asset_url }}" />
         {% endstylesheets %}
     </head>
     <body>
-        <div id="leftcol">
-            <div class="logo">
-                <a href="{{ path('home') }}">{{ 'Családsegítő admin'|trans() }}</a>
+        <div id="main">
+            {% include "JCSGYKAdminBundle:Elements:flash.html.twig" %}
+            <div id="leftcol">
+                <div class="logo">
+                    <a href="{{ path('home') }}">{{ 'Családsegítő admin'|trans() }}</a>
+                </div>
+                {% render "JCSGYKAdminBundle:Menu:main" %}
             </div>
-            {% render "JCSGYKAdminBundle:Menu:main" %}
+            <div id="rightcol">
+                {% include "JCSGYKAdminBundle:Elements:header.html.twig" %}
+                <div id="content">
+                    {% render "JCSGYKAdminBundle:Menu:breadcrumb" %}
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
         </div>
-        <div id="rightcol">
-            <div id="header">
-                <div class="quicksearch">
-                    <form action="" method="get" name="quick_search">
-                        <input type="text" name="q" value="" placeholder="{{ 'gyorskereső'|trans() }}">
-                        <button type="submit" class="searchbutton"><span class="searchicon"></span></button>
-                    </form>
-                </div>
-                <div class="headright">
-                    {% if app.user %}
-                        {{ 'Bejelentkezve:'|trans() }} <span class="username">{{ app.user.username }}</span>
-                    {% endif %}
-                </div>
-                <div class="clear"></div>
+        <footer id="colophon" role="contentinfo">
+            <div class="credits">
+                &copy; <a href="http://jcsgyk.hu" target="_blank">JCSGYK</a> | Fejlesztette: <a href="http://bencemeszaros.com" target="_blank">Mészáros Bence</a>
             </div>
-            <div id="content">
-            {% block content %}
-            {% endblock %}
-            </div>
-        </div>            
+        </footer><!-- #colophon -->
         {% block javascripts %}
             <script src="{{ asset('/bundles/livephp/js/livephp.js') }}" type="text/javascript"></script>
         {% endblock %}
+        {% javascripts 
+            '@JCSGYKAdminBundle/Resources/public/js/jcsgyk.js'
+        %}
+            <script src="{{ asset_url }}" type="text/javascript"></script>
+        {% endjavascripts %}            
     </body>
 </html>
