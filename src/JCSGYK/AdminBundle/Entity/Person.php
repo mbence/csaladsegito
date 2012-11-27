@@ -21,20 +21,27 @@ class Person
 //     * @ORM\GeneratedValue(strategy="IDENTITY")
     
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255, nullable=false)
-     */
-    private $name;
-
+    
     /**
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=10, nullable=true)
      */
     private $title;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="firstname", type="string", length=255, nullable=false)
+     */
+    private $firstname;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="lastname", type="string", length=255, nullable=false)
+     */
+    private $lastname;
 
     /**
      * @var boolean
@@ -60,17 +67,44 @@ class Person
     /**
      * @var string
      *
-     * @ORM\Column(name="birth_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="birth_title", type="string", length=10, nullable=true)
      */
-    private $birthName;
+    private $birthTitle;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="birth_firstname", type="string", length=255, nullable=true)
+     */
+    private $birthFirstname;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="birth_lastname", type="string", length=255, nullable=true)
+     */
+    private $birthLastname;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="mother_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="mother_title", type="string", length=10, nullable=true)
      */
-    private $motherName;
-
+    private $motherTitle;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mother_firstname", type="string", length=255, nullable=true)
+     */
+    private $motherFirstname;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mother_lastname", type="string", length=255, nullable=true)
+     */
+    private $motherLastname;
     /**
      * @var string
      *
@@ -141,6 +175,20 @@ class Person
      */
     private $martialStatus;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="citizenship_status", type="integer", nullable=true)
+     */
+    private $citizenshipStatus;
+    
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="citizenship", type="integer", nullable=true)
+     */
+    private $citizenship;
+    
     /**
      * @var integer
      *
@@ -232,12 +280,12 @@ class Person
      */
     private $delegateName;
 
-    
+
     /**
      * Set id
      *
      * @param integer $id
-     * @return Inquiry
+     * @return Person
      */
     public function setId($id)
     {
@@ -254,29 +302,6 @@ class Person
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Person
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 
     /**
@@ -300,6 +325,52 @@ class Person
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * Set firstname
+     *
+     * @param string $firstname
+     * @return Person
+     */
+    public function setFirstname($firstname)
+    {
+        $this->firstname = $firstname;
+    
+        return $this;
+    }
+
+    /**
+     * Get firstname
+     *
+     * @return string 
+     */
+    public function getFirstname()
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * Set lastname
+     *
+     * @param string $lastname
+     * @return Person
+     */
+    public function setLastname($lastname)
+    {
+        $this->lastname = $lastname;
+    
+        return $this;
+    }
+
+    /**
+     * Get lastname
+     *
+     * @return string 
+     */
+    public function getLastname()
+    {
+        return $this->lastname;
     }
 
     /**
@@ -372,49 +443,141 @@ class Person
     }
 
     /**
-     * Set birthName
+     * Set birthTitle
      *
-     * @param string $birthName
+     * @param string $birthTitle
      * @return Person
      */
-    public function setBirthName($birthName)
+    public function setBirthTitle($birthTitle)
     {
-        $this->birthName = $birthName;
+        $this->birthTitle = $birthTitle;
     
         return $this;
     }
 
     /**
-     * Get birthName
+     * Get birthTitle
      *
      * @return string 
      */
-    public function getBirthName()
+    public function getBirthTitle()
     {
-        return $this->birthName;
+        return $this->birthTitle;
     }
-    
+
     /**
-     * Set motherName
+     * Set birthFirstname
      *
-     * @param string $motherName
+     * @param string $birthFirstname
      * @return Person
      */
-    public function setMotherName($motherName)
+    public function setBirthFirstname($birthFirstname)
     {
-        $this->motherName = $motherName;
+        $this->birthFirstname = $birthFirstname;
     
         return $this;
     }
 
     /**
-     * Get motherName
+     * Get birthFirstname
      *
      * @return string 
      */
-    public function getMotherName()
+    public function getBirthFirstname()
     {
-        return $this->motherName;
+        return $this->birthFirstname;
+    }
+
+    /**
+     * Set birthLastname
+     *
+     * @param string $birthLastname
+     * @return Person
+     */
+    public function setBirthLastname($birthLastname)
+    {
+        $this->birthLastname = $birthLastname;
+    
+        return $this;
+    }
+
+    /**
+     * Get birthLastname
+     *
+     * @return string 
+     */
+    public function getBirthLastname()
+    {
+        return $this->birthLastname;
+    }
+
+    /**
+     * Set motherTitle
+     *
+     * @param string $motherTitle
+     * @return Person
+     */
+    public function setMotherTitle($motherTitle)
+    {
+        $this->motherTitle = $motherTitle;
+    
+        return $this;
+    }
+
+    /**
+     * Get motherTitle
+     *
+     * @return string 
+     */
+    public function getMotherTitle()
+    {
+        return $this->motherTitle;
+    }
+
+    /**
+     * Set motherFirstname
+     *
+     * @param string $motherFirstname
+     * @return Person
+     */
+    public function setMotherFirstname($motherFirstname)
+    {
+        $this->motherFirstname = $motherFirstname;
+    
+        return $this;
+    }
+
+    /**
+     * Get motherFirstname
+     *
+     * @return string 
+     */
+    public function getMotherFirstname()
+    {
+        return $this->motherFirstname;
+    }
+
+    /**
+     * Set motherLastname
+     *
+     * @param string $motherLastname
+     * @return Person
+     */
+    public function setMotherLastname($motherLastname)
+    {
+        $this->motherLastname = $motherLastname;
+    
+        return $this;
+    }
+
+    /**
+     * Get motherLastname
+     *
+     * @return string 
+     */
+    public function getMotherLastname()
+    {
+        return $this->motherLastname;
     }
 
     /**
@@ -645,6 +808,52 @@ class Person
     public function getMartialStatus()
     {
         return $this->martialStatus;
+    }
+
+    /**
+     * Set citizenshipStatus
+     *
+     * @param integer $citizenshipStatus
+     * @return Person
+     */
+    public function setCitizenshipStatus($citizenshipStatus)
+    {
+        $this->citizenshipStatus = $citizenshipStatus;
+    
+        return $this;
+    }
+
+    /**
+     * Get citizenshipStatus
+     *
+     * @return integer 
+     */
+    public function getCitizenshipStatus()
+    {
+        return $this->citizenshipStatus;
+    }
+
+    /**
+     * Set citizenship
+     *
+     * @param integer $citizenship
+     * @return Person
+     */
+    public function setCitizenship($citizenship)
+    {
+        $this->citizenship = $citizenship;
+    
+        return $this;
+    }
+
+    /**
+     * Get citizenship
+     *
+     * @return integer 
+     */
+    public function getCitizenship()
+    {
+        return $this->citizenship;
     }
 
     /**
