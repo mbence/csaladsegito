@@ -155,19 +155,103 @@ class Person
     private $email;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="address_id", type="integer", nullable=false)
+     * @ORM\Column(name="country", type="string", length=60, nullable=true)
      */
-    private $addressId;
+    private $country;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="location_id", type="integer", nullable=false)
+     * @ORM\Column(name="zip_code", type="string", length=10, nullable=true)
      */
-    private $locationId;
+    private $zipCode;    
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="city", type="string", length=255, nullable=true)
+     */
+    private $city;    
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="street", type="string", length=255, nullable=true)
+     */
+    private $street;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="street_type", type="string", length=16, nullable=true)
+     */
+    private $streetType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="street_number", type="string", length=16, nullable=true)
+     */
+    private $streetNumber;    
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="flat_number", type="string", length=16, nullable=true)
+     */
+    private $flatNumber;    
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="location_country", type="string", length=60, nullable=true)
+     */
+    private $locationCountry;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="location_zip_code", type="string", length=10, nullable=true)
+     */
+    private $locationZipCode;    
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="location_city", type="string", length=255, nullable=true)
+     */
+    private $locationCity;    
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="location_street", type="string", length=255, nullable=true)
+     */
+    private $locationStreet;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="location_street_type", type="string", length=16, nullable=true)
+     */
+    private $locationStreetType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="location_street_number", type="string", length=16, nullable=true)
+     */
+    private $locationStreetNumber;    
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="location_flat_number", type="string", length=16, nullable=true)
+     */
+    private $locationFlatNumber;    
+    
     /**
      * @var integer
      *
@@ -279,7 +363,6 @@ class Person
      * @ORM\Column(name="delegate_name", type="string", length=255, nullable=true)
      */
     private $delegateName;
-
 
     /**
      * Set id
@@ -742,49 +825,325 @@ class Person
     }
 
     /**
-     * Set addressId
+     * Set country
      *
-     * @param integer $addressId
+     * @param string $country
      * @return Person
      */
-    public function setAddressId($addressId)
+    public function setCountry($country)
     {
-        $this->addressId = $addressId;
+        $this->country = $country;
     
         return $this;
     }
 
     /**
-     * Get addressId
+     * Get country
      *
-     * @return integer 
+     * @return string 
      */
-    public function getAddressId()
+    public function getCountry()
     {
-        return $this->addressId;
+        return $this->country;
     }
 
     /**
-     * Set locationId
+     * Set zipCode
      *
-     * @param integer $locationId
+     * @param string $zipCode
      * @return Person
      */
-    public function setLocationId($locationId)
+    public function setZipCode($zipCode)
     {
-        $this->locationId = $locationId;
+        $this->zipCode = $zipCode;
     
         return $this;
     }
 
     /**
-     * Get locationId
+     * Get zipCode
      *
-     * @return integer 
+     * @return string 
      */
-    public function getLocationId()
+    public function getZipCode()
     {
-        return $this->locationId;
+        return $this->zipCode;
+    }
+
+    /**
+     * Set city
+     *
+     * @param string $city
+     * @return Person
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+    
+        return $this;
+    }
+
+    /**
+     * Get city
+     *
+     * @return string 
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * Set street
+     *
+     * @param string $street
+     * @return Person
+     */
+    public function setStreet($street)
+    {
+        $this->street = $street;
+    
+        return $this;
+    }
+
+    /**
+     * Get street
+     *
+     * @return string 
+     */
+    public function getStreet()
+    {
+        return $this->street;
+    }
+
+    /**
+     * Set streetType
+     *
+     * @param string $streetType
+     * @return Person
+     */
+    public function setStreetType($streetType)
+    {
+        $this->streetType = $streetType;
+    
+        return $this;
+    }
+
+    /**
+     * Get streetType
+     *
+     * @return string 
+     */
+    public function getStreetType()
+    {
+        return $this->streetType;
+    }
+
+    /**
+     * Set streetNumber
+     *
+     * @param string $streetNumber
+     * @return Person
+     */
+    public function setStreetNumber($streetNumber)
+    {
+        $this->streetNumber = $streetNumber;
+    
+        return $this;
+    }
+
+    /**
+     * Get streetNumber
+     *
+     * @return string 
+     */
+    public function getStreetNumber()
+    {
+        return $this->streetNumber;
+    }
+
+    /**
+     * Set flatNumber
+     *
+     * @param string $flatNumber
+     * @return Person
+     */
+    public function setFlatNumber($flatNumber)
+    {
+        $this->flatNumber = $flatNumber;
+    
+        return $this;
+    }
+
+    /**
+     * Get flatNumber
+     *
+     * @return string 
+     */
+    public function getFlatNumber()
+    {
+        return $this->flatNumber;
+    }
+
+    /**
+     * Set locationCountry
+     *
+     * @param string $locationCountry
+     * @return Person
+     */
+    public function setLocationCountry($locationCountry)
+    {
+        $this->locationCountry = $locationCountry;
+    
+        return $this;
+    }
+
+    /**
+     * Get locationCountry
+     *
+     * @return string 
+     */
+    public function getLocationCountry()
+    {
+        return $this->locationCountry;
+    }
+
+    /**
+     * Set locationZipCode
+     *
+     * @param string $locationZipCode
+     * @return Person
+     */
+    public function setLocationZipCode($locationZipCode)
+    {
+        $this->locationZipCode = $locationZipCode;
+    
+        return $this;
+    }
+
+    /**
+     * Get locationZipCode
+     *
+     * @return string 
+     */
+    public function getLocationZipCode()
+    {
+        return $this->locationZipCode;
+    }
+
+    /**
+     * Set locationCity
+     *
+     * @param string $locationCity
+     * @return Person
+     */
+    public function setLocationCity($locationCity)
+    {
+        $this->locationCity = $locationCity;
+    
+        return $this;
+    }
+
+    /**
+     * Get locationCity
+     *
+     * @return string 
+     */
+    public function getLocationCity()
+    {
+        return $this->locationCity;
+    }
+
+    /**
+     * Set locationStreet
+     *
+     * @param string $locationStreet
+     * @return Person
+     */
+    public function setLocationStreet($locationStreet)
+    {
+        $this->locationStreet = $locationStreet;
+    
+        return $this;
+    }
+
+    /**
+     * Get locationStreet
+     *
+     * @return string 
+     */
+    public function getLocationStreet()
+    {
+        return $this->locationStreet;
+    }
+
+    /**
+     * Set locationStreetType
+     *
+     * @param string $locationStreetType
+     * @return Person
+     */
+    public function setLocationStreetType($locationStreetType)
+    {
+        $this->locationStreetType = $locationStreetType;
+    
+        return $this;
+    }
+
+    /**
+     * Get locationStreetType
+     *
+     * @return string 
+     */
+    public function getLocationStreetType()
+    {
+        return $this->locationStreetType;
+    }
+
+    /**
+     * Set locationStreetNumber
+     *
+     * @param string $locationStreetNumber
+     * @return Person
+     */
+    public function setLocationStreetNumber($locationStreetNumber)
+    {
+        $this->locationStreetNumber = $locationStreetNumber;
+    
+        return $this;
+    }
+
+    /**
+     * Get locationStreetNumber
+     *
+     * @return string 
+     */
+    public function getLocationStreetNumber()
+    {
+        return $this->locationStreetNumber;
+    }
+
+    /**
+     * Set locationFlatNumber
+     *
+     * @param string $locationFlatNumber
+     * @return Person
+     */
+    public function setLocationFlatNumber($locationFlatNumber)
+    {
+        $this->locationFlatNumber = $locationFlatNumber;
+    
+        return $this;
+    }
+
+    /**
+     * Get locationFlatNumber
+     *
+     * @return string 
+     */
+    public function getLocationFlatNumber()
+    {
+        return $this->locationFlatNumber;
     }
 
     /**

@@ -64,8 +64,20 @@ class ImportController extends Controller
             'Phone' => 'PhoneNum',
             'Fax' => 'FaxNum',
             'Email' => 'Email',
-            'AddressId' => 'Address_ID',
-            'LocationId' => 'Location_ID',
+            //'Country' => '',
+            'ZipCode' => 'ZipCode',
+            'City' => 'City',
+            'Street' => 'Street',
+            //'StreetType' => '',
+            'StreetNumber' => 'StreetNum',
+            'FlatNumber' => 'FlatNum',
+            //'LocationCountry' => '',
+            'LocationZipCode' => 'ZipCode1',
+            'LocationCity' => 'City1',
+            'LocationStreet' => 'Street1',
+            //'LocationStreetType' => '',
+            'LocationStreetNumber' => 'StreetNum1',
+            'LocationFlatNumber' => 'FlatNum1',            
             'MartialStatus' => 'MartialStatus',
             'EducationCode' => 'EducationCode',
             'Note' => 'Note',
@@ -89,7 +101,7 @@ class ImportController extends Controller
         $this->truncate('person');
 
         $db = $this->get('doctrine.dbal.csaszir_connection'); 
-        $sql = "SELECT * FROM persons WHERE Type=1";
+        $sql = "SELECT p.*, a1.*, a2.ZipCode as ZipCode1 ,a2.City as City1, a2.Street as Street1, a2.StreetNum as StreetNum1, a2.FlatNum as FlatNum1 FROM Persons p, Addresses a1, Addresses a2 WHERE p.Address_ID=a1.Address_ID AND p.Location_ID=a2.Address_ID AND p.Type=1";
         if ($limit) {
             $sql .= ' LIMIT ' . $limit;
         }
@@ -118,6 +130,16 @@ class ImportController extends Controller
                 elseif ('Title' == $to) {
                     $val = $titles[$imp[$from]];
                 }
+                // Street type
+                elseif ('Street' == $to) {
+                   list($val, $st) = $this->streetFix($imp[$from]);
+                   $p->setStreetType($st);
+                }                
+                // Location Street type
+                elseif ('LocationStreet' == $to) {
+                   list($val, $st) = $this->streetFix($imp[$from]);
+                   $p->setLocationStreetType($st);
+                }                
                 // everything else
                 else {
                     if (!is_array($from)) {
@@ -134,7 +156,11 @@ class ImportController extends Controller
                     $val = $this->conv($val);
                 }
                 // cleanup some unwanted values
-                if ($val === 0 || $val === '0' || $val === '00000000000' || $val === '000000000' || $val === '' || $val === 'nincs megadva' || $val === '?') {
+                if ($val === 0 || $val === '0' 
+                        || $val === '00000000000' || $val === '000000000' 
+                        || $val === '' || $val === 'nincs megadva' 
+                        || $val === '?' || (is_string($val) && preg_match('/(yyy|xxx|aaa|bbb)/', $val))
+                    ) {
                    $val = null;
                 }
                 // copy birth names
@@ -164,6 +190,43 @@ class ImportController extends Controller
         return $n;
     }
     
+    /**
+     * Spilts and validates the street type from the street field
+     * 
+     * @param string $in street and street type
+     * @return array 
+     */
+    protected function streetFix($in)
+    {
+        $street = '';
+        $street_type = '';
+        
+        // list of all street type names
+        $stype_list = [ 'akna', 'alsó', 'alsósor', 'állomás', 'árok', 'átjáró', 'bányatelep', 'bástya', 'bástyája', 'csónakházak', 'domb', 'dűlő', 'dűlőút', 'emlékpark', 'erdészház', 'erdő', 'erdősor', 'fasor', 'fasora', 'felső', 'felsősor', 'forduló', 'főtér', 'gát', 'gyümölcsös', 'határsor', 'határút', 'hegy', 'iskola', 'kapu', 'kert', 'kertek', 'kolónia', 'körönd', 'körtér', 'körút', 'körútja', 'köz', 'középsor', 'kültelek', 'lakópark', 'lejáró', 'lejtő', 'lépcső', 'lépcsősor', 'liget', 'major', 'MÁV pályaudvar', 'menedékház', 'mélyút', 'oldal', 'őrház', 'őrházak', 'park', 'parkja', 'part', 'pályaudvar', 'puszta', 'rakpart', 'rét', 'sétaút', 'sétány', 'sor', 'sportpálya', 'sugárút', 'szőlőhegy', 'tag', 'tanya', 'tanyák', 'telep', 'tere', 'tető', 'tér', 'turistaház', 'udvar', 'utca', 'utcája', 'út', 'útja', 'üdülőpart', 'vadászház', 'vasútállomás', 'vár', 'vízmű', 'víztároló', 'völgy', 'zártkert', 'zug'];
+        // short name fix list
+        $stype_convert = ['u' => 'utca', 'u.' => 'utca', 'krt' => 'körút', 'krt.' => 'körút'];
+        // get and convert the value
+        $street = $this->conv($in);
+        // split the street type from the street
+        $stpos = strrpos($street, ' ');
+        if ($stpos !== false) {
+            $street_type = trim(substr($street, $stpos));
+            // fix some short names
+            if (isset($stype_convert[$street_type])) {
+                $street_type = $stype_convert[$street_type];
+            }
+            // check for valid types
+            if (in_array($street_type, $stype_list)) {
+                // valid street type found
+                $street = substr($street, 0, $stpos);
+            }
+            else {
+                $street_type = '';
+            }
+        }
+        
+        return [$street, $street_type];
+    }
     
     /**
      * Convert and trim the Latin-2 fields to UTF-8

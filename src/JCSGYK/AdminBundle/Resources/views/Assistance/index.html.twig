@@ -3,15 +3,25 @@
 {% block title %}Családsegítő Admin{% endblock %}
 
 {% block content %}
-<div id="search_results">
-</div>
+    <ul class="inquiry">
+        <h2>{{ 'érdeklődés regisztráció'|trans }}</h2>
+    {% for item in inquiry_types %}
+        <li><a href="{{ path('register_inquiry', {'type': item.id}) }}">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>
 
-<ul class="inquiry">
-    <h2>{{ 'érdeklődés regisztráció'|trans }}</h2>
-{% for item in inquiry_types %}
-    <li><a href="{{ path('register_inquiry', {'type': item.id}) }}">{{ item.name }}</a></li>
-{% endfor %}
-</ul>
-<div class="clear"></div>
+    <div class="leftcontent">
+        <div class="quicksearch">
+            <form action="{{ path('quicksearch') }}" method="get" name="quicksearch" id="quicksearch">
+                <input type="text" name="q" id="q" placeholder="{{ 'gyorskereső'|trans() }}" value="{{ app.session.get('quicksearch') }}">
+                <button type="submit" class="searchbutton"><span class="searchicon"></span></button>
+            </form>
+        </div>
 
+        <div id="search-results">
+            A fenti kereső mezőben ügyfélszám, név vagy utcanév alapján kereshet.
+        </div>
+    </div>
+
+    <div class="clear"></div>
 {% endblock %}

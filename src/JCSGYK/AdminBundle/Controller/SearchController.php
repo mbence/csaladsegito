@@ -12,34 +12,52 @@ class SearchController extends Controller
 {
     public function quickAction(Request $request)
     {
+        $limit = 100;
+        
         if ($this->getRequest()->isXmlHttpRequest()) {
             $re = [];
             
             $q = $request->get('q');
-            if (!empty($q)) {
-                $db = $this->get('doctrine.dbal.default_connection'); 
-                $qr = $db->quote('+' . implode('* +', explode(' ', $q)) . '*');
-
-                $sql = "SELECT title, firstname, lastname FROM person2 WHERE MATCH (title, firstname, lastname) AGAINST ({$qr} IN BOOLEAN MODE)";
-                $re = $db->fetchAll($sql);
-
-//                $q = explode(' ', trim($q));
-//                $dql = 'SELECT p.firstname, p.lastname FROM JCSGYKAdminBundle:Person p WHERE %s ORDER BY p.lastname, p.firstname ASC';
-//                $d2 = [];
-//                for ($i = 1; $i <= count($q); $i++) {
-//                    $d2[] = "CONCAT(p.firstname, p.lastname) LIKE ?{$i}";
-//                }
-//                $dql = sprintf($dql, implode(' AND ', $d2));
-//
-//                $em = $this->getDoctrine()->getManager();
-//                $query = $em->createQuery($dql);
-//                for ($i = 1; $i <= count($q); $i++) {
-//                    $query->setParameter($i, "%{$q[$i - 1]}%");
-//                }
-//                $re = $query->getResult();                
-            }
             
-            return $this->render('JCSGYKAdminBundle:Search:quick.html.twig', ['persons' => $re]);
+            // save the search string
+            $this->get('session')->set('quicksearch', $q);
+
+            $time_start = microtime(true);
+            if (!empty($q)) {
+                
+                $db = $this->get('doctrine.dbal.default_connection'); 
+                $sql = "SELECT id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM person WHERE";
+                // search for ID
+                if (is_numeric($q)) {
+                    $sql .= " id=" . $db->quote($q);
+                }
+                else {
+                    $search_words = explode(' ', trim($q));
+                    $last = end($search_words);
+                    // if the last word is a number, we use that for the street number search
+                    if (is_numeric($last)) {
+                        array_pop($search_words);
+                        $last .= '%';
+                    }
+                    else {
+                        $last = false;
+                    }
+                    $qr = $db->quote('+' . implode('* +', $search_words) . '*');
+
+                    $sql .= " MATCH (firstname, lastname, street, street_type) AGAINST ({$qr} IN BOOLEAN MODE)";
+                    
+                    // if we search for street number
+                    if ($last) {
+                        $sql .= " HAVING street_number LIKE " . $db->quote($last);
+                    }
+                }
+                $sql .= " ORDER BY lastname, firstname LIMIT " . $limit;
+                $re = $db->fetchAll($sql);
+            }
+            $time_end = microtime(true);
+            $time = number_format(($time_end - $time_start) * 1000, 3, ',', ' ');
+            
+            return $this->render('JCSGYKAdminBundle:Search:quick.html.twig', ['persons' => $re, 'time' => $time, 'sql' => $sql]);
         }
         
     }

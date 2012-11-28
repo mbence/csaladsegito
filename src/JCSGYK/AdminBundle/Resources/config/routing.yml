@@ -2,7 +2,7 @@ home:
     pattern:  /
     defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
 
-quick_search:
+quicksearch:
     pattern:  /quicksearch
     defaults: { _controller: JCSGYKAdminBundle:Search:quick }
     

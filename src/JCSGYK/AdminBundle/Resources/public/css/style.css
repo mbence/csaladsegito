@@ -70,18 +70,8 @@ a {
     background-color: #fff;    
     height: 100%;
 }
-footer#colophon {
-    height: 22px;
-    text-align: center;
-    padding: 6px 0 0 0;
-}
-footer#colophon .credits, footer#colophon .credits a {
-    font: 12px "Optima Regular", "Optima Regular IE";
-    color: #888;
-}
-footer#colophon .credits a:hover {
-    color: #333;
-}
+
+/* Headers */ 
 #leftcol .logo {
     width: 210px;
     height: 100px;
@@ -94,23 +84,49 @@ footer#colophon .credits a:hover {
     text-indent: -500px;
 }
 #rightcol #header {
-    height: 53px;
+    height: 25px;
     background-color: #e9e0d7;    
     border-bottom: 1px solid #c2b39f;
     margin: 0 0 0 -1px;
     position: relative;
 }
-#rightcol #header .quicksearch {
-    float: left;
-    padding: 12px 0 0 30px;
+#rightcol #header .headright {
+    float: right;
+    padding: 4px 20px 0 0;
+    color: #888;
+}
+#rightcol #header .headright .username {
+    color: #555;
+}
+#rightcol #header .headright .username:hover {
+    /*background-color: #c2b39f;*/
+}
+
+/* Footer */
+footer#colophon {
+    height: 22px;
+    text-align: center;
+    padding: 6px 0 0 0;
+}
+footer#colophon .credits, footer#colophon .credits a {
+    font: 12px "Optima Regular", "Optima Regular IE";
+    color: #888;
+}
+footer#colophon .credits a:hover {
+    color: #333;
+}
+
+/* Quicksearch */
+.quicksearch {
+    padding: 10px 0 0 0;
     height: 36px;
 }
-#rightcol #header .quicksearch input[type=text] {
+.quicksearch input[type=text] {
     width: 400px;
     height: 26px;
     background-color: #FBFBFB;
     border: 1px solid #c2b39f;
-    border-radius: 3px;
+    border-radius: 2px;
     box-shadow: 1px 1px 2px rgba(200, 200, 200, 0.8) inset;
     font: 16px Arial,Helvetica;
     /*font-weight: normal;*/
@@ -118,20 +134,20 @@ footer#colophon .credits a:hover {
     margin: 0;
     float: left;
 }
-#rightcol #header .quicksearch input:-ms-input-placeholder {
+.quicksearch input:-ms-input-placeholder {
     color: #bbb;
     font-style: italic;
 }
-#rightcol #header .quicksearch input:-moz-placeholder {
+.quicksearch input:-moz-placeholder {
     color: #bbb;
     font-style: italic;
 }
-#rightcol #header .quicksearch input::-webkit-input-placeholder
+.quicksearch input::-webkit-input-placeholder
 {
     color: #bbb;
     font-style: italic;
 }
-#rightcol #header .quicksearch button.searchbutton {
+.quicksearch button.searchbutton {
     width: 80px;
     height: 30px;
     border: 1px solid #c2b39f;
@@ -150,26 +166,17 @@ footer#colophon .credits a:hover {
     background: -ms-linear-gradient(top, #eec123, #d3a70e);
     background: -o-linear-gradient(top, #eec123, #d3a70e);    
 }
-#rightcol #header .quicksearch .searchbutton span.searchicon {
+.quicksearch .searchbutton span.searchicon {
     background: url('/bundles/jcsgykadmin/images/sprs.png') no-repeat 0 0;
     width: 13px;
     height: 13px;
     display: inline-block;
 }
-#rightcol #header .quicksearch .searchbutton:hover span.searchicon {
-    background: url('/bundles/jcsgykadmin/images/sprs.png') no-repeat -34px 0;}
-#rightcol #header .headright {
-    float: right;
-    padding: 18px 25px 0 0;
-    color: #888;
-}
-#rightcol #header .headright .username {
-    color: #555;
-}
-#rightcol #header .headright .username:hover {
-    /*background-color: #c2b39f;*/
+.quicksearch .searchbutton:hover span.searchicon {
+    background: url('/bundles/jcsgykadmin/images/sprs.png') no-repeat -34px 0;
 }
 
+/* Menu */
 #leftcol .menu {
     margin: 20px 0 0 0;
     padding: 0 10px 0 10px;
@@ -218,6 +225,10 @@ footer#colophon .credits a:hover {
     margin: 4px 0 10px 0;
     border-bottom: 1px solid #c2b39f;
 }
+.leftcontent {
+    margin: 0 330px 0 0;
+    min-width: 580px;
+}
 .flashbag, .ajaxbag {
     position: relative;
     text-align: center;
@@ -226,11 +237,50 @@ footer#colophon .credits a:hover {
     padding: 5px 30px;
     border-radius: 3px;
     position: absolute;
-    top: 60px;
     z-index: 1000;
     left: 50%;
 }
-.flash-notice, .ajax-notice {
+.ajaxbag div.ajax-loader {
+    top: 0px;
+}
+.flashbag div.flash-notice, .ajaxbag div.ajax-notice {
     color: #fff;
     background-color: #33e620;
+    top: 18px;
+}
+
+/* ajax bgs */
+.ajax-loading2 {
+    background: url('/bundles/jcsgykadmin/images/ajax-loader2.gif') no-repeat center center;
+    text-indent: -2000px;
+    overflow: hidden;
+    cursor: wait;    
+}
+.ajax-loading3 {
+    background: url('/bundles/jcsgykadmin/images/ajax-loader3.gif') no-repeat 395px 10px;
+}
+
+/* search */
+.nothing-found {
+    color: #333;
+}
+#search-results {
+    margin: 20px 0 0 0;
+}
+#search-results tr {
+    border-bottom: 1px solid #f5f5f5;
+}
+#search-results td {
+    padding: 1px 3px;
+    background-color: #eee;
+    font-size: 14px;
+    border-right: 3px solid #f5f5f5;
+}
+#search-results tr:hover td {
+    background-color: #ddd;
+}
+.search-footer {
+    color: #aaa;
+    font-size: 12px;
+    margin: 10px 0 0 0;
 }

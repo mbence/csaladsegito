@@ -10,6 +10,10 @@ class AssistanceController extends Controller
 {
     public function indexAction()
     {
+//        $val = 'ffffaaa';
+//        $r = preg_match('/(yyy|xxx|aaa|bbb)/', $val);
+//        var_dump($r);
+        
 //        $q = "Laka Ild'sel";
 //        $db = $this->get('doctrine.dbal.default_connection'); 
 //        $qr = $db->quote('+' . implode('* +', explode(' ', $q)) . '*');

@@ -10,14 +10,11 @@ JCS = {
 
         // add the inquiry ajax actions
         $(".inquiry a").click(function() {
-            if (!$(this).hasClass('disabled') && $(this).attr('href')) {
-                $(this).addClass('disabled');
+            if (!$(this).hasClass('ajax-loading2') && $(this).attr('href')) {
+                $(this).addClass('ajax-loading2');
                 var that = this;
-                JCS.hideNotice();
-                JCS.showAjaxLoader();
                 $.post($(this).attr('href'), function(data) {
-                    $(that).removeClass('disabled');
-                    JCS.hideAjaxLoader();
+                    $(that).removeClass('ajax-loading2');
                     JCS.showNotice(data);
                 });
             }
@@ -25,13 +22,15 @@ JCS = {
         });
         
         // quick search
-        $("#quick_search #q").on('input', function(){
+        $("#quicksearch #q").on('input', function(){
             clearTimeout(JCS.qto);
-            JCS.qto = setTimeout('JCS.qSubmit()', 200);
-        });
-        $("#quick_search").submit(function(){
+            JCS.qto = setTimeout('JCS.qSubmit()', 300);
+        }).select().focus();
+        $("#quicksearch").submit(function(){
+            $("#quicksearch #q").addClass('ajax-loading3');
             $.post($(this).attr('action'), $(this).serialize(), function(data) {
-                $("#search_results").html(data);
+                $("#quicksearch #q").removeClass('ajax-loading3');
+                $("#search-results").html(data);
             });
             return false;
         });
@@ -39,7 +38,7 @@ JCS = {
     },
     
     qSubmit: function() {
-        $("#quick_search").submit();
+        $("#quicksearch").submit();
     },
     
     showAjaxLoader: function() {    
@@ -53,8 +52,8 @@ JCS = {
     showNotice: function(notice) {
         JCS.hideAjaxLoader();
         $(".ajaxbag .ajax-notice")
-            .clearQueue()
             .stop()
+            .clearQueue()
             .html(notice)
             .css({
                 'marginLeft': -1 * ($(".ajaxbag .ajax-notice").outerWidth() / 2),
@@ -66,15 +65,16 @@ JCS = {
     },
     hideNotice: function() {
         $(".ajaxbag .ajax-notice")
-            .clearQueue()
             .stop()
+            .clearQueue()
             .hide();
     }
 }
 
 // document ready
 $(function() {
-    
     JCS.init();
+    
+    JCS.qSubmit();
 });
 

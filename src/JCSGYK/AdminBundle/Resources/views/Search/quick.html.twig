@@ -1,6 +1,41 @@
-{% for p in persons %}
-<div>
-    {% if p.title %}{{ p.title }}{% endif %}
-    {{ p.lastname }} {{ p.firstname }}
-</div>
-{% endfor %}
+{% if persons %}
+    <table cellspacing="0" border="0">
+    <thead>
+        <th>ÜSZ.</th>
+        <th>Név</th>
+        <th>Anyja neve</th>
+        <th>Cím</th>
+    </thead>
+    <tbody>
+        {% for p in persons %}
+        <tr>
+            <td>
+                {{ p.id }}
+            </td>
+            <td>
+                {% if p.title %}{{ p.title }}{% endif %}
+                {{ p.lastname }} {{ p.firstname }}
+            </td>
+            <td>
+                {{ p.mother_lastname }} {{ p.mother_firstname }}
+            </td>
+            <td>
+                {{ p.zip_code }} {{ p.city }} {{ p.street }} {{ p.street_type }} {{ p.street_number }} ({{ p.flat_number }})
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+{% else %}    
+    <div class="nothing-found">
+    {{ 'Nincs találat'|trans }}
+    </div>
+{% endif %}
+{% if time %}
+    <div class="search-footer">A keresési {{ time }} ezredmásodercig tartott.<br>
+    {{ sql }}</div>
+{% endif %}
+<br>
+<br>
+<br>
+

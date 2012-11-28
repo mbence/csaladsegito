@@ -5,18 +5,13 @@
 .inquiry h2 {
     text-align: center;
     font: 16px "Optima Regular", "Optima Regular IE";
-    margin: 30px 0 0 0;
+    margin: 4px 0 0 0;
     border-bottom: 1px solid #c2b39f;    
 }
-.inquiry a {
+.inquiry li {
     display: block;
     margin: 20px 0 0 0;
-    height: 50px;
-    padding: 12px 0 0 0;
-    text-align: center;
-    font: 30px "Optima Regular", "Optima Regular IE";
-    color: #fff;
-    background-color: blue;
+    height: 62px;
     border-radius: 5px;
     box-shadow: 0 4px 1px #ffc700 inset;
 
@@ -26,7 +21,16 @@
     background: -ms-linear-gradient(top, #eec123, #d3a70e);
     background: -o-linear-gradient(top, #eec123, #d3a70e);    
 }
-.inquiry a:hover {
+.inquiry li a {
+    display: block;
+    padding: 12px 0 0 0;
+    height: 50px;
+    text-align: center;
+    font: 30px "Optima Regular", "Optima Regular IE";
+    color: #fff;
+    border-radius: 5px;
+}    
+.inquiry li a:hover {
     color: #000;
 }
 .inquiry a:active {
@@ -35,8 +39,4 @@
     background: -moz-linear-gradient(bottom, #eec123, #d3a70e);
     background: -ms-linear-gradient(bottom, #eec123, #d3a70e);
     background: -o-linear-gradient(bottom, #eec123, #d3a70e);
-}
-.inquiry a.disabled {
-    color: #ccc;
-    cursor: wait;
 }
