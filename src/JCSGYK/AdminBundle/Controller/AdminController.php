@@ -37,16 +37,17 @@ class AdminController extends Controller
         
         if ($request->isMethod('POST') && $request->get('update')) {
             // git pull
-            $ex[] = "git pull https://github.com/mbence/csaladsegito.git master 2>&1";
+            $ex[] = "git pull https://github.com/mbence/csaladsegito.git master";
             // clear cache
-            $ex[] = "php ../app/console cache:clear --env=prod --no-debug 2>&1";
+            $ex[] = "php ../app/console cache:clear --env=prod --no-debug";
             // assetic dump
-            $ex[] = "php ../app/console assetic:dump --env=prod --no-debug 2>&1";
-            
+            $ex[] = "php ../app/console assetic:dump --env=prod --no-debug";
+            // asset install
+            $ex[] = "php ../app/console assets:install";            
             foreach ($ex as $com) {
                 $output = '';
                 $return_val = '';
-                exec($com, $output, $return_val);
+                exec($com . ' 2>&1', $output, $return_val);
                 $re [] = ['ex' => $com, 'return_val' => $return_val, 'output' => implode($output, '<br>')];
             }
             
