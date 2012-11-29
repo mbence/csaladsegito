@@ -75,6 +75,6 @@ JCS = {
 $(function() {
     JCS.init();
     
-    JCS.qSubmit();
+    //JCS.qSubmit();
 });
 
