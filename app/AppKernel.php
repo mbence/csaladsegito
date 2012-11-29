@@ -22,7 +22,6 @@ class AppKernel extends Kernel
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new JCSGYK\AdminBundle\JCSGYKAdminBundle(),
             new FOS\UserBundle\FOSUserBundle(),
-            new MBence\LivePHPBundle\LivePHPBundle(),
             new JCSGYK\DbimportBundle\JCSGYKDbimportBundle(),
         );
 
@@ -32,7 +31,11 @@ class AppKernel extends Kernel
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
         }
-
+        
+        if ('dev' == $this->getEnvironment()) {
+            $bundles[] = new MBence\LivePHPBundle\LivePHPBundle();
+        }
+        
         return $bundles;
     }
 

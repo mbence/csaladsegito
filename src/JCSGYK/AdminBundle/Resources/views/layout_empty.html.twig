@@ -23,7 +23,8 @@
             </div>
         </footer><!-- #colophon -->
         {% block javascripts %}
-             <script src="{{ asset('/bundles/livephp/js/livephp.js') }}" type="text/javascript"></script> 
-        {% endblock %}
+            {% if app.environment == 'dev' %} 
+                <script src="{{ asset('/bundles/livephp/js/livephp.js') }}" type="text/javascript"></script>
+            {% endif %}        {% endblock %}
     </body>
 </html>
