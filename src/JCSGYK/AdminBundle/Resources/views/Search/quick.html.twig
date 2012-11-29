@@ -33,7 +33,8 @@
 {% endif %}
 {% if time %}
     <div class="search-footer">A keresési {{ time }} ezredmásodercig tartott.<br>
-    {{ sql }}</div>
+    {% if app.environment == 'dev' %}{{ sql }}{% endif %}
+    </div>
 {% endif %}
 <br>
 <br>
