@@ -3,7 +3,7 @@
 {% block content %}
 
     <div class="acreate">
-        <form method="post" action="">
+        <form method="post" action="{{ path('admin_update') }}">
             <h1>{{ 'Rendszerfrissítés'|trans }}</h1>
             <br>
             <button type="submit" name="update" value="1" onclick="return confirm('{{ 'Biztos benne?'|trans }}');">{{ 'Frissítés'|trans }}</button>
