@@ -14,7 +14,7 @@
             <link rel="stylesheet" href="{{ asset_url }}" />
         {% endstylesheets %}
     </head>
-    <body>
+    <body id="main">
         <div id="main">
             {% include "JCSGYKAdminBundle:Elements:flash.html.twig" %}
             <div id="leftcol">
@@ -30,6 +30,7 @@
                     {% block content %}
                     {% endblock %}
                 </div>
+                <div class="clear"></div>
             </div>
         </div>
         <footer id="colophon" role="contentinfo">

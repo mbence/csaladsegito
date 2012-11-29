@@ -38,10 +38,14 @@ class AdminController extends Controller
         if ($request->isMethod('POST') && $request->get('update')) {
             // git pull
             $ex[] = "git pull https://github.com/mbence/csaladsegito.git master 2>&1";
+            // clear cache
+            $ex[] = "php ../app/console cache:clear --env=prod --no-debug 2>&1";
             // assetic dump
             $ex[] = "php ../app/console assetic:dump --env=prod --no-debug 2>&1";
             
             foreach ($ex as $com) {
+                $output = '';
+                $return_val = '';
                 exec($com, $output, $return_val);
                 $re [] = ['ex' => $com, 'return_val' => $return_val, 'output' => implode($output, '<br>')];
             }
@@ -53,7 +57,7 @@ class AdminController extends Controller
         
         if ($session->has('update')) {
             $re = $session->get('update');
-            $session->remove('update');
+            //$session->remove('update');
         }       
         return $this->render('JCSGYKAdminBundle:Admin:update.html.twig', ['result' => $re]);
     }
