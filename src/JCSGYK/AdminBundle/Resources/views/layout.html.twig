@@ -33,11 +33,7 @@
                 <div class="clear"></div>
             </div>
         </div>
-        <footer id="colophon" role="contentinfo">
-            <div class="credits">
-                &copy; <a href="http://jcsgyk.hu" target="_blank">JCSGYK</a> | Fejlesztette: <a href="http://bencemeszaros.com" target="_blank">Mészáros Bence</a>
-            </div>
-        </footer><!-- #colophon -->
+        {% include "JCSGYKAdminBundle:Elements:footer.html.twig" %}
         {% block javascripts %}
             {% if app.environment == 'dev' %} 
                 <script src="{{ asset('/bundles/livephp/js/livephp.js') }}" type="text/javascript"></script>

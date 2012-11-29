@@ -10,6 +10,7 @@ class AssistanceController extends Controller
 {
     public function indexAction()
     {
+//        echo 'session: ' . ini_get('session.save_path');
 //        $val = 'ffffaaa';
 //        $r = preg_match('/(yyy|xxx|aaa|bbb)/', $val);
 //        var_dump($r);
