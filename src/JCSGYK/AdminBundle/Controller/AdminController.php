@@ -39,11 +39,15 @@ class AdminController extends Controller
             // git pull
             $ex[] = "git pull https://github.com/mbence/csaladsegito.git master";
             // clear cache
-            $ex[] = "php ../app/console cache:clear --env=prod --no-debug";
+            $ex[] = "php app/console cache:clear --env=prod --no-debug";
             // assetic dump
-            $ex[] = "php ../app/console assetic:dump --env=prod --no-debug";
+            $ex[] = "php app/console assetic:dump --env=prod --no-debug";
             // asset install
-            $ex[] = "php ../app/console assets:install";            
+            $ex[] = "php app/console assets:install";            
+            
+            // switch to symfony root dir
+            chdir($this->get('kernel')->getRootDir() . '/..');
+            
             foreach ($ex as $com) {
                 $output = '';
                 $return_val = '';
@@ -58,7 +62,7 @@ class AdminController extends Controller
         
         if ($session->has('update')) {
             $re = $session->get('update');
-            //$session->remove('update');
+            $session->remove('update');
         }       
         return $this->render('JCSGYKAdminBundle:Admin:update.html.twig', ['result' => $re]);
     }
