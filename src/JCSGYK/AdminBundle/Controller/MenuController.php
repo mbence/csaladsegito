@@ -12,6 +12,7 @@ class MenuController extends Controller
             ['route' => 'child_home', 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE'],
             ['route' => 'admin_home', 'label' => 'Admin', 'role' => 'ROLE_ADMIN', 'submenu' => [
                 ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
+                ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN'],
                 ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_ADMIN'],
             ]],
         ];    

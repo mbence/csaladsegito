@@ -24,12 +24,16 @@ child_home:
     pattern:  /gyermekjolet
     defaults: { _controller: JCSGYKAdminBundle:User:index }
     
+# Admin #    
 admin_home:    
     pattern:  /admin
     defaults: { _controller: JCSGYKAdminBundle:Admin:index }
 admin_users:
     pattern:  /admin/users
     defaults: { _controller: JCSGYKAdminBundle:Admin:users }
+admin_update:    
+    pattern:  /admin/update
+    defaults: { _controller: JCSGYKAdminBundle:Admin:update }
   
 login_redirector:
     pattern:   /loginredirector

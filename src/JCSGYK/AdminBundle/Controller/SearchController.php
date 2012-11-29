@@ -16,6 +16,7 @@ class SearchController extends Controller
         
         if ($this->getRequest()->isXmlHttpRequest()) {
             $re = [];
+            $sql = '';
             
             $q = $request->get('q');
             
