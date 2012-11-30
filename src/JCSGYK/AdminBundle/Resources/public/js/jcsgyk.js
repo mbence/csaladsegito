@@ -62,7 +62,7 @@ JCS = {
         $("#quicksearch").submit();
     },
     setSrHeight: function() {
-        $('#search-results').height($(window).innerHeight() - 170);
+        $('#search-results').height($(window).innerHeight() - 180);
     },
     showAjaxLoader: function() {    
         $(".ajaxbag .ajax-loader")
