@@ -22,14 +22,21 @@ JCS = {
         });
         
         // quick search
+        var orig_results_text = $("#search-results").html();
+        $("#quicksearch .search-clear").click(function(){
+            $("#quicksearch #q").attr('value', '');
+            $("#search-results").html(orig_results_text);
+        });
         $("#quicksearch #q").on('input', function(){
             clearTimeout(JCS.qto);
             JCS.qto = setTimeout('JCS.qSubmit()', 300);
         }).select().focus();
         $("#quicksearch").submit(function(){
-            $("#quicksearch #q").addClass('ajax-loading3');
+            $("#quicksearch .search-indicator").show();
+            $("#quicksearch .search-clear").hide();
             $.post($(this).attr('action'), $(this).serialize(), function(data) {
-                $("#quicksearch #q").removeClass('ajax-loading3');
+                $("#quicksearch .search-indicator").hide();
+                $("#quicksearch .search-clear").show();
                 $("#search-results").html(data);
             });
             return false;
@@ -75,6 +82,6 @@ JCS = {
 $(function() {
     JCS.init();
     
-    //JCS.qSubmit();
+    JCS.qSubmit();
 });
 

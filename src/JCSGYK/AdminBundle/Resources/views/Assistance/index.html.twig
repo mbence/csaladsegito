@@ -11,13 +11,7 @@
     </ul>
 
     <div class="leftcontent">
-        <div class="quicksearch">
-            <form action="{{ path('quicksearch') }}" method="get" name="quicksearch" id="quicksearch">
-                <input type="text" name="q" id="q" placeholder="{{ 'gyorskereső'|trans() }}" value="{{ app.session.get('quicksearch') }}">
-                <button type="submit" class="searchbutton"><span class="searchicon"></span></button>
-            </form>
-        </div>
-
+        {% include "JCSGYKAdminBundle:Elements:search.html.twig" %}
         <div id="search-results">
             A fenti kereső mezőben ügyfélszám, név vagy utcanév alapján kereshet.
         </div>

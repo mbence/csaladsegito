@@ -20,7 +20,8 @@
                 {{ p.mother_lastname }} {{ p.mother_firstname }}
             </td>
             <td>
-                {{ p.zip_code }} {{ p.city }} {{ p.street }} {{ p.street_type }} {{ p.street_number }} ({{ p.flat_number }})
+                {{ p.zip_code }} {{ p.city }} {{ p.street }} {{ p.street_type }} {{ p.street_number }} 
+                {% if p.flat_number %}({{ p.flat_number }}){% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -32,7 +33,7 @@
     </div>
 {% endif %}
 {% if time %}
-    <div class="search-footer">A keresési {{ time }} ezredmásodercig tartott.<br>
+    <div class="search-footer">A keresés {{ time }} ezredmásodercig tartott.<br>
     {% if app.environment == 'dev' %}{{ sql }}{% endif %}
     </div>
 {% endif %}
