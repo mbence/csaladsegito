@@ -1,12 +1,6 @@
 <div class="quicksearch">
     <form action="{{ path('quicksearch') }}" method="get" name="quicksearch" id="quicksearch">
-        <div class="search-border">
-            <span class="search-field">
-                <input type="text" name="q" id="q" placeholder="{{ 'gyorskereső'|trans() }}" value="{{ app.session.get('quicksearch') }}">
-            </span>
-            <span class="search-indicator"></span>
-            <span class="search-clear"></span>
-        </div>
+        <input type="text" name="q" id="q" class="searchfield" placeholder="{{ 'gyorskereső'|trans() }}" value="{{ app.session.get('quicksearch') }}">
         <button type="submit" class="searchbutton"><span class="searchicon"></span></button>
     </form>
 </div>

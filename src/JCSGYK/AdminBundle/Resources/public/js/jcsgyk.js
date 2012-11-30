@@ -23,21 +23,35 @@ JCS = {
         
         // quick search
         var orig_results_text = $("#search-results").html();
-        $("#quicksearch .search-clear").click(function(){
-            $("#quicksearch #q").attr('value', '');
-            $("#search-results").html(orig_results_text);
+        
+        var nf = new NiceField($("#quicksearch #q"), {
+            clearHook: function() {
+                JCS.qSubmit();
+            },
+            onChange: function() {
+                clearTimeout(JCS.qto);
+                JCS.qto = setTimeout('JCS.qSubmit()', 300);
+            },
+            select: true,
+            focus: true
         });
-        $("#quicksearch #q").on('input', function(){
-            clearTimeout(JCS.qto);
-            JCS.qto = setTimeout('JCS.qSubmit()', 300);
-        }).select().focus();
+        
+        // search results height
+        JCS.setSrHeight();
+        $(window).resize(function(){
+            JCS.setSrHeight();
+        })
+        
         $("#quicksearch").submit(function(){
-            $("#quicksearch .search-indicator").show();
-            $("#quicksearch .search-clear").hide();
+            nf.start();
             $.post($(this).attr('action'), $(this).serialize(), function(data) {
-                $("#quicksearch .search-indicator").hide();
-                $("#quicksearch .search-clear").show();
-                $("#search-results").html(data);
+                nf.stop();
+                if ($("#quicksearch #q").attr('value') == '') {
+                    $("#search-results").html(orig_results_text);
+                } 
+                else {                    
+                    $("#search-results").html(data);
+                }
             });
             return false;
         });
@@ -47,7 +61,9 @@ JCS = {
     qSubmit: function() {
         $("#quicksearch").submit();
     },
-    
+    setSrHeight: function() {
+        $('#search-results').height($(window).innerHeight() - 170);
+    },
     showAjaxLoader: function() {    
         $(".ajaxbag .ajax-loader")
             .css('marginLeft', -1 * ($(".ajaxbag .ajax-loader").outerWidth() / 2))
@@ -78,10 +94,55 @@ JCS = {
     }
 }
 
+NiceField = function(o, opt) {
+    if (typeof(opt) == 'undefined') {
+        opt = {};
+    }
+    this.o = $(o);
+    this.opt = opt;
+    this.container = '<div class="nf-container"></div>';
+    this.indibutt = '<div class="nf-indicator"></div><div class="nf-clear"></div>';
+
+    $(o).wrap(this.container).after(this.indibutt);
+    $(o).parent().css({
+        'height': $(o).outerHeight(),
+        'width': $(o).outerWidth()
+    });
+    this.indi = $(o).next();
+    $(this.indi).css({
+        'height': $(o).outerHeight()
+    });
+    this.clear = $(o).next().next();
+    $(this.clear).css({
+        'height': $(o).outerHeight(),
+        'width': $(o).outerHeight()
+    }).click(function(){
+        $(o).attr('value', '');
+        if ($.isFunction(opt.clearHook)) {
+            opt.clearHook();
+        }
+    });
+    if ($.isFunction(opt.onChange)) {
+        $(o).on('input', function() {
+            opt.onChange();
+        });
+    }        
+    
+    this.start = function() {
+        $(this.indi).show();
+        $(this.clear).hide();
+    }
+    this.stop = function() {
+        $(this.indi).hide();
+        $(this.clear).show();
+    }    
+    return this;
+}
+
 // document ready
 $(function() {
     JCS.init();
     
-    JCS.qSubmit();
+    //JCS.qSubmit();
 });
 

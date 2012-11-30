@@ -10,6 +10,7 @@ class AssistanceController extends Controller
 {
     public function indexAction()
     {
+        $debug = '';
 //        echo 'session: ' . ini_get('session.save_path');
 //        $val = 'ffffaaa';
 //        $r = preg_match('/(yyy|xxx|aaa|bbb)/', $val);
@@ -29,7 +30,7 @@ class AssistanceController extends Controller
         //$this->get('session')->getFlashBag()->set('notice', 'Érdeklődés elmentve');
         $inquiry_types = $this->getInquiryTypes();
                 
-        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', array('inquiry_types' => $inquiry_types));
+        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', ['inquiry_types' => $inquiry_types, 'debug' => $debug]);
     }
 
     public function registerInquiryAction($type)

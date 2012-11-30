@@ -134,7 +134,11 @@ class ImportController extends Controller
                 elseif ('Street' == $to) {
                    list($val, $st) = $this->streetFix($imp[$from]);
                    $p->setStreetType($st);
-                }                
+                }   
+                // Street Number
+                elseif ('StreetNumber' == $to || 'LocationStreetNumber' == $to) {
+                    $val = strtr($imp[$from], ['/' => '', '.' => '']);
+                }
                 // Location Street type
                 elseif ('LocationStreet' == $to) {
                    list($val, $st) = $this->streetFix($imp[$from]);
@@ -159,7 +163,8 @@ class ImportController extends Controller
                 if ($val === 0 || $val === '0' 
                         || $val === '00000000000' || $val === '000000000' 
                         || $val === '' || $val === 'nincs megadva' 
-                        || $val === '?' || (is_string($val) && preg_match('/(yyy|xxx|aaa|bbb)/', $val))
+                        || $val === '?' || $val == 'Anyja neve 1' || $val == 'Anyja neve 2'
+                        || (is_string($val) && preg_match('/(yyy|xxx|aaa|bbb)/', $val))                        
                     ) {
                    $val = null;
                 }

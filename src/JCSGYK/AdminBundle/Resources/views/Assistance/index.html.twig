@@ -3,6 +3,8 @@
 {% block title %}Családsegítő Admin{% endblock %}
 
 {% block content %}
+    {{ debug }}<br>
+    
     <ul class="inquiry">
         <h2>{{ 'érdeklődés regisztráció'|trans }}</h2>
     {% for item in inquiry_types %}

@@ -117,49 +117,25 @@ footer#colophon .credits a:hover {
     height: 36px;
     width: 570px;
 }
-.quicksearch .search-border {
-    width: 420px;
-    height: 26px;
+.searchfield {
     background-color: #FBFBFB;
     border: 1px solid #c2b39f;
     border-radius: 2px;
     box-shadow: 1px 1px 2px rgba(200, 200, 200, 0.8) inset;
-    /*font-weight: normal;*/
+    outline:none;
+}
+.searchfield-container {
     padding: 0;
     margin: 0;
     position: relative;
-    float: left;
 }
-.quicksearch .search-field input {
+.quicksearch input[type=text]{
+    width: 420px;
+    height: 20px;
     width: 370px;
     font: 16px Arial,Helvetica;
-    padding: 3px 8px;
-    border: 0;
-    background-color: transparent;
-    outline:none;
-}
-
-.quicksearch .search-indicator {
-    position: absolute;
-    display: block;
-    right: 8px;
-    top: 0px;
-    width: 16px;
-    height: 26px;
-    background: url('/bundles/jcsgykadmin/images/ajax-loader3.gif') no-repeat center center;    
-}
-.quicksearch .search-clear {
-    position: absolute;
-    display: none;
-    right: 0px;
-    top: 1px;
-    width: 25px;
-    height: 25px;
-    background: url('/bundles/jcsgykadmin/images/search-clear.png') no-repeat center center;    
-    cursor: pointer;
-}
-.quicksearch .search-clear:hover {
-    background-color: #eee;
+    padding: 4px 8px 3px;
+    color: #555;
 }
 .quicksearch input:-ms-input-placeholder {
     color: #bbb;
@@ -176,13 +152,13 @@ footer#colophon .credits a:hover {
 }
 .quicksearch button.searchbutton {
     width: 60px;
-    height: 30px;
+    height: 29px;
     border: 1px solid #c2b39f;
     border-radius: 2px;
     box-shadow: 0 2px 0 #ffc700 inset;
     background-color: #eec123;
     text-align: center;
-    margin: 0 0 0 16px;
+    margin: 0 0 0 12px;
     padding: 0;
     display: inline-block;
 
@@ -202,6 +178,36 @@ footer#colophon .credits a:hover {
     background: url('/bundles/jcsgykadmin/images/sprs.png') no-repeat -34px 0;
 }
 
+/* Nicefield */
+.nf-container {
+    padding: 0;
+    margin: 0;
+    position: relative;
+    float: left;
+}
+.nf-indicator {
+    position: absolute;
+    display: none;
+    right: 8px;
+    top: 0px;
+    width: 16px;
+    height: 28px;
+    background: url('/bundles/jcsgykadmin/images/nf-loader.gif') no-repeat center center;    
+}
+.nf-clear {
+    position: absolute;
+    display: block;
+    right: 0px;
+    top: 0px;
+    width: 25px;
+    height: 25px;
+    background: url('/bundles/jcsgykadmin/images/nf-clear.png') no-repeat center center;    
+    cursor: pointer;
+    opacity: 0.8;
+}
+.nf-clear:hover {
+    opacity: 1;
+}
 /* Menu */
 #leftcol .menu {
     margin: 20px 0 0 0;
@@ -291,12 +297,15 @@ footer#colophon .credits a:hover {
 .nothing-found {
     color: #333;
 }
-#search-results table {
-    width: 100%;
-}
 #search-results {
     margin: 20px 0 0 0;
+    padding: 0 20px 0 0;
     color: #039;
+    overflow: auto;
+    height: 500px;
+}
+#search-results table {
+    width: 100%;
 }
 #search-results th {
     font-size: 16px;

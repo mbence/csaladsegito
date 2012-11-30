@@ -30,14 +30,15 @@ class SearchController extends Controller
                 $sql = "SELECT id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM person WHERE";
                 // search for ID
                 if (is_numeric($q)) {
-                    $sql .= " id=" . $db->quote($q);
+                    $sql .= " id={$db->quote($q)} OR social_security_number LIKE {$db->quote($q . '%')}";
                 }
                 else {
                     $search_words = explode(' ', trim($q));
                     $last = end($search_words);
                     // if the last word is a number, we use that for the street number search
-                    if (is_numeric($last)) {
+                    if (preg_match('/^\d+(\/|\.|-)?\w*\.?$/', $last)) {
                         array_pop($search_words);
+                        $last = strtr($last, ['/' => '', '.' => '', ' ' => '']);
                         $last .= '%';
                     }
                     else {
