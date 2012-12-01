@@ -3,14 +3,18 @@
 {% block title %}Családsegítő Admin{% endblock %}
 
 {% block content %}
-    {{ debug }}<br>
+    {% if debug is defined %}
+        {{ debug }}<br>
+    {% endif %}
     
+    {% if inquiry_types is defined %}
     <ul class="inquiry">
         <h2>{{ 'érdeklődés regisztráció'|trans }}</h2>
     {% for item in inquiry_types %}
         <li><a href="{{ path('register_inquiry', {'type': item.id}) }}">{{ item.name }}</a></li>
     {% endfor %}
     </ul>
+    {% endif %}
 
     <div class="leftcontent">
         {% include "JCSGYKAdminBundle:Elements:search.html.twig" %}

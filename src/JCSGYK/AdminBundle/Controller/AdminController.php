@@ -26,7 +26,7 @@ class AdminController extends Controller
     
     public function usersAction()
     {
-        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', array('inquiry_types' => $inquiry_types));
+        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', []);
     }    
     
     public function updateAction(Request $request)

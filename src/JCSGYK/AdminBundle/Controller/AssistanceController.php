@@ -63,4 +63,9 @@ class AssistanceController extends Controller
             ->findAllOrderedByName();
     }
     
+    public function newPersonAction()
+    {
+        return new Response('new person');
+    }
+    
 }

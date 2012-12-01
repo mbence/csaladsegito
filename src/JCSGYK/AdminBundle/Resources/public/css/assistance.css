@@ -14,6 +14,7 @@
     height: 62px;
     border-radius: 5px;
     box-shadow: 0 4px 1px #ffc700 inset;
+    background-color: #eec123;
 
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
     background: -webkit-linear-gradient(top, #eec123, #d3a70e);

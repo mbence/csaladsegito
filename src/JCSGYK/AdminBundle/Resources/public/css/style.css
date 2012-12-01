@@ -87,8 +87,9 @@ a {
 }
 #rightcol #header .headright {
     float: right;
-    padding: 4px 20px 0 0;
+    line-height: 25px;
     color: #888;
+    font-size: 14px;
 }
 #rightcol #header .headright .username {
     color: #555;
@@ -96,7 +97,14 @@ a {
 #rightcol #header .headright .username:hover {
     /*background-color: #c2b39f;*/
 }
-
+#rightcol #header .headright a.logout {
+    padding: 4px 10px 4px;
+    color: #888;
+}
+#rightcol #header .headright a.logout:hover {
+    background-color: #c2b39f;
+    color: #000;
+}
 /* Footer */
 footer#colophon {
     height: 22px;
@@ -211,29 +219,28 @@ footer#colophon .credits a:hover {
 /* Menu */
 #leftcol .menu {
     margin: 20px 0 0 0;
-    padding: 0 10px 0 10px;
-    font: 16px "Optima Regular", "Optima Regular IE";
-}
-#leftcol .menu .mi {
-    padding: 1px 0;
-}
-#leftcol .menu .misub {
-    padding: 1px 0 1px 10px;
+    font-size: 14px;
 }
 #leftcol .menu a {
     display: block;
-    padding: 4px 10px;
-    color: #333;
+    padding: 5px 10px;
+    border-left: 5px solid transparent;
+    color: #999;
 }
 #leftcol .menu .misub a {
     color: #666;
-    font-size: 14px;
+    font-size: 16px;
+    padding: 5px 10px 5px 20px;
 }
-#leftcol .menu a:hover {
+#leftcol .menu .misub a:hover {
     background-color: #c2b39f;
     color: #000;
 }
-
+#leftcol .menu a.active {
+    color: #473200;
+    background-color: #c2b39f;
+    border-left: 5px solid #473200;
+}
 #leftcol .menudivider {
     margin: 2px 0;
     height: 0px;

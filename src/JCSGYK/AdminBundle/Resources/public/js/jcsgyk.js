@@ -31,9 +31,7 @@ JCS = {
             onChange: function() {
                 clearTimeout(JCS.qto);
                 JCS.qto = setTimeout('JCS.qSubmit()', 300);
-            },
-            select: true,
-            focus: true
+            }
         });
         
         // search results height
@@ -95,9 +93,10 @@ JCS = {
 }
 
 NiceField = function(o, opt) {
-    if (typeof(opt) == 'undefined') {
-        opt = {};
-    }
+    opt = typeof(opt) == 'undefined' ? {} : opt;
+    opt.focus = typeof(opt.focus) == 'undefined' ? true : opt.focus;
+    opt.select = typeof(opt.select) == 'undefined' ? true : opt.select;
+    
     this.o = $(o);
     this.opt = opt;
     this.container = '<div class="nf-container"></div>';
@@ -123,10 +122,16 @@ NiceField = function(o, opt) {
         }
     });
     if ($.isFunction(opt.onChange)) {
-        $(o).on('input', function() {
+        $(o).on('keyup', function() {
             opt.onChange();
         });
-    }        
+    }    
+    if (opt.focus) {
+        $(o).focus();
+    }
+    if (opt.select) {
+        $(o).select();
+    }
     
     this.start = function() {
         $(this.indi).show();

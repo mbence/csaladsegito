@@ -2,6 +2,9 @@
     <div class="headright">
         {% if app.user %}
             {{ 'Bejelentkezve:'|trans() }} <span class="username">{{ app.user.username }}</span>
+
+        <a class="logout" href="{{ path('fos_user_security_logout') }}">{{ 'kilépés'|trans() }}</a>
+    
         {% endif %}
     </div>
     <div class="clear"></div>

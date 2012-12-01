@@ -8,15 +8,11 @@
                 {% for sub in menu.submenu %}
                     {% if is_granted(sub.role) %}
                         <div class="misub">
-                            <a href="{{ path(sub.route) }}">{{ sub.label|trans() }}</a>
+                            <a href="{{ path(sub.route) }}" {% if sub.route == route %}class="active"{% endif %}>{{ sub.label|trans() }}</a>
                         </div>
                     {% endif %}
                 {% endfor %}
             {% endif %}
         {% endif %}
     {% endfor %}
-    <div class="menudivider"></div>
-    <div class="mi">
-        <a href="{{ path('fos_user_security_logout') }}">{{ 'Kilépés'|trans() }}</a>
-    </div>
 </div>

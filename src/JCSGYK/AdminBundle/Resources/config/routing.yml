@@ -5,10 +5,13 @@ home:
 quicksearch:
     pattern:  /quicksearch
     defaults: { _controller: JCSGYKAdminBundle:Search:quick }
-    
+# Assistance #    
 assistance_home:
     pattern:  /asszisztencia
     defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
+new_person:    
+    pattern:  /uj_ugyfel
+    defaults: { _controller: JCSGYKAdminBundle:Assistance:newPerson }
 
 register_inquiry:
     pattern: /asszisztencia/reg/{type}
