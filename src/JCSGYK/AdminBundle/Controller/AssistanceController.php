@@ -10,7 +10,8 @@ class AssistanceController extends Controller
 {
     public function indexAction()
     {
-        //var_dump($this->container->get('templating.helper.assets')->getVersion());
+//        var_dump($this->container->get('templating.helper.assets')->getVersion());
+//        var_dump($this->container->getParameter('app.version'));
         $debug = '';
         
 //        echo 'session: ' . ini_get('session.save_path');

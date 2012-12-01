@@ -1,6 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
+    - { resource: version.yml }
     
 framework:
     #esi:             ~
@@ -12,7 +13,7 @@ framework:
     form:            true
     csrf_protection: true
     validation:      { enable_annotations: true }
-    templating:      { engines: ['twig'], assets_version: 'v0.2' }
+    templating:      { engines: ['twig'], assets_version: %app.version% }
     default_locale:  %locale%
     trust_proxy_headers: false # Whether or not the Request object should trust proxy headers (X_FORWARDED_FOR/HTTP_CLIENT_IP)
     session:         
@@ -22,6 +23,8 @@ framework:
 twig:
     debug:            %kernel.debug%
     strict_variables: %kernel.debug%
+    globals:
+        version: %app.version%    
 
 # Assetic Configuration
 assetic:
