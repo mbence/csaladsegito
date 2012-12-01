@@ -221,16 +221,17 @@ footer#colophon .credits a:hover {
     margin: 20px 0 0 0;
     font-size: 14px;
 }
-#leftcol .menu a {
-    display: block;
-    padding: 5px 10px;
-    border-left: 5px solid transparent;
+#leftcol .menu .mi {
+    padding: 5px 10px 5px 10px;
     color: #999;
 }
 #leftcol .menu .misub a {
+    display: block;
+    padding: 5px 10px;
+    border-left: 5px solid transparent;
     color: #666;
     font-size: 16px;
-    padding: 5px 10px 5px 20px;
+    padding: 5px 10px 5px 15px;
 }
 #leftcol .menu .misub a:hover {
     background-color: #c2b39f;

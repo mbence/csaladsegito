@@ -10,7 +10,9 @@ class AssistanceController extends Controller
 {
     public function indexAction()
     {
+        //var_dump($this->container->get('templating.helper.assets')->getVersion());
         $debug = '';
+        
 //        echo 'session: ' . ini_get('session.save_path');
 //        $val = 'ffffaaa';
 //        $r = preg_match('/(yyy|xxx|aaa|bbb)/', $val);
