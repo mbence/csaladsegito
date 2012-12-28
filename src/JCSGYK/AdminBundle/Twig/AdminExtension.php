@@ -2,20 +2,29 @@
 
 namespace JCSGYK\AdminBundle\Twig;
 
-class Extension extends \Twig_Extension
+class AdminExtension extends \Twig_Extension
 {
 
     public function getFunctions()
     {
         return array(
-            'admin_header' => new \Twig_Function_Method($this, 'adminHeader'),
+            'fname' => new \Twig_Function_Method($this, 'formatName'),
+            'fdate' => new \Twig_Function_Method($this, 'formatDate'),
         );
     }
     
-    public function adminHeader($request)
+    public function formatName($title, $firstname, $lastname)
     {
-        //var_dump($request);
-        //return true;
+        $re = '';
+        $re .= $title ? $title . ' ' : '';
+        $re .= $lastname . ' ' . $firstname;
+        
+        return $re;
+    }
+    
+    public function formatDate(\Datetime $d)
+    {
+        return $d->format("Y.m.d");
     }
     
 /*    public function getFilters()
@@ -35,6 +44,6 @@ class Extension extends \Twig_Extension
 */
     public function getName()
     {
-        return 'jcsgykadmin_extension';
+        return 'jcsgykadmin_adminextension';
     }
 }

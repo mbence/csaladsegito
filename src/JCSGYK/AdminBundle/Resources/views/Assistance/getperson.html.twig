@@ -1,6 +1,33 @@
-ID: {{ person.id }} <br>
-Név: {% if person.title %}{{ person.title }}{% endif %} {{ person.lastname }} {{ person.firstname }} <br>
-Anyja neve: {{ person.motherLastname }} {{ person.motherFirstname }} <br>
-
-        {{ person.zipCode }} {{ person.city }} {{ person.street }} {{ person.streetType }} {{ person.streetNumber }} 
-        {% if person.flatNumber %}({{ person.flatNumber }}){% endif %}
+<h1 class="person">{{ fname(person.title, person.firstname, person.lastname) }}</h1>
+<table class="person" cellspacing="0" border="0">
+    <tr>
+        <th>Ügyfélszám:</th>
+        <td>{{ person.id }}</td>
+    </tr>
+    <tr>
+        <th>Szül. név:</th>
+        <td>{{ fname(person.birthTitle, person.birthFirstname, person.birthLastname) }}</td>
+    </tr>
+    <tr>
+        <th>Szül. hely, idő:</th>
+        <td>{% if person.birthPlace %}{{ person.birthPlace }}, {% endif %}{{ fdate(person.birthDate) }}</td>
+    </tr>
+    <tr>
+        <th>Anyja neve:</th>
+        <td>{{ fname(person.motherTitle, person.motherFirstname, person.motherLastname) }}</td>
+    </tr>
+    <tr>
+        <th>TAJ:</th>
+        <td>{{ person.socialSecurityNumber }}</td>
+    </tr>
+    <tr>
+        <th>Állandó lakcím:</th>
+        <td>{{ person.zipCode }} {{ person.city }}, {{ person.street }} {{ person.streetType }} {{ person.streetNumber }} 
+        {% if person.flatNumber %}({{ person.flatNumber }}){% endif %}</td>
+    </tr>
+    <tr>
+        <th>Tartózkodási hely:</th>
+        <td>{{ person.locationZipCode }} {{ person.locationCity }}, {{ person.locationStreet }} {{ person.locationStreetType }} {{ person.locationStreetNumber }} 
+        {% if person.locationFlatNumber %}({{ person.locationFlatNumber }}){% endif %}</td>
+    </tr>
+</table>

@@ -9,7 +9,7 @@ services:
         class:        JCSGYK\AdminBundle\Services\PageHeader
         arguments:    []
         
-    jcsgyk_admin.twig.extension:
-        class:        JCSGYK\AdminBundle\Twig\Extension
+    jcsgyk_admin.twig.adminextension:
+        class:        JCSGYK\AdminBundle\Twig\AdminExtension
         tags:
             - { name: twig.extension }
