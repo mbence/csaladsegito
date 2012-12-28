@@ -3,8 +3,10 @@
 namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use JCSGYK\AdminBundle\Entity\Inquiry;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AssistanceController extends Controller
 {
@@ -70,5 +72,25 @@ class AssistanceController extends Controller
     {
         return new Response('new person');
     }
+ 
     
+    public function getPersonAction(Request $request)
+    {
+        // only process ajax requests!
+//        if ($this->getRequest()->isXmlHttpRequest()) {
+            $id = $request->get('id');
+            // get person data
+            $person = $this->getDoctrine()
+            ->getRepository('JCSGYKAdminBundle:Person')
+            ->findOneById($id);
+            
+            //var_dump($person);
+            
+            return $this->render('JCSGYKAdminBundle:Assistance:getperson.html.twig', ['person' => $person]);
+//        }
+//        else {
+//            throw new HttpException(400, "Bad request");
+//        }
+    }
+     
 }

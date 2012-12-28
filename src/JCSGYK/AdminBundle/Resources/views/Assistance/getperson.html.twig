@@ -1,0 +1,6 @@
+ID: {{ person.id }} <br>
+Név: {% if person.title %}{{ person.title }}{% endif %} {{ person.lastname }} {{ person.firstname }} <br>
+Anyja neve: {{ person.motherLastname }} {{ person.motherFirstname }} <br>
+
+        {{ person.zipCode }} {{ person.city }} {{ person.street }} {{ person.streetType }} {{ person.streetNumber }} 
+        {% if person.flatNumber %}({{ person.flatNumber }}){% endif %}

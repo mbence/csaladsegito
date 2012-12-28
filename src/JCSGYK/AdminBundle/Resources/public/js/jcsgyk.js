@@ -1,7 +1,7 @@
 JCS = {
     // quicksearch timeout
     qto: null,
-    
+
     init: function() {
         $(".flashbag div").css('marginLeft', function(index) {
             return -1 *( $(this).outerWidth() / 2);
@@ -20,56 +20,84 @@ JCS = {
             }
             return false;
         });
-        
+
         // quick search
         var orig_results_text = $("#search-results").html();
-        
+
         var nf = new NiceField($("#quicksearch #q"), {
             clearHook: function() {
                 JCS.qSubmit();
             },
             onChange: function() {
                 clearTimeout(JCS.qto);
-                JCS.qto = setTimeout('JCS.qSubmit()', 300);
+                JCS.qto = setTimeout("JCS.qSubmit()", 300);
             }
         });
-        
+
         // search results height
         JCS.setSrHeight();
         $(window).resize(function(){
             JCS.setSrHeight();
         })
-        
+
         $("#quicksearch").submit(function(){
             nf.start();
-            $.post($(this).attr('action'), $(this).serialize(), function(data) {
+            $.post($(this).attr("action"), $(this).serialize(), function(data) {
                 nf.stop();
                 if ($("#quicksearch #q").attr('value') == '') {
                     $("#search-results").html(orig_results_text);
-                } 
-                else {                    
+                }
+                else {
+                    // display search results
                     $("#search-results").html(data);
+                    // bind click events on the results
+                    $("#search-results tr").click(function(){
+                        $("#persondata .loading").show();
+                        // load the overlay
+                        $("#persondata").data("overlay").load();
+
+                        // start the ajax request
+                        $.post($("#getpersonform").attr("action"), {id: $(this).data("userid")}, function(data) {
+                            $("#persondata .loading").hide();
+                            $("#persondata .modalcontent").html(data).show();
+                        });
+                    });
                 }
             });
             return false;
         });
 
+        // init persons overlay
+        $("#persondata").overlay({
+            top: 80,
+            mask: {
+                color: '#fff',
+                loadSpeed: 200,
+                opacity: 0.6
+            },
+            closeOnClick: true,
+            load: false,
+            onClose: function() {
+                $("#persondata .loading").show();
+                $("#persondata .modalcontent").hide();
+            }
+        });
     },
-    
+
     qSubmit: function() {
         $("#quicksearch").submit();
     },
     setSrHeight: function() {
         $('#search-results').height($(window).innerHeight() - 180);
     },
-    showAjaxLoader: function() {    
+    showAjaxLoader: function() {
         $(".ajaxbag .ajax-loader")
             .css('marginLeft', -1 * ($(".ajaxbag .ajax-loader").outerWidth() / 2))
             .show();
     },
-    hideAjaxLoader: function() {  
+    hideAjaxLoader: function() {
         $(".ajaxbag .ajax-loader").hide();
-    },    
+    },
     showNotice: function(notice) {
         JCS.hideAjaxLoader();
         $(".ajaxbag .ajax-notice")
@@ -96,7 +124,7 @@ NiceField = function(o, opt) {
     opt = typeof(opt) == 'undefined' ? {} : opt;
     opt.focus = typeof(opt.focus) == 'undefined' ? true : opt.focus;
     opt.select = typeof(opt.select) == 'undefined' ? true : opt.select;
-    
+
     this.o = $(o);
     this.opt = opt;
     this.container = '<div class="nf-container"></div>';
@@ -125,14 +153,14 @@ NiceField = function(o, opt) {
         $(o).on('keyup', function() {
             opt.onChange();
         });
-    }    
+    }
     if (opt.focus) {
         $(o).focus();
     }
     if (opt.select) {
         $(o).select();
     }
-    
+
     this.start = function() {
         $(this.indi).show();
         $(this.clear).hide();
@@ -140,14 +168,14 @@ NiceField = function(o, opt) {
     this.stop = function() {
         $(this.indi).hide();
         $(this.clear).show();
-    }    
+    }
     return this;
 }
 
 // document ready
 $(function() {
     JCS.init();
-    
-    //JCS.qSubmit();
+
+    JCS.qSubmit();
 });
 

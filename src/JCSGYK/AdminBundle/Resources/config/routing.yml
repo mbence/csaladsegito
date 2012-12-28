@@ -18,6 +18,9 @@ register_inquiry:
     defaults: { _controller: JCSGYKAdminBundle:Assistance:registerInquiry }
     requirements:
         type: \d+
+get_person:
+    pattern:  /getperson
+    defaults: { _controller: JCSGYKAdminBundle:Assistance:getPerson }
 
 family_home:
     pattern:  /csaladsegito

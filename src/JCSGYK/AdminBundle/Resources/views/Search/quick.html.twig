@@ -8,7 +8,7 @@
     </thead>
     <tbody>
         {% for p in persons %}
-        <tr>
+        <tr data-userid="{{ p.id }}">
             <td>
                 {{ p.id }}
             </td>

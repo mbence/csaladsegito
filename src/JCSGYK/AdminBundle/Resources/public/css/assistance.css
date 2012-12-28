@@ -41,3 +41,35 @@
     background: -ms-linear-gradient(bottom, #eec123, #d3a70e);
     background: -o-linear-gradient(bottom, #eec123, #d3a70e);
 }
+
+.modal {
+    background-color:#fff;
+    display:none;
+    width:650px;
+    height: 300px;
+    padding:15px;
+    text-align:left;
+    border: 1px solid #333;
+
+    /*opacity:0.8;*/
+    border-radius: 5px;
+    box-shadow: 0 0 50px #ccc;
+}
+
+#persondata .close {
+    background-image:url(/bundles/jcsgykadmin/images/close.png);
+    position:absolute;
+    right:-15px;
+    top:-15px;
+    cursor:pointer;
+    height:35px;
+    width:35px;
+}
+
+#persondata .loading {
+    height: 95%;
+    background: url('/bundles/jcsgykadmin/images/ajax-loader3.gif') no-repeat center center;
+}
+#persondata .modalcontent, #persondata #getpersonform {
+    display: none;
+}

@@ -24,4 +24,13 @@
     </div>
 
     <div class="clear"></div>
+    
+    <div class="modal" id="persondata">
+        <form action="{{ path('get_person') }}" method="post" name="getpersonform" id="getpersonform">
+            <input type="hidden" name="id">
+        </form>        
+        <div class="loading">Betöltés...</div>
+        <div class="modalcontent"></div>
+    </div>
+
 {% endblock %}

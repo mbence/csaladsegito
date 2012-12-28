@@ -14,7 +14,7 @@
             <link rel="stylesheet" href="{{ asset_url }}" />
         {% endstylesheets %}
     </head>
-    <body id="main">
+    <body id="mainbody">
         <div id="main">
             {% include "JCSGYKAdminBundle:Elements:flash.html.twig" %}
             <div id="leftcol">
@@ -41,6 +41,7 @@
         {% endblock %}
         {% javascripts 
             '@JCSGYKAdminBundle/Resources/public/js/jcsgyk.js'
+            '@JCSGYKAdminBundle/Resources/public/js/jquery.tools.min.js'
         %}
             <script src="{{ asset_url }}" type="text/javascript"></script>
         {% endjavascripts %}            
