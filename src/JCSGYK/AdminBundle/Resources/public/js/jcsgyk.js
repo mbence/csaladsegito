@@ -3,7 +3,6 @@ JCS = {
     qto: null,
 
     init: function() {
-        // menu tabs
         // find the active tab
         var n = actTab = 0;
         $("#header .menu ul.menutabs > li.mi").each(function(){
@@ -15,9 +14,26 @@ JCS = {
                 return false;
             }
         })
-        
+        // init menu tabs
         $("#header .menu ul.menutabs").tabs("#header .menu .menupanes > div", {
-            initialIndex: actTab
+            initialIndex: actTab,
+            effect: 'fade'
+        });
+        // add menupanes clicks
+        $("#header .menu .menupanes a").click(function(){
+            $("#header .menu .menupanes a").removeClass('current');
+            $(this).addClass('current');
+        });
+        // add inquiry click
+        $("#header .menu .menupanes #menuinquiry").off().click(function(){
+            $(".inquiry").toggle(0, function(){
+                // change the icon
+                if ($(this).is(":visible")) {
+                    $("#header .menu .menupanes #menuinquiry span").css('background-position', '-120px -406px');
+                } else {
+                    $("#header .menu .menupanes #menuinquiry span").css('background-position', '-241px -407px');
+                }
+            });
         });
         
         $(".flashbag div").css('marginLeft', function(index) {

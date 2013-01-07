@@ -8,17 +8,18 @@ class MenuController extends Controller
 {
     protected $menu = [
         'assistance' => ['route' => 'assistance_home', 'label' => 'Asszisztencia', 'role' => 'ROLE_ASSISTANCE', 'items' => [
-            ['route' => 'assistance_home', 'label' => 'Keresés', 'role' => 'ROLE_ASSISTANCE'],
-            ['route' => 'new_person', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE'],
+            ['route' => 'assistance_home', 'label' => 'Keresés', 'role' => 'ROLE_ASSISTANCE', 'bgpos' => '-120px -6px'],
+            ['route' => 'new_person', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE', 'bgpos' => '-200px -166px'],
+            ['id' => 'menuinquiry', 'route' => false, 'label' => 'Érdeklődés', 'role' => 'ROLE_ASSISTANCE', 'bgpos' => '-120px -406px'],
         ]],
         'family' => ['route' => 'family_home', 'label' => 'Családsegítő', 'role' => 'ROLE_FAMILY_SUPPORT', 'items' => [
         ]],
         'child' => ['route' => 'child_home', 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE', 'items' => [
         ]],
         'admin' => ['route' => 'admin_home', 'label' => 'Admin', 'role' => 'ROLE_ADMIN', 'items' => [
-            ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN'],
-            ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPERADMIN'],
+            ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN', 'bgpos' => '-241px -166px'],
+            ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN', 'bgpos' => '-520px -326px'],
+            ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPERADMIN', 'bgpos' => '-160px -246px'],
         ]]
     ];    
     
