@@ -7,25 +7,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class MenuController extends Controller
 {
     protected $menu = [
-            ['route' => 'assistance_home', 'label' => 'Asszisztencia', 'role' => 'ROLE_ASSISTANCE', 'submenu' => [
-                ['route' => 'assistance_home', 'label' => 'Keresés', 'role' => 'ROLE_ASSISTANCE'],
-//                ['route' => 'new_person', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE'],
-            ]],
-            ['route' => 'family_home', 'label' => 'Családsegítő', 'role' => 'ROLE_FAMILY_SUPPORT'],
-            ['route' => 'child_home', 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE'],
-            ['route' => 'admin_home', 'label' => 'Admin', 'role' => 'ROLE_ADMIN', 'submenu' => [
-                ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
-                ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN'],
-                ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPERADMIN'],
-            ]],
-        ];    
+        'assistance' => ['route' => 'assistance_home', 'label' => 'Asszisztencia', 'role' => 'ROLE_ASSISTANCE', 'items' => [
+            ['route' => 'assistance_home', 'label' => 'Keresés', 'role' => 'ROLE_ASSISTANCE'],
+            ['route' => 'new_person', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE'],
+        ]],
+        'family' => ['route' => 'family_home', 'label' => 'Családsegítő', 'role' => 'ROLE_FAMILY_SUPPORT', 'items' => [
+        ]],
+        'child' => ['route' => 'child_home', 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE', 'items' => [
+        ]],
+        'admin' => ['route' => 'admin_home', 'label' => 'Admin', 'role' => 'ROLE_ADMIN', 'items' => [
+            ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN'],
+            ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPERADMIN'],
+        ]]
+    ];    
     
     public function mainAction()
     {
         $router = $this->get("router");
-        $route = $router->match($this->getRequest()->getPathInfo());
+        $this->setActivePath();
         
-        return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', ['menu_items' => $this->menu, 'route' => $route['_route']]);
+        return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', ['menu' => $this->menu]);
     }
     
     /**
@@ -64,6 +66,32 @@ class MenuController extends Controller
         
         return $this->render('JCSGYKAdminBundle:Elements:breadcrumb.html.twig', array('breadcrumb' => $path));
     }
+    
+    /**
+     * Finds the active path, and sets it in $this->menu
+     */
+    protected function setActivePath()
+    {
+        $router = $this->get("router");
+        $r = $router->match($this->getRequest()->getPathInfo());
+        if (!empty($r['_route'])) {
+            $route = $r['_route'];
+        
+            foreach ($this->menu as $mkey => $m) {
+                if ($m['route'] == $route) {
+                    $this->menu[$mkey]['active'] = 1;
+                }
+                if (isset($m['items'])) {
+                    foreach ($m['items'] as $ikey => $i) {
+                        if ($i['route'] == $route) {
+                            $this->menu[$mkey]['active'] = 1;
+                            $this->menu[$mkey]['items'][$ikey]['active'] = 1;
+                        }
+                    }
+                }
+            } 
+        }
+    }    
     
     /**
      * Finds the given route in the menu recursively

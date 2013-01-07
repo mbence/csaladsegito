@@ -1,18 +1,40 @@
 <div class="menu">
-    {% for menu in menu_items %}
-        {% if is_granted(menu.role) %}
-            <div class="mi">
-                {{ menu.label|trans() }}
-            </div>
-            {% if menu.submenu is defined %}
-                {% for sub in menu.submenu %}
-                    {% if is_granted(sub.role) %}
-                        <div class="misub">
-                            <a href="{{ path(sub.route) }}" {% if sub.route == route %}class="active"{% endif %}>{{ sub.label|trans() }}</a>
-                        </div>
-                    {% endif %}
-                {% endfor %}
+    <ul class="menutabs">
+        {% for menuid, menu in menu %}
+            {% if is_granted(menu.role) %}
+                <li class="mi">
+                    <a href="#" {% if menu.active is defined %}class="current"{% endif %}>{{ menu.label|trans() }}</a>
+                </li>
             {% endif %}
+        {% endfor %}
+    </ul>
+    <div class="menupanes">
+        {% for menuid, menu in menu %}
+        <div>
+            {% for sub in menu.items %}
+                {% if is_granted(menu.role) %}
+                    <a href="{{ path(sub.route) }}" {% if sub.active is defined %}class="current"{% endif %}>{{ sub.label|trans() }}</a>
+                    <div class="menudivider"></div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <div>
+            <a href="#">{{ 'Családsegítő'|trans() }}</a>
+        </div>
+        <div>
+            <a href="#">{{ 'Gyermekjólét'|trans() }}</a>
+        </div>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div>
+                <a href="#">{{ 'Admin'|trans() }}</a>
+            </div>
         {% endif %}
-    {% endfor %}
+    </div>
+{#
+        <div class="misub">
+            <a href="{{ path(sub.route) }}" {% if sub.route == route %}class="active"{% endif %}>{{ sub.label|trans() }}</a>
+        </div>
+#}
 </div>

@@ -3,11 +3,28 @@ JCS = {
     qto: null,
 
     init: function() {
+        // menu tabs
+        // find the active tab
+        var n = actTab = 0;
+        $("#header .menu ul.menutabs > li.mi").each(function(){
+            if (!$("a", this).hasClass('current')) {
+                n++;
+            }
+            else {
+                actTab = n;
+                return false;
+            }
+        })
+        
+        $("#header .menu ul.menutabs").tabs("#header .menu .menupanes > div", {
+            initialIndex: actTab
+        });
+        
         $(".flashbag div").css('marginLeft', function(index) {
             return -1 *( $(this).outerWidth() / 2);
         }).delay(4000).fadeOut(3000);
         $(".ajaxbag div").hide();
-
+        
         // add the inquiry ajax actions
         $(".inquiry a").click(function() {
             if (!$(this).hasClass('ajax-loading2') && $(this).attr('href')) {
