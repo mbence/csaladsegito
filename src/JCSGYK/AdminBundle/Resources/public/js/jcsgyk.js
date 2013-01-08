@@ -24,17 +24,6 @@ JCS = {
             $("#header .menu .menupanes a").removeClass('current');
             $(this).addClass('current');
         });
-        // add inquiry toggle click
-        $("#header .menu .menupanes #menuinquiry").off().click(function(){
-            $(".inquiry").toggle(0, function(){
-                // change the icon
-                if ($(this).is(":visible")) {
-                    $("#header .menu .menupanes #menuinquiry span").css('background-position', '-120px -406px');
-                } else {
-                    $("#header .menu .menupanes #menuinquiry span").css('background-position', '-241px -407px');
-                }
-            });
-        });
         
         $(".flashbag div").css('marginLeft', function(index) {
             return -1 *( $(this).outerWidth() / 2);
