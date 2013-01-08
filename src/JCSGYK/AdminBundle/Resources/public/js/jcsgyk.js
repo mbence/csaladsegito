@@ -3,6 +3,81 @@ JCS = {
     qto: null,
 
     init: function() {
+        
+        JCS.initMenu();
+        
+        $(".flashbag div").css('marginLeft', function(index) {
+            return -1 *( $(this).outerWidth() / 2);
+        }).delay(4000).fadeOut(3000);
+        
+        JCS.initInquiry();
+
+        // search results height
+        JCS.setBlockHeights();
+        $(window).resize(function(){
+            JCS.setBlockHeights();
+        })
+        
+        JCS.initSearch();
+        
+        // personblock
+        $("#personblock .close").click(function(){
+            $("#personblock").hide();
+            $("#personblock .personcontent").html("");
+            $("#search-results tr").removeClass("current");            
+        })
+    },
+    
+    initSearch: function() {
+        // quick search
+        var orig_results_text = $("#search-results").html();
+
+        var nf = new NiceField($("#quicksearch #q"), {
+            clearHook: function() {
+                JCS.qSubmit();
+            },
+            onChange: function() {
+                clearTimeout(JCS.qto);
+                JCS.qto = setTimeout("JCS.qSubmit()", 300);
+            }
+        });
+
+        // quick search
+        $("#quicksearch").submit(function(){
+            nf.start();
+            $.post($(this).attr("action"), $(this).serialize(), function(data) {
+                nf.stop();
+                if ($("#quicksearch #q").attr('value') == '') {
+                    $("#search-results").html(orig_results_text);
+                }
+                else {
+                    // display search results
+                    $("#search-results").html(data);
+                    // bind click events on the results
+                    $("#search-results tr").click(function(){
+                        $("#personblock .loading").show();
+                        $("#personblock .personcontent").hide();
+                        $("#personblock").show();
+
+                        // start the ajax request
+                        $.post($("#getpersonform").attr("action"), {id: $(this).data("userid")}, function(data) {
+                            $("#personblock .loading").hide();
+                            $("#personblock .personcontent").html(data).show();
+                        });
+                        $("#search-results tr").removeClass("current");
+                        $(this).addClass("current");
+                    });
+                    // check for results number and click tr if only 1
+                    if ($("#search-results tr").size() == 2) {
+                        $("#search-results tr").eq(1).click();
+                    }
+                }
+            });
+            return false;
+        });
+    },
+
+    initMenu: function() {
         // find the active tab
         var n = actTab = 0;
         $("#header .menu ul.menutabs > li.mi").each(function(){
@@ -23,13 +98,10 @@ JCS = {
         $("#header .menu .menupanes a.smi").click(function(){
             $("#header .menu .menupanes a").removeClass('current');
             $(this).addClass('current');
-        });
-        
-        $(".flashbag div").css('marginLeft', function(index) {
-            return -1 *( $(this).outerWidth() / 2);
-        }).delay(4000).fadeOut(3000);
-        $(".ajaxbag div").hide();
-        
+        });        
+    },
+    
+    initInquiry: function() {
         // add the inquiry ajax actions
         $(".inquiry a").click(function() {
             if (!$(this).hasClass('ajax-loading2') && $(this).attr('href')) {
@@ -40,77 +112,17 @@ JCS = {
                     JCS.showNotice(data);
                 });
             }
+            
             return false;
-        });
-
-        // quick search
-        var orig_results_text = $("#search-results").html();
-
-        var nf = new NiceField($("#quicksearch #q"), {
-            clearHook: function() {
-                JCS.qSubmit();
-            },
-            onChange: function() {
-                clearTimeout(JCS.qto);
-                JCS.qto = setTimeout("JCS.qSubmit()", 300);
-            }
-        });
-
-        // search results height
-        JCS.setSrHeight();
-        $(window).resize(function(){
-            JCS.setSrHeight();
-        })
-
-        $("#quicksearch").submit(function(){
-            nf.start();
-            $.post($(this).attr("action"), $(this).serialize(), function(data) {
-                nf.stop();
-                if ($("#quicksearch #q").attr('value') == '') {
-                    $("#search-results").html(orig_results_text);
-                }
-                else {
-                    // display search results
-                    $("#search-results").html(data);
-                    // bind click events on the results
-                    $("#search-results tr").click(function(){
-                        $("#persondata .loading").show();
-                        // load the overlay
-                        $("#persondata").data("overlay").load();
-
-                        // start the ajax request
-                        $.post($("#getpersonform").attr("action"), {id: $(this).data("userid")}, function(data) {
-                            $("#persondata .loading").hide();
-                            $("#persondata .modalcontent").html(data).show();
-                        });
-                    });
-                }
-            });
-            return false;
-        });
-
-        // init persons overlay
-        $("#persondata").overlay({
-            top: 80,
-            mask: {
-                color: '#fff',
-                loadSpeed: 200,
-                opacity: 0.6
-            },
-            closeOnClick: true,
-            load: false,
-            onClose: function() {
-                $("#persondata .loading").show();
-                $("#persondata .modalcontent").hide();
-            }
-        });
+        });        
     },
-
+    
     qSubmit: function() {
         $("#quicksearch").submit();
     },
-    setSrHeight: function() {
-        $('#search-results').height($(window).innerHeight() - 180);
+    setBlockHeights: function() {
+        $('#search-results').height($(window).innerHeight() - 186);
+        $('#personblock').height($(window).innerHeight() - 136);
     },
     showAjaxLoader: function() {
         $(".ajaxbag .ajax-loader")

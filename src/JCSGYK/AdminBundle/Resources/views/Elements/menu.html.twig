@@ -13,8 +13,8 @@
         <div id="{{ menuid }}">
             {% for sub in menu.items %}
                 {% if is_granted(menu.role) %}
-                    <a class="smi" href="{% if sub.route %}{{ path(sub.route) }}{% else %}#{% endif %}"
-                       {% if sub.active is defined %}class="current"{% endif %}
+                    <a href="{% if sub.route %}{{ path(sub.route) }}{% else %}#{% endif %}"
+                       class="smi {% if sub.active is defined %}current{% endif %}"
                        {% if sub.id is defined %}id="{{ sub.id }}"{% endif %}>
                         <span {% if sub.bgpos is defined %}style="background-position:{{ sub.bgpos }};"{% endif %}></span>
                         {{ sub.label|trans() }}

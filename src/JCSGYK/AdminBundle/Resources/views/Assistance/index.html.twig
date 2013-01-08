@@ -3,25 +3,32 @@
 {% block title %}Családsegítő Admin{% endblock %}
 
 {% block content %}
-    {% if debug is defined %}
-        {{ debug }}<br>
-    {% endif %}
-        
-    <div class="leftcontent">
-        {% include "JCSGYKAdminBundle:Elements:search.html.twig" %}
-        <div id="search-results">
-            A fenti kereső mezőben ügyfélszám, név vagy utcanév alapján kereshet.
-        </div>
-    </div>
+    <div class="contentscroller">
+        {% if debug is defined %}
+            {{ debug }}<br>
+        {% endif %}
 
-    <div class="clear"></div>
-    
-    <div class="modal" id="persondata">
-        <form action="{{ path('get_person') }}" method="post" name="getpersonform" id="getpersonform">
-            <input type="hidden" name="id">
-        </form>        
-        <div class="loading">Betöltés...</div>
-        <div class="modalcontent"></div>
+        <div id="searchblock">
+            {% include "JCSGYKAdminBundle:Elements:search.html.twig" %}
+            <div id="search-results">
+                A gyorskereső mezőben ügyfélszám, név, tajszám vagy utcanév és házszám szerint is kereshet.
+            </div>
+        </div>
+
+        <div id="personblock">
+            <div class="close"></div>
+            <form action="{{ path('get_person') }}" method="post" name="getpersonform" id="getpersonform">
+                <input type="hidden" name="id">
+            </form>        
+            <div class="loading">Betöltés...</div>
+            <div class="personcontent"></div>
+        </div>
+
+        <div class="problemblock">
+        </div>
+
+        <div class="modal" id="persondata">
+        </div>
     </div>
 
 {% endblock %}

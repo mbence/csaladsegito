@@ -1,10 +1,10 @@
 {% if persons %}
     <table cellspacing="0" border="0">
     <thead>
-        <th>ÜSZ.</th>
-        <th>Név</th>
-        <th>Anyja neve</th>
-        <th>Cím</th>
+        <th>{{ 'ÜSZ.'|trans }}</th>
+        <th>{{ 'Név'|trans }}</th>
+        <th>{{ 'Anyja neve'|trans }}</th>
+        <th>{{ 'Cím'|trans }}</th>
     </thead>
     <tbody>
         {% for p in persons %}
@@ -27,13 +27,17 @@
         {% endfor %}
     </tbody>
     </table>
+    {% if resnum == 100 %}
+        <br><p>{{ 'További találatok vannak, kérem szűkítse a keresési feltételeket!'|trans }}</p>
+    {% endif %}
+
 {% else %}    
     <div class="nothing-found">
     {{ 'Nincs találat'|trans }}
     </div>
 {% endif %}
 {% if time %}
-    <div class="search-footer">A keresés {{ time }} ezredmásodercig tartott.<br>
+    <div class="search-footer">{{ 'A keresés %time% ezredmásodercig tartott'|trans({'%time%': time}) }}.<br>
     {% if app.environment == 'dev' %}{{ sql }}{% endif %}
     </div>
 {% endif %}

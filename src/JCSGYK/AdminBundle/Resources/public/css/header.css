@@ -1,0 +1,101 @@
+/* Headers */ 
+#header {
+    background-color: #f6efe8;
+    border-bottom: 1px solid #c7baac;
+}
+#header .headright {
+    float: right;
+    line-height: 23px;
+    color: #888;
+    font-size: 13px;
+    padding: 2px 0 0 0;
+}
+#header .headright .username {
+    color: #555;
+}
+#header .headright .username:hover {
+    /*background-color: #c2b39f;*/
+}
+#header .headright a.logout {
+    padding: 8px 10px 1px;
+    color: #888;
+}
+#header .headright a.logout:hover {
+    /*background-color: #c2b39f;*/
+    color: #000;
+}
+
+/* Menu */
+#header .menu {
+    padding: 4px 0 0 0;
+}
+#header .menu .menutabs {
+    margin: 0 0 0 4px;
+}
+#header .menu .mi {
+    display: inline-block;
+    margin: 0 3px -1px 0;
+}
+#header .menu .mi a {
+    padding: 2px 10px 4px 10px;
+    color: #555;
+    font: 14px "Optima Regular", "Optima Regular IE";
+    display: block;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 3px 3px 0 0;
+}
+#header .menu .mi a:hover {
+    border-color: #c7baac;
+}
+#header .menu .mi a.current {
+    color: #473200;
+    background-color: #e9e0d7;
+    border-color: #c7baac;
+}
+#header .menu .menupanes {
+    border: 1px solid #c7baac;
+    border-width: 1px 0 0 1px;
+    background-color: #e9e0d7;
+    padding: 2px 10px;
+    min-height: 42px;
+}
+#header .menu .menupanes > div {
+    display: none;
+}
+#header .menu .menupanes a {
+    color: #333;
+    font: 13px "Optima Regular", "Optima Regular IE";
+    display: inline-block;
+    height: 36px;
+    padding: 2px 10px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    vartical-align: bottom;
+}
+#header .menu .menupanes a span {
+    width: 20px;
+    height: 20px;
+    margin: 0 auto 1px;
+    display: block;
+    overflow: hidden;
+    background: url("/bundles/jcsgykadmin/images/iconset.png") no-repeat -38px -366px;
+}
+#header .menu .menupanes a:hover {
+    border-color: #d6cab9;
+    color: #000;
+}
+#header .menu .menupanes a.current {
+    background-color: #e2d7c7;
+    border-color: #d6cab9;
+    color: #000;
+}
+#header .menu .menupanes .menudivider {
+    margin: 8px 2px 0;
+    width: 0px;
+    height: 28px;
+    border-left: 1px solid #c2b39f;
+    border-right: 1px solid #f5f5f5;
+    display: inline-block;
+    vartical-align: bottom;    
+}

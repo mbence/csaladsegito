@@ -9,7 +9,7 @@ class MenuController extends Controller
     protected $menu = [
         'assistance' => ['route' => 'assistance_home', 'label' => 'Asszisztencia', 'role' => 'ROLE_ASSISTANCE', 'items' => [
             ['route' => 'assistance_home', 'label' => 'Keresés', 'role' => 'ROLE_ASSISTANCE', 'bgpos' => '-120px -6px'],
-            ['route' => 'new_person', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE', 'bgpos' => '-200px -166px'],
+//            ['route' => 'new_person', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE', 'bgpos' => '-200px -166px'],
         ]],
         'family' => ['route' => 'family_home', 'label' => 'Családsegítő', 'role' => 'ROLE_FAMILY_SUPPORT', 'items' => [
         ]],

@@ -59,7 +59,7 @@ class SearchController extends Controller
             $time_end = microtime(true);
             $time = number_format(($time_end - $time_start) * 1000, 3, ',', ' ');
             
-            return $this->render('JCSGYKAdminBundle:Search:quick.html.twig', ['persons' => $re, 'time' => $time, 'sql' => $sql]);
+            return $this->render('JCSGYKAdminBundle:Search:quick.html.twig', ['persons' => $re, 'time' => $time, 'sql' => $sql, 'resnum' => count($re)]);
         }
         
     }
