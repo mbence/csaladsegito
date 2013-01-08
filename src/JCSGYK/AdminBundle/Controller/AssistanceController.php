@@ -33,9 +33,8 @@ class AssistanceController extends Controller
 //            $this->get('logger')->info('ROLE_ASSISTANCE');
 //        }
         //$this->get('session')->getFlashBag()->set('notice', 'Érdeklődés elmentve');
-        $inquiry_types = $this->getInquiryTypes();
                 
-        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', ['inquiry_types' => $inquiry_types, 'debug' => $debug]);
+        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', []);
     }
 
     public function registerInquiryAction($type)
@@ -61,12 +60,7 @@ class AssistanceController extends Controller
         return $this->redirect($this->generateUrl('assistance_home'));
     }
     
-    protected function getInquiryTypes()
-    {
-        return $this->getDoctrine()
-            ->getRepository('JCSGYKAdminBundle:InquiryType')
-            ->findAllOrderedByName();
-    }
+
     
     public function newPersonAction()
     {

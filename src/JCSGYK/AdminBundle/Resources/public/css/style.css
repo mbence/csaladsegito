@@ -60,7 +60,7 @@ a {
 }
 #header .headright {
     float: right;
-    line-height: 25px;
+    line-height: 23px;
     color: #888;
     font-size: 13px;
     padding: 2px 0 0 0;
@@ -151,6 +151,61 @@ a {
     border-left: 1px solid #c2b39f;
     border-right: 1px solid #f5f5f5;
     display: inline-block;
+}
+
+/* Inquiry */
+.inquiry {
+    float: right;
+    /*width: 500px;*/
+    text-align: right;
+    vertical-align: top;
+}
+.inquiry span {
+    text-align: center;
+    font: 15px "Optima Regular", "Optima Regular IE";
+    display: inline-block;
+    margin: 8px 4px 0 0;
+    line-height: 15px;
+}
+.inquiry ul {
+    display: inline-block;
+}
+.inquiry li {
+    display: inline-block;
+    margin: 5px 0 0 16px;
+    height: 34px;
+    width: 180px;
+    vertical-align: bottom;
+    border-radius: 5px;
+    box-shadow: 0 4px 1px #ffc700 inset;
+    background-color: #eec123;
+
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: -o-linear-gradient(top, #eec123, #d3a70e);    
+}
+#header .menu .menupanes .inquiry li a {
+    display: block;
+    height: 28px;
+    text-align: center;
+    font: 17px "Optima Regular", "Optima Regular IE";
+    color: #fff;
+    border-radius: 5px;
+    border: 0;
+    margin: 0;
+    padding: 6px 0 0 0;
+}    
+#header .menu .menupanes .inquiry li a:hover {
+    color: #000;
+}
+.inquiry a:active {
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d3a70e), to(#eec123));
+    background: -webkit-linear-gradient(bottom, #eec123, #d3a70e);
+    background: -moz-linear-gradient(bottom, #eec123, #d3a70e);
+    background: -ms-linear-gradient(bottom, #eec123, #d3a70e);
+    background: -o-linear-gradient(bottom, #eec123, #d3a70e);
 }
 
 /* Footer */

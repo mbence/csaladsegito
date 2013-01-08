@@ -1,0 +1,10 @@
+{% if inquiry_types is defined %}
+<div class="inquiry">
+    <span>{{ 'érdeklődés<br>regisztráció'|trans|raw }}</span>
+    <ul>
+        {% for item in inquiry_types %}
+            <li><a href="{{ path('register_inquiry', {'type': item.id}) }}">{{ item.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}

@@ -20,11 +20,11 @@ JCS = {
             effect: 'fade'
         });
         // add menupanes clicks
-        $("#header .menu .menupanes a").click(function(){
+        $("#header .menu .menupanes a.smi").click(function(){
             $("#header .menu .menupanes a").removeClass('current');
             $(this).addClass('current');
         });
-        // add inquiry click
+        // add inquiry toggle click
         $("#header .menu .menupanes #menuinquiry").off().click(function(){
             $(".inquiry").toggle(0, function(){
                 // change the icon

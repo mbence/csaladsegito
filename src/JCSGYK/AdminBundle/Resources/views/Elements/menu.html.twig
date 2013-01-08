@@ -10,10 +10,10 @@
     </ul>
     <div class="menupanes">
         {% for menuid, menu in menu %}
-        <div>
+        <div id="{{ menuid }}">
             {% for sub in menu.items %}
                 {% if is_granted(menu.role) %}
-                    <a href="{% if sub.route %}{{ path(sub.route) }}{% else %}#{% endif %}"
+                    <a class="smi" href="{% if sub.route %}{{ path(sub.route) }}{% else %}#{% endif %}"
                        {% if sub.active is defined %}class="current"{% endif %}
                        {% if sub.id is defined %}id="{{ sub.id }}"{% endif %}>
                         <span {% if sub.bgpos is defined %}style="background-position:{{ sub.bgpos }};"{% endif %}></span>
@@ -22,20 +22,11 @@
                     {% if not loop.last %}<div class="menudivider"></div>{% endif %}
                 {% endif %}
             {% endfor %}
+            {% if menuid == 'assistance' %}
+                {% include "JCSGYKAdminBundle:Elements:inquiry.html.twig" %}
+            {% endif %}    
         </div>
         {% endfor %}
-        <div>
-            <a href="#">{{ 'Családsegítő'|trans() }}</a>
-        </div>
-        <div>
-            <a href="#">{{ 'Gyermekjólét'|trans() }}</a>
-        </div>
-
-        {% if is_granted('ROLE_ADMIN') %}
-            <div>
-                <a href="#">{{ 'Admin'|trans() }}</a>
-            </div>
-        {% endif %}
     </div>
 {#
         <div class="misub">

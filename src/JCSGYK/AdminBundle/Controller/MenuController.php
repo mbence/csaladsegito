@@ -27,8 +27,9 @@ class MenuController extends Controller
     {
         $router = $this->get("router");
         $this->setActivePath();
+        $inquiry_types = $this->getInquiryTypes();
         
-        return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', ['menu' => $this->menu]);
+        return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', ['menu' => $this->menu, 'inquiry_types' => $inquiry_types]);
     }
     
     /**
@@ -120,4 +121,11 @@ class MenuController extends Controller
         
         return [];
     }
+    
+    protected function getInquiryTypes()
+    {
+        return $this->getDoctrine()
+            ->getRepository('JCSGYKAdminBundle:InquiryType')
+            ->findAllOrderedByName();
+    }    
 }
