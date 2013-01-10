@@ -1,33 +1,68 @@
 <h1 class="person">{{ fname(person.title, person.firstname, person.lastname) }}</h1>
 <table class="person" cellspacing="0" border="0">
     <tr>
-        <th>Ügyfélszám:</th>
+        <th>{{ 'Ügyfélszám'|trans }}:</th>
         <td>{{ person.id }}</td>
     </tr>
     <tr>
-        <th>Szül. név:</th>
+        <th>{{ 'Szül. név'|trans }}:</th>
         <td>{{ fname(person.birthTitle, person.birthFirstname, person.birthLastname) }}</td>
     </tr>
     <tr>
-        <th>Szül. hely, idő:</th>
+        <th>{{ 'Szül. hely, idő'|trans }}:</th>
         <td>{% if person.birthPlace %}{{ person.birthPlace }}, {% endif %}{{ fdate(person.birthDate) }}</td>
     </tr>
     <tr>
-        <th>Anyja neve:</th>
+        <th>{{ 'Anyja neve'|trans }}:</th>
         <td>{{ fname(person.motherTitle, person.motherFirstname, person.motherLastname) }}</td>
     </tr>
     <tr>
-        <th>TAJ:</th>
-        <td>{{ person.socialSecurityNumber }}</td>
-    </tr>
-    <tr>
-        <th>Állandó lakcím:</th>
-        <td>{{ person.zipCode }} {{ person.city }}, {{ person.street }} {{ person.streetType }} {{ person.streetNumber }} 
+        <th>{{ 'Állandó lakcím'|trans }}:</th>
+        <td>{{ person.zipCode }} {{ person.city }}, {{ person.street }} {{ person.streetType }} {{ person.streetNumber }}
         {% if person.flatNumber %}({{ person.flatNumber }}){% endif %}</td>
     </tr>
     <tr>
-        <th>Tartózkodási hely:</th>
-        <td>{{ person.locationZipCode }} {{ person.locationCity }}, {{ person.locationStreet }} {{ person.locationStreetType }} {{ person.locationStreetNumber }} 
+        <th>{{ 'Tartózkodási hely'|trans }}:</th>
+        <td>{{ person.locationZipCode }} {{ person.locationCity }}, {{ person.locationStreet }} {{ person.locationStreetType }} {{ person.locationStreetNumber }}
         {% if person.locationFlatNumber %}({{ person.locationFlatNumber }}){% endif %}</td>
     </tr>
+    {% if person.guardianFirstname or person.guardianLastname %}
+    <tr>
+        <th>{{ 'Megbízott'|trans }}:</th>
+        <td>{{ fname('', person.guardianFirstname, person.guardianLastname) }}</td>
+    </tr>
+    {% endif %}
 </table>
+<br>
+<div class="halfbox"><div class="rightpad">
+    <table class="person" cellspacing="0" border="0">
+        <tr>
+            <th>{{ 'TAJ'|trans }}:</th>
+            <td>{{ person.socialSecurityNumber }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Szem.a.j'|trans }}:</th>
+            <td>{{ person.identityNumber }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Szig.sz.'|trans }}:</th>
+            <td>{{ person.idCardNumber }}</td>
+        </tr>
+    </table>
+</div></div>
+<div class="halfbox"><div class="leftpad">
+    <table class="person" cellspacing="0" border="0">
+        <tr>
+            <th>{{ 'TAJ'|trans }}:</th>
+            <td>{{ person.socialSecurityNumber }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Szem.a.j'|trans }}:</th>
+            <td>{{ person.identityNumber }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Szig.sz.'|trans }}:</th>
+            <td>{{ person.idCardNumber }}</td>
+        </tr>
+    </table>
+</div></div>

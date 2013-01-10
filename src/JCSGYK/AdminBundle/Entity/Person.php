@@ -19,16 +19,16 @@ class Person
      * @ORM\Id
      */
 //     * @ORM\GeneratedValue(strategy="IDENTITY")
-    
+
     private $id;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=10, nullable=true)
      */
     private $title;
-    
+
     /**
      * @var string
      *
@@ -70,14 +70,14 @@ class Person
      * @ORM\Column(name="birth_title", type="string", length=10, nullable=true)
      */
     private $birthTitle;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="birth_firstname", type="string", length=255, nullable=true)
      */
     private $birthFirstname;
-    
+
     /**
      * @var string
      *
@@ -91,14 +91,14 @@ class Person
      * @ORM\Column(name="mother_title", type="string", length=10, nullable=true)
      */
     private $motherTitle;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="mother_firstname", type="string", length=255, nullable=true)
      */
     private $motherFirstname;
-    
+
     /**
      * @var string
      *
@@ -166,14 +166,14 @@ class Person
      *
      * @ORM\Column(name="zip_code", type="string", length=10, nullable=true)
      */
-    private $zipCode;    
+    private $zipCode;
 
     /**
      * @var string
      *
      * @ORM\Column(name="city", type="string", length=255, nullable=true)
      */
-    private $city;    
+    private $city;
 
     /**
      * @var string
@@ -194,14 +194,14 @@ class Person
      *
      * @ORM\Column(name="street_number", type="string", length=16, nullable=true)
      */
-    private $streetNumber;    
+    private $streetNumber;
 
     /**
      * @var string
      *
      * @ORM\Column(name="flat_number", type="string", length=16, nullable=true)
      */
-    private $flatNumber;    
+    private $flatNumber;
 
     /**
      * @var string
@@ -215,14 +215,14 @@ class Person
      *
      * @ORM\Column(name="location_zip_code", type="string", length=10, nullable=true)
      */
-    private $locationZipCode;    
+    private $locationZipCode;
 
     /**
      * @var string
      *
      * @ORM\Column(name="location_city", type="string", length=255, nullable=true)
      */
-    private $locationCity;    
+    private $locationCity;
 
     /**
      * @var string
@@ -243,15 +243,15 @@ class Person
      *
      * @ORM\Column(name="location_street_number", type="string", length=16, nullable=true)
      */
-    private $locationStreetNumber;    
+    private $locationStreetNumber;
 
     /**
      * @var string
      *
      * @ORM\Column(name="location_flat_number", type="string", length=16, nullable=true)
      */
-    private $locationFlatNumber;    
-    
+    private $locationFlatNumber;
+
     /**
      * @var integer
      *
@@ -265,14 +265,14 @@ class Person
      * @ORM\Column(name="citizenship_status", type="integer", nullable=true)
      */
     private $citizenshipStatus;
-    
+
     /**
      * @var integer
      *
      * @ORM\Column(name="citizenship", type="integer", nullable=true)
      */
     private $citizenship;
-    
+
     /**
      * @var integer
      *
@@ -353,16 +353,16 @@ class Person
     /**
      * @var integer
      *
-     * @ORM\Column(name="delegate_needed", type="integer", nullable=true)
+     * @ORM\Column(name="guardian_firstname", type="string", length=255, nullable=true)
      */
-    private $delegateNeeded;
+    private $guardianFirstname;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="delegate_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="guardian_lastname", type="string", length=255, nullable=true)
      */
-    private $delegateName;
+    private $guardianLastname;
 
     /**
      * Set id
@@ -373,14 +373,14 @@ class Person
     public function setId($id)
     {
         $this->id = $id;
-    
+
         return $this;
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -396,14 +396,14 @@ class Person
     public function setTitle($title)
     {
         $this->title = $title;
-    
+
         return $this;
     }
 
     /**
      * Get title
      *
-     * @return string 
+     * @return string
      */
     public function getTitle()
     {
@@ -419,14 +419,14 @@ class Person
     public function setFirstname($firstname)
     {
         $this->firstname = $firstname;
-    
+
         return $this;
     }
 
     /**
      * Get firstname
      *
-     * @return string 
+     * @return string
      */
     public function getFirstname()
     {
@@ -442,14 +442,14 @@ class Person
     public function setLastname($lastname)
     {
         $this->lastname = $lastname;
-    
+
         return $this;
     }
 
     /**
      * Get lastname
      *
-     * @return string 
+     * @return string
      */
     public function getLastname()
     {
@@ -465,14 +465,14 @@ class Person
     public function setGender($gender)
     {
         $this->gender = $gender;
-    
+
         return $this;
     }
 
     /**
      * Get gender
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getGender()
     {
@@ -488,14 +488,14 @@ class Person
     public function setBirthDate($birthDate)
     {
         $this->birthDate = $birthDate;
-    
+
         return $this;
     }
 
     /**
      * Get birthDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getBirthDate()
     {
@@ -511,14 +511,14 @@ class Person
     public function setBirthPlace($birthPlace)
     {
         $this->birthPlace = $birthPlace;
-    
+
         return $this;
     }
 
     /**
      * Get birthPlace
      *
-     * @return string 
+     * @return string
      */
     public function getBirthPlace()
     {
@@ -534,14 +534,14 @@ class Person
     public function setBirthTitle($birthTitle)
     {
         $this->birthTitle = $birthTitle;
-    
+
         return $this;
     }
 
     /**
      * Get birthTitle
      *
-     * @return string 
+     * @return string
      */
     public function getBirthTitle()
     {
@@ -557,14 +557,14 @@ class Person
     public function setBirthFirstname($birthFirstname)
     {
         $this->birthFirstname = $birthFirstname;
-    
+
         return $this;
     }
 
     /**
      * Get birthFirstname
      *
-     * @return string 
+     * @return string
      */
     public function getBirthFirstname()
     {
@@ -580,14 +580,14 @@ class Person
     public function setBirthLastname($birthLastname)
     {
         $this->birthLastname = $birthLastname;
-    
+
         return $this;
     }
 
     /**
      * Get birthLastname
      *
-     * @return string 
+     * @return string
      */
     public function getBirthLastname()
     {
@@ -603,14 +603,14 @@ class Person
     public function setMotherTitle($motherTitle)
     {
         $this->motherTitle = $motherTitle;
-    
+
         return $this;
     }
 
     /**
      * Get motherTitle
      *
-     * @return string 
+     * @return string
      */
     public function getMotherTitle()
     {
@@ -626,14 +626,14 @@ class Person
     public function setMotherFirstname($motherFirstname)
     {
         $this->motherFirstname = $motherFirstname;
-    
+
         return $this;
     }
 
     /**
      * Get motherFirstname
      *
-     * @return string 
+     * @return string
      */
     public function getMotherFirstname()
     {
@@ -649,14 +649,14 @@ class Person
     public function setMotherLastname($motherLastname)
     {
         $this->motherLastname = $motherLastname;
-    
+
         return $this;
     }
 
     /**
      * Get motherLastname
      *
-     * @return string 
+     * @return string
      */
     public function getMotherLastname()
     {
@@ -672,14 +672,14 @@ class Person
     public function setSocialSecurityNumber($socialSecurityNumber)
     {
         $this->socialSecurityNumber = $socialSecurityNumber;
-    
+
         return $this;
     }
 
     /**
      * Get socialSecurityNumber
      *
-     * @return string 
+     * @return string
      */
     public function getSocialSecurityNumber()
     {
@@ -695,14 +695,14 @@ class Person
     public function setIdentityNumber($identityNumber)
     {
         $this->identityNumber = $identityNumber;
-    
+
         return $this;
     }
 
     /**
      * Get identityNumber
      *
-     * @return string 
+     * @return string
      */
     public function getIdentityNumber()
     {
@@ -718,14 +718,14 @@ class Person
     public function setIdCardNumber($idCardNumber)
     {
         $this->idCardNumber = $idCardNumber;
-    
+
         return $this;
     }
 
     /**
      * Get idCardNumber
      *
-     * @return string 
+     * @return string
      */
     public function getIdCardNumber()
     {
@@ -741,14 +741,14 @@ class Person
     public function setMobile($mobile)
     {
         $this->mobile = $mobile;
-    
+
         return $this;
     }
 
     /**
      * Get mobile
      *
-     * @return string 
+     * @return string
      */
     public function getMobile()
     {
@@ -764,14 +764,14 @@ class Person
     public function setPhone($phone)
     {
         $this->phone = $phone;
-    
+
         return $this;
     }
 
     /**
      * Get phone
      *
-     * @return string 
+     * @return string
      */
     public function getPhone()
     {
@@ -787,14 +787,14 @@ class Person
     public function setFax($fax)
     {
         $this->fax = $fax;
-    
+
         return $this;
     }
 
     /**
      * Get fax
      *
-     * @return string 
+     * @return string
      */
     public function getFax()
     {
@@ -810,14 +810,14 @@ class Person
     public function setEmail($email)
     {
         $this->email = $email;
-    
+
         return $this;
     }
 
     /**
      * Get email
      *
-     * @return string 
+     * @return string
      */
     public function getEmail()
     {
@@ -833,14 +833,14 @@ class Person
     public function setCountry($country)
     {
         $this->country = $country;
-    
+
         return $this;
     }
 
     /**
      * Get country
      *
-     * @return string 
+     * @return string
      */
     public function getCountry()
     {
@@ -856,14 +856,14 @@ class Person
     public function setZipCode($zipCode)
     {
         $this->zipCode = $zipCode;
-    
+
         return $this;
     }
 
     /**
      * Get zipCode
      *
-     * @return string 
+     * @return string
      */
     public function getZipCode()
     {
@@ -879,14 +879,14 @@ class Person
     public function setCity($city)
     {
         $this->city = $city;
-    
+
         return $this;
     }
 
     /**
      * Get city
      *
-     * @return string 
+     * @return string
      */
     public function getCity()
     {
@@ -902,14 +902,14 @@ class Person
     public function setStreet($street)
     {
         $this->street = $street;
-    
+
         return $this;
     }
 
     /**
      * Get street
      *
-     * @return string 
+     * @return string
      */
     public function getStreet()
     {
@@ -925,14 +925,14 @@ class Person
     public function setStreetType($streetType)
     {
         $this->streetType = $streetType;
-    
+
         return $this;
     }
 
     /**
      * Get streetType
      *
-     * @return string 
+     * @return string
      */
     public function getStreetType()
     {
@@ -948,14 +948,14 @@ class Person
     public function setStreetNumber($streetNumber)
     {
         $this->streetNumber = $streetNumber;
-    
+
         return $this;
     }
 
     /**
      * Get streetNumber
      *
-     * @return string 
+     * @return string
      */
     public function getStreetNumber()
     {
@@ -971,14 +971,14 @@ class Person
     public function setFlatNumber($flatNumber)
     {
         $this->flatNumber = $flatNumber;
-    
+
         return $this;
     }
 
     /**
      * Get flatNumber
      *
-     * @return string 
+     * @return string
      */
     public function getFlatNumber()
     {
@@ -994,14 +994,14 @@ class Person
     public function setLocationCountry($locationCountry)
     {
         $this->locationCountry = $locationCountry;
-    
+
         return $this;
     }
 
     /**
      * Get locationCountry
      *
-     * @return string 
+     * @return string
      */
     public function getLocationCountry()
     {
@@ -1017,14 +1017,14 @@ class Person
     public function setLocationZipCode($locationZipCode)
     {
         $this->locationZipCode = $locationZipCode;
-    
+
         return $this;
     }
 
     /**
      * Get locationZipCode
      *
-     * @return string 
+     * @return string
      */
     public function getLocationZipCode()
     {
@@ -1040,14 +1040,14 @@ class Person
     public function setLocationCity($locationCity)
     {
         $this->locationCity = $locationCity;
-    
+
         return $this;
     }
 
     /**
      * Get locationCity
      *
-     * @return string 
+     * @return string
      */
     public function getLocationCity()
     {
@@ -1063,14 +1063,14 @@ class Person
     public function setLocationStreet($locationStreet)
     {
         $this->locationStreet = $locationStreet;
-    
+
         return $this;
     }
 
     /**
      * Get locationStreet
      *
-     * @return string 
+     * @return string
      */
     public function getLocationStreet()
     {
@@ -1086,14 +1086,14 @@ class Person
     public function setLocationStreetType($locationStreetType)
     {
         $this->locationStreetType = $locationStreetType;
-    
+
         return $this;
     }
 
     /**
      * Get locationStreetType
      *
-     * @return string 
+     * @return string
      */
     public function getLocationStreetType()
     {
@@ -1109,14 +1109,14 @@ class Person
     public function setLocationStreetNumber($locationStreetNumber)
     {
         $this->locationStreetNumber = $locationStreetNumber;
-    
+
         return $this;
     }
 
     /**
      * Get locationStreetNumber
      *
-     * @return string 
+     * @return string
      */
     public function getLocationStreetNumber()
     {
@@ -1132,14 +1132,14 @@ class Person
     public function setLocationFlatNumber($locationFlatNumber)
     {
         $this->locationFlatNumber = $locationFlatNumber;
-    
+
         return $this;
     }
 
     /**
      * Get locationFlatNumber
      *
-     * @return string 
+     * @return string
      */
     public function getLocationFlatNumber()
     {
@@ -1155,14 +1155,14 @@ class Person
     public function setMartialStatus($martialStatus)
     {
         $this->martialStatus = $martialStatus;
-    
+
         return $this;
     }
 
     /**
      * Get martialStatus
      *
-     * @return integer 
+     * @return integer
      */
     public function getMartialStatus()
     {
@@ -1178,14 +1178,14 @@ class Person
     public function setCitizenshipStatus($citizenshipStatus)
     {
         $this->citizenshipStatus = $citizenshipStatus;
-    
+
         return $this;
     }
 
     /**
      * Get citizenshipStatus
      *
-     * @return integer 
+     * @return integer
      */
     public function getCitizenshipStatus()
     {
@@ -1201,14 +1201,14 @@ class Person
     public function setCitizenship($citizenship)
     {
         $this->citizenship = $citizenship;
-    
+
         return $this;
     }
 
     /**
      * Get citizenship
      *
-     * @return integer 
+     * @return integer
      */
     public function getCitizenship()
     {
@@ -1224,14 +1224,14 @@ class Person
     public function setEducationCode($educationCode)
     {
         $this->educationCode = $educationCode;
-    
+
         return $this;
     }
 
     /**
      * Get educationCode
      *
-     * @return integer 
+     * @return integer
      */
     public function getEducationCode()
     {
@@ -1247,14 +1247,14 @@ class Person
     public function setNote($note)
     {
         $this->note = $note;
-    
+
         return $this;
     }
 
     /**
      * Get note
      *
-     * @return string 
+     * @return string
      */
     public function getNote()
     {
@@ -1270,14 +1270,14 @@ class Person
     public function setFamilySize($familySize)
     {
         $this->familySize = $familySize;
-    
+
         return $this;
     }
 
     /**
      * Get familySize
      *
-     * @return integer 
+     * @return integer
      */
     public function getFamilySize()
     {
@@ -1293,14 +1293,14 @@ class Person
     public function setEcActivity($ecActivity)
     {
         $this->ecActivity = $ecActivity;
-    
+
         return $this;
     }
 
     /**
      * Get ecActivity
      *
-     * @return integer 
+     * @return integer
      */
     public function getEcActivity()
     {
@@ -1316,14 +1316,14 @@ class Person
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
-    
+
         return $this;
     }
 
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -1339,14 +1339,14 @@ class Person
     public function setCreatedBy($createdBy)
     {
         $this->createdBy = $createdBy;
-    
+
         return $this;
     }
 
     /**
      * Get createdBy
      *
-     * @return integer 
+     * @return integer
      */
     public function getCreatedBy()
     {
@@ -1362,14 +1362,14 @@ class Person
     public function setModifiedAt($modifiedAt)
     {
         $this->modifiedAt = $modifiedAt;
-    
+
         return $this;
     }
 
     /**
      * Get modifiedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getModifiedAt()
     {
@@ -1385,14 +1385,14 @@ class Person
     public function setModifiedBy($modifiedBy)
     {
         $this->modifiedBy = $modifiedBy;
-    
+
         return $this;
     }
 
     /**
      * Get modifiedBy
      *
-     * @return integer 
+     * @return integer
      */
     public function getModifiedBy()
     {
@@ -1408,14 +1408,14 @@ class Person
     public function setOpenedBy($openedBy)
     {
         $this->openedBy = $openedBy;
-    
+
         return $this;
     }
 
     /**
      * Get openedBy
      *
-     * @return integer 
+     * @return integer
      */
     public function getOpenedBy()
     {
@@ -1431,14 +1431,14 @@ class Person
     public function setDocFile($docFile)
     {
         $this->docFile = $docFile;
-    
+
         return $this;
     }
 
     /**
      * Get docFile
      *
-     * @return string 
+     * @return string
      */
     public function getDocFile()
     {
@@ -1454,14 +1454,14 @@ class Person
     public function setJobType($jobType)
     {
         $this->jobType = $jobType;
-    
+
         return $this;
     }
 
     /**
      * Get jobType
      *
-     * @return integer 
+     * @return integer
      */
     public function getJobType()
     {
@@ -1469,48 +1469,48 @@ class Person
     }
 
     /**
-     * Set delegateNeeded
+     * Set guardianFirstname
      *
-     * @param integer $delegateNeeded
+     * @param string $guardianName
      * @return Person
      */
-    public function setDelegateNeeded($delegateNeeded)
+    public function setGuardianFirstname($guardianFirstname)
     {
-        $this->delegateNeeded = $delegateNeeded;
-    
+        $this->guardianFirstname = $guardianFirstname;
+
         return $this;
     }
 
     /**
-     * Get delegateNeeded
+     * Get guardianFirstname
      *
-     * @return integer 
+     * @return string
      */
-    public function getDelegateNeeded()
+    public function getGuardianFirstname()
     {
-        return $this->delegateNeeded;
+        return $this->guardianFirstname;
     }
 
     /**
-     * Set delegateName
+     * Set guardianLastname
      *
-     * @param string $delegateName
+     * @param string $guardianName
      * @return Person
      */
-    public function setDelegateName($delegateName)
+    public function setGuardianLastname($guardianLastname)
     {
-        $this->delegateName = $delegateName;
-    
+        $this->guardianLastname = $guardianLastname;
+
         return $this;
     }
 
     /**
-     * Get delegateName
+     * Get guardianLastname
      *
-     * @return string 
+     * @return string
      */
-    public function getDelegateName()
+    public function getGuardianLastname()
     {
-        return $this->delegateName;
+        return $this->guardianLastname;
     }
 }

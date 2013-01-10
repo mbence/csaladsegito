@@ -16,28 +16,28 @@ class ImportController extends Controller
         ];
 
         if ($request->isMethod('POST')) {
-            
+
             $table = $request->get('import');
-            
+
             if ('person' == $table || 'all' == $table || 'person100' == $table) {
                 $limit = 'person100' == $table ? 100 : 0;
-                
+
                 $results['person'] = $this->importPerson($limit);
             }
             $session->set('results', $results);
-            
+
             return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
         }
         $r = $session->get('results', $results);
         $session->remove('results');
-        
-        return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);        
+
+        return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);
     }
-    
+
     /**
      * Import the Persons SQLite table to the projects DB
      * The `person` table gets truncated on every run!
-     * 
+     *
      * @param int $limit import limit
      * @return int number of imported rows
      */
@@ -77,7 +77,7 @@ class ImportController extends Controller
             'LocationStreet' => 'Street1',
             //'LocationStreetType' => '',
             'LocationStreetNumber' => 'StreetNum1',
-            'LocationFlatNumber' => 'FlatNum1',            
+            'LocationFlatNumber' => 'FlatNum1',
             'MartialStatus' => 'MartialStatus',
             'EducationCode' => 'EducationCode',
             'Note' => 'Note',
@@ -90,17 +90,17 @@ class ImportController extends Controller
             'OpenedBy' => 'OpenedBy_ID',
             'DocFile' => 'DocFile',
             'JobType' => 'JobType',
-            'DelegateNeeded' => 'DelegateNeeded',
-            'DelegateName' => ['DelegateName1', 'DelegateName2']
+            'GuardianFirstname' => 'DelegateName2',
+            'GuardianLastname' => 'DelegateName1'
         ];
-        
+
         $date_fields = ['BirthDate', 'CreatedAt', 'ModifiedAt'];
         $titles = [1 => '', 2 => 'dr.', 3 => 'özv.', 4 => 'id.', 5=> 'ifj.'];
         $phone_fields = ['Mobile', 'Phone', 'Fax'];
-        
+
         $this->truncate('person');
 
-        $db = $this->get('doctrine.dbal.csaszir_connection'); 
+        $db = $this->get('doctrine.dbal.csaszir_connection');
         $sql = "SELECT p.*, a1.*, a2.ZipCode as ZipCode1 ,a2.City as City1, a2.Street as Street1, a2.StreetNum as StreetNum1, a2.FlatNum as FlatNum1 FROM Persons p, Addresses a1, Addresses a2 WHERE p.Address_ID=a1.Address_ID AND p.Location_ID=a2.Address_ID AND p.Type=1";
         if ($limit) {
             $sql .= ' LIMIT ' . $limit;
@@ -108,7 +108,7 @@ class ImportController extends Controller
         $persons = $db->fetchAll($sql);
 
         $em = $this->getDoctrine()->getManager();
-        
+
         foreach ($persons as $imp) {
             $p = new Person();
             foreach ($field_map as $to => $from) {
@@ -134,7 +134,7 @@ class ImportController extends Controller
                 elseif ('Street' == $to) {
                    list($val, $st) = $this->streetFix($imp[$from]);
                    $p->setStreetType($st);
-                }   
+                }
                 // Street Number
                 elseif ('StreetNumber' == $to || 'LocationStreetNumber' == $to) {
                     $val = strtr($imp[$from], ['/' => '', '.' => '']);
@@ -143,12 +143,12 @@ class ImportController extends Controller
                 elseif ('LocationStreet' == $to) {
                    list($val, $st) = $this->streetFix($imp[$from]);
                    $p->setLocationStreetType($st);
-                }                
+                }
                 // everything else
                 else {
                     if (!is_array($from)) {
                         $val = $imp[$from];
-                    } 
+                    }
                     // concatenate multi fields
                     else {
                         $val = [];
@@ -160,11 +160,11 @@ class ImportController extends Controller
                     $val = $this->conv($val);
                 }
                 // cleanup some unwanted values
-                if ($val === 0 || $val === '0' 
-                        || $val === '00000000000' || $val === '000000000' 
-                        || $val === '' || $val === 'nincs megadva' 
+                if ($val === 0 || $val === '0'
+                        || $val === '00000000000' || $val === '000000000'
+                        || $val === '' || $val === 'nincs megadva'
                         || $val === '?' || $val == 'Anyja neve 1' || $val == 'Anyja neve 2'
-                        || (is_string($val) && preg_match('/(yyy|xxx|aaa|bbb)/', $val))                        
+                        || (is_string($val) && preg_match('/(yyy|xxx|aaa|bbb)/', $val))
                     ) {
                    $val = null;
                 }
@@ -175,37 +175,37 @@ class ImportController extends Controller
                 if ($to == 'BirthLastname' && empty($val)) {
                     $val = $p->getLastname();
                 }
-                
+
                 // set the value in the entity
-                $p->$setter($val);                
+                $p->$setter($val);
             }
             // manage the object
             $em->persist($p);
-            
+
             // save the entities to the DB
             if ($em->getUnitOfWork()->size() >= 100) {
                 $em->flush();
                 $em->clear();
             }
-            
-            $n++;            
+
+            $n++;
         }
         $em->flush();
-        
+
         return $n;
     }
-    
+
     /**
      * Spilts and validates the street type from the street field
-     * 
+     *
      * @param string $in street and street type
-     * @return array 
+     * @return array
      */
     protected function streetFix($in)
     {
         $street = '';
         $street_type = '';
-        
+
         // list of all street type names
         $stype_list = [ 'akna', 'alsó', 'alsósor', 'állomás', 'árok', 'átjáró', 'bányatelep', 'bástya', 'bástyája', 'csónakházak', 'domb', 'dűlő', 'dűlőút', 'emlékpark', 'erdészház', 'erdő', 'erdősor', 'fasor', 'fasora', 'felső', 'felsősor', 'forduló', 'főtér', 'gát', 'gyümölcsös', 'határsor', 'határút', 'hegy', 'iskola', 'kapu', 'kert', 'kertek', 'kolónia', 'körönd', 'körtér', 'körút', 'körútja', 'köz', 'középsor', 'kültelek', 'lakópark', 'lejáró', 'lejtő', 'lépcső', 'lépcsősor', 'liget', 'major', 'MÁV pályaudvar', 'menedékház', 'mélyút', 'oldal', 'őrház', 'őrházak', 'park', 'parkja', 'part', 'pályaudvar', 'puszta', 'rakpart', 'rét', 'sétaút', 'sétány', 'sor', 'sportpálya', 'sugárút', 'szőlőhegy', 'tag', 'tanya', 'tanyák', 'telep', 'tere', 'tető', 'tér', 'turistaház', 'udvar', 'utca', 'utcája', 'út', 'útja', 'üdülőpart', 'vadászház', 'vasútállomás', 'vár', 'vízmű', 'víztároló', 'völgy', 'zártkert', 'zug'];
         // short name fix list
@@ -229,13 +229,13 @@ class ImportController extends Controller
                 $street_type = '';
             }
         }
-        
+
         return [$street, $street_type];
     }
-    
+
     /**
      * Convert and trim the Latin-2 fields to UTF-8
-     * 
+     *
      * @param string $in input
      * @return string converted value
      */
@@ -243,22 +243,22 @@ class ImportController extends Controller
     {
         return trim(mb_convert_encoding($in, 'UTF-8', 'ISO-8859-2'));
     }
-    
+
     /**
      * Truncate a table in the DB
-     * 
+     *
      * @param string $table the table name
      */
     protected function truncate($table)
     {
-        $db = $this->get('doctrine.dbal.default_connection'); 
+        $db = $this->get('doctrine.dbal.default_connection');
         $db->query("TRUNCATE TABLE ". $table);
         unset($db);
     }
-    
+
     /**
      * Convert the Excel 1900 based date format to a DateTime object
-     * 
+     *
      * @param string $date date string in excel Real format
      * @return DateTime
      */

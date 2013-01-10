@@ -147,15 +147,16 @@ Person:
             fixed: false
             nullable: true
             column: child_name
-        delegateNeeded:
-            type: integer
-            unsigned: false
-            nullable: true
-            column: delegate_needed
-        delegateName:
+        guardianFirstname:
             type: string
             length: 255
             fixed: false
             nullable: true
-            column: delegate_name
+            column: guardian_firstname
+        guardianLastname:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+            column: guardian_lastname
     lifecycleCallbacks: {  }

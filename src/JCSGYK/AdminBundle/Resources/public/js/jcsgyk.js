@@ -2,33 +2,42 @@ JCS = {
     // quicksearch timeout
     qto: null,
 
-    init: function() {
-        
+    init: function()
+    {
+
         JCS.initMenu();
-        
+
         $(".flashbag div").css('marginLeft', function(index) {
             return -1 *( $(this).outerWidth() / 2);
         }).delay(4000).fadeOut(3000);
-        
+
         JCS.initInquiry();
 
         // search results height
-        JCS.setBlockHeights();
+        JCS.setBlockSizes();
         $(window).resize(function(){
-            JCS.setBlockHeights();
+            JCS.setBlockSizes();
         })
-        
+
         JCS.initSearch();
-        
-        // personblock
-        $("#personblock .close").click(function(){
+
+        // close buttons
+        $("#personblock .close").click(function() {
             $("#personblock").hide();
             $("#personblock .personcontent").html("");
-            $("#search-results tr").removeClass("current");            
+            $("#search-results tr").removeClass("current");
+            JCS.setBlockSizes();
+        });
+        $("#problemblock .close").click(function() {
+            $("#problemblock").hide();
+            $("#problemblock .personcontent").html("");
+            JCS.setBlockSizes();
         })
+
     },
-    
-    initSearch: function() {
+
+    initSearch: function()
+    {
         // quick search
         var orig_results_text = $("#search-results").html();
 
@@ -54,30 +63,37 @@ JCS = {
                     // display search results
                     $("#search-results").html(data);
                     // bind click events on the results
-                    $("#search-results tr").click(function(){
-                        $("#personblock .loading").show();
-                        $("#personblock .personcontent").hide();
-                        $("#personblock").show();
-
-                        // start the ajax request
-                        $.post($("#getpersonform").attr("action"), {id: $(this).data("userid")}, function(data) {
-                            $("#personblock .loading").hide();
-                            $("#personblock .personcontent").html(data).show();
-                        });
-                        $("#search-results tr").removeClass("current");
-                        $(this).addClass("current");
-                    });
-                    // check for results number and click tr if only 1
-                    if ($("#search-results tr").size() == 2) {
-                        $("#search-results tr").eq(1).click();
-                    }
+                    JCS.setupResults();
                 }
             });
             return false;
         });
     },
 
-    initMenu: function() {
+    setupResults: function()
+    {
+        $("#search-results tbody tr").click(function(){
+            $("#personblock .loading").show();
+            $("#personblock .personcontent").hide();
+            $("#personblock").show();
+            JCS.setBlockSizes();
+
+            // start the ajax request
+            $.post($("#getpersonform").attr("action"), {id: $(this).data("userid")}, function(data) {
+                $("#personblock .loading").hide();
+                $("#personblock .personcontent").html(data).show();
+            });
+            $("#search-results tr").removeClass("current");
+            $(this).addClass("current");
+        });
+        // check for results number and click tr if only 1
+        if ($("#search-results tr").size() == 2) {
+            $("#search-results tr").eq(1).click();
+        }
+    },
+
+    initMenu: function()
+    {
         // find the active tab
         var n = actTab = 0;
         $("#header .menu ul.menutabs > li.mi").each(function(){
@@ -98,10 +114,11 @@ JCS = {
         $("#header .menu .menupanes a.smi").click(function(){
             $("#header .menu .menupanes a").removeClass('current');
             $(this).addClass('current');
-        });        
+        });
     },
-    
-    initInquiry: function() {
+
+    initInquiry: function()
+    {
         // add the inquiry ajax actions
         $(".inquiry a").click(function() {
             if (!$(this).hasClass('ajax-loading2') && $(this).attr('href')) {
@@ -112,27 +129,54 @@ JCS = {
                     JCS.showNotice(data);
                 });
             }
-            
+
             return false;
-        });        
+        });
     },
-    
-    qSubmit: function() {
+
+    qSubmit: function()
+    {
         $("#quicksearch").submit();
     },
-    setBlockHeights: function() {
+    setBlockSizes: function()
+    {
+        var blockW = Math.round(($(window).innerWidth() - 40) * 0.45);
+        if (blockW < 470) {
+            blockW = 470;
+        }
+        else if (blockW > 600) {
+            blockW = 600;
+        }
+        // count visible blocks
+        var blockNum = $(".contentscroller > div:visible").length;
+        var scrollerW = blockW * blockNum;
+        $(".contentscroller").width(scrollerW);
+        // if there is a horisontal scrollbar...
+        if (scrollerW > $(window).innerWidth() - 40) {
+            $("#content").css('padding-bottom', '26px');
+        }
+        else {
+            $("#content").css('padding-bottom', '40px');
+        }
+        $(".contentscroller > div:visible").width(blockW);
+
+        // set heights
         $('#search-results').height($(window).innerHeight() - 186);
         $('#personblock').height($(window).innerHeight() - 136);
+        $('#problemblock').height($(window).innerHeight() - 136);
     },
-    showAjaxLoader: function() {
+    showAjaxLoader: function()
+    {
         $(".ajaxbag .ajax-loader")
             .css('marginLeft', -1 * ($(".ajaxbag .ajax-loader").outerWidth() / 2))
             .show();
     },
-    hideAjaxLoader: function() {
+    hideAjaxLoader: function()
+    {
         $(".ajaxbag .ajax-loader").hide();
     },
-    showNotice: function(notice) {
+    showNotice: function(notice)
+    {
         JCS.hideAjaxLoader();
         $(".ajaxbag .ajax-notice")
             .stop()
@@ -146,7 +190,8 @@ JCS = {
             .delay(4000)
             .fadeOut(3000);
     },
-    hideNotice: function() {
+    hideNotice: function()
+    {
         $(".ajaxbag .ajax-notice")
             .stop()
             .clearQueue()
@@ -154,7 +199,8 @@ JCS = {
     }
 }
 
-NiceField = function(o, opt) {
+NiceField = function(o, opt)
+{
     opt = typeof(opt) == 'undefined' ? {} : opt;
     opt.focus = typeof(opt.focus) == 'undefined' ? true : opt.focus;
     opt.select = typeof(opt.select) == 'undefined' ? true : opt.select;
@@ -207,7 +253,8 @@ NiceField = function(o, opt) {
 }
 
 // document ready
-$(function() {
+$(function()
+{
     JCS.init();
 
     JCS.qSubmit();
