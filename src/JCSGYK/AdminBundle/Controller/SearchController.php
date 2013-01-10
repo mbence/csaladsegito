@@ -13,20 +13,20 @@ class SearchController extends Controller
     public function quickAction(Request $request)
     {
         $limit = 100;
-        
+
         if ($this->getRequest()->isXmlHttpRequest()) {
             $re = [];
             $sql = '';
-            
+
             $q = $request->get('q');
-            
+
             // save the search string
             $this->get('session')->set('quicksearch', $q);
 
             $time_start = microtime(true);
             if (!empty($q)) {
-                
-                $db = $this->get('doctrine.dbal.default_connection'); 
+
+                $db = $this->get('doctrine.dbal.default_connection');
                 $sql = "SELECT id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM person WHERE";
                 // search for ID
                 if (is_numeric($q)) {
@@ -39,7 +39,7 @@ class SearchController extends Controller
                     if (preg_match('/^\d+(\/|\.|-)?\w*\.?$/', $last)) {
                         array_pop($search_words);
                         $last = strtr($last, ['/' => '', '.' => '', ' ' => '']);
-                        $last .= '%';
+                        //$last .= '%';
                     }
                     else {
                         $last = false;
@@ -47,10 +47,10 @@ class SearchController extends Controller
                     $qr = $db->quote('+' . implode('* +', $search_words) . '*');
 
                     $sql .= " MATCH (firstname, lastname, street, street_type) AGAINST ({$qr} IN BOOLEAN MODE)";
-                    
+
                     // if we search for street number
                     if ($last) {
-                        $sql .= " HAVING street_number LIKE " . $db->quote($last);
+                        $sql .= " HAVING street_number = " . $db->quote($last);
                     }
                 }
                 $sql .= " ORDER BY lastname, firstname LIMIT " . $limit;
@@ -58,9 +58,9 @@ class SearchController extends Controller
             }
             $time_end = microtime(true);
             $time = number_format(($time_end - $time_start) * 1000, 3, ',', ' ');
-            
+
             return $this->render('JCSGYKAdminBundle:Search:quick.html.twig', ['persons' => $re, 'time' => $time, 'sql' => $sql, 'resnum' => count($re)]);
         }
-        
+
     }
 }
