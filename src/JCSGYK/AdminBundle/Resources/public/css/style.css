@@ -213,10 +213,13 @@ table.person {
     width: 100%;
 }
 table.person th {
-    color: #34a;
+    color: #5661a2;
     font-weight: normal;
     padding: 6px 8px;
     border-bottom: 1px solid #CCC;
+    text-align: right;
+    width: 20%;
+    white-space: nowrap;
 }
 table.person td {
     /*font-weight: bold;*/

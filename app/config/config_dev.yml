@@ -33,6 +33,6 @@ assetic:
 #    delivery_address: me@example.com
 
 live_php:
-    dirs: [., ../src, ../web]
+    dirs: [., ../src]
     ignore: [logs, cache]
     timelimit: 125
