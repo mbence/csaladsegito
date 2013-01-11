@@ -1,35 +1,35 @@
 @charset "utf-8";
 @font-face {
 	font-family: "Optima Regular";
-	src: url("../images/fontoptimah_regular-webfont.ttf");
+	src: url("../images/font/optimah_regular-webfont.ttf");
 }
 @font-face {
 	font-family: "Optima Regular IE";
-	src: url("../images/fontoptimah_regular-webfont.eot");
+	src: url("../images/font/optimah_regular-webfont.eot");
 } /* IE */
 @font-face {
 	font-family: "Optima Bold";
-	src: url("../images/fontoptimah_bold-webfont.ttf");
+	src: url("../images/font/optimah_bold-webfont.ttf");
 }
 @font-face {
 	font-family: "Optima Bold IE";
-	src: url("../images/fontoptimah_bold-webfont.eot");
+	src: url("../images/font/optimah_bold-webfont.eot");
 } /* IE */
 @font-face {
 	font-family: "Optima Italic";
-	src: url("../images/fontoptimah_italic-webfont.ttf");
+	src: url("../images/font/optimah_italic-webfont.ttf");
 }
 @font-face {
 	font-family: "Optima Italic IE";
-	src: url("../images/fontoptimah_italic_webfont.eot");
+	src: url("../images/font/optimah_italic_webfont.eot");
 } /* IE */
 @font-face {
 	font-family: "Optima Bold Italic";
-	src: url("../images/fontoptimah_bold_italic-webfont.ttf");
+	src: url("../images/font/optimah_bold_italic-webfont.ttf");
 }
 @font-face {
 	font-family: "Optima Bold Italic IE";
-	src: url("../images/fontoptimah_bold_italic-webfont.eot");
+	src: url("../images/font/optimah_bold_italic-webfont.eot");
 } /* IE */
 
 html {
