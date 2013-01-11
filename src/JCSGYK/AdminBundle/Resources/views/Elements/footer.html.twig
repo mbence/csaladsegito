@@ -3,3 +3,17 @@
         JCSGYK Admin {{ version }} | &copy; <a href="http://jcsgyk.hu" target="_blank">JCSGYK</a> | Fejlesztette: <a href="http://bencemeszaros.com" target="_blank">Mészáros Bence</a>
     </div>
 </footer><!-- #colophon -->
+
+{% block javascripts %}
+    {% if app.environment == 'dev' %}
+        <script src="{{ asset('/bundles/livephp/js/livephp.js') }}" type="text/javascript"></script>
+    {% endif %}
+{% endblock %}
+
+{% javascripts output='js/compiled/main.js'
+    '@JCSGYKAdminBundle/Resources/public/js/jquery.min.js'
+    '@JCSGYKAdminBundle/Resources/public/js/jcsgyk.js'
+    '@JCSGYKAdminBundle/Resources/public/js/jquery.tools.min.js'
+%}
+    <script src="{{ asset_url }}" type="text/javascript"></script>
+{% endjavascripts %}

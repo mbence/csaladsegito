@@ -1,0 +1,15 @@
+<meta charset="UTF-8" />
+<title>{% block title %}Családsegítő Admin{% endblock %}</title>
+<link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
+
+ {% stylesheets output='css/compiled/main.css'
+    '@JCSGYKAdminBundle/Resources/public/css/reset.css'
+    '@JCSGYKAdminBundle/Resources/public/css/login.css'
+    '@JCSGYKAdminBundle/Resources/public/css/header.css'
+    '@JCSGYKAdminBundle/Resources/public/css/inquiry.css'
+    '@JCSGYKAdminBundle/Resources/public/css/style.css'
+    '@JCSGYKAdminBundle/Resources/public/css/assistance.css'
+    '@JCSGYKAdminBundle/Resources/public/css/quicksearch.css'
+%}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+{% endstylesheets %}

@@ -1,27 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Családsegítő Admin{% endblock %}</title>
-        <link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
-        {% stylesheets 
-            '@JCSGYKAdminBundle/Resources/public/css/reset.css'
-            '@JCSGYKAdminBundle/Resources/public/css/style.css'            
-            '@JCSGYKAdminBundle/Resources/public/css/login.css' 
-        %}
-            <link rel="stylesheet" href="{{ asset_url }}" />
-        {% endstylesheets %}
+        {% include "JCSGYKAdminBundle:Elements:head.html.twig" %}
     </head>
     <body>
-        <div id="main">
+        <div>
             {% block content %}
             {% endblock %}
         </div>
         {% include "JCSGYKAdminBundle:Elements:footer.html.twig" %}
-        {% block javascripts %}
-            {% if app.environment == 'dev' %} 
-                <script src="{{ asset('/bundles/livephp/js/livephp.js') }}" type="text/javascript"></script>
-            {% endif %}
-        {% endblock %}
     </body>
 </html>
