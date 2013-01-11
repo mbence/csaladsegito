@@ -252,6 +252,25 @@ NiceField = function(o, opt)
     return this;
 }
 
+CsNav = function ()
+{
+    this.actBlock = 0;
+    this.actRow = 0;
+    this.numRows = 0;
+
+    this.init = function()
+    {
+
+    };
+
+    this.initRes = function(numRows)
+    {
+        this.numRows = numRows;
+    };
+
+    return this;
+}
+
 // document ready
 $(function()
 {

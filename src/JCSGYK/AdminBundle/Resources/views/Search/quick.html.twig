@@ -10,6 +10,7 @@
         {% for p in persons %}
         <tr data-userid="{{ p.id }}">
             <td>
+                <a name="r{{ p.id }}"></a>
                 {{ p.id }}
             </td>
             <td>
@@ -20,7 +21,7 @@
                 {{ p.mother_lastname }} {{ p.mother_firstname }}
             </td>
             <td>
-                {{ p.zip_code }} {{ p.city }} {{ p.street }} {{ p.street_type }} {{ p.street_number }} 
+                {{ p.zip_code }} {{ p.city }} {{ p.street }} {{ p.street_type }} {{ p.street_number }}
                 {% if p.flat_number %}({{ p.flat_number }}){% endif %}
             </td>
         </tr>
@@ -31,7 +32,7 @@
         <br><p>{{ 'További találatok vannak, kérem szűkítse a keresési feltételeket!'|trans }}</p>
     {% endif %}
 
-{% else %}    
+{% else %}
     <div class="nothing-found">
     {{ 'Nincs találat'|trans }}
     </div>
