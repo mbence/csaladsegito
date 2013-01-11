@@ -28,11 +28,12 @@ assetic:
             bin: "C:/Users/Bence/AppData/Roaming/npm/node_modules/coffee-script/bin/coffee"
             node: "C:/Program\ Files/nodejs/node.exe"
             apply_to: "\.coffee$"
+            bare: true
 
 #swiftmailer:
 #    delivery_address: me@example.com
 
 live_php:
-    dirs: [., ../src]
-    ignore: [logs, cache]
+    dirs: [., ../src, ../web]
+    ignore: [logs, cache, public]
     timelimit: 125

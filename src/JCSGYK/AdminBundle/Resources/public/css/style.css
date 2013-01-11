@@ -91,12 +91,14 @@ footer#colophon .credits a:hover {
     text-align: center;
 }
 .flashbag div, .ajaxbag div {
-    display: none;
     padding: 5px 30px;
     border-radius: 3px;
     position: absolute;
     z-index: 1000;
     left: 50%;
+}
+.ajaxbag div {
+    display: none;
 }
 .ajaxbag div.ajax-loader {
     top: 0px;
@@ -241,6 +243,9 @@ table.person tr:hover td, table.person tr:hover th  {
 }
 .leftpad20 {
     margin-left: 20px;
+}
+.fullheight {
+    height: 100%;
 }
 
 /* Admin */
