@@ -12,6 +12,7 @@ web/css/*
 web/js/*
 
 composer.phar
+composer.lock
 /nbproject
 
 # Configuration files
