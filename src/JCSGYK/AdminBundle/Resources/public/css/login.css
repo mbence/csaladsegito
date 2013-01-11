@@ -7,7 +7,7 @@
     height: 100px;
     width: 210px;
     margin: 30px auto 20px;
-    background: url('/bundles/jcsgykadmin/images/logo1.png') no-repeat left top;
+    background: url('../images/logo1.png') no-repeat left top;
 }
 .login H1 {
     font-size: 26px;
@@ -58,13 +58,13 @@
     margin: 16px 0 20px 0px;
     padding: 8px 15px 6px;
     text-shadow: none;
-    text-transform: uppercase;    
+    text-transform: uppercase;
 
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
     background: -webkit-linear-gradient(top, #eec123, #d3a70e);
     background: -moz-linear-gradient(top, #eec123, #d3a70e);
     background: -ms-linear-gradient(top, #eec123, #d3a70e);
-    background: -o-linear-gradient(top, #eec123, #d3a70e);    
+    background: -o-linear-gradient(top, #eec123, #d3a70e);
 }
 .login form #_submit:hover {
     color: #000;

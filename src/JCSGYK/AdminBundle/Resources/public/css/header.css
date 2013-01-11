@@ -1,4 +1,4 @@
-/* Headers */ 
+/* Headers */
 #header {
     background-color: #f6efe8;
     border-bottom: 1px solid #c7baac;
@@ -79,7 +79,7 @@
     margin: 0 auto 1px;
     display: block;
     overflow: hidden;
-    background: url("/bundles/jcsgykadmin/images/iconset.png") no-repeat -38px -366px;
+    background: url("../images/iconset.png") no-repeat -38px -366px;
 }
 #header .menu .menupanes a:hover {
     border-color: #d6cab9;
@@ -97,5 +97,5 @@
     border-left: 1px solid #c2b39f;
     border-right: 1px solid #f5f5f5;
     display: inline-block;
-    vartical-align: bottom;    
+    vartical-align: bottom;
 }

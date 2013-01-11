@@ -1,4 +1,15 @@
-csaladsegito
-============
+Csal√°dseg√≠t≈ë Admin / Family Helper Admin
+========================================
 
-Csal·dsegÌtı Ès GyermekjÛlÈti szolg·latok adminisztr·ciÛs rendszere
+Csal√°dseg√≠t≈ë √©s Gyermekj√≥l√©ti szolg√°latok adminisztr√°ci√≥s rendszere
+Administration system of family helper and child welfare services
+
+= Requirements
+
+* PHP 5.4
+* Node.js / Coffeescript
+
+To realtime recompile the coffee assets during development, run the assetic compiler:
+``
+php app/console assetic:dump --watch
+``

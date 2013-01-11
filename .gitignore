@@ -8,10 +8,11 @@ vendor/*
 */logs/*
 */cache/*
 web/uploads/*
-web/bundles/*
+web/css/*
+web/js/*
+
 composer.phar
 /nbproject
 
 # Configuration files
-app/config/parameters.yml
 /app/config/parameters.yml
