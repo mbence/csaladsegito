@@ -21,10 +21,17 @@ monolog:
 
 assetic:
     use_controller: true
+    bundles:        [JCSGYKAdminBundle]
+    filters:
+        cssrewrite: ~
+        coffee:
+            bin: "C:/Users/Bence/AppData/Roaming/npm/node_modules/coffee-script/bin/coffee"
+            node: "C:/Program\ Files/nodejs/node.exe"
+            apply_to: "\.coffee$"
 
 #swiftmailer:
 #    delivery_address: me@example.com
-    
+
 live_php:
     dirs: [., ../src, ../web]
     ignore: [logs, cache]
