@@ -1,10 +1,10 @@
 Családsegítő Admin / Family Helper Admin
 ========================================
 
-Családsegítő és Gyermekjóléti szolgálatok adminisztrációs rendszere
+Családsegítő és Gyermekjóléti szolgálatok adminisztrációs rendszere / 
 Administration system of family helper and child welfare services
 
-== Requirements ==
+## Requirements
 
 * PHP 5.4
 * Node.js / Coffeescript
