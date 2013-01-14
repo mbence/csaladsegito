@@ -1,0 +1,274 @@
+Person:
+    type: entity
+    table: person
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        companyId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: company_id
+        title:
+            type: string
+            length: 10
+            fixed: false
+            nullable: true
+        firstname:
+            type: string
+            length: 255
+            fixed: false
+            nullable: false
+        lastname:
+            type: string
+            length: 255
+            fixed: false
+            nullable: false
+        gender:
+            type: boolean
+            nullable: true
+        birthDate:
+            type: date
+            nullable: true
+            column: birth_date
+        birthPlace:
+            type: string
+            length: 64
+            fixed: false
+            nullable: true
+            column: birth_place
+        birthTitle:
+            type: string
+            length: 10
+            fixed: false
+            nullable: true
+            column: birth_title
+        birthFirstname:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+            column: birth_firstname
+        birthLastname:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+            column: birth_lastname
+        motherTitle:
+            type: string
+            length: 10
+            fixed: false
+            nullable: true
+            column: mother_title
+        motherFirstname:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+            column: mother_firstname
+        motherLastname:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+            column: mother_lastname
+        socialSecurityNumber:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: social_security_number
+        identityNumber:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: identity_number
+        idCardNumber:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: id_card_number
+        mobile:
+            type: string
+            length: 32
+            fixed: false
+            nullable: true
+        phone:
+            type: string
+            length: 32
+            fixed: false
+            nullable: true
+        fax:
+            type: string
+            length: 32
+            fixed: false
+            nullable: true
+        email:
+            type: string
+            length: 128
+            fixed: false
+            nullable: true
+        country:
+            type: string
+            length: 60
+            fixed: false
+            nullable: true
+        zipCode:
+            type: string
+            length: 10
+            fixed: false
+            nullable: true
+            column: zip_code
+        city:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+        street:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+        streetType:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: street_type
+        streetNumber:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: street_number
+        flatNumber:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: flat_number
+        locationCountry:
+            type: string
+            length: 60
+            fixed: false
+            nullable: true
+            column: location_country
+        locationZipCode:
+            type: string
+            length: 10
+            fixed: false
+            nullable: true
+            column: location_zip_code
+        locationCity:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+            column: location_city
+        locationStreet:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+            column: location_street
+        locationStreetType:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: location_street_type
+        locationStreetNumber:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: location_street_number
+        locationFlatNumber:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: location_flat_number
+        martialStatus:
+            type: boolean
+            nullable: true
+            column: martial_status
+        citizenshipStatus:
+            type: boolean
+            nullable: true
+            column: citizenship_status
+        citizenship:
+            type: integer
+            unsigned: false
+            nullable: true
+        educationCode:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: education_code
+        note:
+            type: text
+            nullable: true
+        familySize:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: family_size
+        ecActivity:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: ec_activity
+        createdAt:
+            type: datetime
+            nullable: true
+            column: created_at
+        createdBy:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: created_by
+        modifiedAt:
+            type: datetime
+            nullable: true
+            column: modified_at
+        modifiedBy:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: modified_by
+        openedBy:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: opened_by
+        docFile:
+            type: text
+            nullable: true
+            column: doc_file
+        jobType:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: job_type
+        guardianFirstname:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+            column: guardian_firstname
+        guardianLastname:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+            column: guardian_lastname
+    lifecycleCallbacks: {  }

@@ -4,10 +4,15 @@ namespace JCSGYK\DbimportBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use JCSGYK\AdminBundle\Entity\Person;
+use JCSGYK\AdminBundle\Entity\UtilityproviderId;
+use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use Symfony\Component\HttpFoundation\Request;
 
 class ImportController extends Controller
 {
+    private $companyID = 1;
+    private $utilityproviderList = [];
+
     public function indexAction(Request $request)
     {
         $session = $this->get('session');
@@ -99,6 +104,7 @@ class ImportController extends Controller
         $phone_fields = ['Mobile', 'Phone', 'Fax'];
 
         $this->truncate('person');
+        $this->truncate('utilityprovider_id');
 
         $db = $this->get('doctrine.dbal.csaszir_connection');
         $sql = "SELECT p.*, a1.*, a2.ZipCode as ZipCode1 ,a2.City as City1, a2.Street as Street1, a2.StreetNum as StreetNum1, a2.FlatNum as FlatNum1 FROM Persons p, Addresses a1, Addresses a2 WHERE p.Address_ID=a1.Address_ID AND p.Location_ID=a2.Address_ID AND p.Type=1";
@@ -111,6 +117,8 @@ class ImportController extends Controller
 
         foreach ($persons as $imp) {
             $p = new Person();
+            $p->setCompanyId($this->companyID);
+
             foreach ($field_map as $to => $from) {
                 $val = null;
                 $setter = 'Set' . $to;
@@ -179,6 +187,8 @@ class ImportController extends Controller
                 // set the value in the entity
                 $p->$setter($val);
             }
+
+            $this->setUtilityproviderIds($p, $imp);
             // manage the object
             $em->persist($p);
 
@@ -193,6 +203,45 @@ class ImportController extends Controller
         $em->flush();
 
         return $n;
+    }
+
+    protected function setUtilityproviderIds(Person &$person, $imp)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $utility_id_map = [
+            'GazmuvekNum' => 1,
+            'ElmuNum' => 2,
+            'FotavNum' => 3,
+            'DijbeszedoNum' => 4,
+            'JVKNum' => 5,
+        ];
+        foreach ($utility_id_map as $field => $db_id) {
+            $val = ltrim($imp[$field], 0);
+            if (!empty($val)) {
+                $upid = new UtilityproviderId();
+                $upid->setValue($val);
+                $upid->setPerson($person);
+                $up = $em->getRepository('JCSGYKAdminBundle:Utilityprovider')->find($db_id);
+                $upid->setUtilityprovider($up);
+
+                $em->persist($upid);
+            }
+        }
+    }
+
+    protected function getUtilityProviderList()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $ups = $em->createQuery('SELECT p FROM JCSGYKAdminBundle:Utilityprovider p WHERE p.isActive=1 AND p.companyId=:company')
+            ->setParameter('company', $this->companyID)
+            ->getResult();
+
+        $res = [];
+        foreach ($ups as $rec) {
+            $res[$rec->getId()] = $rec;
+        }
+
+        $this->utilityproviderList = $res;
     }
 
     /**

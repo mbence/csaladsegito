@@ -51,18 +51,12 @@
     </table>
 </div></div>
 <div class="halfbox"><div class="leftpad">
-    <!--<table class="person" cellspacing="0" border="0">
+    <table class="person" cellspacing="0" border="0">
+    {% for provider in providers %}
         <tr>
-            <th>{{ 'TAJ'|trans }}:</th>
-            <td>{{ person.socialSecurityNumber }}</td>
+            <th>{{ provider.utilityprovider.name }}</th>
+            <td>{{ provider.value }}</td>
         </tr>
-        <tr>
-            <th>{{ 'Szem.a.j'|trans }}:</th>
-            <td>{{ person.identityNumber }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'Szig.sz.'|trans }}:</th>
-            <td>{{ person.idCardNumber }}</td>
-        </tr>
-    </table>-->
+    {% endfor %}
+    </table>
 </div></div>

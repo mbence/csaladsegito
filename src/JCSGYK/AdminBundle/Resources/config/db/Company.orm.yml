@@ -1,0 +1,27 @@
+Company:
+    type: entity
+    table: company
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        shortName:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: short_name
+        name:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+        isActive:
+            type: boolean
+            nullable: true
+            column: is_active
+    lifecycleCallbacks: {  }

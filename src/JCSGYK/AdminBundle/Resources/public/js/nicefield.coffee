@@ -13,7 +13,6 @@
 
     To style the container, loading and clear divs use the following css:
 
-    /* Nicefield */
     .nf-container {
         padding: 0;
         margin: 0;
@@ -45,6 +44,7 @@
     }
 
 ###
+
 class NiceField
     constructor: (o, opt) ->
 

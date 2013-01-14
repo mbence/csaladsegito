@@ -3,6 +3,7 @@
 namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Person
@@ -18,9 +19,14 @@ class Person
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      */
-//     * @ORM\GeneratedValue(strategy="IDENTITY")
-
     private $id;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="company_id", type="integer", nullable=true)
+     */
+    private $companyId;
 
     /**
      * @var string
@@ -105,6 +111,7 @@ class Person
      * @ORM\Column(name="mother_lastname", type="string", length=255, nullable=true)
      */
     private $motherLastname;
+
     /**
      * @var string
      *
@@ -253,16 +260,16 @@ class Person
     private $locationFlatNumber;
 
     /**
-     * @var integer
+     * @var boolean
      *
-     * @ORM\Column(name="martial_status", type="integer", nullable=true)
+     * @ORM\Column(name="martial_status", type="boolean", nullable=true)
      */
     private $martialStatus;
 
     /**
-     * @var integer
+     * @var boolean
      *
-     * @ORM\Column(name="citizenship_status", type="integer", nullable=true)
+     * @ORM\Column(name="citizenship_status", type="boolean", nullable=true)
      */
     private $citizenshipStatus;
 
@@ -311,7 +318,7 @@ class Person
     /**
      * @var integer
      *
-     * @ORM\Column(name="created_by", type="integer", nullable=false)
+     * @ORM\Column(name="created_by", type="integer", nullable=true)
      */
     private $createdBy;
 
@@ -325,14 +332,14 @@ class Person
     /**
      * @var integer
      *
-     * @ORM\Column(name="modified_by", type="integer", nullable=false)
+     * @ORM\Column(name="modified_by", type="integer", nullable=true)
      */
     private $modifiedBy;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="opened_by", type="integer", nullable=false)
+     * @ORM\Column(name="opened_by", type="integer", nullable=true)
      */
     private $openedBy;
 
@@ -351,7 +358,7 @@ class Person
     private $jobType;
 
     /**
-     * @var integer
+     * @var string
      *
      * @ORM\Column(name="guardian_firstname", type="string", length=255, nullable=true)
      */
@@ -363,6 +370,16 @@ class Person
      * @ORM\Column(name="guardian_lastname", type="string", length=255, nullable=true)
      */
     private $guardianLastname;
+
+    /**
+     * @ORM\OneToMany(targetEntity="UtilityproviderId", mappedBy="person")
+     */
+    private $utilityproviderids;
+
+    public function __construct()
+    {
+        $this->utilityproviderids = new ArrayCollection();
+    }
 
     /**
      * Set id
@@ -385,6 +402,29 @@ class Person
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set companyId
+     *
+     * @param integer $companyId
+     * @return Person
+     */
+    public function setCompanyId($companyId)
+    {
+        $this->companyId = $companyId;
+
+        return $this;
+    }
+
+    /**
+     * Get companyId
+     *
+     * @return integer
+     */
+    public function getCompanyId()
+    {
+        return $this->companyId;
     }
 
     /**
@@ -1149,7 +1189,7 @@ class Person
     /**
      * Set martialStatus
      *
-     * @param integer $martialStatus
+     * @param boolean $martialStatus
      * @return Person
      */
     public function setMartialStatus($martialStatus)
@@ -1162,7 +1202,7 @@ class Person
     /**
      * Get martialStatus
      *
-     * @return integer
+     * @return boolean
      */
     public function getMartialStatus()
     {
@@ -1172,7 +1212,7 @@ class Person
     /**
      * Set citizenshipStatus
      *
-     * @param integer $citizenshipStatus
+     * @param boolean $citizenshipStatus
      * @return Person
      */
     public function setCitizenshipStatus($citizenshipStatus)
@@ -1185,7 +1225,7 @@ class Person
     /**
      * Get citizenshipStatus
      *
-     * @return integer
+     * @return boolean
      */
     public function getCitizenshipStatus()
     {
@@ -1471,7 +1511,7 @@ class Person
     /**
      * Set guardianFirstname
      *
-     * @param string $guardianName
+     * @param string $guardianFirstname
      * @return Person
      */
     public function setGuardianFirstname($guardianFirstname)
@@ -1494,7 +1534,7 @@ class Person
     /**
      * Set guardianLastname
      *
-     * @param string $guardianName
+     * @param string $guardianLastname
      * @return Person
      */
     public function setGuardianLastname($guardianLastname)
@@ -1512,5 +1552,38 @@ class Person
     public function getGuardianLastname()
     {
         return $this->guardianLastname;
+    }
+
+    /**
+     * Add utilityproviderids
+     *
+     * @param \JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids
+     * @return Person
+     */
+    public function addUtilityproviderid(\JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids)
+    {
+        $this->utilityproviderids[] = $utilityproviderids;
+
+        return $this;
+    }
+
+    /**
+     * Remove utilityproviderids
+     *
+     * @param \JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids
+     */
+    public function removeUtilityproviderid(\JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids)
+    {
+        $this->utilityproviderids->removeElement($utilityproviderids);
+    }
+
+    /**
+     * Get utilityproviderids
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUtilityproviderids()
+    {
+        return $this->utilityproviderids;
     }
 }

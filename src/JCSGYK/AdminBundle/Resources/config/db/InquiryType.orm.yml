@@ -1,0 +1,22 @@
+InquiryType:
+    type: entity
+    table: inquiry_type
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        companyId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: company_id
+        name:
+            type: string
+            length: 40
+            fixed: false
+            nullable: false
+    lifecycleCallbacks: {  }

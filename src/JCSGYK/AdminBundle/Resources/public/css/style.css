@@ -155,6 +155,7 @@ footer#colophon .credits a:hover {
 }
 
 #personblock .loading {
+    color: #666;
     height: 95%;
     background: url('../images/ajax-loader3.gif') no-repeat center center;
     display: none;

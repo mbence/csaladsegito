@@ -1,0 +1,26 @@
+Utilityprovider:
+    type: entity
+    table: utilityprovider
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        companyId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: company_id
+        name:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+        isActive:
+            type: boolean
+            nullable: true
+            column: is_active
+    lifecycleCallbacks: {  }

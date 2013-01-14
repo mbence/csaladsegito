@@ -2,6 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: "@JCSGYKAdminBundle/Resources/config/version.yml" }
+    - { resource: "@JCSGYKAdminBundle/Resources/config/parameters.yml" }
 
 framework:
     #esi:             ~

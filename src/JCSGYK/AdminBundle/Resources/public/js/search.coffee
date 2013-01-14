@@ -41,7 +41,7 @@ JcsSearch =
             $("#personblock .loading").show()
             $("#personblock .personcontent").hide()
             $("#personblock").show()
-            JCS.setBlockSizes()
+            HBlocks.setBlockSizes()
 
             # start the ajax request
             $.post($("#getpersonform").attr("action"), {id: $(this).data("userid")}, (data) ->

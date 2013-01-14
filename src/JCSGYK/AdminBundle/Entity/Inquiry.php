@@ -1,39 +1,56 @@
 <?php
+
 namespace JCSGYK\AdminBundle\Entity;
 
-use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * Inquiry
+ *
  * @ORM\Table(name="inquiry")
+ * @ORM\Entity
  */
-
 class Inquiry
 {
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    protected $id;
-    
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $inquiry_type_id;
+    private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @var integer
+     *
+     * @ORM\Column(name="company_id", type="integer", nullable=true)
      */
-    protected $user_id;
+    private $companyId;
 
     /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
+     * @var integer
+     *
+     * @ORM\Column(name="inquiry_type_id", type="integer", nullable=false)
      */
-    protected $created_at;
-   
+    private $inquiryTypeId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     */
+    private $userId;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+
+
+
     /**
      * Get id
      *
@@ -45,71 +62,94 @@ class Inquiry
     }
 
     /**
-     * Set inquiry_type_id
+     * Set companyId
+     *
+     * @param integer $companyId
+     * @return Inquiry
+     */
+    public function setCompanyId($companyId)
+    {
+        $this->companyId = $companyId;
+    
+        return $this;
+    }
+
+    /**
+     * Get companyId
+     *
+     * @return integer 
+     */
+    public function getCompanyId()
+    {
+        return $this->companyId;
+    }
+
+    /**
+     * Set inquiryTypeId
      *
      * @param integer $inquiryTypeId
      * @return Inquiry
      */
     public function setInquiryTypeId($inquiryTypeId)
     {
-        $this->inquiry_type_id = $inquiryTypeId;
+        $this->inquiryTypeId = $inquiryTypeId;
     
         return $this;
     }
 
     /**
-     * Get inquiry_type_id
+     * Get inquiryTypeId
      *
      * @return integer 
      */
     public function getInquiryTypeId()
     {
-        return $this->inquiry_type_id;
+        return $this->inquiryTypeId;
     }
 
     /**
-     * Set user_id
+     * Set userId
      *
      * @param integer $userId
      * @return Inquiry
      */
     public function setUserId($userId)
     {
-        $this->user_id = $userId;
+        $this->userId = $userId;
     
         return $this;
     }
 
     /**
-     * Get user_id
+     * Get userId
      *
      * @return integer 
      */
     public function getUserId()
     {
-        return $this->user_id;
+        return $this->userId;
     }
 
     /**
-     * Set created_at
+     * Set createdAt
      *
      * @param \DateTime $createdAt
      * @return Inquiry
      */
     public function setCreatedAt($createdAt)
     {
-        $this->created_at = $createdAt;
+        $this->createdAt = $createdAt;
     
         return $this;
     }
 
     /**
-     * Get created_at
+     * Get createdAt
      *
      * @return \DateTime 
      */
     public function getCreatedAt()
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 }
