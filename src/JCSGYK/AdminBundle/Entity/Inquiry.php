@@ -2,6 +2,7 @@
 
 namespace JCSGYK\AdminBundle\Entity;
 
+use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -45,6 +46,7 @@ class Inquiry
     /**
      * @var \DateTime
      *
+     * @Gedmo\Timestampable(on="create")
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
     private $createdAt;
@@ -54,7 +56,7 @@ class Inquiry
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -70,14 +72,14 @@ class Inquiry
     public function setCompanyId($companyId)
     {
         $this->companyId = $companyId;
-    
+
         return $this;
     }
 
     /**
      * Get companyId
      *
-     * @return integer 
+     * @return integer
      */
     public function getCompanyId()
     {
@@ -93,14 +95,14 @@ class Inquiry
     public function setInquiryTypeId($inquiryTypeId)
     {
         $this->inquiryTypeId = $inquiryTypeId;
-    
+
         return $this;
     }
 
     /**
      * Get inquiryTypeId
      *
-     * @return integer 
+     * @return integer
      */
     public function getInquiryTypeId()
     {
@@ -116,14 +118,14 @@ class Inquiry
     public function setUserId($userId)
     {
         $this->userId = $userId;
-    
+
         return $this;
     }
 
     /**
      * Get userId
      *
-     * @return integer 
+     * @return integer
      */
     public function getUserId()
     {
@@ -139,14 +141,14 @@ class Inquiry
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
-    
+
         return $this;
     }
 
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {

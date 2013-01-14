@@ -40,9 +40,11 @@ class AssistanceController extends Controller
     public function registerInquiryAction($type)
     {
         $user = $this->get('security.context')->getToken()->getUser();
+        $company_id = $this->container->getParameter('company_id', 1);
 
         if ($this->getRequest()->isXmlHttpRequest()) {
             $inquiry = new Inquiry();
+            $inquiry->setCompanyId($company_id);
             $inquiry->setInquiryTypeId($type);
             $inquiry->setUserId($user->getId());
 
@@ -60,13 +62,10 @@ class AssistanceController extends Controller
         return $this->redirect($this->generateUrl('assistance_home'));
     }
 
-
-
     public function newPersonAction()
     {
         return new Response('new person');
     }
-
 
     public function getPersonAction(Request $request)
     {
@@ -88,5 +87,4 @@ class AssistanceController extends Controller
 //            throw new HttpException(400, "Bad request");
 //        }
     }
-
 }
