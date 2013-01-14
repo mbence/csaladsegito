@@ -1,10 +1,18 @@
+###
+    Creates the menu tabs with jquery.tools, and adds the assistance / inquiry button click functionality
+
+    Called by main.coffee on document.ready()
+###
 JcsMenu =
     init: ->
         JcsMenu.menu()
         JcsMenu.inquiry()
 
+    ###
+        Set up the menu tabs
+    ###
     menu: ->
-        # find the active tab
+        # find the active tab selected by the current class
         n = actTab = 0
         $("#header .menu ul.menutabs > li.mi").each( ->
             if !$("a", this).hasClass('current')
@@ -19,7 +27,7 @@ JcsMenu =
             initialIndex: actTab,
             effect: 'fade'
         })
-        # add menupanes clicks
+        # add menupanes clicks (only visual tuing)
         $("#header .menu .menupanes a.smi").click( ->
             $("#header .menu .menupanes a").removeClass('current')
             $(this).addClass('current')
@@ -29,8 +37,10 @@ JcsMenu =
 
         true
 
+    ###
+        Add the inquiry ajax actions
+    ###
     inquiry: ->
-        # add the inquiry ajax actions
         $(".inquiry a").click( ->
             if !$(this).hasClass('ajax-loading2') && $(this).attr('href')
                 $(this).addClass('ajax-loading2')

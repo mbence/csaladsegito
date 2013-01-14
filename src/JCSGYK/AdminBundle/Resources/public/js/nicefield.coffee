@@ -1,5 +1,49 @@
 ###
-    Easy to use search field with load status indicator and clear button
+    Easy to use search field class with ajax status indicator and clear button
+
+    Usage:
+
+        nf = new NiceField(jQuery object (input text field), [options])
+
+        options:
+            focus: boolean - set focus on load, default true
+            select: boolean - select the input fields content, default true
+            clearHook: function to execute at the clear (x) button click
+            onChange: function to execute on keyup
+
+    To style the container, loading and clear divs use the following css:
+
+    /* Nicefield */
+    .nf-container {
+        padding: 0;
+        margin: 0;
+        position: relative;
+        float: left;
+    }
+    .nf-indicator {
+        position: absolute;
+        display: none;
+        right: 8px;
+        top: 0px;
+        width: 16px;
+        height: 28px;
+        background: url('../images/nf-loader.gif') no-repeat center center;
+    }
+    .nf-clear {
+        position: absolute;
+        display: block;
+        right: 0px;
+        top: 0px;
+        width: 25px;
+        height: 25px;
+        background: url('../images/nf-clear.png') no-repeat center center;
+        cursor: pointer;
+        opacity: 0.8;
+    }
+    .nf-clear:hover {
+        opacity: 1;
+    }
+
 ###
 class NiceField
     constructor: (o, opt) ->
@@ -29,7 +73,6 @@ class NiceField
             if $.isFunction(opt.clearHook)
                 opt.clearHook()
 
-
         if $.isFunction(opt.onChange)
             $(o).on('keyup', ( ->
                 opt.onChange()
@@ -40,7 +83,6 @@ class NiceField
 
         if opt.select
             $(o).select()
-
 
     start: ->
         $(@indi).show()

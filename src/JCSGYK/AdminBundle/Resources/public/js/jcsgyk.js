@@ -1,7 +1,4 @@
 JCS = {
-    // quicksearch timeout
-    qto: null,
-
     init: function()
     {
         // search results height
@@ -22,13 +19,8 @@ JCS = {
             $("#problemblock .personcontent").html("");
             JCS.setBlockSizes();
         })
-
     },
 
-    qSubmit: function()
-    {
-        //$("#quicksearch").submit();
-    },
     setBlockSizes: function()
     {
         var blockW = Math.round(($(window).innerWidth() - 40) * 0.45);
@@ -55,10 +47,8 @@ JCS = {
         $('#search-results').height($(window).innerHeight() - 186);
         $('#personblock').height($(window).innerHeight() - 136);
         $('#problemblock').height($(window).innerHeight() - 136);
-    },
-
+    }
 }
-
 
 CsNav = function ()
 {
