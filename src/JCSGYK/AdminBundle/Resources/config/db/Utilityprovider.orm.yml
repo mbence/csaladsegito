@@ -9,18 +9,23 @@ Utilityprovider:
             nullable: false
             generator:
                 strategy: IDENTITY
-        companyId:
-            type: integer
-            unsigned: false
-            nullable: true
-            column: company_id
-        name:
+        value:
             type: string
-            length: 255
+            length: 60
             fixed: false
             nullable: true
-        isActive:
-            type: boolean
-            nullable: true
-            column: is_active
+        type:
+            type: integer
+            unsigned: false
+            nullable: false
+    manyToOne:
+        person:
+            targetEntity: Person
+            cascade: {  }
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                person_id:
+                    referencedColumnName: id
+            orphanRemoval: false
     lifecycleCallbacks: {  }

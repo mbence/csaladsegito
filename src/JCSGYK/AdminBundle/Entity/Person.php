@@ -372,13 +372,13 @@ class Person
     private $guardianLastname;
 
     /**
-     * @ORM\OneToMany(targetEntity="UtilityproviderId", mappedBy="person")
+     * @ORM\OneToMany(targetEntity="Utilityprovider", mappedBy="person")
      */
-    private $utilityproviderids;
+    private $utilityproviders;
 
     public function __construct()
     {
-        $this->utilityproviderids = new ArrayCollection();
+        $this->utilityproviders = new ArrayCollection();
     }
 
     /**

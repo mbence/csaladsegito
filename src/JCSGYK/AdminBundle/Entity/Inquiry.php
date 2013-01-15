@@ -32,9 +32,9 @@ class Inquiry
     /**
      * @var integer
      *
-     * @ORM\Column(name="inquiry_type_id", type="integer", nullable=false)
+     * @ORM\Column(name="type", type="integer", nullable=false)
      */
-    private $inquiryTypeId;
+    private $type;
 
     /**
      * @var integer
@@ -87,26 +87,26 @@ class Inquiry
     }
 
     /**
-     * Set inquiryTypeId
+     * Set type
      *
-     * @param integer $inquiryTypeId
+     * @param integer $type
      * @return Inquiry
      */
-    public function setInquiryTypeId($inquiryTypeId)
+    public function setType($type)
     {
-        $this->inquiryTypeId = $inquiryTypeId;
+        $this->type = $type;
 
         return $this;
     }
 
     /**
-     * Get inquiryTypeId
+     * Get type
      *
      * @return integer
      */
-    public function getInquiryTypeId()
+    public function getType()
     {
-        return $this->inquiryTypeId;
+        return $this->type;
     }
 
     /**

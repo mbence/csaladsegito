@@ -4,7 +4,6 @@ namespace JCSGYK\DbimportBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use JCSGYK\AdminBundle\Entity\Person;
-use JCSGYK\AdminBundle\Entity\UtilityproviderId;
 use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -104,7 +103,7 @@ class ImportController extends Controller
         $phone_fields = ['Mobile', 'Phone', 'Fax'];
 
         $this->truncate('person');
-        $this->truncate('utilityprovider_id');
+        $this->truncate('utilityprovider');
 
         $db = $this->get('doctrine.dbal.csaszir_connection');
         $sql = "SELECT p.*, a1.*, a2.ZipCode as ZipCode1 ,a2.City as City1, a2.Street as Street1, a2.StreetNum as StreetNum1, a2.FlatNum as FlatNum1 FROM Persons p, Addresses a1, Addresses a2 WHERE p.Address_ID=a1.Address_ID AND p.Location_ID=a2.Address_ID AND p.Type=1";
@@ -170,25 +169,25 @@ class ImportController extends Controller
                 // cleanup some unwanted values
                 if ($val === 0 || $val === '0'
                         || $val === '00000000000' || $val === '000000000'
-                        || $val === '' || $val === 'nincs megadva'
+                        || $val === '' || $val === 'nincs megadva' || $val === 'uaz'
                         || $val === '?' || $val == 'Anyja neve 1' || $val == 'Anyja neve 2'
                         || (is_string($val) && preg_match('/(yyy|xxx|aaa|bbb)/', $val))
                     ) {
                    $val = null;
                 }
                 // copy birth names
-                if ($to == 'BirthFirstname' && empty($val)) {
-                    $val = $p->getFirstname();
-                }
-                if ($to == 'BirthLastname' && empty($val)) {
-                    $val = $p->getLastname();
-                }
+//                if ($to == 'BirthFirstname' && empty($val)) {
+//                    $val = $p->getFirstname();
+//                }
+//                if ($to == 'BirthLastname' && empty($val)) {
+//                    $val = $p->getLastname();
+//                }
 
                 // set the value in the entity
                 $p->$setter($val);
             }
 
-            $this->setUtilityproviderIds($p, $imp);
+            $this->setUtilityproviders($p, $imp);
             // manage the object
             $em->persist($p);
 
@@ -205,43 +204,31 @@ class ImportController extends Controller
         return $n;
     }
 
-    protected function setUtilityproviderIds(Person &$person, $imp)
+    protected function setUtilityproviders(Person &$person, $imp)
     {
         $em = $this->getDoctrine()->getManager();
-        $utility_id_map = [
-            'GazmuvekNum' => 1,
-            'ElmuNum' => 2,
-            'FotavNum' => 3,
-            'DijbeszedoNum' => 4,
-            'JVKNum' => 5,
+        $utility_id_fields = [
+            'GazmuvekNum',
+            'ElmuNum',
+            'FotavNum',
+            'DijbeszedoNum',
+            'JVKNum',
         ];
-        foreach ($utility_id_map as $field => $db_id) {
+
+        foreach ($utility_id_fields as $field) {
+            $db_id = $this->convertId('providers', $field);
+
             $val = ltrim($imp[$field], 0);
             if (!empty($val)) {
-                $upid = new UtilityproviderId();
+                $upid = new Utilityprovider();
                 $upid->setValue($val);
                 $upid->setPerson($person);
-                $up = $em->getRepository('JCSGYKAdminBundle:Utilityprovider')->find($db_id);
-                $upid->setUtilityprovider($up);
+                //$up = $em->getRepository('JCSGYKAdminBundle:Utilityprovider')->find($db_id);
+                $upid->setType($db_id);
 
                 $em->persist($upid);
             }
         }
-    }
-
-    protected function getUtilityProviderList()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $ups = $em->createQuery('SELECT p FROM JCSGYKAdminBundle:Utilityprovider p WHERE p.isActive=1 AND p.companyId=:company')
-            ->setParameter('company', $this->companyID)
-            ->getResult();
-
-        $res = [];
-        foreach ($ups as $rec) {
-            $res[$rec->getId()] = $rec;
-        }
-
-        $this->utilityproviderList = $res;
     }
 
     /**
@@ -314,5 +301,21 @@ class ImportController extends Controller
     protected function getDate($date)
     {
         return new \DateTime(date('r', ($date  * 86400) - ((70 * 365 + 19) * 86400)));
+    }
+
+
+    protected function convertId($group, $id)
+    {
+        $map = [
+            'providers' => [
+                'GazmuvekNum' => 3,
+                'ElmuNum' => 4,
+                'FotavNum' => 5,
+                'DijbeszedoNum' => 6,
+                'JVKNum' => 7,
+            ]
+        ];
+
+        return isset($map[$group][$id]) ? $map[$group][$id] : false;
     }
 }

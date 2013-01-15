@@ -222,7 +222,7 @@ table.person {
 table.person th {
     color: #5661a2;
     font-weight: normal;
-    padding: 6px 8px;
+    padding: 8px 8px 4px;
     border-bottom: 1px solid #CCC;
     text-align: right;
     width: 20%;
@@ -230,7 +230,7 @@ table.person th {
 }
 table.person td {
     /*font-weight: bold;*/
-    padding: 6px 8px;
+    padding: 8px 8px 4px;
     border-bottom: 1px solid #CCC;
 }
 table.person tr:hover td, table.person tr:hover th  {

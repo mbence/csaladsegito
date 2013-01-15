@@ -1,16 +1,20 @@
-parameters:
-#    jcsgyk_admin.example.class: JCSGYK\AdminBundle\Example
-
 services:
-#    jcsgyk_admin.example:
-#        class: %jcsgyk_admin.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
-    jcsgyk_admin.page_header:
-        class:        JCSGYK\AdminBundle\Services\PageHeader
-        arguments:    []
+#    jcsgyk_admin.page_header:
+#        class:        JCSGYK\AdminBundle\Services\PageHeader
+#        arguments:    []
+
+    jcsgyk_admin.db_params:
+        class:        JCSGYK\AdminBundle\Services\DbParams
+        arguments:    ["@doctrine"]
 
     jcsgyk_admin.twig.adminextension:
         class:        JCSGYK\AdminBundle\Twig\AdminExtension
-        arguments:    ["@translator"]
+        arguments:    ["@translator", "@jcsgyk_admin.db_params"]
         tags:
             - { name: twig.extension }
+
+#    jcsgyk_admin.listener.request:
+#        class: JCSGYK\AdminBundle\Services\RequestListener
+#        arguments: ["@doctrine"]
+#        tags:
+#            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

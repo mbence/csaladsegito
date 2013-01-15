@@ -1,6 +1,6 @@
-InquiryType:
+Parameter:
     type: entity
-    table: inquiry_type
+    table: parameter
     fields:
         id:
             id: true
@@ -14,9 +14,21 @@ InquiryType:
             unsigned: false
             nullable: true
             column: company_id
+        group:
+            type: integer
+            unsigned: false
+            nullable: true
+        position:
+            type: integer
+            unsigned: false
+            nullable: true
         name:
             type: string
-            length: 40
+            length: 255
             fixed: false
-            nullable: false
+            nullable: true
+        isActive:
+            type: boolean
+            nullable: true
+            column: is_active
     lifecycleCallbacks: {  }

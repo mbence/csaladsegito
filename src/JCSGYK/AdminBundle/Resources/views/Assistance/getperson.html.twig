@@ -3,33 +3,60 @@
     <tr>
         <th>{{ 'Ügyfélszám'|trans }}:</th>
         <td>{{ person.id }}</td>
+        <th>{{ 'Nem'|trans }}:</th>
+        <td>{{ gender(person.gender) }}</td>
     </tr>
     <tr>
         <th>{{ 'Szül. név'|trans }}:</th>
-        <td>{{ fname(person.birthTitle, person.birthFirstname, person.birthLastname) }}</td>
+        <td colspan="3">{{ fname(person.birthTitle, person.birthFirstname, person.birthLastname) }}</td>
     </tr>
     <tr>
         <th>{{ 'Szül. hely, idő'|trans }}:</th>
-        <td>{% if person.birthPlace %}{{ person.birthPlace }}, {% endif %}{{ fdate(person.birthDate) }}</td>
+        <td colspan="3">{% if person.birthPlace %}{{ person.birthPlace }}, {% endif %}{{ fdate(person.birthDate) }}</td>
     </tr>
     <tr>
         <th>{{ 'Anyja neve'|trans }}:</th>
-        <td>{{ fname(person.motherTitle, person.motherFirstname, person.motherLastname) }}</td>
+        <td colspan="3">{{ fname(person.motherTitle, person.motherFirstname, person.motherLastname) }}</td>
     </tr>
     <tr>
         <th>{{ 'Állandó lakcím'|trans }}:</th>
-        <td>{{ person.zipCode }} {{ person.city }}, {{ person.street }} {{ person.streetType }} {{ person.streetNumber }}
+        <td colspan="3">{{ person.zipCode }} {{ person.city }}, {{ person.street }} {{ person.streetType }} {{ person.streetNumber }}
         {% if person.flatNumber %}({{ person.flatNumber }}){% endif %}</td>
     </tr>
     <tr>
         <th>{{ 'Tartózkodási hely'|trans }}:</th>
-        <td>{{ person.locationZipCode }} {{ person.locationCity }}, {{ person.locationStreet }} {{ person.locationStreetType }} {{ person.locationStreetNumber }}
+        <td colspan="3">{{ person.locationZipCode }} {{ person.locationCity }}, {{ person.locationStreet }} {{ person.locationStreetType }} {{ person.locationStreetNumber }}
         {% if person.locationFlatNumber %}({{ person.locationFlatNumber }}){% endif %}</td>
     </tr>
+    {% if person.mobile or person.phone %}
+    <tr>
+        {% if person.mobile %}
+        <th>{{ 'Mobil'|trans }}:</th>
+        <td {% if not person.phone %}colspan="3"{% endif %}>{{ fphone(person.mobile) }}</td>
+        {% endif %}
+        {% if person.phone %}
+        <th>{{ 'Telefon'|trans }}:</th>
+        <td>{{ fphone(person.phone) }}</td>
+        {% endif %}
+    </tr>
+    {% endif %}
+    {% if person.email or person.fax %}
+    <tr>
+        {% if person.email %}
+        <th>{{ 'Email'|trans }}:</th>
+        <td {% if not person.fax %}colspan="3"{% endif %}><a href="mailto:{{ fname(person.title, person.firstname, person.lastname) }} &lt;{{ person.email }}&gt;">{{ person.email }}</a></td>
+        {% endif %}
+        {% if person.fax %}
+        <th>{{ 'Fax'|trans }}:</th>
+        <td>{{ fphone(person.fax) }}</td>
+        {% endif %}
+    </tr>
+    {% endif %}
+
     {% if person.guardianFirstname or person.guardianLastname %}
     <tr>
         <th>{{ 'Megbízott'|trans }}:</th>
-        <td>{{ fname('', person.guardianFirstname, person.guardianLastname) }}</td>
+        <td colspan="3">{{ fname('', person.guardianFirstname, person.guardianLastname) }}</td>
     </tr>
     {% endif %}
 </table>
@@ -54,7 +81,7 @@
     <table class="person" cellspacing="0" border="0">
     {% for provider in providers %}
         <tr>
-            <th>{{ provider.utilityprovider.name }}</th>
+            <th>{{ param(provider.type) }}</th>
             <td>{{ provider.value }}</td>
         </tr>
     {% endfor %}

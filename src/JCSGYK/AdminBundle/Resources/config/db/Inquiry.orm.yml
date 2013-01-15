@@ -14,7 +14,7 @@ Inquiry:
             unsigned: false
             nullable: true
             column: company_id
-        inquiryTypeId:
+        type:
             type: integer
             unsigned: false
             nullable: false

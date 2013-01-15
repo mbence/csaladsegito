@@ -5,18 +5,16 @@ namespace JCSGYK\AdminBundle\Entity;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * UtilityproviderIdRepository
+ * UtilityproviderRepository
  *
  */
-class UtilityproviderIdRepository extends EntityRepository
+class UtilityproviderRepository extends EntityRepository
 {
     public function findProviders($id)
     {
         $query = $this->getEntityManager()
             ->createQuery('
-                SELECT i, p FROM JCSGYKAdminBundle:UtilityproviderId i
-                JOIN i.utilityprovider p
-                WHERE i.person = :id'
+                SELECT p FROM JCSGYKAdminBundle:Utilityprovider p WHERE p.person = :id'
             )->setParameter('id', $id);
 
         try {

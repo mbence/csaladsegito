@@ -10,11 +10,15 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AssistanceController extends Controller
 {
-    public function indexAction()
+    public function indexAction(Request $request)
     {
 //        var_dump($this->container->get('templating.helper.assets')->getVersion());
 //        var_dump($this->container->getParameter('app.version'));
-        $debug = '';
+//
+//         $params = $this->container->get('jcsgyk_admin.db_params');
+//         var_dump($params->get(10));
+//         var_dump($params->getGroup(1));
+
 
 //        echo 'session: ' . ini_get('session.save_path');
 //        $val = 'ffffaaa';
@@ -39,24 +43,34 @@ class AssistanceController extends Controller
 
     public function registerInquiryAction($type)
     {
+
         $user = $this->get('security.context')->getToken()->getUser();
         $company_id = $this->container->getParameter('company_id', 1);
 
-        if ($this->getRequest()->isXmlHttpRequest()) {
+        // get inquiry types from the db param service (parameters table)
+        $inquiry_types = $this->container->get('jcsgyk_admin.db_params')->getGroup(1);
+        // validate inquiry type sent
+        if (!isset($inquiry_types[$type])) {
+            throw new HttpException(400, "Bad request");
+        }
+        else {
             $inquiry = new Inquiry();
             $inquiry->setCompanyId($company_id);
-            $inquiry->setInquiryTypeId($type);
+            $inquiry->setType($type);
             $inquiry->setUserId($user->getId());
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($inquiry);
             $em->flush();
 
-            $re = $this->getDoctrine()->getEntityManager()
-                ->createQuery("SELECT p FROM JCSGYKAdminBundle:InquiryType p WHERE p.id={$type} ORDER BY p.name ASC")
-                ->getResult();
+            $msg = $inquiry_types[$type] . ' regisztrálva';
 
-            return new Response($re[0]->getName() . ' regisztrálva');
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return new Response($msg);
+            }
+            else {
+                $this->get('session')->setFlash('notice',$msg);
+            }
         }
 
         return $this->redirect($this->generateUrl('assistance_home'));
@@ -78,7 +92,7 @@ class AssistanceController extends Controller
             ->find($id);
 
             $ups = $this->getDoctrine()
-            ->getRepository('JCSGYKAdminBundle:UtilityproviderId')
+            ->getRepository('JCSGYKAdminBundle:Utilityprovider')
             ->findProviders($id);
 
             return $this->render('JCSGYKAdminBundle:Assistance:getperson.html.twig', ['person' => $person, 'providers' => $ups]);

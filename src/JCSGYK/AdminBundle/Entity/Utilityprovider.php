@@ -5,10 +5,10 @@ namespace JCSGYK\AdminBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Utilityprovider
+ * UtilityproviderId
  *
  * @ORM\Table(name="utilityprovider")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\UtilityproviderRepository")
  */
 class Utilityprovider
 {
@@ -22,35 +22,26 @@ class Utilityprovider
     private $id;
 
     /**
-     * @var integer
+     * @var \Person
      *
-     * @ORM\Column(name="company_id", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Person", inversedBy="utilityproviders")
+     * @ORM\JoinColumn(name="person_id", referencedColumnName="id")
      */
-    private $companyId;
+    private $person;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="value", type="string", length=60, nullable=true)
      */
-    private $name;
+    private $value;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="is_active", type="boolean", nullable=true)
+     * @ORM\Column(name="type", type="integer", nullable=true)
      */
-    private $isActive;
-
-    /**
-     * @ORM\OneToMany(targetEntity="UtilityproviderId", mappedBy="utilityprovider")
-     */
-    private $utilityproviderids;
-
-    public function __construct()
-    {
-        $this->utilityproviderids = new ArrayCollection();
-    }
+    private $type;
 
     /**
      * Get id
@@ -63,105 +54,71 @@ class Utilityprovider
     }
 
     /**
-     * Set companyId
+     * Set value
      *
-     * @param integer $companyId
-     * @return Utilityprovider
+     * @param string $value
+     * @return UtilityproviderId
      */
-    public function setCompanyId($companyId)
+    public function setValue($value)
     {
-        $this->companyId = $companyId;
+        $this->value = $value;
 
         return $this;
     }
 
     /**
-     * Get companyId
-     *
-     * @return integer
-     */
-    public function getCompanyId()
-    {
-        return $this->companyId;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Utilityprovider
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
+     * Get value
      *
      * @return string
      */
-    public function getName()
+    public function getValue()
     {
-        return $this->name;
+        return $this->value;
     }
 
     /**
-     * Set isActive
+     * Set person
      *
-     * @param boolean $isActive
-     * @return Utilityprovider
+     * @param \JCSGYK\AdminBundle\Entity\Person $person
+     * @return UtilityproviderId
      */
-    public function setIsActive($isActive)
+    public function setPerson(\JCSGYK\AdminBundle\Entity\Person $person = null)
     {
-        $this->isActive = $isActive;
+        $this->person = $person;
 
         return $this;
     }
 
     /**
-     * Get isActive
+     * Get person
      *
-     * @return boolean
+     * @return \JCSGYK\AdminBundle\Entity\Person
      */
-    public function getIsActive()
+    public function getPerson()
     {
-        return $this->isActive;
+        return $this->person;
     }
 
-
     /**
-     * Add utilityproviderids
+     * Set type
      *
-     * @param \JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids
+     * @param integer $type
      * @return Utilityprovider
      */
-    public function addUtilityproviderid(\JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids)
+    public function setType($type)
     {
-        $this->utilityproviderids[] = $utilityproviderids;
-    
+        $this->type = $type;
+
         return $this;
     }
 
     /**
-     * Remove utilityproviderids
+     * Get type
      *
-     * @param \JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids
+     * @return integer
      */
-    public function removeUtilityproviderid(\JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids)
+    public function getType()
     {
-        $this->utilityproviderids->removeElement($utilityproviderids);
-    }
-
-    /**
-     * Get utilityproviderids
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getUtilityproviderids()
-    {
-        return $this->utilityproviderids;
+        return $this->type;
     }
 }

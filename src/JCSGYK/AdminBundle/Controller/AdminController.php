@@ -17,11 +17,7 @@ class AdminController extends Controller
             $this->get('logger')->info('ROLE_ADMIN');
         }
 
-        $inquiry_types = $this->getDoctrine()
-            ->getRepository('JCSGYKAdminBundle:InquiryType')
-            ->findAllOrderedByName();
-
-        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', array('inquiry_types' => $inquiry_types));
+        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', []);
     }
 
     public function usersAction()
