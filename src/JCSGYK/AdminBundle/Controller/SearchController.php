@@ -39,11 +39,11 @@ class SearchController extends Controller
                     // We must use HAVING after the FULLTEXT search to filter these fields.
                     $last = end($search_words);
                     // if the last word is a number, we use that for the street number search
-                    if (preg_match('/^\d+(\/|\.|-)?\w*\.?$/', $last)) {
+                    if (preg_match('/^\d+(\/|\.|-)?\w*\.?\*?$/', $last)) {
                         // remove the last element
                         array_pop($search_words);
                         // also remove any extra chars
-                        $last = strtr($last, ['/' => '', '.' => '', ' ' => '']);
+                        $last = strtr($last, ['/' => '', '.' => '', ' ' => '', '*' => '%']);
                         //$last .= '%';
                         $last = $db->quote($last);
                     }
@@ -76,7 +76,7 @@ class SearchController extends Controller
                     if (!empty($last) || !empty($street_types)) {
                         $xsql = [];
                         if (!empty($last)) {
-                            $xsql[] = "street_number = " . $last;
+                            $xsql[] = "street_number LIKE " . $last;
                         }
                         if (!empty($street_types)) {
                             $xsql[] = "street_type IN (" . implode(',', $street_types) . ")";

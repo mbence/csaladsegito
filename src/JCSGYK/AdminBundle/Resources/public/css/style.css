@@ -175,6 +175,10 @@ footer#colophon .credits a:hover {
     overflow: auto;
     height: 500px;
 }
+#search-results p {
+    line-height: 20px;
+    margin-bottom: 10px;
+}
 #search-results table {
     width: 100%;
 }
