@@ -1555,35 +1555,35 @@ class Person
     }
 
     /**
-     * Add utilityproviderids
+     * Add utilityproviders
      *
-     * @param \JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids
+     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
      * @return Person
      */
-    public function addUtilityproviderid(\JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids)
+    public function addUtilityproviderid(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
     {
-        $this->utilityproviderids[] = $utilityproviderids;
+        $this->utilityproviders[] = $utilityproviders;
 
         return $this;
     }
 
     /**
-     * Remove utilityproviderids
+     * Remove utilityproviders
      *
-     * @param \JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids
+     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
      */
-    public function removeUtilityproviderid(\JCSGYK\AdminBundle\Entity\UtilityproviderId $utilityproviderids)
+    public function removeUtilityproviderid(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
     {
-        $this->utilityproviderids->removeElement($utilityproviderids);
+        $this->utilityproviderids->removeElement($utilityproviders);
     }
 
     /**
-     * Get utilityproviderids
+     * Get utilityproviders
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUtilityproviderids()
+    public function getUtilityproviders()
     {
-        return $this->utilityproviderids;
+        return $this->utilityproviders;
     }
 }
