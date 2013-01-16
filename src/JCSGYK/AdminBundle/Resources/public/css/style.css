@@ -225,7 +225,7 @@ table.person th {
     padding: 8px 8px 4px;
     border-bottom: 1px solid #CCC;
     text-align: right;
-    width: 20%;
+    width: 25%;
     white-space: nowrap;
 }
 table.person td {
@@ -251,6 +251,21 @@ table.person tr:hover td, table.person tr:hover th  {
 }
 .fullheight {
     height: 100%;
+}
+.person-sub {
+    font-size: 14px;
+    color: #666;
+    margin: 14px 0 0 0;
+    background-color: #eee;
+    text-align: center;
+    padding: 4px;
+}
+.person-comment {
+    color: #444;
+    font-size: 15px;
+    padding: 6px 12px;
+    border: 1px solid #F5F5F5;
+    font-family: monospace;
 }
 
 /* Admin */

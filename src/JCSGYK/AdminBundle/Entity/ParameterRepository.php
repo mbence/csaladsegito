@@ -31,23 +31,4 @@ class ParameterRepository extends EntityRepository
             ->setParameter('group', $group)
             ->getResult();
     }
-
-    /**
-     * Find all parameters structured in groups
-     * @return type
-     */
-    public function getGroups()
-    {
-        $res = [];
-        $params = $this->getAll();
-
-        foreach ($params as $para) {
-            if (empty($res[$para->getGroup()])) {
-                $res[$para->getGroup()] = [];
-            }
-            $res[$para->getGroup()][$para->getId()] = $para->getName();
-        }
-
-        return $res;
-    }
 }

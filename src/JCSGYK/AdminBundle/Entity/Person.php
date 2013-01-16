@@ -260,16 +260,16 @@ class Person
     private $locationFlatNumber;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="martial_status", type="boolean", nullable=true)
+     * @ORM\Column(name="marital_status", type="integer", nullable=true)
      */
-    private $martialStatus;
+    private $maritalStatus;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="citizenship_status", type="boolean", nullable=true)
+     * @ORM\Column(name="citizenship_status", type="integer", nullable=true)
      */
     private $citizenshipStatus;
 
@@ -1187,32 +1187,32 @@ class Person
     }
 
     /**
-     * Set martialStatus
+     * Set maritalStatus
      *
-     * @param boolean $martialStatus
+     * @param integer $maritalStatus
      * @return Person
      */
-    public function setMartialStatus($martialStatus)
+    public function setMaritalStatus($maritalStatus)
     {
-        $this->martialStatus = $martialStatus;
+        $this->maritalStatus = $maritalStatus;
 
         return $this;
     }
 
     /**
-     * Get martialStatus
+     * Get maritalStatus
      *
-     * @return boolean
+     * @return integer
      */
-    public function getMartialStatus()
+    public function getMaritalStatus()
     {
-        return $this->martialStatus;
+        return $this->maritalStatus;
     }
 
     /**
      * Set citizenshipStatus
      *
-     * @param boolean $citizenshipStatus
+     * @param integer $citizenshipStatus
      * @return Person
      */
     public function setCitizenshipStatus($citizenshipStatus)
@@ -1225,7 +1225,7 @@ class Person
     /**
      * Get citizenshipStatus
      *
-     * @return boolean
+     * @return integer
      */
     public function getCitizenshipStatus()
     {

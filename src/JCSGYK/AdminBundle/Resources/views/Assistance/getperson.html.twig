@@ -1,4 +1,6 @@
 <h1 class="person">{{ fname(person.title, person.firstname, person.lastname) }}</h1>
+{# Törzsadatok #}
+<div class="person-sub">személyes adatok</div>
 <table class="person" cellspacing="0" border="0">
     <tr>
         <th>{{ 'Ügyfélszám'|trans }}:</th>
@@ -28,6 +30,7 @@
         <td colspan="3">{{ person.locationZipCode }} {{ person.locationCity }}, {{ person.locationStreet }} {{ person.locationStreetType }} {{ person.locationStreetNumber }}
         {% if person.locationFlatNumber %}({{ person.locationFlatNumber }}){% endif %}</td>
     </tr>
+{# Kapcsolat #}
     {% if person.mobile or person.phone %}
     <tr>
         {% if person.mobile %}
@@ -60,7 +63,8 @@
     </tr>
     {% endif %}
 </table>
-<br>
+<div class="person-sub">azonosítók</div>
+{# Azonosítók #}
 <div class="halfbox"><div class="rightpad">
     <table class="person" cellspacing="0" border="0">
         <tr>
@@ -77,6 +81,7 @@
         </tr>
     </table>
 </div></div>
+{# Közüzemi szolgáltatók #}
 <div class="halfbox"><div class="leftpad">
     <table class="person" cellspacing="0" border="0">
     {% for provider in providers %}
@@ -87,3 +92,28 @@
     {% endfor %}
     </table>
 </div></div>
+<div class="clear"></div>
+<div class="person-sub">egyéb adatok</div>
+{# Egyéb adatok #}
+<table class="person" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Végzettség'|trans }}:</th>
+        <td>{{ param(person.educationCode) }} </td>
+    </tr>
+    <tr>
+        <th>{{ 'Gazdasági aktivitás'|trans }}:</th>
+        <td>{{ param(person.ecActivity) }} </td>
+    </tr>
+    <tr>
+        <th>{{ 'Családi összetétel'|trans }}:</th>
+        <td>{{ param(person.maritalStatus) }} </td>
+    </tr>
+    <tr>
+        <th>{{ 'Igénylők'|trans }}:</th>
+        <td>{{ person.familySize }} {{ 'fő'|trans }} </td>
+    </tr>
+</table>
+<div class="person-sub">megjegyzés</div>
+<div class="person-comment">
+    {{ person.note }}
+</div>

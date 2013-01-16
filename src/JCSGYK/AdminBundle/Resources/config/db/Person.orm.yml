@@ -197,12 +197,12 @@ Person:
             fixed: false
             nullable: true
             column: location_flat_number
-        martialStatus:
-            type: boolean
+        maritalStatus:
+            type: integer
             nullable: true
-            column: martial_status
+            column: marital_status
         citizenshipStatus:
-            type: boolean
+            type: integer
             nullable: true
             column: citizenship_status
         citizenship:

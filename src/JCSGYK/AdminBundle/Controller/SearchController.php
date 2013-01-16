@@ -12,6 +12,7 @@ class SearchController extends Controller
 {
     public function quickAction(Request $request)
     {
+        $company_id = $this->container->getParameter('company_id', 1);
         $limit = 100;
 
         if ($this->getRequest()->isXmlHttpRequest()) {
@@ -30,7 +31,7 @@ class SearchController extends Controller
                 $sql = "SELECT id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM person WHERE";
                 // search for ID
                 if (is_numeric($q)) {
-                    $sql .= " id={$db->quote($q)} OR social_security_number LIKE {$db->quote($q . '%')}";
+                    $sql .= " (id={$db->quote($q)} AND company_id={$db->quote($company_id)}) OR (social_security_number LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)})";
                 }
                 else {
                     $search_words = explode(' ', trim($q));

@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 class ImportController extends Controller
 {
     private $companyID = 1;
-    private $utilityproviderList = [];
 
     public function indexAction(Request $request)
     {
@@ -82,11 +81,11 @@ class ImportController extends Controller
             //'LocationStreetType' => '',
             'LocationStreetNumber' => 'StreetNum1',
             'LocationFlatNumber' => 'FlatNum1',
-            'MartialStatus' => 'MartialStatus',
-            'EducationCode' => 'EducationCode',
             'Note' => 'Note',
             'FamilySize' => 'FamilySize',
             'EcActivity' => 'EcActivity',
+            'MaritalStatus' => 'MartialStatus',
+            'EducationCode' => 'EducationCode',
             'CreatedAt' => 'CreatedOn',
             'CreatedBy' => 'CreatedBy_ID',
             'ModifiedAt' => 'ModifiedOn',
@@ -144,12 +143,16 @@ class ImportController extends Controller
                 }
                 // Street Number
                 elseif ('StreetNumber' == $to || 'LocationStreetNumber' == $to) {
-                    $val = strtr($imp[$from], ['/' => '', '.' => '']);
+                    $val = trim(strtr($imp[$from], ['/' => '', '.' => '']));
                 }
                 // Location Street type
                 elseif ('LocationStreet' == $to) {
                    list($val, $st) = $this->streetFix($imp[$from]);
                    $p->setLocationStreetType($st);
+                }
+                // convert ID-s to the parameter system
+                elseif('EcActivity' == $to || 'MaritalStatus' == $to || 'EducationCode' == $to) {
+                    $val = $this->convertId($to, $imp[$from]);
                 }
                 // everything else
                 else {
@@ -223,7 +226,6 @@ class ImportController extends Controller
                 $upid = new Utilityprovider();
                 $upid->setValue($val);
                 $upid->setPerson($person);
-                //$up = $em->getRepository('JCSGYKAdminBundle:Utilityprovider')->find($db_id);
                 $upid->setType($db_id);
 
                 $em->persist($upid);
@@ -313,9 +315,43 @@ class ImportController extends Controller
                 'FotavNum' => 5,
                 'DijbeszedoNum' => 6,
                 'JVKNum' => 7,
-            ]
+            ],
+            'EducationCode' => [
+                2 => 8,
+                3 => 9,
+                4 => 10,
+                5 => 11,
+                6 => 12,
+                7 => 13,
+                8 => 14,
+                9 => 15
+            ],
+            'EcActivity' => [
+                2 => 16,
+                3 => 17,
+                4 => 18,
+                5 => 19,
+                6 => 20,
+                7 => 21,
+                8 => 22,
+                9 => 23,
+                10 => 24,
+                11 => 25,
+                12 => 26,
+                13 => 27,
+                14 => 28,
+                15 => 29,
+                16 => 30,
+            ],
+            'MaritalStatus' => [
+                2 => 31,
+                3 => 32,
+                4 => 33,
+                5 => 34,
+                6 => 35
+            ],
         ];
 
-        return isset($map[$group][$id]) ? $map[$group][$id] : false;
+        return isset($map[$group][$id]) ? $map[$group][$id] : 0;
     }
 }
