@@ -4,25 +4,22 @@ namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use JCSGYK\AdminBundle\Entity\Inquiry;
 
 class AdminController extends Controller
 {
     public function indexAction()
     {
-        $ph = $this->get('jcsgyk_admin.page_header');
-        $header_vars = $ph->getVars($this->getRequest());
 
         if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
             $this->get('logger')->info('ROLE_ADMIN');
         }
 
-        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', []);
+        return $this->render('JCSGYKAdminBundle:Admin:index.html.twig', []);
     }
 
     public function usersAction()
     {
-        return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', []);
+        return $this->render('JCSGYKAdminBundle:Admin:index.html.twig', []);
     }
 
     public function updateAction(Request $request)

@@ -30,7 +30,7 @@ Person:
             fixed: false
             nullable: false
         gender:
-            type: boolean
+            type: integer
             nullable: true
         birthDate:
             type: date

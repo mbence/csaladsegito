@@ -50,9 +50,9 @@ class Person
     private $lastname;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="gender", type="boolean", nullable=true)
+     * @ORM\Column(name="gender", type="integer", nullable=true)
      */
     private $gender;
 
@@ -499,7 +499,7 @@ class Person
     /**
      * Set gender
      *
-     * @param boolean $gender
+     * @param integer $gender
      * @return Person
      */
     public function setGender($gender)
@@ -512,7 +512,7 @@ class Person
     /**
      * Get gender
      *
-     * @return boolean
+     * @return integer
      */
     public function getGender()
     {

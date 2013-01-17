@@ -83,8 +83,8 @@ class AssistanceController extends Controller
 
     public function getPersonAction(Request $request)
     {
-        // only process ajax requests!
-//        if ($this->getRequest()->isXmlHttpRequest()) {
+        // only process ajax requests on prod env!
+        if ($this->getRequest()->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment')) {
             $id = $request->get('id');
             // get person data
             $person = $this->getDoctrine()
@@ -96,9 +96,9 @@ class AssistanceController extends Controller
             ->findProviders($id);
 
             return $this->render('JCSGYKAdminBundle:Assistance:getperson.html.twig', ['person' => $person, 'providers' => $ups]);
-//        }
-//        else {
-//            throw new HttpException(400, "Bad request");
-//        }
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
     }
 }

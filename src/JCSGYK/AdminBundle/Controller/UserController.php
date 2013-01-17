@@ -3,7 +3,6 @@
 namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use JCSGYK\AdminBundle\Entity\Inquiry;
 
 class UserController extends Controller
 {

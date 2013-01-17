@@ -32,7 +32,9 @@ class AdminExtension extends \Twig_Extension
      */
     public function getParam($id)
     {
-        return $this->dbparams->get($id);
+        $param = $this->dbparams->get($id);
+
+        return $param ? $param : 'Nincs megadva';
     }
 
     public function formatName($title, $firstname, $lastname)

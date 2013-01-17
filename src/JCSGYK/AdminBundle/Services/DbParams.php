@@ -3,6 +3,9 @@
 namespace JCSGYK\AdminBundle\Services;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 
+/**
+ * Service for database parameter retrieval
+ */
 class DbParams
 {
     private $parameters;
@@ -17,6 +20,11 @@ class DbParams
         $this->doctrine = $doctrine;
     }
 
+    /**
+     * Returns all parameters in a doctrine object collection
+     *
+     * @return array $parameters
+     */
     public function getAll()
     {
         if (empty($this->parameters)) {
@@ -29,13 +37,11 @@ class DbParams
     }
 
     /**
-     * Returns the selected parameter, or all if no $id given
-     * If unknown $id received, it will be sent back unchanged
+     * Returns all parameters in a flat $id => $param list
      *
-     * @param integer $id
-     * @return mixed
+     * @return array $parameterList
      */
-    public function get($id = null)
+    public function getList()
     {
         if (empty($this->parameterList)) {
             $this->parameterList = [];
@@ -45,7 +51,19 @@ class DbParams
             }
         }
 
-        return is_null($id) ? $this->parameterList : (isset($this->parameterList[$id]) ? $this->parameterList[$id] : $id);
+        return $this->parameterList;
+    }
+
+    /**
+     * Returns the selected parameter or false, on faliure
+     *
+     * @param integer $id
+     */
+    public function get($id = null)
+    {
+        $params = $this->getList();
+
+        return isset($params[$id]) ? $params[$id] : false;
     }
 
     /**
