@@ -1,23 +1,52 @@
 <?php
 
 namespace JCSGYK\AdminBundle\Services;
-use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Service for database parameter retrieval
  */
 class DbParams
 {
+    private $company;
     private $parameters;
 
     private $parameterList = [];
     private $groups = [];
 
-    private $doctrine;
+    private $container;
 
-    public function __construct(Doctrine $doctrine)
+    public function __construct($container)
     {
-        $this->doctrine = $doctrine;
+        $this->container = $container;
+    }
+
+    public function getCompany()
+    {
+        if (empty($this->company)) {
+            $em = $this->container->get('doctrine')->getManager();
+            $req = $this->container->get('request');
+            // find the current company based on server host
+            $company = $em->createQuery('SELECT c FROM JCSGYKAdminBundle:Company c WHERE c.host LIKE :host')
+                ->setMaxResults(1)
+                ->setParameter('host', '%' . $req->getHost() . '%')
+                ->getArrayResult();
+
+            // exception for unknown host
+            if (empty($company)) {
+                throw new HttpException(500, "Unknown host:" . $req->getHost());
+            }
+            $this->company = $company[0];
+        }
+
+        return $this->company;
+    }
+
+    public function getCompanyId()
+    {
+        $co = $this->getCompany();
+
+        return isset($co['id']) ? $co['id'] : 1;
     }
 
     /**
@@ -28,9 +57,9 @@ class DbParams
     public function getAll()
     {
         if (empty($this->parameters)) {
-            $this->parameters = $this->doctrine->getManager()
+            $this->parameters = $this->container->get('doctrine')->getManager()
                 ->getRepository('JCSGYKAdminBundle:Parameter')
-                ->getAll();
+                ->getAll($this->getCompanyId());
         }
 
         return $this->parameters;

@@ -45,7 +45,7 @@ class AssistanceController extends Controller
     {
 
         $user = $this->get('security.context')->getToken()->getUser();
-        $company_id = $this->container->getParameter('company_id', 1);
+        $company_id = $this->container->get('jcsgyk_admin.db_params')->getCompanyId();
 
         // get inquiry types from the db param service (parameters table)
         $inquiry_types = $this->container->get('jcsgyk_admin.db_params')->getGroup(1);
@@ -86,16 +86,21 @@ class AssistanceController extends Controller
         // only process ajax requests on prod env!
         if ($this->getRequest()->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment')) {
             $id = $request->get('id');
+            $company_id = $this->container->get('jcsgyk_admin.db_params')->getCompanyId();
             // get person data
             $person = $this->getDoctrine()
             ->getRepository('JCSGYKAdminBundle:Person')
-            ->find($id);
+            ->findBy(['id' => $id, 'companyId' => $company_id]);
 
             $ups = $this->getDoctrine()
             ->getRepository('JCSGYKAdminBundle:Utilityprovider')
             ->findProviders($id);
 
-            return $this->render('JCSGYKAdminBundle:Assistance:getperson.html.twig', ['person' => $person, 'providers' => $ups]);
+            if (empty($person[0])) {
+                throw new HttpException(400, "Bad request");
+            }
+
+            return $this->render('JCSGYKAdminBundle:Assistance:getperson.html.twig', ['person' => $person[0], 'providers' => $ups]);
         }
         else {
             throw new HttpException(400, "Bad request");

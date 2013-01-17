@@ -5,7 +5,7 @@ services:
 
     jcsgyk_admin.db_params:
         class:        JCSGYK\AdminBundle\Services\DbParams
-        arguments:    ["@doctrine"]
+        arguments:    ["@service_container"]
 
     jcsgyk_admin.twig.adminextension:
         class:        JCSGYK\AdminBundle\Twig\AdminExtension

@@ -22,15 +22,22 @@ AjaxBag =
         $(".ajaxbag .ajax-loader").hide()
 
     # displays the ajax notice, and starts the auto-fade out
-    showNotice: (notice) ->
-        AjaxBag.hideLoader()
+    showNotice: (notice, cl = false) ->
+        @hideLoader()
         $(".ajaxbag .ajax-notice")
+            .addClass(cl)
             .stop().clearQueue().html(notice)
             .css({
                 'marginLeft': -1 * ($(".ajaxbag .ajax-notice").outerWidth() / 2),
                 'opacity': 1
             })
-            .show().delay(4000).fadeOut(3000)
+            .show().delay(4000).fadeOut(3000, ->
+                $(this).removeClass(cl)
+            )
+
+    # displays an error notice
+    showError: (msg) ->
+        @showNotice(msg, 'ajax-error')
 
     # hides the ajax notice
     hideNotice: ->

@@ -36,12 +36,18 @@ class Company
     private $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="host", type="string", length=255, nullable=true)
+     */
+    private $host;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="is_active", type="boolean", nullable=true)
      */
     private $isActive;
-
 
 
     /**
@@ -98,6 +104,29 @@ class Company
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set host
+     *
+     * @param string $host
+     * @return Company
+     */
+    public function setHost($host)
+    {
+        $this->host = $host;
+    
+        return $this;
+    }
+
+    /**
+     * Get host
+     *
+     * @return string 
+     */
+    public function getHost()
+    {
+        return $this->host;
     }
 
     /**

@@ -20,6 +20,11 @@ Company:
             length: 255
             fixed: false
             nullable: true
+        host:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
         isActive:
             type: boolean
             nullable: true

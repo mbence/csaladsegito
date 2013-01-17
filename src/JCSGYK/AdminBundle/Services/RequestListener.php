@@ -15,17 +15,18 @@ class RequestListener
         $this->doctrine = $doctrine;
     }
 
+    /**
+     * Loads the company data from the db, based on the server host
+     * Saves the company arra in request attributes company
+     *
+     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+     * @throws HttpException 500 on faliure
+     */
     public function onKernelRequest(GetResponseEvent $event)
     {
         if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
             // return immediately
-            return;
+            //return;
         }
-
-        $params = $this->doctrine->getManager()
-            ->getRepository('JCSGYKAdminBundle:Parameter')
-            ->getList();
-
-        $event->getRequest()->attributes->set('db.params', $params);
     }
 }

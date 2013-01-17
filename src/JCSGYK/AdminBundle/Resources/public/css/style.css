@@ -108,7 +108,9 @@ footer#colophon .credits a:hover {
     background-color: #33e620;
     top: 18px;
 }
-
+.ajaxbag div.ajax-error {
+    background-color: #e62033;
+}
 /* ajax bgs */
 .ajax-loading2 {
     background: url('../images/ajax-loader2.gif') no-repeat center center;

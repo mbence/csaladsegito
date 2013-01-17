@@ -11,7 +11,7 @@ class SearchController extends Controller
 {
     public function quickAction(Request $request)
     {
-        $company_id = $this->container->getParameter('company_id', 1);
+        $company_id = $this->container->get('jcsgyk_admin.db_params')->getCompanyId();
         $limit = 100;
 
         if ($this->getRequest()->isXmlHttpRequest()) {
@@ -27,7 +27,7 @@ class SearchController extends Controller
             if (!empty($q)) {
 
                 $db = $this->get('doctrine.dbal.default_connection');
-                $sql = "SELECT id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM person WHERE";
+                $sql = "SELECT id, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM person WHERE";
                 // search for ID
                 if (is_numeric($q)) {
                     $sql .= " (id={$db->quote($q)} AND company_id={$db->quote($company_id)}) OR (social_security_number LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)})";
@@ -72,18 +72,21 @@ class SearchController extends Controller
 
                     $sql .= " MATCH (firstname, lastname, street) AGAINST ({$qr} IN BOOLEAN MODE)";
 
+                    $company_id = 1;
+                    $xsql = ['company_id=' . $company_id];
+
                     // if we search for street number
                     if (!empty($last) || !empty($street_types)) {
-                        $xsql = [];
+
                         if (!empty($last)) {
                             $xsql[] = "street_number LIKE " . $last;
                         }
                         if (!empty($street_types)) {
                             $xsql[] = "street_type IN (" . implode(',', $street_types) . ")";
                         }
-
-                        $sql .= " HAVING " . implode(' AND ', $xsql);
                     }
+
+                    $sql .= " HAVING " . implode(' AND ', $xsql);
                 }
                 $sql .= " ORDER BY lastname, firstname LIMIT " . $limit;
                 $re = $db->fetchAll($sql);

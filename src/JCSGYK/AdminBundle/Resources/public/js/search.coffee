@@ -47,6 +47,11 @@ JcsSearch =
             $.post($("#getpersonform").attr("action"), {id: $(this).data("userid")}, (data) ->
                 $("#personblock .loading").hide()
                 $("#personblock .personcontent").html(data).show()
+            ).error( (data) ->
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $("#personblock .loading").hide()
+                $("#personblock .close").click()
             )
             $("#search-results tr").removeClass("current")
             $(this).addClass("current")

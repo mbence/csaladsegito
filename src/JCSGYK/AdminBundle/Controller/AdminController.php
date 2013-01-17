@@ -9,6 +9,8 @@ class AdminController extends Controller
 {
     public function indexAction()
     {
+        $co = $this->container->get('jcsgyk_admin.db_params')->getCompany();
+        
 
         if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
             $this->get('logger')->info('ROLE_ADMIN');
