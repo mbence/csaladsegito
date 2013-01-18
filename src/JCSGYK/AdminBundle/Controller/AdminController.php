@@ -4,13 +4,18 @@ namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use JMS\SecurityExtraBundle\Annotation\Secure;
 
 class AdminController extends Controller
 {
+    /**
+    * @Secure(roles="ROLE_ADMIN")
+    */
+
     public function indexAction()
     {
-        $co = $this->container->get('jcsgyk_admin.db_params')->getCompany();
-        
+        $co = $this->container->get('jcs.ds')->getCompany();
+
 
         if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
             $this->get('logger')->info('ROLE_ADMIN');
@@ -19,10 +24,18 @@ class AdminController extends Controller
         return $this->render('JCSGYKAdminBundle:Admin:index.html.twig', []);
     }
 
+    /**
+    * @Secure(roles="ROLE_ADMIN")
+    */
+
     public function usersAction()
     {
         return $this->render('JCSGYKAdminBundle:Admin:index.html.twig', []);
     }
+
+    /**
+    * @Secure(roles="ROLE_SUPERADMIN")
+    */
 
     public function updateAction(Request $request)
     {

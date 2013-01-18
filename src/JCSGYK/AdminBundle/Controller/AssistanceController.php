@@ -7,15 +7,20 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use JCSGYK\AdminBundle\Entity\Inquiry;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use JMS\SecurityExtraBundle\Annotation\Secure;
 
 class AssistanceController extends Controller
 {
+    /**
+    * @Secure(roles="ROLE_ASSISTANCE")
+    */
+
     public function indexAction(Request $request)
     {
 //        var_dump($this->container->get('templating.helper.assets')->getVersion());
 //        var_dump($this->container->getParameter('app.version'));
 //
-//         $params = $this->container->get('jcsgyk_admin.db_params');
+//         $params = $this->container->get('jcs.ds');
 //         var_dump($params->get(10));
 //         var_dump($params->getGroup(1));
 
@@ -41,14 +46,18 @@ class AssistanceController extends Controller
         return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', []);
     }
 
+    /**
+    * @Secure(roles="ROLE_ASSISTANCE")
+    */
+
     public function registerInquiryAction($type)
     {
 
         $user = $this->get('security.context')->getToken()->getUser();
-        $company_id = $this->container->get('jcsgyk_admin.db_params')->getCompanyId();
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
         // get inquiry types from the db param service (parameters table)
-        $inquiry_types = $this->container->get('jcsgyk_admin.db_params')->getGroup(1);
+        $inquiry_types = $this->container->get('jcs.ds')->getGroup(1);
         // validate inquiry type sent
         if (!isset($inquiry_types[$type])) {
             throw new HttpException(400, "Bad request");
@@ -76,17 +85,25 @@ class AssistanceController extends Controller
         return $this->redirect($this->generateUrl('assistance_home'));
     }
 
+    /**
+    * @Secure(roles="ROLE_ASSISTANCE")
+    */
+
     public function newPersonAction()
     {
         return new Response('new person');
     }
+
+    /**
+    * @Secure(roles="ROLE_ASSISTANCE")
+    */
 
     public function getPersonAction(Request $request)
     {
         // only process ajax requests on prod env!
         if ($this->getRequest()->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment')) {
             $id = $request->get('id');
-            $company_id = $this->container->get('jcsgyk_admin.db_params')->getCompanyId();
+            $company_id = $this->container->get('jcs.ds')->getCompanyId();
             // get person data
             $person = $this->getDoctrine()
             ->getRepository('JCSGYKAdminBundle:Person')

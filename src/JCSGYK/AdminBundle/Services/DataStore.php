@@ -4,9 +4,9 @@ namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * Service for database parameter retrieval
+ * Service for Data Store
  */
-class DbParams
+class DataStore
 {
     private $company;
     private $parameters;

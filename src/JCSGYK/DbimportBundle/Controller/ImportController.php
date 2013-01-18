@@ -6,17 +6,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use JCSGYK\AdminBundle\Entity\Person;
 use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use Symfony\Component\HttpFoundation\Request;
+use JMS\SecurityExtraBundle\Annotation\Secure;
 
 class ImportController extends Controller
 {
     private $companyID = 1;
 
+    private $user_id_map = [];
+
+    /**
+     * @Secure(roles="ROLE_SUPERADMIN")
+     */
+
     public function indexAction(Request $request)
     {
         $session = $this->get('session');
-        $results = [
-            'person' => ''
-        ];
+        $results = [];
 
         if ($request->isMethod('POST')) {
 
@@ -27,6 +32,12 @@ class ImportController extends Controller
 
                 $results['person'] = $this->importPerson($limit);
             }
+            if ('user' == $table || 'all' == $table || 'user10' == $table) {
+                $limit = 'user10' == $table ? 10 : 0;
+
+                $results['user'] = $this->importUser($limit);
+            }
+
             $session->set('results', $results);
 
             return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
@@ -35,6 +46,68 @@ class ImportController extends Controller
         $session->remove('results');
 
         return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);
+    }
+
+    protected function importUser($limit = 10)
+    {
+        $n = 0;
+        $db = $this->get('doctrine.dbal.csaszir_connection');
+        $sql = "SELECT p.Name1, p.Name2, p.Email, u.* FROM Persons p, Users u WHERE Person_ID = PJFIG";
+        if ($limit) {
+            $sql .= ' LIMIT ' . $limit;
+        }
+        $csaszir_users = $db->fetchAll($sql);
+
+        $this->truncate('admin_user');
+
+        $userManager = $this->container->get('fos_user.user_manager');
+
+        $user = $userManager->createUser();
+        $user->setUsername('bence');
+        $user->setPlainPassword('rulez');
+        $user->setEmail('mxbence@gmail.com');
+        $user->setRoles(['ROLE_SUPERADMIN']);
+        $user->setEnabled(true);
+        $user->setCompanyId($this->companyID);
+        $user->setFirstname('Bence');
+        $user->setLastname('Mészáros');
+        $userManager->updateUser($user);
+
+        foreach ($csaszir_users as $csaszir_user) {
+            $user = $userManager->createUser();
+            $user->setUsername(trim($this->decode($csaszir_user['IKFL'])));
+            $user->setPlainPassword(trim($this->decode($csaszir_user['VHRD'])));
+            $user->setEmail(trim($csaszir_user['Email']));
+            $user->setRoles($this->getRoles($csaszir_user['DFGF']));
+            $user->setEnabled(true);
+            $user->setCompanyId($this->companyID);
+            $user->setFirstname($this->conv($csaszir_user['Name2']));
+            $user->setLastname($this->conv($csaszir_user['Name1']));
+            $userManager->updateUser($user);
+
+            $this->user_id_map[$csaszir_user['PJFIG']] = $user->getId();
+
+            $n++;
+        }
+
+        $this->updateUserIds();
+
+        return $n;
+    }
+
+    protected function updateUserIds()
+    {
+        foreach ($this->user_id_map as $old_id => $new_id) {
+            $db = $this->get('doctrine.dbal.default_connection');
+            $sql = "UPDATE person SET created_by={$new_id} WHERE created_by={$old_id}";
+            $db->query($sql);
+
+            $db = $this->get('doctrine.dbal.default_connection');
+            $sql = "UPDATE person SET modified_by={$new_id} WHERE modified_by={$old_id}";
+            $db->query($sql);
+
+            // TODO: update problem and event tables as well!
+        }
     }
 
     /**
@@ -353,5 +426,31 @@ class ImportController extends Controller
         ];
 
         return isset($map[$group][$id]) ? $map[$group][$id] : 0;
+    }
+
+    protected function decode($in)
+    {
+        $out = '';
+        foreach (str_split($in) as $c) {
+            $n = ord($c);
+            $n += $n % 2 ? -1 : 1;
+            $out .= chr($n);
+        }
+
+        return $out;
+    }
+
+    protected function getRoles($in)
+    {
+        $roles = [];
+        if ($in == 22150) {
+            $roles[] = 'ROLE_ADMIN';
+        } elseif ($in == 5200) {
+            $roles[] = 'ROLE_FAMILY_HELP';
+        } elseif ($in == 1700) {
+            $roles[] = 'ROLE_ASSISTANCE';
+        }
+
+        return $roles;
     }
 }

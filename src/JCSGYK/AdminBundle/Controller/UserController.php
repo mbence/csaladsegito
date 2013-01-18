@@ -3,9 +3,14 @@
 namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use JMS\SecurityExtraBundle\Annotation\Secure;
 
 class UserController extends Controller
 {
+    /**
+    * @Secure(roles="ROLE_ADMIN")
+    */
+
     public function indexAction()
     {
         if ($this->get('security.context')->isGranted('ROLE_USER')) {

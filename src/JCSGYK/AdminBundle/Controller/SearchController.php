@@ -11,7 +11,7 @@ class SearchController extends Controller
 {
     public function quickAction(Request $request)
     {
-        $company_id = $this->container->get('jcsgyk_admin.db_params')->getCompanyId();
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
         $limit = 100;
 
         if ($this->getRequest()->isXmlHttpRequest()) {
