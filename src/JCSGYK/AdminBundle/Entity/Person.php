@@ -316,11 +316,10 @@ class Person
     private $createdAt;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="created_by", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="personcreated")
+     * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
-    private $createdBy;
+    private $creator;
 
     /**
      * @var \DateTime
@@ -330,11 +329,10 @@ class Person
     private $modifiedAt;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="modified_by", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="personmodified")
+     * @ORM\JoinColumn(name="modified_by", referencedColumnName="id")
      */
-    private $modifiedBy;
+    private $modifier;
 
     /**
      * @var integer
@@ -1585,5 +1583,74 @@ class Person
     public function getUtilityproviders()
     {
         return $this->utilityproviders;
+    }
+
+    /**
+     * Set creator
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $creator
+     * @return Person
+     */
+    public function setCreator(\JCSGYK\AdminBundle\Entity\User $creator = null)
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
+
+    /**
+     * Get creator
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User
+     */
+    public function getCreator()
+    {
+        return $this->creator;
+    }
+
+    /**
+     * Add utilityproviders
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
+     * @return Person
+     */
+    public function addUtilityprovider(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
+    {
+        $this->utilityproviders[] = $utilityproviders;
+
+        return $this;
+    }
+
+    /**
+     * Remove utilityproviders
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
+     */
+    public function removeUtilityprovider(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
+    {
+        $this->utilityproviders->removeElement($utilityproviders);
+    }
+
+    /**
+     * Set modifier
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $modifier
+     * @return Person
+     */
+    public function setModifier(\JCSGYK\AdminBundle\Entity\User $modifier = null)
+    {
+        $this->modifier = $modifier;
+    
+        return $this;
+    }
+
+    /**
+     * Get modifier
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User 
+     */
+    public function getModifier()
+    {
+        return $this->modifier;
     }
 }

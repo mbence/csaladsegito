@@ -117,3 +117,16 @@
 <div class="person-comment">
     {{ person.note|nl2br }}
 </div>
+<div class="person-sub">előzmények</div>
+<table class="person" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Létrehozta'|trans }}:</th>
+        <td>{{ fname('', person.getCreator.firstname, person.getCreator.lastname) }}</td>
+        <td>({{ fdatetime(person.createdAt) }})</td>
+    </tr>
+    <tr>
+        <th>{{ 'Módosította'|trans }}:</th>
+        <td>{{ fname('', person.getModifier.firstname, person.getModifier.lastname) }}</td>
+        <td>({{ fdatetime(person.modifiedAt) }})</td>
+    </tr>
+</table>

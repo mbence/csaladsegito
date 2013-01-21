@@ -39,10 +39,23 @@ class User extends BaseUser
      */
     private $lastname;
 
-    public function __construct()
+    /**
+     * @ORM\OneToMany(targetEntity="Person", mappedBy="creator")
+     */
+    private $personcreated;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Person", mappedBy="modifier")
+     */
+    private $personmodified;
+
+    public function __construct($salt = null)
     {
         parent::__construct();
         // your own logic
+        if (!is_null($salt)) {
+            $this->salt = $salt;
+        }
     }
 
     /**
@@ -100,7 +113,7 @@ class User extends BaseUser
     {
         return $this->firstname;
     }
-    
+
     /**
      * Set lastname
      *

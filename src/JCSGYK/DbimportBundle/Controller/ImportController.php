@@ -7,6 +7,7 @@ use JCSGYK\AdminBundle\Entity\Person;
 use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use JCSGYK\AdminBundle\Entity\User;
 
 class ImportController extends Controller
 {
@@ -35,7 +36,7 @@ class ImportController extends Controller
             if ('user' == $table || 'all' == $table || 'user10' == $table) {
                 $limit = 'user10' == $table ? 10 : 0;
 
-                $results['user'] = $this->importUser($limit);
+                $results['user'] = $this->importUser($limit, $table);
             }
 
             $session->set('results', $results);
@@ -48,9 +49,16 @@ class ImportController extends Controller
         return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);
     }
 
-    protected function importUser($limit = 10)
+    /**
+     * Import the users from the old DB
+     * @param int $limit
+     * @param string $table all || user
+     * @return int number of imported rows
+     */
+    protected function importUser($limit = 10, $table)
     {
         $n = 0;
+        // get users from old sqlite db
         $db = $this->get('doctrine.dbal.csaszir_connection');
         $sql = "SELECT p.Name1, p.Name2, p.Email, u.* FROM Persons p, Users u WHERE Person_ID = PJFIG";
         if ($limit) {
@@ -58,13 +66,14 @@ class ImportController extends Controller
         }
         $csaszir_users = $db->fetchAll($sql);
 
-        $this->truncate('admin_user');
-
         $userManager = $this->container->get('fos_user.user_manager');
 
-        $user = $userManager->createUser();
+        $this->truncate('admin_user');
+        // add the superadmin
+        //$user = $userManager->createUser();
+        $user = new User('8monh30zxj404wggc48gsg840sk088k');
         $user->setUsername('bence');
-        $user->setPlainPassword('rulez');
+        $user->setPassword('tknMFBTjss49Q4QeXpslTbKJptBGMGknSRsCfCCsrUqtB8PTk1BviF1J5qehhHwlvCJ5JEtQYAA3qGurfv4ylw==');
         $user->setEmail('mxbence@gmail.com');
         $user->setRoles(['ROLE_SUPERADMIN']);
         $user->setEnabled(true);
@@ -90,15 +99,22 @@ class ImportController extends Controller
             $n++;
         }
 
-        $this->updateUserIds();
+        // update the old user ids in the other tables
+        if ('all' == $table) {
+            $this->updateUserIds();
+        }
 
         return $n;
     }
 
+    /**
+     * Update the old user ids in the other tables
+     */
     protected function updateUserIds()
     {
         foreach ($this->user_id_map as $old_id => $new_id) {
             $db = $this->get('doctrine.dbal.default_connection');
+            // update the person table
             $sql = "UPDATE person SET created_by={$new_id} WHERE created_by={$old_id}";
             $db->query($sql);
 

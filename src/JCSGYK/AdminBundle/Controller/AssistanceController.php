@@ -105,9 +105,13 @@ class AssistanceController extends Controller
             $id = $request->get('id');
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
             // get person data
-            $person = $this->getDoctrine()
-            ->getRepository('JCSGYKAdminBundle:Person')
-            ->findBy(['id' => $id, 'companyId' => $company_id]);
+            $person = $this->getDoctrine()->getEntityManager()
+                ->createQuery('SELECT p, c, m FROM JCSGYKAdminBundle:Person p JOIN p.creator c JOIN p.modifier m WHERE p.id=:id AND p.companyId=:company')
+                ->setParameter('id', $id)
+                ->setParameter('company', $company_id)
+                ->getResult();
+
+            //var_dump($person);
 
             $ups = $this->getDoctrine()
             ->getRepository('JCSGYKAdminBundle:Utilityprovider')
