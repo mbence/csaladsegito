@@ -1,10 +1,10 @@
 <header id="header" role="banner">
     <div class="headright">
         {% if app.user %}
-            {{ 'Bejelentkezve:'|trans() }} <span class="username">{{ app.user.username }}</span>
+            {{ 'Bejelentkezve:'|trans() }} <span class="username">{{ fname('', app.user.firstname, app.user.lastname) }}</span>
 
         <a class="logout" href="{{ path('fos_user_security_logout') }}">{{ 'kilépés'|trans() }}</a>
-    
+
         {% endif %}
     </div>
 

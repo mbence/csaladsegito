@@ -93,38 +93,4 @@ class AssistanceController extends Controller
     {
         return new Response('new person');
     }
-
-    /**
-    * @Secure(roles="ROLE_ASSISTANCE")
-    */
-
-    public function getPersonAction(Request $request)
-    {
-        // only process ajax requests on prod env!
-        if ($this->getRequest()->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment')) {
-            $id = $request->get('id');
-            $company_id = $this->container->get('jcs.ds')->getCompanyId();
-            // get person data
-            $person = $this->getDoctrine()->getEntityManager()
-                ->createQuery('SELECT p, c, m FROM JCSGYKAdminBundle:Person p JOIN p.creator c JOIN p.modifier m WHERE p.id=:id AND p.companyId=:company')
-                ->setParameter('id', $id)
-                ->setParameter('company', $company_id)
-                ->getResult();
-
-            //var_dump($person);
-
-            $ups = $this->getDoctrine()
-            ->getRepository('JCSGYKAdminBundle:Utilityprovider')
-            ->findProviders($id);
-
-            if (empty($person[0])) {
-                throw new HttpException(400, "Bad request");
-            }
-
-            return $this->render('JCSGYKAdminBundle:Assistance:getperson.html.twig', ['person' => $person[0], 'providers' => $ups]);
-        }
-        else {
-            throw new HttpException(400, "Bad request");
-        }
-    }
 }

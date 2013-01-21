@@ -1,15 +1,43 @@
 home:
     pattern:  /
-    defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
+    defaults: { _controller: JCSGYKAdminBundle:Menu:loginRedirector }
 
+# Search #
+assistance_search:
+    pattern:  /asszisztencia/kereses
+    defaults: { _controller: JCSGYKAdminBundle:Search:index }
+familyhelp_search:
+    pattern:  /csaladsegito/kereses
+    defaults: { _controller: JCSGYKAdminBundle:Search:index }
+childwelfare_search:
+    pattern:  /gyermekjolet/kereses
+    defaults: { _controller: JCSGYKAdminBundle:Search:index }
+admin_search:
+    pattern:  /admin/kereses
+    defaults: { _controller: JCSGYKAdminBundle:Search:index }
 quicksearch:
     pattern:  /quicksearch
     defaults: { _controller: JCSGYKAdminBundle:Search:quick }
-# Assistance #    
+
+# Person #
+assistance_view:
+    pattern:  /asszisztencia/view
+    defaults: { _controller: JCSGYKAdminBundle:Person:view }
+familyhelp_view:
+    pattern:  /csaladsegito/view
+    defaults: { _controller: JCSGYKAdminBundle:Person:view }
+childwelfare_view:
+    pattern:  /gyermekjolet/view
+    defaults: { _controller: JCSGYKAdminBundle:Person:view }
+admin_view:
+    pattern:  /admin/view
+    defaults: { _controller: JCSGYKAdminBundle:Person:view }
+
+# Assistance #
 assistance_home:
     pattern:  /asszisztencia
     defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
-new_person:    
+new_person:
     pattern:  /uj_ugyfel
     defaults: { _controller: JCSGYKAdminBundle:Assistance:newPerson }
 
@@ -18,9 +46,6 @@ register_inquiry:
     defaults: { _controller: JCSGYKAdminBundle:Assistance:registerInquiry }
     requirements:
         type: \d+
-get_person:
-    pattern:  /getperson
-    defaults: { _controller: JCSGYKAdminBundle:Assistance:getPerson }
 
 family_home:
     pattern:  /csaladsegito
@@ -29,28 +54,28 @@ family_home:
 child_home:
     pattern:  /gyermekjolet
     defaults: { _controller: JCSGYKAdminBundle:User:index }
-    
-# Admin #    
-admin_home:    
+
+# Admin #
+admin_home:
     pattern:  /admin
     defaults: { _controller: JCSGYKAdminBundle:Admin:index }
 admin_users:
     pattern:  /admin/users
     defaults: { _controller: JCSGYKAdminBundle:Admin:users }
-admin_update:    
+admin_update:
     pattern:  /admin/update
     defaults: { _controller: JCSGYKAdminBundle:Admin:update }
-  
+
 login_redirector:
     pattern:   /loginredirector
     defaults: { _controller: JCSGYKAdminBundle:Menu:loginRedirector }
-    
+
 #login:
 #    pattern:  /login
 #    defaults: { _controller: JCSGYKAdminBundle:Security:login }
 #login_check:
 #    pattern:  /login_check
-#    
+#
 #logout:
 #    pattern:  /logout
-    
+

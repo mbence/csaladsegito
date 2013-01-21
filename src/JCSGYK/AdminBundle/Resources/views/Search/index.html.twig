@@ -9,7 +9,7 @@
     <div class="contentwrapper">
         <div class="contentscroller">
             <div id="searchblock">
-                {% include "JCSGYKAdminBundle:Elements:search.html.twig" %}
+                {% include "JCSGYKAdminBundle:Elements:quicksearch.html.twig" %}
                 <div id="search-results">
                     <p><br></p>
                     <p>A gyorskereső mezőben ügyfélszám, név, TAJ szám vagy utcanév és házszám szerint is kereshet.</p>
@@ -22,7 +22,7 @@
 
             <div id="personblock"><div class="leftpad20 fullheight">
                 <div class="close">x</div>
-                <form action="{{ path('get_person') }}" method="post" name="getpersonform" id="getpersonform">
+                <form action="{{ path(view_route) }}" method="post" name="getpersonform" id="getpersonform">
                     <input type="hidden" name="id">
                 </form>
                 <div class="loading">Betöltés...</div>

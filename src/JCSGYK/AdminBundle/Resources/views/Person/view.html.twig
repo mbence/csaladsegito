@@ -1,6 +1,12 @@
 <h1 class="person">{{ fname(person.title, person.firstname, person.lastname) }}</h1>
+<table class="person caseowner" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Esetgazda'|trans }}:</th>
+        <td colspan="3">{{ fname('', person.getCreator.firstname, person.getCreator.lastname) }}</td>
+    </tr>
+</table>
 {# Törzsadatok #}
-<div class="person-sub">személyes adatok</div>
+<div class="person-sub first-sub">személyes adatok</div>
 <table class="person" cellspacing="0" border="0">
     <tr>
         <th>{{ 'Ügyfélszám'|trans }}:</th>
@@ -63,60 +69,64 @@
     </tr>
     {% endif %}
 </table>
-<div class="person-sub">azonosítók</div>
-{# Azonosítók #}
-<div class="halfbox"><div class="rightpad">
+{% if type != 'assistance' and is_granted('ROLE_FAMILY_HELP') %}
+    <div class="person-sub">azonosítók</div>
+    {# Azonosítók #}
+    <div class="halfbox"><div class="rightpad">
+        <table class="person" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'TAJ'|trans }}:</th>
+                <td>{{ person.socialSecurityNumber }} </td>
+            </tr>
+            <tr>
+                <th>{{ 'Szem.a.j'|trans }}:</th>
+                <td>{{ person.identityNumber }} </td>
+            </tr>
+            <tr>
+                <th>{{ 'Szig.sz.'|trans }}:</th>
+                <td>{{ person.idCardNumber }} </td>
+            </tr>
+        </table>
+    </div></div>
+    {# Közüzemi szolgáltatók #}
+    <div class="halfbox"><div class="leftpad">
+        <table class="person" cellspacing="0" border="0">
+        {% for provider in person.getutilityproviders %}
+            <tr>
+                <th>{{ param(provider.type) }}</th>
+                <td>{{ provider.value }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div></div>
+    <div class="clear"></div>
+    <div class="person-sub">egyéb adatok</div>
+    {# Egyéb adatok #}
     <table class="person" cellspacing="0" border="0">
         <tr>
-            <th>{{ 'TAJ'|trans }}:</th>
-            <td>{{ person.socialSecurityNumber }} </td>
+            <th>{{ 'Végzettség'|trans }}:</th>
+            <td>{{ param(person.educationCode) }} </td>
         </tr>
         <tr>
-            <th>{{ 'Szem.a.j'|trans }}:</th>
-            <td>{{ person.identityNumber }} </td>
+            <th>{{ 'Gazdasági aktivitás'|trans }}:</th>
+            <td>{{ param(person.ecActivity) }} </td>
         </tr>
         <tr>
-            <th>{{ 'Szig.sz.'|trans }}:</th>
-            <td>{{ person.idCardNumber }} </td>
+            <th>{{ 'Családi összetétel'|trans }}:</th>
+            <td>{{ param(person.maritalStatus) }} </td>
+        </tr>
+        <tr>
+            <th>{{ 'Igénylők'|trans }}:</th>
+            <td>{{ person.familySize }} {{ 'fő'|trans }} </td>
         </tr>
     </table>
-</div></div>
-{# Közüzemi szolgáltatók #}
-<div class="halfbox"><div class="leftpad">
-    <table class="person" cellspacing="0" border="0">
-    {% for provider in providers %}
-        <tr>
-            <th>{{ param(provider.type) }}</th>
-            <td>{{ provider.value }}</td>
-        </tr>
-    {% endfor %}
-    </table>
-</div></div>
-<div class="clear"></div>
-<div class="person-sub">egyéb adatok</div>
-{# Egyéb adatok #}
-<table class="person" cellspacing="0" border="0">
-    <tr>
-        <th>{{ 'Végzettség'|trans }}:</th>
-        <td>{{ param(person.educationCode) }} </td>
-    </tr>
-    <tr>
-        <th>{{ 'Gazdasági aktivitás'|trans }}:</th>
-        <td>{{ param(person.ecActivity) }} </td>
-    </tr>
-    <tr>
-        <th>{{ 'Családi összetétel'|trans }}:</th>
-        <td>{{ param(person.maritalStatus) }} </td>
-    </tr>
-    <tr>
-        <th>{{ 'Igénylők'|trans }}:</th>
-        <td>{{ person.familySize }} {{ 'fő'|trans }} </td>
-    </tr>
-</table>
-<div class="person-sub">megjegyzés</div>
-<div class="person-comment">
-    {{ person.note|nl2br }}
-</div>
+{% endif %}
+{% if person.note %}
+    <div class="person-sub">megjegyzés</div>
+    <div class="person-comment">
+        {{ person.note|nl2br }}
+    </div>
+{% endif %}
 <div class="person-sub">előzmények</div>
 <table class="person" cellspacing="0" border="0">
     <tr>
