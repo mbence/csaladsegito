@@ -3,11 +3,13 @@
 namespace JCSGYK\DbimportBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use JCSGYK\AdminBundle\Entity\Person;
+use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\Utilityprovider;
+use JCSGYK\AdminBundle\Entity\User;
+use JCSGYK\AdminBundle\Entity\Problem;
+
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
-use JCSGYK\AdminBundle\Entity\User;
 
 class ImportController extends Controller
 {
@@ -28,10 +30,15 @@ class ImportController extends Controller
 
             $table = $request->get('import');
 
-            if ('person' == $table || 'all' == $table || 'person100' == $table) {
-                $limit = 'person100' == $table ? 100 : 0;
+            if ('client' == $table || 'all' == $table || 'client100' == $table) {
+                $limit = 'client100' == $table ? 100 : 0;
 
-                $results['person'] = $this->importPerson($limit);
+                $results['client'] = $this->importClient($limit);
+            }
+            if ('problem' == $table || 'all' == $table || 'problem100' == $table) {
+                $limit = 'problem100' == $table ? 100 : 0;
+
+                $results['problem'] = $this->importProblem($limit);
             }
             if ('user' == $table || 'all' == $table || 'user10' == $table) {
                 $limit = 'user10' == $table ? 10 : 0;
@@ -41,12 +48,87 @@ class ImportController extends Controller
 
             $session->set('results', $results);
 
-            return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
+            //return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
         }
         $r = $session->get('results', $results);
         $session->remove('results');
 
         return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);
+    }
+
+    protected function importProblem($limit = 100)
+    {
+        $n = 0;
+        // get problems from old sqlite db
+        $db = $this->get('doctrine.dbal.csaszir_connection');
+        $sql = "SELECT Person_ID, p.* FROM Problems p JOIN PersonProblems ON RootProblem_ID=Problem_ID";
+        if ($limit) {
+            $sql .= ' LIMIT ' . $limit;
+        }
+        $problems = $db->fetchAll($sql);
+
+        //var_dump($problems);
+
+        $field_map = [
+            'Id' => 'Problem_ID',
+            'ClientId' => 'Person_ID',
+            'Title' => 'Title',
+            'Desciption' => 'Desciption',
+            'UserProb' => 'UserProb',
+            'Level' => 'ProblemLevel',
+            'Status' => 'Status',
+            'CreatedAt' => 'CreatedOn',
+            'CreatedBy' => 'CreatedBy_ID',
+            'ModifiedAt' => 'ModifiedOn',
+            'ModifiedBy' => 'ModifiedBy_ID',
+            'AssignedTo' => 'AssignedTo_ID',
+            'ClosedBy' => 'ClosedBy_ID',
+            'ClosedAt' => 'ClosedOn',
+            'CloseCode' => 'CloseCode',
+            'OpenedBy' => 'OpenedBy_ID',
+            'Attachment' => 'DocFile',
+        ];
+
+        $date_fields = ['CreatedAt', 'ModifiedAt', 'ClosedAt'];
+
+        $this->truncate('problem');
+
+        $em = $this->getDoctrine()->getManager();
+
+        foreach ($problems as $imp) {
+            $p = new Problem();
+
+            foreach ($field_map as $to => $from) {
+                $val = null;
+                $setter = 'Set' . $to;
+                // check and convert date fields
+                if (in_array($to, $date_fields)) {
+                    $val = $this->getDate($imp[$from]);
+                }
+                // everything else
+                else {
+                    $val = $this->conv($imp[$from]);
+                }
+
+                // set the value in the entity
+                $p->$setter($val);
+            }
+            // TODO: save the utility provider data
+
+            // manage the object
+            $em->persist($p);
+
+            // save the entities to the DB
+            if ($em->getUnitOfWork()->size() >= 100) {
+                $em->flush();
+                $em->clear();
+            }
+
+            $n++;
+        }
+        $em->flush();
+
+        return $n;
     }
 
     /**
@@ -60,7 +142,7 @@ class ImportController extends Controller
         $n = 0;
         // get users from old sqlite db
         $db = $this->get('doctrine.dbal.csaszir_connection');
-        $sql = "SELECT p.Name1, p.Name2, p.Email, u.* FROM Persons p, Users u WHERE Person_ID = PJFIG";
+        $sql = "SELECT p.Name1, p.Name2, p.Email, u.* FROM Clients p, Users u WHERE Client_ID = PJFIG";
         if ($limit) {
             $sql .= ' LIMIT ' . $limit;
         }
@@ -114,26 +196,33 @@ class ImportController extends Controller
     {
         foreach ($this->user_id_map as $old_id => $new_id) {
             $db = $this->get('doctrine.dbal.default_connection');
-            // update the person table
-            $sql = "UPDATE person SET created_by={$new_id} WHERE created_by={$old_id}";
+            // update the client table
+            $sql = "UPDATE client SET created_by={$new_id} WHERE created_by={$old_id}";
             $db->query($sql);
 
-            $db = $this->get('doctrine.dbal.default_connection');
-            $sql = "UPDATE person SET modified_by={$new_id} WHERE modified_by={$old_id}";
+            $sql = "UPDATE client SET modified_by={$new_id} WHERE modified_by={$old_id}";
             $db->query($sql);
 
-            // TODO: update problem and event tables as well!
+            // problems
+            $sql = "UPDATE problem SET created_by={$new_id} WHERE created_by={$old_id}";
+            $db->query($sql);
+            $sql = "UPDATE problem SET modified_by={$new_id} WHERE modified_by={$old_id}";
+            $db->query($sql);
+            $sql = "UPDATE problem SET closed_by={$new_id} WHERE closed_by={$old_id}";
+            $db->query($sql);
+
+            // TODO: update event tables as well!
         }
     }
 
     /**
-     * Import the Persons SQLite table to the projects DB
-     * The `person` table gets truncated on every run!
+     * Import the Clients SQLite table to the projects DB
+     * The `client` table gets truncated on every run!
      *
      * @param int $limit import limit
      * @return int number of imported rows
      */
-    protected function importPerson($limit = 100)
+    protected function importClient($limit = 100)
     {
         $n = 0;
 
@@ -190,7 +279,7 @@ class ImportController extends Controller
         $titles = [1 => '', 2 => 'dr.', 3 => 'özv.', 4 => 'id.', 5=> 'ifj.'];
         $phone_fields = ['Mobile', 'Phone', 'Fax'];
 
-        $this->truncate('person');
+        $this->truncate('client');
         $this->truncate('utilityprovider');
 
         $db = $this->get('doctrine.dbal.csaszir_connection');
@@ -198,12 +287,12 @@ class ImportController extends Controller
         if ($limit) {
             $sql .= ' LIMIT ' . $limit;
         }
-        $persons = $db->fetchAll($sql);
+        $clients = $db->fetchAll($sql);
 
         $em = $this->getDoctrine()->getManager();
 
-        foreach ($persons as $imp) {
-            $p = new Person();
+        foreach ($clients as $imp) {
+            $p = new Client();
             $p->setCompanyId($this->companyID);
 
             foreach ($field_map as $to => $from) {
@@ -296,7 +385,7 @@ class ImportController extends Controller
         return $n;
     }
 
-    protected function setUtilityproviders(Person &$person, $imp)
+    protected function setUtilityproviders(Client &$client, $imp)
     {
         $em = $this->getDoctrine()->getManager();
         $utility_id_fields = [
@@ -314,7 +403,7 @@ class ImportController extends Controller
             if (!empty($val)) {
                 $upid = new Utilityprovider();
                 $upid->setValue($val);
-                $upid->setPerson($person);
+                $upid->setClient($client);
                 $upid->setType($db_id);
 
                 $em->persist($upid);

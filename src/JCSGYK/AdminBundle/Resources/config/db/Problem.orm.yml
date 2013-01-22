@@ -1,0 +1,85 @@
+Problem:
+    type: entity
+    table: problem
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        clientId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: client_id
+        title:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+        desciption:
+            type: text
+            nullable: true
+        userProb:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: user_prob
+        level:
+            type: integer
+            unsigned: false
+            nullable: false
+        status:
+            type: integer
+            unsigned: false
+            nullable: true
+        createdAt:
+            type: datetime
+            nullable: true
+            column: created_at
+        createdBy:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: created_by
+        modifiedAt:
+            type: datetime
+            nullable: true
+            column: modified_at
+        modifiedBy:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: modified_by
+        assignedTo:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: assigned_to
+        closedBy:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: closed_by
+        closedAt:
+            type: datetime
+            nullable: true
+            column: closed_at
+        closeCode:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: close_code
+        openedBy:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: opened_by
+        attachment:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+    lifecycleCallbacks: {  }

@@ -5,8 +5,11 @@ HBlocks =
     init: ->
         # set sizes and win resize event
         @setBlockSizes()
+        @setHeights()
+
         $(window).resize =>
             @setBlockSizes()
+            @setHeights()
 
         @setCloseButtons()
 
@@ -44,9 +47,13 @@ HBlocks =
         # set block widths
         $(".contentscroller > div:visible").width(blockW)
 
+        true
+
+    setHeights: ->
+        h = $(window).innerHeight() - $('#header').outerHeight() - $('#colophon').outerHeight() - 36
         # set heights
-        $('#search-results').height($(window).innerHeight() - 186)
-        $('#clientblock').height($(window).innerHeight() - 136)
-        $('#problemblock').height($(window).innerHeight() - 136)
+        $('#search-results').height(h - 50)
+        $('#clientblock').height(h)
+        $('#problemblock').height(h)
 
         true
