@@ -1,0 +1,146 @@
+<h1 class="client">{{ fname(client.firstname, client.lastname, client.title) }}</h1>
+<table class="client caseowner" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Esetgazda'|trans }}:</th>
+        <td>
+            {% if client.getCaseAdmin %}
+                {{ fname(client.getCaseAdmin.firstname, client.getCaseAdmin.lastname) }}
+            {% endif %}
+        </td>
+    </tr>
+</table>
+{# Törzsadatok #}
+<div class="client-sub first-sub">személyes adatok</div>
+<table class="client" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Ügyfélszám'|trans }}:</th>
+        <td>{{ client.id }}</td>
+        <th>{{ 'Nem'|trans }}:</th>
+        <td>{{ gender(client.gender)|trans }}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Szül. név'|trans }}:</th>
+        <td colspan="3">{{ fname(client.birthFirstname, client.birthLastname, client.birthTitle) }}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Szül. hely, idő'|trans }}:</th>
+        <td colspan="3">{% if client.birthPlace %}{{ client.birthPlace }}, {% endif %}{{ fdate(client.birthDate) }}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Anyja neve'|trans }}:</th>
+        <td colspan="3">{{ fname(client.motherFirstname, client.motherLastname, client.motherTitle) }}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Állandó lakcím'|trans }}:</th>
+        <td colspan="3">{{ client.zipCode }} {{ client.city }}, {{ client.street }} {{ client.streetType }} {{ client.streetNumber }}
+        {% if client.flatNumber %}({{ client.flatNumber }}){% endif %}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Tartózkodási hely'|trans }}:</th>
+        <td colspan="3">{{ client.locationZipCode }} {{ client.locationCity }}, {{ client.locationStreet }} {{ client.locationStreetType }} {{ client.locationStreetNumber }}
+        {% if client.locationFlatNumber %}({{ client.locationFlatNumber }}){% endif %}</td>
+    </tr>
+{# Kapcsolat #}
+    {% if client.mobile or client.phone %}
+    <tr>
+        {% if client.mobile %}
+        <th>{{ 'Mobil'|trans }}:</th>
+        <td {% if not client.phone %}colspan="3"{% endif %}>{{ fphone(client.mobile) }}</td>
+        {% endif %}
+        {% if client.phone %}
+        <th>{{ 'Telefon'|trans }}:</th>
+        <td>{{ fphone(client.phone) }}</td>
+        {% endif %}
+    </tr>
+    {% endif %}
+    {% if client.email or client.fax %}
+    <tr>
+        {% if client.email %}
+        <th>{{ 'Email'|trans }}:</th>
+        <td {% if not client.fax %}colspan="3"{% endif %}><a href="mailto:{{ fname(client.firstname, client.lastname, client.title) }} &lt;{{ client.email }}&gt;">{{ client.email }}</a></td>
+        {% endif %}
+        {% if client.fax %}
+        <th>{{ 'Fax'|trans }}:</th>
+        <td>{{ fphone(client.fax) }}</td>
+        {% endif %}
+    </tr>
+    {% endif %}
+
+    {% if client.guardianFirstname or client.guardianLastname %}
+    <tr>
+        <th>{{ 'Megbízott'|trans }}:</th>
+        <td colspan="3">{{ fname(client.guardianFirstname, client.guardianLastname) }}</td>
+    </tr>
+    {% endif %}
+</table>
+{% if type != 'assistance' and is_granted('ROLE_FAMILY_HELP') %}
+    <div class="client-sub">azonosítók</div>
+    {# Azonosítók #}
+    <div class="halfbox"><div class="rightpad">
+        <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'TAJ'|trans }}:</th>
+                <td>{{ client.socialSecurityNumber }} </td>
+            </tr>
+            <tr>
+                <th>{{ 'Szem.a.j'|trans }}:</th>
+                <td>{{ client.identityNumber }} </td>
+            </tr>
+            <tr>
+                <th>{{ 'Szig.sz.'|trans }}:</th>
+                <td>{{ client.idCardNumber }} </td>
+            </tr>
+        </table>
+    </div></div>
+    {# Közüzemi szolgáltatók #}
+    <div class="halfbox"><div class="leftpad">
+        <table class="client" cellspacing="0" border="0">
+        {% for provider in client.getutilityproviders %}
+            <tr>
+                <th>{{ param(provider.type) }}</th>
+                <td>{{ provider.value }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div></div>
+    <div class="clear"></div>
+    <div class="client-sub">egyéb adatok</div>
+    {# Egyéb adatok #}
+    <table class="client" cellspacing="0" border="0">
+        <tr>
+            <th>{{ 'Végzettség'|trans }}:</th>
+            <td>{{ param(client.educationCode) }} </td>
+        </tr>
+        <tr>
+            <th>{{ 'Gazdasági aktivitás'|trans }}:</th>
+            <td>{{ param(client.ecActivity) }} </td>
+        </tr>
+        <tr>
+            <th>{{ 'Családi összetétel'|trans }}:</th>
+            <td>{{ param(client.maritalStatus) }} </td>
+        </tr>
+        <tr>
+            <th>{{ 'Igénylők'|trans }}:</th>
+            <td>{{ client.familySize }} {{ 'fő'|trans }} </td>
+        </tr>
+    </table>
+{% endif %}
+{% if client.note %}
+    <div class="client-sub">megjegyzés</div>
+    <div class="client-comment">
+        {{ client.note|nl2br }}
+    </div>
+{% endif %}
+<div class="client-sub">előzmények</div>
+<table class="client" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Létrehozta'|trans }}:</th>
+        <td>{{ fname(client.getCreator.firstname, client.getCreator.lastname) }}</td>
+        <td>({{ fdatetime(client.createdAt) }})</td>
+    </tr>
+    <tr>
+        <th>{{ 'Módosította'|trans }}:</th>
+        <td>{{ fname(client.getModifier.firstname, client.getModifier.lastname) }}</td>
+        <td>({{ fdatetime(client.modifiedAt) }})</td>
+    </tr>
+</table>

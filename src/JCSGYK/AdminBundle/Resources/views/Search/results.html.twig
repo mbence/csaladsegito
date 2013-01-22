@@ -1,4 +1,4 @@
-{% if persons %}
+{% if clients %}
     <table cellspacing="0" border="0">
     <thead>
         <th>{{ 'ÜSZ.'|trans }}</th>
@@ -7,7 +7,7 @@
         <th>{{ 'Cím'|trans }}</th>
     </thead>
     <tbody>
-        {% for p in persons %}
+        {% for p in clients %}
         <tr data-userid="{{ p.id }}">
             <td>
                 <a name="r{{ p.id }}"></a>

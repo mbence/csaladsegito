@@ -3,9 +3,6 @@
 {% block title %}Családsegítő Admin{% endblock %}
 
 {% block content %}
-    {% if debug is defined %}
-        {{ debug }}<br>
-    {% endif %}
     <div class="contentwrapper">
         <div class="contentscroller">
             <div id="searchblock">
@@ -20,13 +17,13 @@
                 </div>
             </div>
 
-            <div id="personblock"><div class="leftpad20 fullheight">
+            <div id="clientblock"><div class="leftpad20 fullheight">
                 <div class="close">x</div>
-                <form action="{{ path(view_route) }}" method="post" name="getpersonform" id="getpersonform">
+                <form action="{{ path('client_view') }}" method="post" name="getclientform" id="getclientform">
                     <input type="hidden" name="id">
                 </form>
                 <div class="loading">Betöltés...</div>
-                <div class="personcontent"></div>
+                <div class="clientcontent"></div>
             </div></div>
 
             <div id="problemblock" ><div class="leftpad20 fullheight">

@@ -3,37 +3,26 @@
 namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class MenuController extends Controller
 {
     protected $menu = [
-        'assistance' => ['route' => 'assistance_home', 'label' => 'Asszisztencia', 'role' => 'ROLE_ASSISTANCE', 'items' => [
-            ['route' => 'assistance_search', 'label' => 'Keresés', 'role' => 'ROLE_ASSISTANCE', 'bgpos' => '-120px -6px'],
-//            ['route' => 'new_person', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE', 'bgpos' => '-200px -166px'],
-        ]],
-        'family' => ['route' => 'family_home', 'label' => 'Családsegítő', 'role' => 'ROLE_FAMILY_HELP', 'items' => [
-            ['route' => 'familyhelp_search', 'label' => 'Keresés', 'role' => 'ROLE_FAMILY_HELP', 'bgpos' => '-120px -6px'],
-        ]],
-        'child' => ['route' => 'child_home', 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE', 'items' => [
-            ['route' => 'childwelfare_search', 'label' => 'Keresés', 'role' => 'ROLE_CHILD_WELFARE', 'bgpos' => '-120px -6px'],
-        ]],
-        'admin' => ['route' => 'admin_home', 'label' => 'Admin', 'role' => 'ROLE_ADMIN', 'items' => [
-            ['route' => 'admin_search', 'label' => 'Keresés', 'role' => 'ROLE_ADMIN', 'bgpos' => '-120px -6px'],
-            ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN', 'bgpos' => '-241px -166px'],
-            ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN', 'bgpos' => '-520px -326px'],
-            ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPERADMIN', 'bgpos' => '-160px -246px'],
-        ]]
+        ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'IS_AUTHENTICATED_FULLY', 'bgpos' => '-120px -6px'],
+//       ['route' => 'new_client', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE', 'bgpos' => '-200px -166px'],
+
+        ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN', 'bgpos' => '-241px -166px'],
+        ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN', 'bgpos' => '-520px -326px'],
+        ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPERADMIN', 'bgpos' => '-160px -246px'],
     ];
 
     public function mainAction()
     {
         $router = $this->get("router");
         $this->setActivePath();
-        // get inquiry types from the db param service (parameters table)
-        $inquiry_types = $this->container->get('jcs.ds')->getGroup(1);
         $user_menu = $this->checkMenu();
 
-        return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', ['menu' => $user_menu, 'inquiry_types' => $inquiry_types]);
+        return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', ['menu' => $user_menu]);
     }
 
     /**
@@ -48,16 +37,7 @@ class MenuController extends Controller
 
         foreach ($this->menu as $m) {
             if ($sec->isGranted($m['role'])) {
-                $tmp = $m;
-                $tmp['items'] = [];
-                if (!empty($m['items'])) {
-                    foreach ($m['items'] as $i) {
-                        if ($sec->isGranted($i['role'])) {
-                            $tmp['items'][] = $i;
-                        }
-                    }
-                }
-                $user_menu[] = $tmp;
+                $user_menu[] = $m;
             }
         }
 
@@ -72,16 +52,16 @@ class MenuController extends Controller
         $sec = $this->get('security.context');
 
         if ($sec->isGranted('ROLE_ADMIN')) {
-            return $this->redirect($this->generateUrl('admin_search'), 301);
+            return $this->redirect($this->generateUrl('admin_home'), 301);
         }
         elseif ($sec->isGranted('ROLE_FAMILY_HELP')) {
-            return $this->redirect($this->generateUrl('family_search'), 301);
+            return $this->redirect($this->generateUrl('home'), 301);
         }
         elseif ($sec->isGranted('ROLE_CHILD_WELFARE')) {
-            return $this->redirect($this->generateUrl('child_search'), 301);
+            return $this->redirect($this->generateUrl('home'), 301);
         }
         elseif ($sec->isGranted('ROLE_ASSISTANCE')) {
-            return $this->redirect($this->generateUrl('assistance_search'), 301);
+            return $this->redirect($this->generateUrl('clients'), 301);
         }
     }
 
@@ -114,14 +94,6 @@ class MenuController extends Controller
             foreach ($this->menu as $mkey => $m) {
                 if ($m['route'] == $route) {
                     $this->menu[$mkey]['active'] = 1;
-                }
-                if (isset($m['items'])) {
-                    foreach ($m['items'] as $ikey => $i) {
-                        if ($i['route'] == $route) {
-                            $this->menu[$mkey]['active'] = 1;
-                            $this->menu[$mkey]['items'][$ikey]['active'] = 1;
-                        }
-                    }
                 }
             }
         }

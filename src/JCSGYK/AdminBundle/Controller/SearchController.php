@@ -10,25 +10,15 @@ use JMS\SecurityExtraBundle\Annotation\Secure;
 
 class SearchController extends Controller
 {
-    /**
-    * @Secure(roles="ROLE_ASSISTANCE")
-    */
     public function indexAction(Request $request)
     {
         $route = $request->attributes->get('_route');
-        $routemap = [
-            'assistance_search' => 'assistance_view',
-            'familyhelp_search' => 'familyhelp_view',
-            'childwelfare_search' => 'childwelfare_view',
-            'admin_search' => 'admin_view'
-        ];
-        $view_route = isset($routemap[$route]) ? $routemap[$route] : reset($routemap);
 
         if ($this->getRequest()->isXmlHttpRequest() || $request->request->get('q')) {
             return $this->quickSearch($request);
         }
 
-        return $this->render('JCSGYKAdminBundle:Search:index.html.twig', ['route' => $route, 'view_route' => $view_route]);
+        return $this->render('JCSGYKAdminBundle:Search:index.html.twig', []);
     }
 
     protected function quickSearch(Request $request)
@@ -48,7 +38,7 @@ class SearchController extends Controller
         if (!empty($q)) {
 
             $db = $this->get('doctrine.dbal.default_connection');
-            $sql = "SELECT id, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM person WHERE";
+            $sql = "SELECT id, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM client WHERE";
             // search for ID
             if (is_numeric($q)) {
                 $sql .= " (id={$db->quote($q)} AND company_id={$db->quote($company_id)}) OR (social_security_number LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)})";
@@ -115,6 +105,6 @@ class SearchController extends Controller
         $time_end = microtime(true);
         $time = number_format(($time_end - $time_start) * 1000, 3, ',', ' ');
 
-        return $this->render('JCSGYKAdminBundle:Search:results.html.twig', ['persons' => $re, 'time' => $time, 'sql' => $sql, 'resnum' => count($re)]);
+        return $this->render('JCSGYKAdminBundle:Search:results.html.twig', ['clients' => $re, 'time' => $time, 'sql' => $sql, 'resnum' => count($re)]);
     }
 }

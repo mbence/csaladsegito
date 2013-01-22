@@ -34,10 +34,6 @@ class AssistanceController extends Controller
 //        $db = $this->get('doctrine.dbal.default_connection');
 //        $qr = $db->quote('+' . implode('* +', explode(' ', $q)) . '*');
 //
-//        $sql = "SELECT title, firstname, lastname FROM person2 WHERE MATCH (title, firstname, lastname) AGAINST ({$qr} IN BOOLEAN MODE)";
-//        $res = $db->fetchAll($sql);
-//        var_dump($res);
-
 //        if ($this->get('security.context')->isGranted('ROLE_ASSISTANCE')) {
 //            $this->get('logger')->info('ROLE_ASSISTANCE');
 //        }
@@ -89,8 +85,8 @@ class AssistanceController extends Controller
     * @Secure(roles="ROLE_ASSISTANCE")
     */
 
-    public function newPersonAction()
+    public function newClientAction()
     {
-        return new Response('new person');
+        return new Response('new Client');
     }
 }

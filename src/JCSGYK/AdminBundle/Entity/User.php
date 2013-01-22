@@ -40,14 +40,19 @@ class User extends BaseUser
     private $lastname;
 
     /**
-     * @ORM\OneToMany(targetEntity="Person", mappedBy="creator")
+     * @ORM\OneToMany(targetEntity="Client", mappedBy="caseAdmin")
      */
-    private $personcreated;
+    private $clientCaseAdmin;
 
     /**
-     * @ORM\OneToMany(targetEntity="Person", mappedBy="modifier")
+     * @ORM\OneToMany(targetEntity="Client", mappedBy="creator")
      */
-    private $personmodified;
+    private $clientcreated;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Client", mappedBy="modifier")
+     */
+    private $clientmodified;
 
     public function __construct($salt = null)
     {
@@ -95,7 +100,7 @@ class User extends BaseUser
      * Set firstname
      *
      * @param string $firstname
-     * @return Person
+     * @return Client
      */
     public function setFirstname($firstname)
     {
@@ -118,7 +123,7 @@ class User extends BaseUser
      * Set lastname
      *
      * @param string $lastname
-     * @return Person
+     * @return Client
      */
     public function setLastname($lastname)
     {
@@ -137,4 +142,103 @@ class User extends BaseUser
         return $this->lastname;
     }
 
+
+    /**
+     * Add clientCaseAdmin
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $clientCaseAdmin
+     * @return User
+     */
+    public function addClientCaseAdmin(\JCSGYK\AdminBundle\Entity\Client $clientCaseAdmin)
+    {
+        $this->clientCaseAdmin[] = $clientCaseAdmin;
+
+        return $this;
+    }
+
+    /**
+     * Remove clientCaseAdmin
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $clientCaseAdmin
+     */
+    public function removeClientCaseAdmin(\JCSGYK\AdminBundle\Entity\Client $clientCaseAdmin)
+    {
+        $this->clientCaseAdmin->removeElement($clientCaseAdmin);
+    }
+
+    /**
+     * Get clientCaseAdmin
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getClientCaseAdmin()
+    {
+        return $this->clientCaseAdmin;
+    }
+
+    /**
+     * Add clientcreated
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $clientcreated
+     * @return User
+     */
+    public function addClientcreated(\JCSGYK\AdminBundle\Entity\Client $clientcreated)
+    {
+        $this->clientcreated[] = $clientcreated;
+
+        return $this;
+    }
+
+    /**
+     * Remove clientcreated
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $clientcreated
+     */
+    public function removeClientcreated(\JCSGYK\AdminBundle\Entity\Client $clientcreated)
+    {
+        $this->clientcreated->removeElement($clientcreated);
+    }
+
+    /**
+     * Get clientcreated
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getClientcreated()
+    {
+        return $this->clientcreated;
+    }
+
+    /**
+     * Add clientmodified
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $clientmodified
+     * @return User
+     */
+    public function addClientmodified(\JCSGYK\AdminBundle\Entity\Client $clientmodified)
+    {
+        $this->clientmodified[] = $clientmodified;
+
+        return $this;
+    }
+
+    /**
+     * Remove clientmodified
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $clientmodified
+     */
+    public function removeClientmodified(\JCSGYK\AdminBundle\Entity\Client $clientmodified)
+    {
+        $this->clientmodified->removeElement($clientmodified);
+    }
+
+    /**
+     * Get clientmodified
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getClientmodified()
+    {
+        return $this->clientmodified;
+    }
 }

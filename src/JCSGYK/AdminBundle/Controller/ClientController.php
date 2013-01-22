@@ -8,19 +8,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 
-class PersonController extends Controller
+class ClientController extends Controller
 {
-    /**
-    * @Secure(roles="ROLE_ASSISTANCE")
-    */
     public function indexAction(Request $request)
     {
         return $this->render('JCSGYKAdminBundle:Search:index.html.twig', []);
     }
 
-    /**
-    * @Secure(roles="ROLE_ASSISTANCE")
-    */
     public function viewAction(Request $request)
     {
         // only process ajax requests on prod env!
@@ -37,10 +31,10 @@ class PersonController extends Controller
 
             $id = $request->request->get('id');
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
-            // get person data
+            // get client data
             try {
-                $person = $this->getDoctrine()->getEntityManager()
-                    ->createQuery('SELECT p, c, m FROM JCSGYKAdminBundle:Person p JOIN p.creator c JOIN p.modifier m WHERE p.id=:id AND p.companyId=:company')
+                $client = $this->getDoctrine()->getEntityManager()
+                    ->createQuery('SELECT p, c, m FROM JCSGYKAdminBundle:Client p JOIN p.creator c JOIN p.modifier m WHERE p.id=:id AND p.companyId=:company')
                     ->setParameter('id', $id)
                     ->setParameter('company', $company_id)
                     ->getSingleResult();
@@ -48,7 +42,7 @@ class PersonController extends Controller
                 throw new HttpException(400, "Bad request");
             }
 
-            return $this->render('JCSGYKAdminBundle:Person:view.html.twig', ['person' => $person, 'type' => $search_type]);
+            return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'type' => $search_type]);
         }
         else {
             throw new HttpException(400, "Bad request");

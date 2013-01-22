@@ -14,7 +14,7 @@ class UtilityproviderRepository extends EntityRepository
     {
         $query = $this->getEntityManager()
             ->createQuery('
-                SELECT p FROM JCSGYKAdminBundle:Utilityprovider p WHERE p.person = :id'
+                SELECT p FROM JCSGYKAdminBundle:Utilityprovider p WHERE p.client_id = :id'
             )->setParameter('id', $id);
 
         try {

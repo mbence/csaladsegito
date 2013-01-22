@@ -23,9 +23,14 @@ class AdminExtension extends \Twig_Extension
             'gender' => new \Twig_Function_Method($this, 'gender'),
             'fphone' => new \Twig_Function_Method($this, 'formatPhone'),
             'param' => new \Twig_Function_Method($this, 'getParam'),
+            'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
         );
     }
 
+    public function getInquiryTypes()
+    {
+        return $this->dbparams->getGroup(1);
+    }
     /**
      * Returns a parameter by it's id
      *
@@ -38,7 +43,7 @@ class AdminExtension extends \Twig_Extension
         return $param ? $param : 'Nincs megadva';
     }
 
-    public function formatName($title, $firstname, $lastname)
+    public function formatName($firstname, $lastname, $title = '')
     {
         $re = '';
         $re .= $title ? $title . ' ' : '';

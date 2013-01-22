@@ -22,12 +22,12 @@ class Utilityprovider
     private $id;
 
     /**
-     * @var \Person
+     * @var \Client
      *
-     * @ORM\ManyToOne(targetEntity="Person", inversedBy="utilityproviders")
-     * @ORM\JoinColumn(name="person_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Client", inversedBy="utilityproviders")
+     * @ORM\JoinColumn(name="client_id", referencedColumnName="id")
      */
-    private $person;
+    private $client;
 
     /**
      * @var string
@@ -77,26 +77,26 @@ class Utilityprovider
     }
 
     /**
-     * Set person
+     * Set client
      *
-     * @param \JCSGYK\AdminBundle\Entity\Person $person
+     * @param \JCSGYK\AdminBundle\Entity\Client $client
      * @return UtilityproviderId
      */
-    public function setPerson(\JCSGYK\AdminBundle\Entity\Person $person = null)
+    public function setClient(\JCSGYK\AdminBundle\Entity\Client $client = null)
     {
-        $this->person = $person;
+        $this->client = $client;
 
         return $this;
     }
 
     /**
-     * Get person
+     * Get client
      *
-     * @return \JCSGYK\AdminBundle\Entity\Person
+     * @return \JCSGYK\AdminBundle\Entity\Client
      */
-    public function getPerson()
+    public function getClient()
     {
-        return $this->person;
+        return $this->client;
     }
 
     /**

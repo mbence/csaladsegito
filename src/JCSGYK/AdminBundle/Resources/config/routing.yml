@@ -1,59 +1,26 @@
 home:
     pattern:  /
-    defaults: { _controller: JCSGYKAdminBundle:Menu:loginRedirector }
+    defaults: { _controller: JCSGYKAdminBundle:Home:index }
 
 # Search #
-assistance_search:
-    pattern:  /asszisztencia/kereses
+clients:
+    pattern:  /clients
     defaults: { _controller: JCSGYKAdminBundle:Search:index }
-familyhelp_search:
-    pattern:  /csaladsegito/kereses
-    defaults: { _controller: JCSGYKAdminBundle:Search:index }
-childwelfare_search:
-    pattern:  /gyermekjolet/kereses
-    defaults: { _controller: JCSGYKAdminBundle:Search:index }
-admin_search:
-    pattern:  /admin/kereses
-    defaults: { _controller: JCSGYKAdminBundle:Search:index }
-quicksearch:
-    pattern:  /quicksearch
-    defaults: { _controller: JCSGYKAdminBundle:Search:quick }
 
-# Person #
-assistance_view:
-    pattern:  /asszisztencia/view
-    defaults: { _controller: JCSGYKAdminBundle:Person:view }
-familyhelp_view:
-    pattern:  /csaladsegito/view
-    defaults: { _controller: JCSGYKAdminBundle:Person:view }
-childwelfare_view:
-    pattern:  /gyermekjolet/view
-    defaults: { _controller: JCSGYKAdminBundle:Person:view }
-admin_view:
-    pattern:  /admin/view
-    defaults: { _controller: JCSGYKAdminBundle:Person:view }
+# Client #
+client_view:
+    pattern:  /clients/view
+    defaults: { _controller: JCSGYKAdminBundle:Client:view }
 
 # Assistance #
-assistance_home:
-    pattern:  /asszisztencia
-    defaults: { _controller: JCSGYKAdminBundle:Assistance:index }
-new_person:
-    pattern:  /uj_ugyfel
-    defaults: { _controller: JCSGYKAdminBundle:Assistance:newPerson }
-
+new_client:
+    pattern:  /clients/new
+    defaults: { _controller: JCSGYKAdminBundle:Client:newClient }
 register_inquiry:
-    pattern: /asszisztencia/reg/{type}
+    pattern: /inquiry/new/{type}
     defaults: { _controller: JCSGYKAdminBundle:Assistance:registerInquiry }
     requirements:
         type: \d+
-
-family_home:
-    pattern:  /csaladsegito
-    defaults: { _controller: JCSGYKAdminBundle:User:index }
-
-child_home:
-    pattern:  /gyermekjolet
-    defaults: { _controller: JCSGYKAdminBundle:User:index }
 
 # Admin #
 admin_home:

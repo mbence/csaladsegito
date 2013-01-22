@@ -6,12 +6,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Person
+ * Client
  *
- * @ORM\Table(name="person")
+ * @ORM\Table(name="client")
  * @ORM\Entity
  */
-class Person
+class Client
 {
     /**
      * @var integer
@@ -309,6 +309,12 @@ class Person
     private $ecActivity;
 
     /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientCaseAdmin")
+     * @ORM\JoinColumn(name="case_admin", referencedColumnName="id")
+     */
+    private $caseAdmin;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -316,7 +322,7 @@ class Person
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="personcreated")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientcreated")
      * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
     private $creator;
@@ -329,7 +335,7 @@ class Person
     private $modifiedAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="personmodified")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientmodified")
      * @ORM\JoinColumn(name="modified_by", referencedColumnName="id")
      */
     private $modifier;
@@ -370,7 +376,7 @@ class Person
     private $guardianLastname;
 
     /**
-     * @ORM\OneToMany(targetEntity="Utilityprovider", mappedBy="person")
+     * @ORM\OneToMany(targetEntity="Utilityprovider", mappedBy="client")
      */
     private $utilityproviders;
 
@@ -383,7 +389,7 @@ class Person
      * Set id
      *
      * @param integer $id
-     * @return Person
+     * @return Client
      */
     public function setId($id)
     {
@@ -406,7 +412,7 @@ class Person
      * Set companyId
      *
      * @param integer $companyId
-     * @return Person
+     * @return Client
      */
     public function setCompanyId($companyId)
     {
@@ -429,7 +435,7 @@ class Person
      * Set title
      *
      * @param string $title
-     * @return Person
+     * @return Client
      */
     public function setTitle($title)
     {
@@ -452,7 +458,7 @@ class Person
      * Set firstname
      *
      * @param string $firstname
-     * @return Person
+     * @return Client
      */
     public function setFirstname($firstname)
     {
@@ -475,7 +481,7 @@ class Person
      * Set lastname
      *
      * @param string $lastname
-     * @return Person
+     * @return Client
      */
     public function setLastname($lastname)
     {
@@ -498,7 +504,7 @@ class Person
      * Set gender
      *
      * @param integer $gender
-     * @return Person
+     * @return Client
      */
     public function setGender($gender)
     {
@@ -521,7 +527,7 @@ class Person
      * Set birthDate
      *
      * @param \DateTime $birthDate
-     * @return Person
+     * @return Client
      */
     public function setBirthDate($birthDate)
     {
@@ -544,7 +550,7 @@ class Person
      * Set birthPlace
      *
      * @param string $birthPlace
-     * @return Person
+     * @return Client
      */
     public function setBirthPlace($birthPlace)
     {
@@ -567,7 +573,7 @@ class Person
      * Set birthTitle
      *
      * @param string $birthTitle
-     * @return Person
+     * @return Client
      */
     public function setBirthTitle($birthTitle)
     {
@@ -590,7 +596,7 @@ class Person
      * Set birthFirstname
      *
      * @param string $birthFirstname
-     * @return Person
+     * @return Client
      */
     public function setBirthFirstname($birthFirstname)
     {
@@ -613,7 +619,7 @@ class Person
      * Set birthLastname
      *
      * @param string $birthLastname
-     * @return Person
+     * @return Client
      */
     public function setBirthLastname($birthLastname)
     {
@@ -636,7 +642,7 @@ class Person
      * Set motherTitle
      *
      * @param string $motherTitle
-     * @return Person
+     * @return Client
      */
     public function setMotherTitle($motherTitle)
     {
@@ -659,7 +665,7 @@ class Person
      * Set motherFirstname
      *
      * @param string $motherFirstname
-     * @return Person
+     * @return Client
      */
     public function setMotherFirstname($motherFirstname)
     {
@@ -682,7 +688,7 @@ class Person
      * Set motherLastname
      *
      * @param string $motherLastname
-     * @return Person
+     * @return Client
      */
     public function setMotherLastname($motherLastname)
     {
@@ -705,7 +711,7 @@ class Person
      * Set socialSecurityNumber
      *
      * @param string $socialSecurityNumber
-     * @return Person
+     * @return Client
      */
     public function setSocialSecurityNumber($socialSecurityNumber)
     {
@@ -728,7 +734,7 @@ class Person
      * Set identityNumber
      *
      * @param string $identityNumber
-     * @return Person
+     * @return Client
      */
     public function setIdentityNumber($identityNumber)
     {
@@ -751,7 +757,7 @@ class Person
      * Set idCardNumber
      *
      * @param string $idCardNumber
-     * @return Person
+     * @return Client
      */
     public function setIdCardNumber($idCardNumber)
     {
@@ -774,7 +780,7 @@ class Person
      * Set mobile
      *
      * @param string $mobile
-     * @return Person
+     * @return Client
      */
     public function setMobile($mobile)
     {
@@ -797,7 +803,7 @@ class Person
      * Set phone
      *
      * @param string $phone
-     * @return Person
+     * @return Client
      */
     public function setPhone($phone)
     {
@@ -820,7 +826,7 @@ class Person
      * Set fax
      *
      * @param string $fax
-     * @return Person
+     * @return Client
      */
     public function setFax($fax)
     {
@@ -843,7 +849,7 @@ class Person
      * Set email
      *
      * @param string $email
-     * @return Person
+     * @return Client
      */
     public function setEmail($email)
     {
@@ -866,7 +872,7 @@ class Person
      * Set country
      *
      * @param string $country
-     * @return Person
+     * @return Client
      */
     public function setCountry($country)
     {
@@ -889,7 +895,7 @@ class Person
      * Set zipCode
      *
      * @param string $zipCode
-     * @return Person
+     * @return Client
      */
     public function setZipCode($zipCode)
     {
@@ -912,7 +918,7 @@ class Person
      * Set city
      *
      * @param string $city
-     * @return Person
+     * @return Client
      */
     public function setCity($city)
     {
@@ -935,7 +941,7 @@ class Person
      * Set street
      *
      * @param string $street
-     * @return Person
+     * @return Client
      */
     public function setStreet($street)
     {
@@ -958,7 +964,7 @@ class Person
      * Set streetType
      *
      * @param string $streetType
-     * @return Person
+     * @return Client
      */
     public function setStreetType($streetType)
     {
@@ -981,7 +987,7 @@ class Person
      * Set streetNumber
      *
      * @param string $streetNumber
-     * @return Person
+     * @return Client
      */
     public function setStreetNumber($streetNumber)
     {
@@ -1004,7 +1010,7 @@ class Person
      * Set flatNumber
      *
      * @param string $flatNumber
-     * @return Person
+     * @return Client
      */
     public function setFlatNumber($flatNumber)
     {
@@ -1027,7 +1033,7 @@ class Person
      * Set locationCountry
      *
      * @param string $locationCountry
-     * @return Person
+     * @return Client
      */
     public function setLocationCountry($locationCountry)
     {
@@ -1050,7 +1056,7 @@ class Person
      * Set locationZipCode
      *
      * @param string $locationZipCode
-     * @return Person
+     * @return Client
      */
     public function setLocationZipCode($locationZipCode)
     {
@@ -1073,7 +1079,7 @@ class Person
      * Set locationCity
      *
      * @param string $locationCity
-     * @return Person
+     * @return Client
      */
     public function setLocationCity($locationCity)
     {
@@ -1096,7 +1102,7 @@ class Person
      * Set locationStreet
      *
      * @param string $locationStreet
-     * @return Person
+     * @return Client
      */
     public function setLocationStreet($locationStreet)
     {
@@ -1119,7 +1125,7 @@ class Person
      * Set locationStreetType
      *
      * @param string $locationStreetType
-     * @return Person
+     * @return Client
      */
     public function setLocationStreetType($locationStreetType)
     {
@@ -1142,7 +1148,7 @@ class Person
      * Set locationStreetNumber
      *
      * @param string $locationStreetNumber
-     * @return Person
+     * @return Client
      */
     public function setLocationStreetNumber($locationStreetNumber)
     {
@@ -1165,7 +1171,7 @@ class Person
      * Set locationFlatNumber
      *
      * @param string $locationFlatNumber
-     * @return Person
+     * @return Client
      */
     public function setLocationFlatNumber($locationFlatNumber)
     {
@@ -1188,7 +1194,7 @@ class Person
      * Set maritalStatus
      *
      * @param integer $maritalStatus
-     * @return Person
+     * @return Client
      */
     public function setMaritalStatus($maritalStatus)
     {
@@ -1211,7 +1217,7 @@ class Person
      * Set citizenshipStatus
      *
      * @param integer $citizenshipStatus
-     * @return Person
+     * @return Client
      */
     public function setCitizenshipStatus($citizenshipStatus)
     {
@@ -1234,7 +1240,7 @@ class Person
      * Set citizenship
      *
      * @param integer $citizenship
-     * @return Person
+     * @return Client
      */
     public function setCitizenship($citizenship)
     {
@@ -1257,7 +1263,7 @@ class Person
      * Set educationCode
      *
      * @param integer $educationCode
-     * @return Person
+     * @return Client
      */
     public function setEducationCode($educationCode)
     {
@@ -1280,7 +1286,7 @@ class Person
      * Set note
      *
      * @param string $note
-     * @return Person
+     * @return Client
      */
     public function setNote($note)
     {
@@ -1303,7 +1309,7 @@ class Person
      * Set familySize
      *
      * @param integer $familySize
-     * @return Person
+     * @return Client
      */
     public function setFamilySize($familySize)
     {
@@ -1326,7 +1332,7 @@ class Person
      * Set ecActivity
      *
      * @param integer $ecActivity
-     * @return Person
+     * @return Client
      */
     public function setEcActivity($ecActivity)
     {
@@ -1349,7 +1355,7 @@ class Person
      * Set createdAt
      *
      * @param \DateTime $createdAt
-     * @return Person
+     * @return Client
      */
     public function setCreatedAt($createdAt)
     {
@@ -1372,7 +1378,7 @@ class Person
      * Set createdBy
      *
      * @param integer $createdBy
-     * @return Person
+     * @return Client
      */
     public function setCreatedBy($createdBy)
     {
@@ -1395,7 +1401,7 @@ class Person
      * Set modifiedAt
      *
      * @param \DateTime $modifiedAt
-     * @return Person
+     * @return Client
      */
     public function setModifiedAt($modifiedAt)
     {
@@ -1418,7 +1424,7 @@ class Person
      * Set modifiedBy
      *
      * @param integer $modifiedBy
-     * @return Person
+     * @return Client
      */
     public function setModifiedBy($modifiedBy)
     {
@@ -1441,7 +1447,7 @@ class Person
      * Set openedBy
      *
      * @param integer $openedBy
-     * @return Person
+     * @return Client
      */
     public function setOpenedBy($openedBy)
     {
@@ -1464,7 +1470,7 @@ class Person
      * Set docFile
      *
      * @param string $docFile
-     * @return Person
+     * @return Client
      */
     public function setDocFile($docFile)
     {
@@ -1487,7 +1493,7 @@ class Person
      * Set jobType
      *
      * @param integer $jobType
-     * @return Person
+     * @return Client
      */
     public function setJobType($jobType)
     {
@@ -1510,7 +1516,7 @@ class Person
      * Set guardianFirstname
      *
      * @param string $guardianFirstname
-     * @return Person
+     * @return Client
      */
     public function setGuardianFirstname($guardianFirstname)
     {
@@ -1533,7 +1539,7 @@ class Person
      * Set guardianLastname
      *
      * @param string $guardianLastname
-     * @return Person
+     * @return Client
      */
     public function setGuardianLastname($guardianLastname)
     {
@@ -1556,7 +1562,7 @@ class Person
      * Add utilityproviders
      *
      * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
-     * @return Person
+     * @return Client
      */
     public function addUtilityproviderid(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
     {
@@ -1589,7 +1595,7 @@ class Person
      * Set creator
      *
      * @param \JCSGYK\AdminBundle\Entity\User $creator
-     * @return Person
+     * @return Client
      */
     public function setCreator(\JCSGYK\AdminBundle\Entity\User $creator = null)
     {
@@ -1612,7 +1618,7 @@ class Person
      * Add utilityproviders
      *
      * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
-     * @return Person
+     * @return Client
      */
     public function addUtilityprovider(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
     {
@@ -1635,22 +1641,45 @@ class Person
      * Set modifier
      *
      * @param \JCSGYK\AdminBundle\Entity\User $modifier
-     * @return Person
+     * @return Client
      */
     public function setModifier(\JCSGYK\AdminBundle\Entity\User $modifier = null)
     {
         $this->modifier = $modifier;
-    
+
         return $this;
     }
 
     /**
      * Get modifier
      *
-     * @return \JCSGYK\AdminBundle\Entity\User 
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
     public function getModifier()
     {
         return $this->modifier;
+    }
+
+    /**
+     * Set caseAdmin
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $caseAdmin
+     * @return Client
+     */
+    public function setCaseAdmin(\JCSGYK\AdminBundle\Entity\User $caseAdmin = null)
+    {
+        $this->caseAdmin = $caseAdmin;
+
+        return $this;
+    }
+
+    /**
+     * Get caseAdmin
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User
+     */
+    public function getCaseAdmin()
+    {
+        return $this->caseAdmin;
     }
 }

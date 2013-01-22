@@ -1,7 +1,7 @@
 <header id="header" role="banner">
     <div class="headright">
         {% if app.user %}
-            {{ 'Bejelentkezve:'|trans() }} <span class="username">{{ fname('', app.user.firstname, app.user.lastname) }}</span>
+            {{ 'Bejelentkezve:'|trans() }} <span class="username">{{ fname(app.user.firstname, app.user.lastname) }}</span>
 
         <a class="logout" href="{{ path('fos_user_security_logout') }}">{{ 'kilépés'|trans() }}</a>
 
@@ -9,8 +9,11 @@
     </div>
 
     {% render "JCSGYKAdminBundle:Menu:main" %}
-
     <div class="clear"></div>
+
+    {% if is_granted('ROLE_ASSISTANCE') %}
+        {% include "JCSGYKAdminBundle:Elements:inquiry.html.twig" %}
+    {% endif %}
 </header>
 
 {# render "JCSGYKAdminBundle:Menu:breadcrumb" #}

@@ -12,15 +12,15 @@ HBlocks =
 
     setCloseButtons: ->
         # close button functionality
-        $("#personblock .close").click =>
-            $("#personblock").hide()
-            $("#personblock .personcontent").html("")
+        $("#clientblock .close").click =>
+            $("#clientblock").hide()
+            $("#clientblock .clientcontent").html("")
             $("#search-results tr").removeClass("current")
             @setBlockSizes()
 
         $("#problemblock .close").click =>
             $("#problemblock").hide()
-            $("#problemblock .personcontent").html("")
+            $("#problemblock .clientcontent").html("")
             @setBlockSizes()
 
     setBlockSizes: ->
@@ -46,7 +46,7 @@ HBlocks =
 
         # set heights
         $('#search-results').height($(window).innerHeight() - 186)
-        $('#personblock').height($(window).innerHeight() - 136)
+        $('#clientblock').height($(window).innerHeight() - 136)
         $('#problemblock').height($(window).innerHeight() - 136)
 
         true

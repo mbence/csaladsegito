@@ -1,6 +1,6 @@
-Person:
+Client:
     type: entity
-    table: person
+    table: client
     fields:
         id:
             id: true

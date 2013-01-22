@@ -7,7 +7,6 @@ security:
         FOS\UserBundle\Model\UserInterface: sha512
 
     role_hierarchy:
-        ROLE_USER:        ROLE_ASSISTANCE
         ROLE_ADMIN:       [ROLE_FAMILY_HELP, ROLE_CHILD_WELFARE]
         ROLE_SUPERADMIN:  [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 

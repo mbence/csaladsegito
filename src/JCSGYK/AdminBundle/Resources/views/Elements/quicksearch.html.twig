@@ -1,5 +1,5 @@
 <div class="quicksearch">
-    <form action="{{ path(route) }}" method="get" name="quicksearch" id="quicksearch">
+    <form action="{{ path('clients') }}" method="get" name="quicksearch" id="quicksearch">
         <input type="text" name="q" id="q" class="searchfield" placeholder="{{ 'gyorskereső'|trans() }}" value="{{ app.session.get('quicksearch') }}">
         <button type="submit" class="searchbutton"><span class="searchicon"></span></button>
     </form>

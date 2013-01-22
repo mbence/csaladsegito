@@ -38,20 +38,20 @@ JcsSearch =
 
     setupResults: ->
         $("#search-results tbody tr").click( ->
-            $("#personblock .loading").show()
-            $("#personblock .personcontent").hide()
-            $("#personblock").show()
+            $("#clientblock .loading").show()
+            $("#clientblock .clientcontent").hide()
+            $("#clientblock").show()
             HBlocks.setBlockSizes()
 
             # start the ajax request
-            $.post($("#getpersonform").attr("action"), {id: $(this).data("userid")}, (data) ->
-                $("#personblock .loading").hide()
-                $("#personblock .personcontent").html(data).show()
+            $.post($("#getclientform").attr("action"), {id: $(this).data("userid")}, (data) ->
+                $("#clientblock .loading").hide()
+                $("#clientblock .clientcontent").html(data).show()
             ).error( (data) ->
                 # there was some error :(
                 AjaxBag.showError(data.statusText)
-                $("#personblock .loading").hide()
-                $("#personblock .close").click()
+                $("#clientblock .loading").hide()
+                $("#clientblock .close").click()
             )
             $("#search-results tr").removeClass("current")
             $(this).addClass("current")

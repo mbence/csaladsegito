@@ -19,13 +19,13 @@ Utilityprovider:
             unsigned: false
             nullable: false
     manyToOne:
-        person:
-            targetEntity: Person
+        client:
+            targetEntity: Client
             cascade: {  }
             mappedBy: null
             inversedBy: null
             joinColumns:
-                person_id:
+                client_id:
                     referencedColumnName: id
             orphanRemoval: false
     lifecycleCallbacks: {  }

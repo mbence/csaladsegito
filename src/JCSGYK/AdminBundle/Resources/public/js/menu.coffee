@@ -5,7 +5,7 @@
 ###
 JcsMenu =
     init: ->
-        JcsMenu.menu()
+        #JcsMenu.menu()
         JcsMenu.inquiry()
 
     ###

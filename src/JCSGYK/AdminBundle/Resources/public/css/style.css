@@ -112,12 +112,6 @@ footer#colophon .credits a:hover {
     background-color: #e62033;
 }
 /* ajax bgs */
-.ajax-loading2 {
-    background: url('../images/ajax-loader2.gif') no-repeat center center;
-    text-indent: -2000px;
-    overflow: hidden;
-    cursor: wait;
-}
 .ajax-loading3 {
     background: url('../images/ajax-loader3.gif') no-repeat 395px 10px;
 }
@@ -138,24 +132,24 @@ footer#colophon .credits a:hover {
     cursor:pointer;
     height:19px;
     width:24px;
-    background-color: #d04a37;
-    border-radius: 5px;
-    border: 1px solid #5a2e26;
-    color: #fff;
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    color: #888;
     font-size: 16px;
     text-align: center;
-    margin: 0 6px 0 0;
-    box-shadow: 0 0 1px 1px #fff inset;
+    margin: 2px 2px 0 0;
+    box-shadow: 0 0 2px 1px #ddd inset;
 }
 .contentscroller .close:hover {
-    color: #000;
+    box-shadow: 0 0 2px 1px #ddd, 0 0 2px 1px #ddd inset;
+    color: #d04a37;
 }
 #searchblock {
     width: 45%;
     min-width: 470px;
     float: left;
 }
-#personblock, #problemblock {
+#clientblock, #problemblock {
     width: 45%;
     min-width: 470px;
     /*margin: 0 0 0 20px;*/
@@ -166,13 +160,13 @@ footer#colophon .credits a:hover {
     display: none;
 }
 
-#personblock .loading {
+#clientblock .loading {
     color: #666;
     height: 95%;
     background: url('../images/ajax-loader3.gif') no-repeat center center;
     display: none;
 }
-#personblock .personcontent, #personblock #getpersonform {
+#clientblock .clientcontent, #clientblock #getclientform {
     display: none;
 }
 
@@ -212,7 +206,7 @@ footer#colophon .credits a:hover {
     background-color: #f5f5f5;
 }
 #search-results tr.current {
-    background-color: #E9E0D7;
+    background-color: #e6e6e6;
 }
 .search-footer {
     color: #aaa;
@@ -220,19 +214,19 @@ footer#colophon .credits a:hover {
     margin: 10px 0 0 0;
 }
 
-/* Person */
-h1.person {
+/* Client */
+h1.client {
     color: #34a;
     margin: 0 0 15px 0;
     font-weight: normal;
     font-size: 23px;
 }
-table.person {
+table.client {
     color: #039;
     font-size: 13px;
     width: 100%;
 }
-table.person th {
+table.client th {
     color: #5661a2;
     font-weight: normal;
     padding: 5px 6px 5px;
@@ -241,12 +235,12 @@ table.person th {
     width: 25%;
     white-space: nowrap;
 }
-table.person td {
+table.client td {
     /*font-weight: bold;*/
     padding: 5px 6px 5px;
     border-bottom: 1px solid #DDD;
 }
-table.person tr:hover td, table.person tr:hover th  {
+table.client tr:hover td, table.client tr:hover th  {
     background-color: #f5f5f5;
 }
 table.caseowner th {
@@ -273,7 +267,7 @@ table.caseowner td {
 .fullheight {
     height: 100%;
 }
-.person-sub {
+.client-sub {
     font-size: 12px;
     color: #666;
     margin: 14px 0 0 0;
@@ -284,7 +278,7 @@ table.caseowner td {
 .first-sub {
     margin: 0;
 }
-.person-comment {
+.client-comment {
     color: #444;
     font-size: 13px;
     padding: 6px 12px;
