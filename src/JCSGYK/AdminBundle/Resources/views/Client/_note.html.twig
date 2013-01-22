@@ -1,0 +1,7 @@
+{# Note #}
+{% if client.note %}
+    <div class="client-sub">{{ 'megjegyzés'|trans }}</div>
+    <div class="client-comment">
+        {{ client.note|nl2br }}
+    </div>
+{% endif %}

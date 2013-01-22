@@ -1,0 +1,20 @@
+{# Other data #}
+<div class="client-sub">{{ 'egyéb adatok'|trans }}</div>
+<table class="client" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Végzettség'|trans }}:</th>
+        <td>{{ param(client.educationCode) }} </td>
+    </tr>
+    <tr>
+        <th>{{ 'Gazdasági aktivitás'|trans }}:</th>
+        <td>{{ param(client.ecActivity) }} </td>
+    </tr>
+    <tr>
+        <th>{{ 'Családi összetétel'|trans }}:</th>
+        <td>{{ param(client.maritalStatus) }} </td>
+    </tr>
+    <tr>
+        <th>{{ 'Igénylők'|trans }}:</th>
+        <td>{{ client.familySize }} {{ 'fő'|trans }} </td>
+    </tr>
+</table>

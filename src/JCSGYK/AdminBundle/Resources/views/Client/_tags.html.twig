@@ -1,0 +1,14 @@
+{# Tags #}
+<div class="client-sub">{{ 'előzmények'|trans }}</div>
+<table class="client" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Létrehozta'|trans }}:</th>
+        <td>{{ fname(client.getCreator.firstname, client.getCreator.lastname) }}</td>
+        <td>({{ fdatetime(client.createdAt) }})</td>
+    </tr>
+    <tr>
+        <th>{{ 'Módosította'|trans }}:</th>
+        <td>{{ fname(client.getModifier.firstname, client.getModifier.lastname) }}</td>
+        <td>({{ fdatetime(client.modifiedAt) }})</td>
+    </tr>
+</table>
