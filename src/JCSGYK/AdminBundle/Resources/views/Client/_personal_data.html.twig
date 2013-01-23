@@ -11,66 +11,68 @@
         </td>
     </tr>
 </table>
-<div class="client-sub first-sub">személyes adatok</div>
-<table class="client" cellspacing="0" border="0">
-    <tr>
-        <th>{{ 'Ügyfélszám'|trans }}:</th>
-        <td>{{ client.id }}</td>
-        <th>{{ 'Nem'|trans }}:</th>
-        <td>{{ gender(client.gender)|trans }}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Szül. név'|trans }}:</th>
-        <td colspan="3">{{ fname(client.birthFirstname, client.birthLastname, client.birthTitle) }}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Szül. hely, idő'|trans }}:</th>
-        <td colspan="3">{% if client.birthPlace %}{{ client.birthPlace }}, {% endif %}{{ fdate(client.birthDate) }}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Anyja neve'|trans }}:</th>
-        <td colspan="3">{{ fname(client.motherFirstname, client.motherLastname, client.motherTitle) }}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Állandó lakcím'|trans }}:</th>
-        <td colspan="3">{{ client.zipCode }} {{ client.city }}, {{ client.street }} {{ client.streetType }} {{ client.streetNumber }}
-        {% if client.flatNumber %}({{ client.flatNumber }}){% endif %}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Tartózkodási hely'|trans }}:</th>
-        <td colspan="3">{{ client.locationZipCode }} {{ client.locationCity }}, {{ client.locationStreet }} {{ client.locationStreetType }} {{ client.locationStreetNumber }}
-        {% if client.locationFlatNumber %}({{ client.locationFlatNumber }}){% endif %}</td>
-    </tr>
-{# Kapcsolat #}
-    {% if client.mobile or client.phone %}
-    <tr>
-        {% if client.mobile %}
-        <th>{{ 'Mobil'|trans }}:</th>
-        <td {% if not client.phone %}colspan="3"{% endif %}>{{ fphone(client.mobile) }}</td>
+<div class="client-sub first-sub togglable">személyes adatok</div>
+<div>
+    <table class="client" cellspacing="0" border="0">
+        <tr>
+            <th>{{ 'Ügyfélszám'|trans }}:</th>
+            <td>{{ client.id }}</td>
+            <th>{{ 'Nem'|trans }}:</th>
+            <td>{{ gender(client.gender)|trans }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Szül. név'|trans }}:</th>
+            <td colspan="3">{{ fname(client.birthFirstname, client.birthLastname, client.birthTitle) }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Szül. hely, idő'|trans }}:</th>
+            <td colspan="3">{% if client.birthPlace %}{{ client.birthPlace }}, {% endif %}{{ fdate(client.birthDate) }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Anyja neve'|trans }}:</th>
+            <td colspan="3">{{ fname(client.motherFirstname, client.motherLastname, client.motherTitle) }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Állandó lakcím'|trans }}:</th>
+            <td colspan="3">{{ client.zipCode }} {{ client.city }}, {{ client.street }} {{ client.streetType }} {{ client.streetNumber }}
+            {% if client.flatNumber %}({{ client.flatNumber }}){% endif %}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Tartózkodási hely'|trans }}:</th>
+            <td colspan="3">{{ client.locationZipCode }} {{ client.locationCity }}, {{ client.locationStreet }} {{ client.locationStreetType }} {{ client.locationStreetNumber }}
+            {% if client.locationFlatNumber %}({{ client.locationFlatNumber }}){% endif %}</td>
+        </tr>
+    {# Kapcsolat #}
+        {% if client.mobile or client.phone %}
+        <tr>
+            {% if client.mobile %}
+            <th>{{ 'Mobil'|trans }}:</th>
+            <td {% if not client.phone %}colspan="3"{% endif %}>{{ fphone(client.mobile) }}</td>
+            {% endif %}
+            {% if client.phone %}
+            <th>{{ 'Telefon'|trans }}:</th>
+            <td>{{ fphone(client.phone) }}</td>
+            {% endif %}
+        </tr>
         {% endif %}
-        {% if client.phone %}
-        <th>{{ 'Telefon'|trans }}:</th>
-        <td>{{ fphone(client.phone) }}</td>
+        {% if client.email or client.fax %}
+        <tr>
+            {% if client.email %}
+            <th>{{ 'Email'|trans }}:</th>
+            <td {% if not client.fax %}colspan="3"{% endif %}><a href="mailto:{{ fname(client.firstname, client.lastname, client.title) }} &lt;{{ client.email }}&gt;">{{ client.email }}</a></td>
+            {% endif %}
+            {% if client.fax %}
+            <th>{{ 'Fax'|trans }}:</th>
+            <td>{{ fphone(client.fax) }}</td>
+            {% endif %}
+        </tr>
         {% endif %}
-    </tr>
-    {% endif %}
-    {% if client.email or client.fax %}
-    <tr>
-        {% if client.email %}
-        <th>{{ 'Email'|trans }}:</th>
-        <td {% if not client.fax %}colspan="3"{% endif %}><a href="mailto:{{ fname(client.firstname, client.lastname, client.title) }} &lt;{{ client.email }}&gt;">{{ client.email }}</a></td>
-        {% endif %}
-        {% if client.fax %}
-        <th>{{ 'Fax'|trans }}:</th>
-        <td>{{ fphone(client.fax) }}</td>
-        {% endif %}
-    </tr>
-    {% endif %}
 
-    {% if client.guardianFirstname or client.guardianLastname %}
-    <tr>
-        <th>{{ 'Megbízott'|trans }}:</th>
-        <td colspan="3">{{ fname(client.guardianFirstname, client.guardianLastname) }}</td>
-    </tr>
-    {% endif %}
-</table>
+        {% if client.guardianFirstname or client.guardianLastname %}
+        <tr>
+            <th>{{ 'Megbízott'|trans }}:</th>
+            <td colspan="3">{{ fname(client.guardianFirstname, client.guardianLastname) }}</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>

@@ -1,31 +1,33 @@
 {# IDs #}
-<div class="client-sub">{{ 'azonosítók'|trans }}</div>
-<div class="halfbox"><div class="rightpad">
-    <table class="client" cellspacing="0" border="0">
-        <tr>
-            <th>{{ 'TAJ'|trans }}:</th>
-            <td>{{ client.socialSecurityNumber }} </td>
-        </tr>
-        <tr>
-            <th>{{ 'Szem.a.j'|trans }}:</th>
-            <td>{{ client.identityNumber }} </td>
-        </tr>
-        <tr>
-            <th>{{ 'Szig.sz.'|trans }}:</th>
-            <td>{{ client.idCardNumber }} </td>
-        </tr>
-    </table>
-</div></div>
+<div class="client-sub togglable">{{ 'azonosítók'|trans }}</div>
+<div>
+    <div class="halfbox"><div class="rightpad">
+        <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'TAJ'|trans }}:</th>
+                <td>{{ client.socialSecurityNumber }} </td>
+            </tr>
+            <tr>
+                <th>{{ 'Szem.a.j'|trans }}:</th>
+                <td>{{ client.identityNumber }} </td>
+            </tr>
+            <tr>
+                <th>{{ 'Szig.sz.'|trans }}:</th>
+                <td>{{ client.idCardNumber }} </td>
+            </tr>
+        </table>
+    </div></div>
 
-{# utility providers #}
-<div class="halfbox"><div class="leftpad">
-    <table class="client" cellspacing="0" border="0">
-    {% for provider in client.getutilityproviders %}
-        <tr>
-            <th>{{ param(provider.type) }}</th>
-            <td>{{ provider.value }}</td>
-        </tr>
-    {% endfor %}
-    </table>
-</div></div>
-<div class="clear"></div>
+    {# utility providers #}
+    <div class="halfbox"><div class="leftpad">
+        <table class="client" cellspacing="0" border="0">
+        {% for provider in client.getutilityproviders %}
+            <tr>
+                <th>{{ param(provider.type) }}</th>
+                <td>{{ provider.value }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div></div>
+    <div class="clear"></div>
+</div>

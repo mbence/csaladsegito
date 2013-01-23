@@ -47,6 +47,7 @@ JcsSearch =
             $.post($("#getclientform").attr("action"), {id: $(this).data("userid")}, (data) ->
                 $("#clientblock .loading").hide()
                 $("#clientblock .clientcontent").html(data).show()
+                JcsClient.init()
             ).error( (data) ->
                 # there was some error :(
                 AjaxBag.showError(data.statusText)

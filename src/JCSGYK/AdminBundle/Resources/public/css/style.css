@@ -285,6 +285,44 @@ table.caseowner td {
     border: 1px solid #F5F5F5;
     font-family: monospace;
 }
+.togglable {
+    cursor: pointer;
+    position: relative;
+}
+
+.togglable span {
+    display: block;
+    position: absolute;
+    left: 7px;
+    top: 7px;
+    width: 7px;
+    height: 4px;
+    background: url('../images/sprs.png') no-repeat -52px 0px;
+    transition: transform 0.2s;
+    opacity: 0.7;
+}
+.togglable span.collapsed {
+    transform: rotate(-90deg);
+    opacity: 1;
+}
+/* Problem list */
+table.problem-list {
+    margin-top: 10px;
+}
+table.problem-list th {
+    text-align: left;
+    width: auto;
+    font-size: 15px;
+    font-weight: normal;
+    color: #039;
+    border-bottom: 1px solid #6678B1;
+}
+table.problem-list tr:hover th {
+    background-color: #fff;
+}
+table.problem-list td {
+    cursor: pointer;
+}
 
 /* Admin */
 .update-output {

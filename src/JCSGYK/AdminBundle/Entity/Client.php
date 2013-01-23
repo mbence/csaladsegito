@@ -382,6 +382,7 @@ class Client
 
     /**
      * @ORM\OneToMany(targetEntity="Problem", mappedBy="client")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     private $problems;
 
@@ -1698,7 +1699,7 @@ class Client
     public function addProblem(\JCSGYK\AdminBundle\Entity\Problem $problems)
     {
         $this->problems[] = $problems;
-    
+
         return $this;
     }
 
@@ -1715,7 +1716,7 @@ class Client
     /**
      * Get problems
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getProblems()
     {
