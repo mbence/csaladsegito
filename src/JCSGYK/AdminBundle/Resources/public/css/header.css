@@ -63,3 +63,6 @@
 #header .menu .menuitems a.current:hover {
     box-shadow: none;
 }
+#header .menu .menuitems a.adm-menu {
+    color: #6678B1;
+}

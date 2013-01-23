@@ -1,0 +1,32 @@
+Debt:
+    type: entity
+    table: debt
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        problemId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: client_id
+        type:
+            type: smallint
+            nullable: true
+        registeredDebt:
+            type: decimal
+            nullable: true
+            column: registered_debt
+        managedDebt:
+            type: decimal
+            nullable: true
+            column: managed_debt
+        isActive:
+            type: boolean
+            nullable: true
+            column: is_active
+    lifecycleCallbacks: {  }

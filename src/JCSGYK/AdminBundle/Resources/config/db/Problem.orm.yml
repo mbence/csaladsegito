@@ -19,10 +19,10 @@ Problem:
             length: 255
             fixed: false
             nullable: true
-        desciption:
+        description:
             type: text
             nullable: true
-        userProb:
+        type:
             type: integer
             unsigned: false
             nullable: true
@@ -31,7 +31,7 @@ Problem:
             type: integer
             unsigned: false
             nullable: false
-        status:
+        is_active:
             type: integer
             unsigned: false
             nullable: true

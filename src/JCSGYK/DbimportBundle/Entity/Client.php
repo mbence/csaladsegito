@@ -1,6 +1,6 @@
 <?php
 
-namespace JCSGYK\AdminBundle\Entity;
+namespace JCSGYK\DbimportBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -309,8 +309,9 @@ class Client
     private $ecActivity;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientCaseAdmin")
-     * @ORM\JoinColumn(name="case_admin", referencedColumnName="id")
+     * @var integer
+     *
+     * @ORM\Column(name="case_admin", type="integer", nullable=true)
      */
     private $caseAdmin;
 
@@ -322,10 +323,11 @@ class Client
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientcreated")
-     * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
+     * @var integer
+     *
+     * @ORM\Column(name="created_by", type="integer", nullable=true)
      */
-    private $creator;
+    private $createdBy;
 
     /**
      * @var \DateTime
@@ -335,10 +337,11 @@ class Client
     private $modifiedAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientmodified")
-     * @ORM\JoinColumn(name="modified_by", referencedColumnName="id")
+     * @var integer
+     *
+     * @ORM\Column(name="modified_by", type="integer", nullable=true)
      */
-    private $modifier;
+    private $modifiedBy;
 
     /**
      * @var integer
@@ -380,15 +383,9 @@ class Client
      */
     private $utilityproviders;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Problem", mappedBy="client")
-     */
-    private $problems;
-
     public function __construct()
     {
         $this->utilityproviders = new ArrayCollection();
-        $this->problems = new ArrayCollection();
     }
 
     /**
@@ -1567,10 +1564,10 @@ class Client
     /**
      * Add utilityproviders
      *
-     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
+     * @param \JCSGYK\DbimportBundle\Entity\Utilityprovider $utilityproviders
      * @return Client
      */
-    public function addUtilityproviderid(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
+    public function addUtilityproviderid(\JCSGYK\DbimportBundle\Entity\Utilityprovider $utilityproviders)
     {
         $this->utilityproviders[] = $utilityproviders;
 
@@ -1580,9 +1577,9 @@ class Client
     /**
      * Remove utilityproviders
      *
-     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
+     * @param \JCSGYK\DbimportBundle\Entity\Utilityprovider $utilityproviders
      */
-    public function removeUtilityproviderid(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
+    public function removeUtilityproviderid(\JCSGYK\DbimportBundle\Entity\Utilityprovider $utilityproviders)
     {
         $this->utilityproviderids->removeElement($utilityproviders);
     }
@@ -1598,35 +1595,12 @@ class Client
     }
 
     /**
-     * Set creator
-     *
-     * @param \JCSGYK\AdminBundle\Entity\User $creator
-     * @return Client
-     */
-    public function setCreator(\JCSGYK\AdminBundle\Entity\User $creator = null)
-    {
-        $this->creator = $creator;
-
-        return $this;
-    }
-
-    /**
-     * Get creator
-     *
-     * @return \JCSGYK\AdminBundle\Entity\User
-     */
-    public function getCreator()
-    {
-        return $this->creator;
-    }
-
-    /**
      * Add utilityproviders
      *
-     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
+     * @param \JCSGYK\DbimportBundle\Entity\Utilityprovider $utilityproviders
      * @return Client
      */
-    public function addUtilityprovider(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
+    public function addUtilityprovider(\JCSGYK\DbimportBundle\Entity\Utilityprovider $utilityproviders)
     {
         $this->utilityproviders[] = $utilityproviders;
 
@@ -1636,43 +1610,22 @@ class Client
     /**
      * Remove utilityproviders
      *
-     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
+     * @param \JCSGYK\DbimportBundle\Entity\Utilityprovider $utilityproviders
      */
-    public function removeUtilityprovider(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
+    public function removeUtilityprovider(\JCSGYK\DbimportBundle\Entity\Utilityprovider $utilityproviders)
     {
         $this->utilityproviders->removeElement($utilityproviders);
     }
 
-    /**
-     * Set modifier
-     *
-     * @param \JCSGYK\AdminBundle\Entity\User $modifier
-     * @return Client
-     */
-    public function setModifier(\JCSGYK\AdminBundle\Entity\User $modifier = null)
-    {
-        $this->modifier = $modifier;
 
-        return $this;
-    }
-
-    /**
-     * Get modifier
-     *
-     * @return \JCSGYK\AdminBundle\Entity\User
-     */
-    public function getModifier()
-    {
-        return $this->modifier;
-    }
 
     /**
      * Set caseAdmin
      *
-     * @param \JCSGYK\AdminBundle\Entity\User $caseAdmin
+     * @param integer $caseAdmin
      * @return Client
      */
-    public function setCaseAdmin(\JCSGYK\AdminBundle\Entity\User $caseAdmin = null)
+    public function setCaseAdmin($caseAdmin)
     {
         $this->caseAdmin = $caseAdmin;
 
@@ -1682,43 +1635,10 @@ class Client
     /**
      * Get caseAdmin
      *
-     * @return \JCSGYK\AdminBundle\Entity\User
+     * @return integer
      */
     public function getCaseAdmin()
     {
         return $this->caseAdmin;
-    }
-
-    /**
-     * Add problems
-     *
-     * @param \JCSGYK\AdminBundle\Entity\Problem $problems
-     * @return Client
-     */
-    public function addProblem(\JCSGYK\AdminBundle\Entity\Problem $problems)
-    {
-        $this->problems[] = $problems;
-    
-        return $this;
-    }
-
-    /**
-     * Remove problems
-     *
-     * @param \JCSGYK\AdminBundle\Entity\Problem $problems
-     */
-    public function removeProblem(\JCSGYK\AdminBundle\Entity\Problem $problems)
-    {
-        $this->problems->removeElement($problems);
-    }
-
-    /**
-     * Get problems
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getProblems()
-    {
-        return $this->problems;
     }
 }

@@ -8,18 +8,21 @@ use Symfony\Component\HttpFoundation\Response;
 class MenuController extends Controller
 {
     protected $menu = [
-        ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'IS_AUTHENTICATED_FULLY', 'bgpos' => '-120px -6px'],
-//       ['route' => 'new_client', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE', 'bgpos' => '-200px -166px'],
+        ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'IS_AUTHENTICATED_FULLY'],
+//       ['route' => 'new_client', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE'],
 
-        ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN', 'bgpos' => '-241px -166px'],
-        ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN', 'bgpos' => '-520px -326px'],
-        ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPERADMIN', 'bgpos' => '-160px -246px'],
+        ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
+        ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN'],
     ];
 
     public function mainAction()
     {
+        // add the db import menu only for the dev enver
+        if ('dev' == $this->container->getParameter('kernel.environment')) {
+            $this->menu[] = ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPERADMIN'];
+        }
+
         $router = $this->get("router");
-        $this->setActivePath();
         $user_menu = $this->checkMenu();
 
         return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', ['menu' => $user_menu]);
@@ -27,15 +30,26 @@ class MenuController extends Controller
 
     /**
      * Filters the menu with the user rights
-     * @return type
+     * Finds the active path, and sets it the class
+     * Adds extra classes for admin role menu items
+     * @return array Menu
      */
     protected function checkMenu()
     {
+        $router = $this->get("router");
+        $r = $router->match($this->getRequest()->getPathInfo());
         $sec = $this->get('security.context');
 
         $user_menu = [];
-
         foreach ($this->menu as $m) {
+            $class_list = [];
+            if (!empty($r['_route']) && $m['route'] == $r['_route']) {
+                $class_list[] = 'current';
+            }
+            if (in_array($m['role'], ['ROLE_ADMIN', 'ROLE_SUPERADMIN'])) {
+                $class_list[] = 'adm-menu';
+            }
+            $m['class'] = implode(' ', $class_list);
             if ($sec->isGranted($m['role'])) {
                 $user_menu[] = $m;
             }
@@ -45,6 +59,8 @@ class MenuController extends Controller
     }
 
     /**
+     * TODO: Remove this, no longer needed
+     *
      * Redirects the user based on her roles (assistance, user or admin)
      */
     public function loginRedirectorAction()
@@ -66,6 +82,8 @@ class MenuController extends Controller
     }
 
     /**
+     * TODO: Remove this, no longer needed
+     *
      * Renders the breadcrumb element
      */
     public function breadcrumbAction()
@@ -82,24 +100,8 @@ class MenuController extends Controller
     }
 
     /**
-     * Finds the active path, and sets it in $this->menu
-     */
-    protected function setActivePath()
-    {
-        $router = $this->get("router");
-        $r = $router->match($this->getRequest()->getPathInfo());
-        if (!empty($r['_route'])) {
-            $route = $r['_route'];
-
-            foreach ($this->menu as $mkey => $m) {
-                if ($m['route'] == $route) {
-                    $this->menu[$mkey]['active'] = 1;
-                }
-            }
-        }
-    }
-
-    /**
+     * TODO: Remove this, no longer needed
+     *
      * Finds the given route in the menu recursively
      *
      * @param string $route the route to find

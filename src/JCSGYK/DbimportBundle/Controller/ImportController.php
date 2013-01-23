@@ -3,10 +3,12 @@
 namespace JCSGYK\DbimportBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use JCSGYK\AdminBundle\Entity\Client;
-use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use JCSGYK\AdminBundle\Entity\User;
-use JCSGYK\AdminBundle\Entity\Problem;
+use JCSGYK\DbimportBundle\Entity\Client;
+use JCSGYK\DbimportBundle\Entity\Utilityprovider;
+use JCSGYK\DbimportBundle\Entity\Problem;
+use JCSGYK\DbimportBundle\Entity\TmpIdmap;
+use JCSGYK\DbimportBundle\Entity\Debt;
 
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
@@ -36,7 +38,7 @@ class ImportController extends Controller
                 $results['client'] = $this->importClient($limit);
             }
             if ('problem' == $table || 'all' == $table || 'problem100' == $table) {
-                $limit = 'problem100' == $table ? 100 : 0;
+                $limit = 'problem100' == $table ? 300 : 0;
 
                 $results['problem'] = $this->importProblem($limit);
             }
@@ -68,15 +70,16 @@ class ImportController extends Controller
         $problems = $db->fetchAll($sql);
 
         //var_dump($problems);
+        $id_map = $this->getIdMap();
 
         $field_map = [
             'Id' => 'Problem_ID',
             'ClientId' => 'Person_ID',
             'Title' => 'Title',
-            'Desciption' => 'Desciption',
-            'UserProb' => 'UserProb',
+            'Description' => 'Desciption',
+            'Type' => 'UserProb',
             'Level' => 'ProblemLevel',
-            'Status' => 'Status',
+            'IsActive' => 'Status',
             'CreatedAt' => 'CreatedOn',
             'CreatedBy' => 'CreatedBy_ID',
             'ModifiedAt' => 'ModifiedOn',
@@ -90,8 +93,10 @@ class ImportController extends Controller
         ];
 
         $date_fields = ['CreatedAt', 'ModifiedAt', 'ClosedAt'];
+        $user_fields = ['CreatedBy', 'ModifiedBy', 'OpenedBy', 'AssignedTo', 'ClosedBy'];
 
         $this->truncate('problem');
+        $this->truncate('debt');
 
         $em = $this->getDoctrine()->getManager();
 
@@ -105,10 +110,25 @@ class ImportController extends Controller
                 if (in_array($to, $date_fields)) {
                     $val = $this->getDate($imp[$from]);
                 }
+                // user id remap
+                elseif (in_array($to, $user_fields)) {
+                    $val = isset($id_map[$imp[$from]]) ? $id_map[$imp[$from]] : null;
+                }
+                elseif ('Type' == $to) {
+                    $val =  $this->convertId('ProblemType', $imp[$from]);
+                }
+                elseif ('IsActive' == $to) {
+                    $val = $imp[$from] == 1 ? 1 : 0;
+                }
+                // description
+                elseif ('Description' == $to) {
+                    $val = str_replace('Ügyfél által hozott probléma részletes leírása...', '', $this->conv($imp[$from]));
+                }
                 // everything else
                 else {
                     $val = $this->conv($imp[$from]);
                 }
+
 
                 // set the value in the entity
                 $p->$setter($val);
@@ -117,6 +137,8 @@ class ImportController extends Controller
 
             // manage the object
             $em->persist($p);
+
+            $this->saveDebts($imp);
 
             // save the entities to the DB
             if ($em->getUnitOfWork()->size() >= 100) {
@@ -131,6 +153,35 @@ class ImportController extends Controller
         return $n;
     }
 
+    protected function saveDebts($problem)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $utility_id_fields = [
+            'dhJVK' => 7,
+            'dhElmu' => 4,
+            'dhFoGaz' => 3,
+            'dhFotav' => 5,
+            'dhDijbeszedo' => 6,
+            'dhKozos' => 49,
+        ];
+
+        foreach ($utility_id_fields as $field => $type) {
+            $reg_field = $field . '_1';
+            $man_field = $field . '_2';
+
+            if (!empty($problem[$reg_field]) || !empty($problem[$man_field])) {
+                $debt = new Debt();
+                $debt->setProblemId($problem['Problem_ID']);
+                $debt->setRegisteredDebt(trim($problem[$reg_field]));
+                $debt->setManagedDebt(trim($problem[$man_field]));
+                $debt->setType($type);
+                $debt->setIsActive(true);
+
+                $em->persist($debt);
+            }
+        }
+    }
+
     /**
      * Import the users from the old DB
      * @param int $limit
@@ -142,17 +193,19 @@ class ImportController extends Controller
         $n = 0;
         // get users from old sqlite db
         $db = $this->get('doctrine.dbal.csaszir_connection');
-        $sql = "SELECT p.Name1, p.Name2, p.Email, u.* FROM Clients p, Users u WHERE Client_ID = PJFIG";
+        $sql = "SELECT p.Name1, p.Name2, p.Email, u.* FROM Persons p, Users u WHERE Person_ID = PJFIG";
         if ($limit) {
             $sql .= ' LIMIT ' . $limit;
         }
         $csaszir_users = $db->fetchAll($sql);
 
         $userManager = $this->container->get('fos_user.user_manager');
+        $em = $this->getDoctrine()->getManager();
 
         $this->truncate('admin_user');
+        $this->truncate('_tmp_idmap');
+
         // add the superadmin
-        //$user = $userManager->createUser();
         $user = new User('8monh30zxj404wggc48gsg840sk088k');
         $user->setUsername('bence');
         $user->setPassword('tknMFBTjss49Q4QeXpslTbKJptBGMGknSRsCfCCsrUqtB8PTk1BviF1J5qehhHwlvCJ5JEtQYAA3qGurfv4ylw==');
@@ -176,43 +229,19 @@ class ImportController extends Controller
             $user->setLastname($this->conv($csaszir_user['Name1']));
             $userManager->updateUser($user);
 
-            $this->user_id_map[$csaszir_user['PJFIG']] = $user->getId();
+            // save id map
+            $idmap = new TmpIdmap();
+            $idmap->setUserId($user->getId());
+            $idmap->setOldId($csaszir_user['PJFIG']);
+            $em->persist($idmap);
 
             $n++;
         }
 
-        // update the old user ids in the other tables
-        if ('all' == $table) {
-            $this->updateUserIds();
-        }
+        $em->flush();
+        $em->clear();
 
         return $n;
-    }
-
-    /**
-     * Update the old user ids in the other tables
-     */
-    protected function updateUserIds()
-    {
-        foreach ($this->user_id_map as $old_id => $new_id) {
-            $db = $this->get('doctrine.dbal.default_connection');
-            // update the client table
-            $sql = "UPDATE client SET created_by={$new_id} WHERE created_by={$old_id}";
-            $db->query($sql);
-
-            $sql = "UPDATE client SET modified_by={$new_id} WHERE modified_by={$old_id}";
-            $db->query($sql);
-
-            // problems
-            $sql = "UPDATE problem SET created_by={$new_id} WHERE created_by={$old_id}";
-            $db->query($sql);
-            $sql = "UPDATE problem SET modified_by={$new_id} WHERE modified_by={$old_id}";
-            $db->query($sql);
-            $sql = "UPDATE problem SET closed_by={$new_id} WHERE closed_by={$old_id}";
-            $db->query($sql);
-
-            // TODO: update event tables as well!
-        }
     }
 
     /**
@@ -225,6 +254,8 @@ class ImportController extends Controller
     protected function importClient($limit = 100)
     {
         $n = 0;
+
+        $id_map = $this->getIdMap();
 
         $field_map = [
             'Id' => 'Person_ID',
@@ -276,6 +307,7 @@ class ImportController extends Controller
         ];
 
         $date_fields = ['BirthDate', 'CreatedAt', 'ModifiedAt'];
+        $user_fields = ['CreatedBy', 'ModifiedBy', 'OpenedBy'];
         $titles = [1 => '', 2 => 'dr.', 3 => 'özv.', 4 => 'id.', 5=> 'ifj.'];
         $phone_fields = ['Mobile', 'Phone', 'Fax'];
 
@@ -301,6 +333,10 @@ class ImportController extends Controller
                 // check and convert date fields
                 if (in_array($to, $date_fields)) {
                     $val = $this->getDate($imp[$from]);
+                }
+                // user id remap
+                elseif (in_array($to, $user_fields)) {
+                    $val = isset($id_map[$imp[$from]]) ? $id_map[$imp[$from]] : null;
                 }
                 // mobile and phone numbers
                 elseif (in_array($to, $phone_fields)) {
@@ -383,6 +419,20 @@ class ImportController extends Controller
         $em->flush();
 
         return $n;
+    }
+
+    protected function getIdMap()
+    {
+        $map = [];
+        $res = $this->getDoctrine()->getManager()
+            ->createQuery('SELECT p FROM JCSGYKDbimportBundle:TmpIdmap p')
+            ->getArrayResult();
+
+        foreach($res as $r) {
+            $map[$r['oldId']] = $r['userId'];
+        }
+
+        return $map;
     }
 
     protected function setUtilityproviders(Client &$client, $imp)
@@ -527,6 +577,21 @@ class ImportController extends Controller
                 4 => 33,
                 5 => 34,
                 6 => 35
+            ],
+            'ProblemType' => [
+                2 => 36,
+                3 => 37,
+                4 => 38,
+                5 => 39,
+                6 => 40,
+                7 => 41,
+                8 => 42,
+                9 => 43,
+                10 => 44,
+                11 => 45,
+                12 => 46,
+                13 => 47,
+                14 => 48
             ],
         ];
 

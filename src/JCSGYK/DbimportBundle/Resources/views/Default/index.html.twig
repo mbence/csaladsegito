@@ -6,7 +6,18 @@
 <br>
 <form action="" method="POST" name="start">
     <dl class="import_controls">
-        <dt>Client</dt>
+
+        <dt>1) User</dt>
+        <dd>
+            <button type="submit" name="import" value="user10" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 10 &nbsp;</button>
+            &nbsp;&nbsp;
+            <button type="submit" name="import" value="user" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+            {% if results.user is defined %}
+                Succesfully imported {{ results.user }}
+            {% endif %}
+        </dd>
+
+        <dt>2) Client</dt>
         <dd>
             <button type="submit" name="import" value="client100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
             &nbsp;&nbsp;
@@ -16,7 +27,7 @@
             {% endif %}
         </dd>
 
-        <dt>Problem</dt>
+        <dt>3) Problem</dt>
         <dd>
             <button type="submit" name="import" value="problem100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
             &nbsp;&nbsp;
@@ -26,18 +37,9 @@
             {% endif %}
         </dd>
 
-        <dt>User</dt>
-        <dd>
-            <button type="submit" name="import" value="user10" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 10 &nbsp;</button>
-            &nbsp;&nbsp;
-            <button type="submit" name="import" value="user" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
-            {% if results.user is defined %}
-                Succesfully imported {{ results.user }}
-            {% endif %}
-        </dd>
     </dl>
     <div class="clear"></div>
     <br>
-    <button type="submit" name="import" value="all" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import All Tables</button>
+<!--    <button type="submit" name="import" value="all" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import All Tables</button> -->
 </form>
 {% endblock %}

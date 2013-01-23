@@ -22,7 +22,6 @@ class AppKernel extends Kernel
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new JCSGYK\AdminBundle\JCSGYKAdminBundle(),
             new FOS\UserBundle\FOSUserBundle(),
-            new JCSGYK\DbimportBundle\JCSGYKDbimportBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
@@ -32,6 +31,7 @@ class AppKernel extends Kernel
         }
 
         if ('dev' == $this->getEnvironment()) {
+            $bundles[] = new JCSGYK\DbimportBundle\JCSGYKDbimportBundle();
             $bundles[] = new MBence\LivePHPBundle\LivePHPBundle();
         }
 

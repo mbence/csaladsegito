@@ -1,0 +1,18 @@
+TmpIdmap:
+    type: entity
+    table: _tmp_idmap
+    fields:
+        userId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: user_id
+            generator:
+                strategy: IDENTITY
+        oldId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: old_id
+    lifecycleCallbacks: {  }

@@ -1,6 +1,6 @@
 <?php
 
-namespace JCSGYK\AdminBundle\Entity;
+namespace JCSGYK\DbimportBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -17,17 +17,15 @@ class Problem
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
-     * @var \Client
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="Client", inversedBy="problems")
-     * @ORM\JoinColumn(name="client_id", referencedColumnName="id")
+     * @ORM\Column(name="client_id", type="integer", nullable=false)
      */
-    private $client;
+    private $clientId;
 
     /**
      * @var string
@@ -155,6 +153,29 @@ class Problem
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set clientId
+     *
+     * @param integer $clientId
+     * @return Problem
+     */
+    public function setClientId($clientId)
+    {
+        $this->clientId = $clientId;
+
+        return $this;
+    }
+
+    /**
+     * Get clientId
+     *
+     * @return integer
+     */
+    public function getClientId()
+    {
+        return $this->clientId;
     }
 
     /**
@@ -480,29 +501,6 @@ class Problem
     }
 
     /**
-     * Set client
-     *
-     * @param \JCSGYK\AdminBundle\Entity\Client $client
-     * @return Problem
-     */
-    public function setClient(\JCSGYK\AdminBundle\Entity\Client $client = null)
-    {
-        $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * Get client
-     *
-     * @return \JCSGYK\AdminBundle\Entity\Client
-     */
-    public function getClient()
-    {
-        return $this->client;
-    }
-
-    /**
      * Set isActive
      *
      * @param integer $isActive
@@ -511,14 +509,14 @@ class Problem
     public function setIsActive($isActive)
     {
         $this->isActive = $isActive;
-    
+
         return $this;
     }
 
     /**
      * Get isActive
      *
-     * @return integer 
+     * @return integer
      */
     public function getIsActive()
     {
