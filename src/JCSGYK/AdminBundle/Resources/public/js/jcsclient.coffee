@@ -3,12 +3,18 @@
 ###
 JcsClient =
     init: ->
-        $(".togglable").prepend("<span></span>").on "click", ->
+        $(".togglable").prepend("<span></span>").on "click", (event) ->
             if $(this).next().is(":visible")
-                $(this).next().hide()
+                if event.isTrigger?
+                    $(this).next().hide()
+                else
+                    $(this).next().slideUp(200, 'linear')
                 $("span", this).addClass("collapsed")
             else
-                $(this).next().show()
+                if event.isTrigger?
+                    $(this).next().show()
+                else
+                    $(this).next().slideDown(200, 'linear')
                 $("span", this).removeClass("collapsed")
             JcsClient.saveToggles()
 
@@ -16,7 +22,6 @@ JcsClient =
         coo = JSON.parse($.cookie('jcsgyk'))
         n = 0
         $("#clientblock .togglable").each ->
-            console.log coo.toggles[n]
             if coo.toggles[n]
                 $(this).click()
             n++

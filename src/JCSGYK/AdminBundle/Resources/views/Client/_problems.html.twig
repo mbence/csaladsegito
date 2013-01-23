@@ -1,16 +1,18 @@
 {# Problems #}
 <div class="client-sub togglable">{{ 'problémák'|trans }}</div>
-<table class="client problem-list" cellspacing="0" border="0">
-    <tr>
-        <th>Cím</th>
-        <th>Felelős</th>
-        <th>Állapot</th>
-    </tr>
-    {% for problem in client.getproblems %}
-    <tr>
-        <td>{{ problem.title }}</td>
-        <td>{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}</td>
-        <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
-    </tr>
-    {% endfor %}
-</table>
+<div>
+    <table class="client problem-list" cellspacing="0" border="0">
+        <tr>
+            <th>Cím</th>
+            <th>Felelős</th>
+            <th>Állapot</th>
+        </tr>
+        {% for problem in client.getproblems %}
+        <tr>
+            <td>{{ problem.title }}</td>
+            <td>{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}</td>
+            <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
