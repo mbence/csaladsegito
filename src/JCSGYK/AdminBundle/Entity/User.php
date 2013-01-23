@@ -61,6 +61,10 @@ class User extends BaseUser
         if (!is_null($salt)) {
             $this->salt = $salt;
         }
+
+        $this->clientCaseAdmin = new ArrayCollection();
+        $this->clientcreated = new ArrayCollection();
+        $this->clientmodified = new ArrayCollection();
     }
 
     /**

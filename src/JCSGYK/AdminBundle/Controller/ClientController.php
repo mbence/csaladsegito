@@ -42,7 +42,11 @@ class ClientController extends Controller
                 throw new HttpException(400, "Bad request");
             }
 
-            var_dump($client->getProblems()->toArray());
+            $problems = $client->getProblems();
+            if (!empty($problems)) {
+                var_dump($problems[0]->getDebts()->toArray());
+            }
+
 
             return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'type' => $search_type]);
         }

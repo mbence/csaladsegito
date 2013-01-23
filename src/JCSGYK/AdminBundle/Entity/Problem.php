@@ -72,11 +72,10 @@ class Problem
     private $createdAt;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="created_by", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
-    private $createdBy;
+    private $creator;
 
     /**
      * @var \DateTime
@@ -86,25 +85,22 @@ class Problem
     private $modifiedAt;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="modified_by", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="modified_by", referencedColumnName="id")
      */
-    private $modifiedBy;
+    private $modifier;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="assigned_to", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="assigned_to", referencedColumnName="id")
      */
-    private $assignedTo;
+    private $assignee;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="closed_by", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="closed_by", referencedColumnName="id")
      */
-    private $closedBy;
+    private $closer;
 
     /**
      * @var \DateTime
@@ -121,11 +117,10 @@ class Problem
     private $closeCode;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="opened_by", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="opened_by", referencedColumnName="id")
      */
-    private $openedBy;
+    private $opener;
 
     /**
      * @var string
@@ -135,22 +130,19 @@ class Problem
     private $attachment;
 
     /**
-     * Set id
-     *
-     * @param integer $id
-     * @return Problem
+     * @ORM\OneToMany(targetEntity="Debt", mappedBy="problem")
      */
-    public function setId($id)
-    {
-        $this->id = $id;
+    private $debts;
 
-        return $this;
+    public function __construct()
+    {
+        $this->debts = new ArrayCollection();
     }
 
     /**
      * Get id
      *
-     * @return integer
+     * @return integer 
      */
     public function getId()
     {
@@ -166,14 +158,14 @@ class Problem
     public function setTitle($title)
     {
         $this->title = $title;
-
+    
         return $this;
     }
 
     /**
      * Get title
      *
-     * @return string
+     * @return string 
      */
     public function getTitle()
     {
@@ -189,14 +181,14 @@ class Problem
     public function setDescription($description)
     {
         $this->description = $description;
-
+    
         return $this;
     }
 
     /**
      * Get description
      *
-     * @return string
+     * @return string 
      */
     public function getDescription()
     {
@@ -212,14 +204,14 @@ class Problem
     public function setType($type)
     {
         $this->type = $type;
-
+    
         return $this;
     }
 
     /**
      * Get type
      *
-     * @return integer
+     * @return integer 
      */
     public function getType()
     {
@@ -235,271 +227,18 @@ class Problem
     public function setLevel($level)
     {
         $this->level = $level;
-
+    
         return $this;
     }
 
     /**
      * Get level
      *
-     * @return integer
+     * @return integer 
      */
     public function getLevel()
     {
         return $this->level;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Problem
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set createdBy
-     *
-     * @param integer $createdBy
-     * @return Problem
-     */
-    public function setCreatedBy($createdBy)
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    /**
-     * Get createdBy
-     *
-     * @return integer
-     */
-    public function getCreatedBy()
-    {
-        return $this->createdBy;
-    }
-
-    /**
-     * Set modifiedAt
-     *
-     * @param \DateTime $modifiedAt
-     * @return Problem
-     */
-    public function setModifiedAt($modifiedAt)
-    {
-        $this->modifiedAt = $modifiedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get modifiedAt
-     *
-     * @return \DateTime
-     */
-    public function getModifiedAt()
-    {
-        return $this->modifiedAt;
-    }
-
-    /**
-     * Set modifiedBy
-     *
-     * @param integer $modifiedBy
-     * @return Problem
-     */
-    public function setModifiedBy($modifiedBy)
-    {
-        $this->modifiedBy = $modifiedBy;
-
-        return $this;
-    }
-
-    /**
-     * Get modifiedBy
-     *
-     * @return integer
-     */
-    public function getModifiedBy()
-    {
-        return $this->modifiedBy;
-    }
-
-    /**
-     * Set assignedTo
-     *
-     * @param integer $assignedTo
-     * @return Problem
-     */
-    public function setAssignedTo($assignedTo)
-    {
-        $this->assignedTo = $assignedTo;
-
-        return $this;
-    }
-
-    /**
-     * Get assignedTo
-     *
-     * @return integer
-     */
-    public function getAssignedTo()
-    {
-        return $this->assignedTo;
-    }
-
-    /**
-     * Set closedBy
-     *
-     * @param integer $closedBy
-     * @return Problem
-     */
-    public function setClosedBy($closedBy)
-    {
-        $this->closedBy = $closedBy;
-
-        return $this;
-    }
-
-    /**
-     * Get closedBy
-     *
-     * @return integer
-     */
-    public function getClosedBy()
-    {
-        return $this->closedBy;
-    }
-
-    /**
-     * Set closedAt
-     *
-     * @param \DateTime $closedAt
-     * @return Problem
-     */
-    public function setClosedAt($closedAt)
-    {
-        $this->closedAt = $closedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get closedAt
-     *
-     * @return \DateTime
-     */
-    public function getClosedAt()
-    {
-        return $this->closedAt;
-    }
-
-    /**
-     * Set closeCode
-     *
-     * @param integer $closeCode
-     * @return Problem
-     */
-    public function setCloseCode($closeCode)
-    {
-        $this->closeCode = $closeCode;
-
-        return $this;
-    }
-
-    /**
-     * Get closeCode
-     *
-     * @return integer
-     */
-    public function getCloseCode()
-    {
-        return $this->closeCode;
-    }
-
-    /**
-     * Set openedBy
-     *
-     * @param integer $openedBy
-     * @return Problem
-     */
-    public function setOpenedBy($openedBy)
-    {
-        $this->openedBy = $openedBy;
-
-        return $this;
-    }
-
-    /**
-     * Get openedBy
-     *
-     * @return integer
-     */
-    public function getOpenedBy()
-    {
-        return $this->openedBy;
-    }
-
-    /**
-     * Set attachment
-     *
-     * @param string $attachment
-     * @return Problem
-     */
-    public function setAttachment($attachment)
-    {
-        $this->attachment = $attachment;
-
-        return $this;
-    }
-
-    /**
-     * Get attachment
-     *
-     * @return string
-     */
-    public function getAttachment()
-    {
-        return $this->attachment;
-    }
-
-    /**
-     * Set client
-     *
-     * @param \JCSGYK\AdminBundle\Entity\Client $client
-     * @return Problem
-     */
-    public function setClient(\JCSGYK\AdminBundle\Entity\Client $client = null)
-    {
-        $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * Get client
-     *
-     * @return \JCSGYK\AdminBundle\Entity\Client
-     */
-    public function getClient()
-    {
-        return $this->client;
     }
 
     /**
@@ -523,5 +262,291 @@ class Problem
     public function getIsActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Problem
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+    
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set modifiedAt
+     *
+     * @param \DateTime $modifiedAt
+     * @return Problem
+     */
+    public function setModifiedAt($modifiedAt)
+    {
+        $this->modifiedAt = $modifiedAt;
+    
+        return $this;
+    }
+
+    /**
+     * Get modifiedAt
+     *
+     * @return \DateTime 
+     */
+    public function getModifiedAt()
+    {
+        return $this->modifiedAt;
+    }
+
+    /**
+     * Set closedAt
+     *
+     * @param \DateTime $closedAt
+     * @return Problem
+     */
+    public function setClosedAt($closedAt)
+    {
+        $this->closedAt = $closedAt;
+    
+        return $this;
+    }
+
+    /**
+     * Get closedAt
+     *
+     * @return \DateTime 
+     */
+    public function getClosedAt()
+    {
+        return $this->closedAt;
+    }
+
+    /**
+     * Set closeCode
+     *
+     * @param integer $closeCode
+     * @return Problem
+     */
+    public function setCloseCode($closeCode)
+    {
+        $this->closeCode = $closeCode;
+    
+        return $this;
+    }
+
+    /**
+     * Get closeCode
+     *
+     * @return integer 
+     */
+    public function getCloseCode()
+    {
+        return $this->closeCode;
+    }
+
+    /**
+     * Set attachment
+     *
+     * @param string $attachment
+     * @return Problem
+     */
+    public function setAttachment($attachment)
+    {
+        $this->attachment = $attachment;
+    
+        return $this;
+    }
+
+    /**
+     * Get attachment
+     *
+     * @return string 
+     */
+    public function getAttachment()
+    {
+        return $this->attachment;
+    }
+
+    /**
+     * Set client
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $client
+     * @return Problem
+     */
+    public function setClient(\JCSGYK\AdminBundle\Entity\Client $client = null)
+    {
+        $this->client = $client;
+    
+        return $this;
+    }
+
+    /**
+     * Get client
+     *
+     * @return \JCSGYK\AdminBundle\Entity\Client 
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * Set creator
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $creator
+     * @return Problem
+     */
+    public function setCreator(\JCSGYK\AdminBundle\Entity\User $creator = null)
+    {
+        $this->creator = $creator;
+    
+        return $this;
+    }
+
+    /**
+     * Get creator
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User 
+     */
+    public function getCreator()
+    {
+        return $this->creator;
+    }
+
+    /**
+     * Set modifier
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $modifier
+     * @return Problem
+     */
+    public function setModifier(\JCSGYK\AdminBundle\Entity\User $modifier = null)
+    {
+        $this->modifier = $modifier;
+    
+        return $this;
+    }
+
+    /**
+     * Get modifier
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User 
+     */
+    public function getModifier()
+    {
+        return $this->modifier;
+    }
+
+    /**
+     * Set assignee
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $assignee
+     * @return Problem
+     */
+    public function setAssignee(\JCSGYK\AdminBundle\Entity\User $assignee = null)
+    {
+        $this->assignee = $assignee;
+    
+        return $this;
+    }
+
+    /**
+     * Get assignee
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User 
+     */
+    public function getAssignee()
+    {
+        return $this->assignee;
+    }
+
+    /**
+     * Set closer
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $closer
+     * @return Problem
+     */
+    public function setCloser(\JCSGYK\AdminBundle\Entity\User $closer = null)
+    {
+        $this->closer = $closer;
+    
+        return $this;
+    }
+
+    /**
+     * Get closer
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User 
+     */
+    public function getCloser()
+    {
+        return $this->closer;
+    }
+
+    /**
+     * Set opener
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $opener
+     * @return Problem
+     */
+    public function setOpener(\JCSGYK\AdminBundle\Entity\User $opener = null)
+    {
+        $this->opener = $opener;
+    
+        return $this;
+    }
+
+    /**
+     * Get opener
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User 
+     */
+    public function getOpener()
+    {
+        return $this->opener;
+    }
+
+    /**
+     * Add debts
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Debt $debts
+     * @return Problem
+     */
+    public function addDebt(\JCSGYK\AdminBundle\Entity\Debt $debts)
+    {
+        $this->debts[] = $debts;
+    
+        return $this;
+    }
+
+    /**
+     * Remove debts
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Debt $debts
+     */
+    public function removeDebt(\JCSGYK\AdminBundle\Entity\Debt $debts)
+    {
+        $this->debts->removeElement($debts);
+    }
+
+    /**
+     * Get debts
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getDebts()
+    {
+        return $this->debts;
     }
 }

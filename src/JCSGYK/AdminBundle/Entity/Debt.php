@@ -22,11 +22,12 @@ class Debt
     private $id;
 
     /**
-     * @var integer
+     * @var \Problem
      *
-     * @ORM\Column(name="problem_id", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Problem", inversedBy="debts")
+     * @ORM\JoinColumn(name="problem_id", referencedColumnName="id")
      */
-    private $problemId;
+    private $problem;
 
     /**
      * @var integer
@@ -66,29 +67,6 @@ class Debt
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set problemId
-     *
-     * @param integer $problemId
-     * @return Debt
-     */
-    public function setProblemId($problemId)
-    {
-        $this->problemId = $problemId;
-
-        return $this;
-    }
-
-    /**
-     * Get problemId
-     *
-     * @return integer
-     */
-    public function getProblemId()
-    {
-        return $this->problemId;
     }
 
     /**
@@ -181,5 +159,28 @@ class Debt
     public function getIsActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * Set problem
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Problem $problem
+     * @return Debt
+     */
+    public function setProblem(\JCSGYK\AdminBundle\Entity\Problem $problem = null)
+    {
+        $this->problem = $problem;
+    
+        return $this;
+    }
+
+    /**
+     * Get problem
+     *
+     * @return \JCSGYK\AdminBundle\Entity\Problem 
+     */
+    public function getProblem()
+    {
+        return $this->problem;
     }
 }
