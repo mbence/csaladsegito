@@ -19,7 +19,6 @@ JcsClient =
             console.log coo.toggles[n]
             if coo.toggles[n]
                 $(this).click()
-#                $(this).addClass("collapsed")
             n++
 
 
