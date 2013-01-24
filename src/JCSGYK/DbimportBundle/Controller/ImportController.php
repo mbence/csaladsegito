@@ -32,6 +32,11 @@ class ImportController extends Controller
 
             $table = $request->get('import');
 
+            if ('user' == $table || 'all' == $table || 'user10' == $table) {
+                $limit = 'user10' == $table ? 10 : 0;
+
+                $results['user'] = $this->importUser($limit, $table);
+            }
             if ('client' == $table || 'all' == $table || 'client100' == $table) {
                 $limit = 'client100' == $table ? 100 : 0;
 
@@ -42,10 +47,10 @@ class ImportController extends Controller
 
                 $results['problem'] = $this->importProblem($limit);
             }
-            if ('user' == $table || 'all' == $table || 'user10' == $table) {
-                $limit = 'user10' == $table ? 10 : 0;
+            if ('caseadmin' == $table || 'all' == $table || 'caseadmin100' == $table) {
+                $limit = 'caseadmin100' == $table ? 100 : 0;
 
-                $results['user'] = $this->importUser($limit, $table);
+                $results['caseadmin'] = $this->setCaseadmins($limit);
             }
 
             $session->set('results', $results);
@@ -56,6 +61,51 @@ class ImportController extends Controller
         $session->remove('results');
 
         return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);
+    }
+
+    protected function setCaseadmins($limit = 100)
+    {
+        $n = 0;
+        // get the clients
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery('SELECT c FROM JCSGYKAdminBundle:Client c');
+        if ($limit) {
+            $query->setMaxResults($limit);
+        }
+        $clients = $query->getResult();
+
+        foreach ($clients as $client) {
+            // find the last family help problem
+            $problem = $em->createQuery("SELECT p FROM JCSGYKAdminBundle:Problem p WHERE p.client=:client AND p.title LIKE '%CSG%' ORDER BY p.createdAt DESC")
+                ->setParameter('client', $client->getId())
+                ->setMaxResults(1)
+                ->getResult();
+            if (empty($problem)) {
+                // no CSG problem, lets use the last one
+                $problem = $em->createQuery("SELECT p FROM JCSGYKAdminBundle:Problem p WHERE p.client=:client ORDER BY p.createdAt DESC")
+                    ->setParameter('client', $client->getId())
+                    ->setMaxResults(1)
+                    ->getResult();
+            }
+
+            $assigned_user = null;
+            if (!empty($problem)) {
+                $assigned_user = $problem[0]->getAssignee();
+                $n++;
+            }
+
+            $client->setCaseadmin($assigned_user);
+            $em->persist($client);
+
+            // save the entities to the DB
+//            if ($n >= 90) {
+//                $em->flush();
+//                $em->clear();
+//            }
+        }
+        $em->flush();
+
+        return $n;
     }
 
     protected function importProblem($limit = 100)

@@ -1,6 +1,10 @@
 {% extends 'JCSGYKAdminBundle::layout.html.twig' %}
 
 {% block content %}
+
+{% stylesheets output='css/dbimport.css' '@JCSGYKDbimportBundle/Resources/public/css/dbimport.css' %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+{% endstylesheets %}
 <h1>DB Import </h1>
 <br>
 <br>
@@ -34,6 +38,16 @@
             <button type="submit" name="import" value="problem" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
             {% if results.problem is defined %}
                 Succesfully imported {{ results.problem }}
+            {% endif %}
+        </dd>
+
+        <dt>4) Case admins</dt>
+        <dd>
+            <button type="submit" name="import" value="caseadmin100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
+            &nbsp;&nbsp;
+            <button type="submit" name="import" value="caseadmin" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+            {% if results.caseadmin is defined %}
+                Succesfully imported {{ results.caseadmin }}
             {% endif %}
         </dd>
 

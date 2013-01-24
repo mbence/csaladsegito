@@ -10,7 +10,7 @@
         {% for problem in client.getproblems %}
         <tr>
             <td>{{ problem.title }}</td>
-            <td>{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}</td>
+            <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
             <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
         </tr>
         {% endfor %}
