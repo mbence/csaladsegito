@@ -76,13 +76,13 @@ class ImportController extends Controller
 
         foreach ($clients as $client) {
             // find the last family help problem
-            $problem = $em->createQuery("SELECT p FROM JCSGYKAdminBundle:Problem p WHERE p.client=:client AND p.title LIKE '%CSG%' ORDER BY p.createdAt DESC")
+            $problem = $em->createQuery("SELECT p FROM JCSGYKAdminBundle:Problem p WHERE p.client=:client AND p.title LIKE '%CSG%' AND p.assignee IS NOT NULL ORDER BY p.createdAt DESC")
                 ->setParameter('client', $client->getId())
                 ->setMaxResults(1)
                 ->getResult();
             if (empty($problem)) {
                 // no CSG problem, lets use the last one
-                $problem = $em->createQuery("SELECT p FROM JCSGYKAdminBundle:Problem p WHERE p.client=:client ORDER BY p.createdAt DESC")
+                $problem = $em->createQuery("SELECT p FROM JCSGYKAdminBundle:Problem p WHERE p.client=:client AND p.assignee IS NOT NULL ORDER BY p.createdAt DESC")
                     ->setParameter('client', $client->getId())
                     ->setMaxResults(1)
                     ->getResult();
