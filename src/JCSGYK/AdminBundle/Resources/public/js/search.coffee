@@ -32,16 +32,26 @@ JcsSearch =
 
             false
         )
+        # init horizontal blocks
+        $("#searchblock").click ->
+            HBlocks.scrollTo(0)
+        $("#clientblock").click ->
+            HBlocks.scrollTo(1)
+        $("#problemblock").click ->
+            HBlocks.scrollTo(2)
 
     qSubmit: ->
         $("#quicksearch").submit();
 
     setupResults: ->
-        $("#search-results tbody tr").click( ->
+        $("#search-results tbody tr").click( (event) ->
+            event.stopPropagation()
             $("#clientblock .loading").show()
             $("#clientblock .clientcontent").hide()
             $("#clientblock").show()
+            $("#problemblock .close").click()
             HBlocks.setBlockSizes()
+            HBlocks.scrollTo(1)
 
             # start the ajax request
             $.post($("#getclientform").attr("action"), {id: $(this).data("userid")}, (data) ->

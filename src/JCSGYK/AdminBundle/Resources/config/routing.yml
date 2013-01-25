@@ -11,11 +11,16 @@ clients:
 client_view:
     pattern:  /clients/view
     defaults: { _controller: JCSGYKAdminBundle:Client:view }
-
-# Assistance #
 new_client:
     pattern:  /clients/new
     defaults: { _controller: JCSGYKAdminBundle:Client:newClient }
+
+# Problem #
+problem_view:
+    pattern:  /problem/view
+    defaults: { _controller: JCSGYKAdminBundle:Problem:view }
+
+# Assistance #
 register_inquiry:
     pattern: /inquiry/new/{type}
     defaults: { _controller: JCSGYKAdminBundle:Assistance:registerInquiry }

@@ -28,7 +28,11 @@
 
             <div id="problemblock" ><div class="leftpad20 fullheight">
                 <div class="close">x</div>
-                problem!
+                <form action="{{ path('problem_view') }}" method="post" name="getproblemform" id="getproblemform">
+                    <input type="hidden" name="id">
+                </form>
+                <div class="loading">Betöltés...</div>
+                <div class="problemcontent"></div>
             </div></div>
         </div>
     </div>

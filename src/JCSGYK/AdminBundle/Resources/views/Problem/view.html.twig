@@ -1,0 +1,18 @@
+<table class="client" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Probléma'|trans }}:</th>
+        <td>{{ problem.title }}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Felelős'|trans }}:</th>
+        <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Jelleg'|trans }}:</th>
+        <td>{{ param(problem.type) }}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Állapot'|trans }}:</th>
+        <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
+    </tr>
+</table>

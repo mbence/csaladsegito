@@ -91,7 +91,7 @@ class Problem
     private $modifier;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
      * @ORM\JoinColumn(name="assigned_to", referencedColumnName="id")
      */
     private $assignee;
@@ -142,7 +142,7 @@ class Problem
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -158,14 +158,14 @@ class Problem
     public function setTitle($title)
     {
         $this->title = $title;
-    
+
         return $this;
     }
 
     /**
      * Get title
      *
-     * @return string 
+     * @return string
      */
     public function getTitle()
     {
@@ -181,14 +181,14 @@ class Problem
     public function setDescription($description)
     {
         $this->description = $description;
-    
+
         return $this;
     }
 
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -204,14 +204,14 @@ class Problem
     public function setType($type)
     {
         $this->type = $type;
-    
+
         return $this;
     }
 
     /**
      * Get type
      *
-     * @return integer 
+     * @return integer
      */
     public function getType()
     {
@@ -227,14 +227,14 @@ class Problem
     public function setLevel($level)
     {
         $this->level = $level;
-    
+
         return $this;
     }
 
     /**
      * Get level
      *
-     * @return integer 
+     * @return integer
      */
     public function getLevel()
     {
@@ -250,14 +250,14 @@ class Problem
     public function setIsActive($isActive)
     {
         $this->isActive = $isActive;
-    
+
         return $this;
     }
 
     /**
      * Get isActive
      *
-     * @return integer 
+     * @return integer
      */
     public function getIsActive()
     {
@@ -273,14 +273,14 @@ class Problem
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
-    
+
         return $this;
     }
 
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -296,14 +296,14 @@ class Problem
     public function setModifiedAt($modifiedAt)
     {
         $this->modifiedAt = $modifiedAt;
-    
+
         return $this;
     }
 
     /**
      * Get modifiedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getModifiedAt()
     {
@@ -319,14 +319,14 @@ class Problem
     public function setClosedAt($closedAt)
     {
         $this->closedAt = $closedAt;
-    
+
         return $this;
     }
 
     /**
      * Get closedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getClosedAt()
     {
@@ -342,14 +342,14 @@ class Problem
     public function setCloseCode($closeCode)
     {
         $this->closeCode = $closeCode;
-    
+
         return $this;
     }
 
     /**
      * Get closeCode
      *
-     * @return integer 
+     * @return integer
      */
     public function getCloseCode()
     {
@@ -365,14 +365,14 @@ class Problem
     public function setAttachment($attachment)
     {
         $this->attachment = $attachment;
-    
+
         return $this;
     }
 
     /**
      * Get attachment
      *
-     * @return string 
+     * @return string
      */
     public function getAttachment()
     {
@@ -388,14 +388,14 @@ class Problem
     public function setClient(\JCSGYK\AdminBundle\Entity\Client $client = null)
     {
         $this->client = $client;
-    
+
         return $this;
     }
 
     /**
      * Get client
      *
-     * @return \JCSGYK\AdminBundle\Entity\Client 
+     * @return \JCSGYK\AdminBundle\Entity\Client
      */
     public function getClient()
     {
@@ -411,14 +411,14 @@ class Problem
     public function setCreator(\JCSGYK\AdminBundle\Entity\User $creator = null)
     {
         $this->creator = $creator;
-    
+
         return $this;
     }
 
     /**
      * Get creator
      *
-     * @return \JCSGYK\AdminBundle\Entity\User 
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
     public function getCreator()
     {
@@ -434,14 +434,14 @@ class Problem
     public function setModifier(\JCSGYK\AdminBundle\Entity\User $modifier = null)
     {
         $this->modifier = $modifier;
-    
+
         return $this;
     }
 
     /**
      * Get modifier
      *
-     * @return \JCSGYK\AdminBundle\Entity\User 
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
     public function getModifier()
     {
@@ -457,14 +457,14 @@ class Problem
     public function setAssignee(\JCSGYK\AdminBundle\Entity\User $assignee = null)
     {
         $this->assignee = $assignee;
-    
+
         return $this;
     }
 
     /**
      * Get assignee
      *
-     * @return \JCSGYK\AdminBundle\Entity\User 
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
     public function getAssignee()
     {
@@ -480,14 +480,14 @@ class Problem
     public function setCloser(\JCSGYK\AdminBundle\Entity\User $closer = null)
     {
         $this->closer = $closer;
-    
+
         return $this;
     }
 
     /**
      * Get closer
      *
-     * @return \JCSGYK\AdminBundle\Entity\User 
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
     public function getCloser()
     {
@@ -503,14 +503,14 @@ class Problem
     public function setOpener(\JCSGYK\AdminBundle\Entity\User $opener = null)
     {
         $this->opener = $opener;
-    
+
         return $this;
     }
 
     /**
      * Get opener
      *
-     * @return \JCSGYK\AdminBundle\Entity\User 
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
     public function getOpener()
     {
@@ -526,7 +526,7 @@ class Problem
     public function addDebt(\JCSGYK\AdminBundle\Entity\Debt $debts)
     {
         $this->debts[] = $debts;
-    
+
         return $this;
     }
 
@@ -543,7 +543,7 @@ class Problem
     /**
      * Get debts
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getDebts()
     {

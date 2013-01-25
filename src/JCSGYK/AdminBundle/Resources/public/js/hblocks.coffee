@@ -19,6 +19,7 @@ HBlocks =
             $("#clientblock").hide()
             $("#clientblock .clientcontent").html("")
             $("#search-results tr").removeClass("current")
+            $("#problemblock .close").click()
             @setBlockSizes()
 
         $("#problemblock .close").click =>
@@ -26,12 +27,17 @@ HBlocks =
             $("#problemblock .clientcontent").html("")
             @setBlockSizes()
 
-    setBlockSizes: ->
+    blockW: ->
         blockW = Math.round(($(window).innerWidth() - 40) * 0.45)
         if blockW < 470
             blockW = 470
         else if blockW > 600
             blockW = 600
+
+        return blockW
+
+    setBlockSizes: ->
+        blockW = @blockW()
 
         # count visible blocks
         blockNum = $(".contentscroller > div:visible").length
@@ -57,3 +63,9 @@ HBlocks =
         $('#problemblock').height(h)
 
         true
+
+    scrollTo: (block) ->
+        blockW = @blockW()
+        x = Math.round(block * blockW - (($("#content").width() - blockW) / 2))
+        $(".contentwrapper").animate({scrollLeft: x}, 500)
+        console.log x

@@ -309,7 +309,7 @@ class Client
     private $ecActivity;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientCaseAdmin")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientCaseAdmin", fetch="EAGER")
      * @ORM\JoinColumn(name="case_admin", referencedColumnName="id")
      */
     private $caseAdmin;
@@ -322,7 +322,7 @@ class Client
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientcreated")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientcreated", fetch="EAGER")
      * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
     private $creator;
@@ -335,7 +335,7 @@ class Client
     private $modifiedAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientmodified")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="clientmodified", fetch="EAGER")
      * @ORM\JoinColumn(name="modified_by", referencedColumnName="id")
      */
     private $modifier;

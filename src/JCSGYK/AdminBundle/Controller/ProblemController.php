@@ -6,25 +6,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 
-class ClientController extends Controller
+class ProblemController extends Controller
 {
-    public function indexAction(Request $request)
-    {
-        return $this->render('JCSGYKAdminBundle:Search:index.html.twig', []);
-    }
-
     public function viewAction(Request $request)
     {
         // only process ajax requests on prod env!
         if ($this->getRequest()->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment')) {
 
             $id = $request->request->get('id');
-            $company_id = $this->container->get('jcs.ds')->getCompanyId();
-            // get client data
-            $client = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')
-                ->findOneBy(['id' => $id, 'companyId' => $company_id]);
+            // get problem data
+            $problem = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')
+                ->find($id);
 
-            return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client]);
+            return $this->render('JCSGYKAdminBundle:Problem:view.html.twig', ['problem' => $problem]);
         }
         else {
             throw new HttpException(400, "Bad request");
