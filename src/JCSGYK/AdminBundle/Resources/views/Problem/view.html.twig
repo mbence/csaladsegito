@@ -1,11 +1,16 @@
+<h1 class="client">&nbsp;</h1>
+
+<table class="client caseowner" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Felelős'|trans }}:</th>
+        <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
+    </tr>
+</table>
+<div class="client-sub first-sub togglable">probléma</div>
 <table class="client" cellspacing="0" border="0">
     <tr>
         <th>{{ 'Probléma'|trans }}:</th>
         <td>{{ problem.title }}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Felelős'|trans }}:</th>
-        <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
     </tr>
     <tr>
         <th>{{ 'Jelleg'|trans }}:</th>
@@ -15,4 +20,15 @@
         <th>{{ 'Állapot'|trans }}:</th>
         <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
     </tr>
+    {% if problem.attachment %}
+        <tr>
+            <th>{{ 'Csatolt dok.'|trans }}:</th>
+            <td>{{ problem.attachment }}</td>
+        </tr>
+    {% endif %}
 </table>
+
+{% include "JCSGYKAdminBundle:Client:_note.html.twig" with {item: problem} %}
+{% include "JCSGYKAdminBundle:Problem:_debt.html.twig" %}
+{% include "JCSGYKAdminBundle:Problem:_close.html.twig" %}
+{% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: problem} %}

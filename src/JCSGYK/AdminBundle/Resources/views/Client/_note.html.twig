@@ -1,5 +1,9 @@
 {# Note #}
 <div class="client-sub togglable">{{ 'megjegyzés'|trans }}</div>
 <div class="client-comment">
-    {{ client.note|nl2br }}
+    {% if item.note is defined %}
+        {{ item.note|nl2br }}
+    {% elseif item.description is defined %}
+        {{ item.description|nl2br }}
+    {% endif %}
 </div>

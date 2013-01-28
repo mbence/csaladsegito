@@ -1,0 +1,17 @@
+{# Close #}
+<div class="client-sub togglable" {% if problem.isActive == 1 %}style="display:none;"{% endif %}>{{ 'lezárás'|trans }}</div>
+<div>
+    {% if problem.isActive == 0 %}
+        <table cellspacing="0" border="0" class="client">
+            <tr>
+                <th>{{ 'Lezárta'|trans }}:</th>
+                <td>{% if problem.closer.firstname is defined %}{{ fname(problem.closer.firstname, problem.closer.lastname) }}{% endif %}</td>
+                <td>({{ fdatetime(problem.closedAt) }})</td>
+            </tr>
+            <tr>
+                <th>{{ 'Lezárás oka'|trans }}:</th>
+                <td colspan="2">{{ problem.closeCode }}</td>
+            </tr>
+        </table>
+    {% endif %}
+</div>

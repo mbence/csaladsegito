@@ -3,28 +3,8 @@
 ###
 JcsClient =
     init: ->
-        $(".togglable").prepend("<span></span>").on "click", (event) ->
-            if $(this).next().is(":visible")
-                if event.isTrigger?
-                    $(this).next().hide()
-                else
-                    $(this).next().slideUp(200, 'linear')
-                $("span", this).addClass("collapsed")
-            else
-                if event.isTrigger?
-                    $(this).next().show()
-                else
-                    $(this).next().slideDown(200, 'linear')
-                $("span", this).removeClass("collapsed")
-            JcsClient.saveToggles()
-
         # init toggles
-        coo = JSON.parse($.cookie('jcsgyk'))
-        n = 0
-        $("#clientblock .togglable").each ->
-            if coo.toggles[n]
-                $(this).click()
-            n++
+        JcsToggle.init("clientblock")
 
         @initProblems()
 
@@ -32,13 +12,16 @@ JcsClient =
 
     initProblems: ->
         $("#showAllProblem").click (event) ->
-            JcsClient.toggleClosed(event)
+            JcsClient.toggleClosed()
+            # save the cookie only if clicked by the user
+            if not event.isTrigger?
+                showCl = if $("#showAllProblem").attr('checked') then 1 else 0
+                JcsOpt.set("shCl", showCl)
 
-        coo = JSON.parse($.cookie("jcsgyk"))
-        coo.shCl ?= 0
+        showClosed = JcsOpt.get("shCl")
         $("#showAllProblem").attr('checked', true)
         # clicking the chekcbox hides the closed problems
-        if not coo.shCl
+        if not showClosed
             $("#showAllProblem").click()
 
         # count closed problems
@@ -51,27 +34,10 @@ JcsClient =
 
         @setupProblems()
 
-    toggleClosed: (event)->
+    toggleClosed: ()->
         $("#problem-list tr").each ->
             if $(this).data("isactive") == 0
                 $(this).toggle()
-        # save the cookie only if clicked by the user
-        if not event.isTrigger?
-            coo = JSON.parse($.cookie("jcsgyk"))
-            coo.shCl = if $("#showAllProblem").attr('checked') then 1 else 0
-            $.cookie("jcsgyk", JSON.stringify(coo), { expires: 365, path: '/' })
-
-    saveToggles: ->
-        tg_status = []
-        n = 0
-        $("#clientblock .togglable span").each ->
-            tg_status[n] = if $(this).hasClass("collapsed") then 1 else 0
-            n++
-
-        coo = JSON.parse($.cookie("jcsgyk"))
-        coo ?= {toggles:[], shCl:0}
-        coo.toggles = tg_status
-        $.cookie("jcsgyk", JSON.stringify(coo), { expires: 365, path: '/' })
 
     setupProblems: ->
         $("#problem-list tbody tr").click( (event) ->
@@ -87,6 +53,7 @@ JcsClient =
                 $.post($("#getproblemform").attr("action"), {id: $(this).data("problemid")}, (data) ->
                     $("#problemblock .loading").hide()
                     $("#problemblock .problemcontent").html(data).show()
+                    JcsToggle.init("problemblock")
                     #JcsClient.init()
                 ).error( (data) ->
                     # there was some error :(

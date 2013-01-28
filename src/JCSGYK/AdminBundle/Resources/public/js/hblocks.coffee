@@ -68,3 +68,6 @@ HBlocks =
         blockW = @blockW()
         x = Math.round(block * blockW - (($("#content").width() - blockW) / 2))
         $(".contentwrapper").animate({scrollLeft: x}, 500)
+        $(".contentscroller > div").removeClass("current")
+        bch = block + 1
+        $(".contentscroller > div:nth-child(" + bch + ")").addClass("current")

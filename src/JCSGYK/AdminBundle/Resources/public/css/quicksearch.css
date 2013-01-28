@@ -1,13 +1,10 @@
 /* Quicksearch */
 .quicksearch {
-    padding: 10px 0 0 0;
-    width: 470px;
+    padding: 10px 6px 0 0;
 }
 .searchfield {
-    background-color: #FBFBFB;
-    border: 1px solid #c2b39f;
-    border-radius: 2px;
-    box-shadow: 1px 1px 2px rgba(200, 200, 200, 0.8) inset;
+    background-color: transparent;
+    border: 0;
     outline:none;
 }
 .searchfield-container {
@@ -16,11 +13,10 @@
     position: relative;
 }
 .quicksearch input[type=text]{
-    width: 420px;
     height: 20px;
-    width: 370px;
+    width: 485px;
     font: 16px Arial,Helvetica;
-    padding: 4px 8px 3px;
+    padding: 4px 27px 3px 8px;
     color: #555;
 }
 .quicksearch input:-ms-input-placeholder {
@@ -70,6 +66,10 @@
     margin: 0;
     position: relative;
     float: left;
+    background-color: #FBFBFB;
+    border: 1px solid #c2b39f;
+    border-radius: 2px;
+    box-shadow: 1px 1px 2px rgba(200, 200, 200, 0.8) inset;
 }
 .nf-indicator {
     position: absolute;

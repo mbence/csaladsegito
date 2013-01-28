@@ -1,0 +1,31 @@
+{# Debt #}
+<div class="client-sub togglable" {% if problem.getDebts|length == 0 %}style="display:none;"{% endif %}>{{ 'hátralékok'|trans }}</div>
+<div>
+    {% if problem.getDebts|length %}
+        <table cellspacing="0" border="0" class="client problem-list">
+            <tr>
+                <th> </th>
+                <th>{{ 'Nyilvántartott hátralék'|trans }}</th>
+                <th>{{ 'Kezelt hátralék'|trans }}</th>
+            </tr>
+            {% set sumReg = 0 %}
+            {% set sumMan = 0 %}
+            {% for debt in problem.getDebts %}
+                <tr>
+                    <td>{{ param(debt.type) }}</td>
+                    <td>{{ fcurr(debt.registeredDebt) }}</td>
+                    <td>{{ fcurr(debt.managedDebt) }}</td>
+                </tr>
+                {% set sumReg = sumReg + debt.registeredDebt %}
+                {% set sumMan = sumMan + debt.managedDebt %}
+            {% endfor %}
+            {% if problem.getDebts|length > 1 %}
+                <tr class="debt-sum">
+                    <td>{{ 'összesen'|trans }}</td>
+                    <td>{{ fcurr(sumReg) }}</td>
+                    <td>{{ fcurr(sumMan) }}</td>
+                </tr>
+            {% endif %}
+        </table>
+    {% endif %}
+</div>

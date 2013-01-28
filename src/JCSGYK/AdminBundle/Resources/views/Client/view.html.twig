@@ -5,6 +5,6 @@
     {% include "JCSGYKAdminBundle:Client:_other_data.html.twig" %}
 {% endif %}
 
-{% include "JCSGYKAdminBundle:Client:_note.html.twig" %}
-{% include "JCSGYKAdminBundle:Client:_tags.html.twig" %}
+{% include "JCSGYKAdminBundle:Client:_note.html.twig" with {item: client} %}
+{% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: client} %}
 {% include "JCSGYKAdminBundle:Client:_problems.html.twig" %}

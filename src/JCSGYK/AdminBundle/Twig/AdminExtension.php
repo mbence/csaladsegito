@@ -24,6 +24,7 @@ class AdminExtension extends \Twig_Extension
             'fphone' => new \Twig_Function_Method($this, 'formatPhone'),
             'param' => new \Twig_Function_Method($this, 'getParam'),
             'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
+            'fcurr' => new \Twig_Function_Method($this, 'formatCurrency'),
         );
     }
 
@@ -101,6 +102,18 @@ class AdminExtension extends \Twig_Extension
         return sprintf('(%s) %s-%s', $prefix, substr($num, 0, 3), substr($num, 3));
     }
 
+    public function formatCurrency ($number, $decimals = 0, $decPoint = ',', $thousandsSep = ' ')
+    {
+        if (!empty($number)) {
+            $price = number_format($number, $decimals, $decPoint, $thousandsSep);
+            $price = $price . ' Ft';
+        }
+        else {
+            $price = '';
+        }
+
+        return $price;
+    }
 
 /*    public function getFilters()
     {
