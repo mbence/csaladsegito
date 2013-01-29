@@ -2,7 +2,7 @@
 <div class="client-sub togglable" {% if problem.getDebts|length == 0 %}style="display:none;"{% endif %}>{{ 'hátralékok'|trans }}</div>
 <div>
     {% if problem.getDebts|length %}
-        <table cellspacing="0" border="0" class="client problem-list">
+        <table id="debt-list" cellspacing="0" border="0" class="client problem-list">
             <tr>
                 <th> </th>
                 <th>{{ 'Nyilvántartott hátralék'|trans }}</th>

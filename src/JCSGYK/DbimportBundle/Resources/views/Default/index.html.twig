@@ -11,7 +11,7 @@
 <form action="" method="POST" name="start">
     <dl class="import_controls">
 
-        <dt>1) User</dt>
+        <dt>1) Users</dt>
         <dd>
             <button type="submit" name="import" value="user10" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 10 &nbsp;</button>
             &nbsp;&nbsp;
@@ -21,7 +21,7 @@
             {% endif %}
         </dd>
 
-        <dt>2) Client</dt>
+        <dt>2) Clients</dt>
         <dd>
             <button type="submit" name="import" value="client100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
             &nbsp;&nbsp;
@@ -31,7 +31,7 @@
             {% endif %}
         </dd>
 
-        <dt>3) Problem</dt>
+        <dt>3) Problems</dt>
         <dd>
             <button type="submit" name="import" value="problem100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
             &nbsp;&nbsp;
@@ -41,7 +41,17 @@
             {% endif %}
         </dd>
 
-        <dt>4) Case admins</dt>
+        <dt>4) Events</dt>
+        <dd>
+            <button type="submit" name="import" value="event100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
+            &nbsp;&nbsp;
+            <button type="submit" name="import" value="event" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+            {% if results.events is defined %}
+                Succesfully imported {{ results.events }}
+            {% endif %}
+        </dd>
+
+        <dt>5) Case admins</dt>
         <dd>
             <button type="submit" name="import" value="caseadmin100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
             &nbsp;&nbsp;

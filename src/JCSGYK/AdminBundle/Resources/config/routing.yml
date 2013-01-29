@@ -20,6 +20,11 @@ problem_view:
     pattern:  /problem/view
     defaults: { _controller: JCSGYKAdminBundle:Problem:view }
 
+# Event #
+event_view:
+    pattern:  /event/view
+    defaults: { _controller: JCSGYKAdminBundle:Event:view }
+
 # Assistance #
 register_inquiry:
     pattern: /inquiry/new/{type}

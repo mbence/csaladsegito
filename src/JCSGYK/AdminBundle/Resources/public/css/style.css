@@ -162,7 +162,7 @@ footer#colophon .credits a:hover {
     min-width: 470px;
     float: left;
 }
-#clientblock, #problemblock {
+#clientblock, #problemblock, #eventblock {
     width: 45%;
     min-width: 470px;
     /*margin: 0 0 0 20px;*/
@@ -173,13 +173,13 @@ footer#colophon .credits a:hover {
     display: none;
 }
 
-#clientblock .loading, #problemblock .loading {
+#clientblock .loading, #problemblock .loading, #eventblock .loading {
     color: #666;
     height: 95%;
     background: url('../images/ajax-loader3.gif') no-repeat center center;
     display: none;
 }
-#clientblock .clientcontent, #clientblock #getclientform {
+#clientblock .clientcontent, #clientblock #getclientform, #problemblock #getproblemform, #eventblock #geteventform {
     display: none;
 }
 
@@ -233,6 +233,7 @@ h1.client {
     margin: 0 0 15px 0;
     font-weight: normal;
     font-size: 23px;
+    text-align: center;
 }
 table.client {
     color: #039;
@@ -357,6 +358,22 @@ table.problem-list td {
 .problem-list tr.debt-sum td {
     border-bottom: 0;
     color: #555;
+}
+#debt-list td {
+    cursor: auto;
+}
+/* Events */
+.event-list td {
+    line-height: 17px;
+    padding: 3px 6px;
+}
+.event-description {
+    color: #039;
+    line-height: 19px;
+    font-size: 15px;
+    padding: 6px 12px;
+    border: 1px solid #F5F5F5;
+    margin-bottom: 15px;
 }
 
 /* Admin */

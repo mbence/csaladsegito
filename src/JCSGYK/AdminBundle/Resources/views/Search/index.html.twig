@@ -34,6 +34,15 @@
                 <div class="loading">Betöltés...</div>
                 <div class="problemcontent"></div>
             </div></div>
+
+            <div id="eventblock" ><div class="leftpad rightpad fullheight">
+                <div class="close">x</div>
+                <form action="{{ path('event_view') }}" method="post" name="geteventform" id="geteventform">
+                    <input type="hidden" name="id">
+                </form>
+                <div class="loading">Betöltés...</div>
+                <div class="eventcontent"></div>
+            </div></div>
         </div>
     </div>
 {% endblock %}

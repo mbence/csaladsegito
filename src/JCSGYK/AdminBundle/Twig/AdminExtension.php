@@ -19,6 +19,7 @@ class AdminExtension extends \Twig_Extension
         return array(
             'fname' => new \Twig_Function_Method($this, 'formatName'),
             'fdate' => new \Twig_Function_Method($this, 'formatDate'),
+            'fsdate' => new \Twig_Function_Method($this, 'formatShortDate'),
             'fdatetime' => new \Twig_Function_Method($this, 'formatDateTime'),
             'gender' => new \Twig_Function_Method($this, 'gender'),
             'fphone' => new \Twig_Function_Method($this, 'formatPhone'),
@@ -52,13 +53,19 @@ class AdminExtension extends \Twig_Extension
 
         return $re;
     }
+    public function formatShortDate(\Datetime $d)
+    {
+        return $this->formatDate($d, true);
+    }
 
-    public function formatDate(\Datetime $d)
+    public function formatDate(\Datetime $d, $short = false)
     {
         // TODO: find a better place for the month names
         $months = ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];
 
-        return $d->format('Y. ') .  $this->translator->trans($months[$d->format('n') - 1]) . $d->format(' j.');
+        return $short ?
+            $d->format('Y.m.d.') :
+            $d->format('Y. ') .  $this->translator->trans($months[$d->format('n') - 1]) . $d->format(' j.');
     }
 
     public function formatDateTime(\Datetime $d)

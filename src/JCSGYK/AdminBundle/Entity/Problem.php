@@ -72,7 +72,7 @@ class Problem
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
      * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
     private $creator;
@@ -85,7 +85,7 @@ class Problem
     private $modifiedAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
      * @ORM\JoinColumn(name="modified_by", referencedColumnName="id")
      */
     private $modifier;
@@ -134,9 +134,17 @@ class Problem
      */
     private $debts;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Event", mappedBy="problem")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
+     */
+    private $events;
+
+
     public function __construct()
     {
         $this->debts = new ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     /**
@@ -548,5 +556,38 @@ class Problem
     public function getDebts()
     {
         return $this->debts;
+    }
+
+    /**
+     * Add event
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Event $event
+     * @return Problem
+     */
+    public function addEvent(\JCSGYK\AdminBundle\Entity\Event $event)
+    {
+        $this->events[] = $event;
+
+        return $this;
+    }
+
+    /**
+     * Remove event
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Event $event
+     */
+    public function removeEvent(\JCSGYK\AdminBundle\Entity\Event $event)
+    {
+        $this->events->removeElement($event);
+    }
+
+    /**
+     * Get events
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEvents()
+    {
+        return $this->events;
     }
 }

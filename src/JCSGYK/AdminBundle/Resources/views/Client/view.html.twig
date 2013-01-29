@@ -1,4 +1,5 @@
 {% include "JCSGYKAdminBundle:Client:_personal_data.html.twig" %}
+{% include "JCSGYKAdminBundle:Client:_problems.html.twig" %}
 
 {% if is_granted(['ROLE_FAMILY_HELP','ROLE_CHILD_WELFARE']) %}
     {% include "JCSGYKAdminBundle:Client:_ids.html.twig" %}
@@ -7,4 +8,3 @@
 
 {% include "JCSGYKAdminBundle:Client:_note.html.twig" with {item: client} %}
 {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: client} %}
-{% include "JCSGYKAdminBundle:Client:_problems.html.twig" %}

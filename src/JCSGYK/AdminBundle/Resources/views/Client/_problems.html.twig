@@ -13,7 +13,7 @@
             <th>Állapot</th>
         </tr>
         <tbody>
-        {% for problem in client.getproblems %}
+        {% for problem in client.getProblems %}
         <tr data-isactive="{{ problem.isActive }}" data-problemid="{{ problem.id }}">
             <td>{{ problem.title }}</td>
             <td>{{ param(problem.type) }}</td>

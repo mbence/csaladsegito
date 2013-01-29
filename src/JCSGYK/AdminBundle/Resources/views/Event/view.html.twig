@@ -1,0 +1,39 @@
+<h1 class="client">&nbsp;</h1>
+
+<table class="client" cellspacing="0" border="0">
+    <tr>
+        <td>{{ fsdate(event.eventDate) }}</td>
+    </tr>
+</table>
+
+<div class="event-description">
+    {{ event.description|nl2br }}
+</div>
+
+<div class="client-sub first-sub togglable">{{ 'adatok'|trans }}</div>
+<table class="client" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Megnevezés'|trans }}:</th>
+        <td>{{ param(event.type) }}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Esetkezelés jellege'|trans }}:</th>
+        <td>{{ param(event.titleCode) }}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Továbbirányítás'|trans }}:</th>
+        <td>{{ param(event.forwardCode) }}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Egyéb tevékenység'|trans }}:</th>
+        <td>{{ param(event.activityCode) }}</td>
+    </tr>
+    {% if event.attachment %}
+        <tr>
+            <th>{{ 'Csatolt dok.'|trans }}:</th>
+            <td colspan="3">{{ event.attachment }}</td>
+        </tr>
+    {% endif %}
+</table>
+
+{% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: event} %}

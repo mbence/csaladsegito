@@ -9,6 +9,7 @@ use JCSGYK\DbimportBundle\Entity\Utilityprovider;
 use JCSGYK\DbimportBundle\Entity\Problem;
 use JCSGYK\DbimportBundle\Entity\TmpIdmap;
 use JCSGYK\DbimportBundle\Entity\Debt;
+use JCSGYK\DbimportBundle\Entity\Event;
 
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
@@ -43,9 +44,14 @@ class ImportController extends Controller
                 $results['client'] = $this->importClient($limit);
             }
             if ('problem' == $table || 'all' == $table || 'problem100' == $table) {
-                $limit = 'problem100' == $table ? 300 : 0;
+                $limit = 'problem100' == $table ? 100 : 0;
 
                 $results['problem'] = $this->importProblem($limit);
+            }
+            if ('event' == $table || 'all' == $table || 'event100' == $table) {
+                $limit = 'event100' == $table ? 100 : 0;
+
+                $results['events'] = $this->importEvent($limit);
             }
             if ('caseadmin' == $table || 'all' == $table || 'caseadmin100' == $table) {
                 $limit = 'caseadmin100' == $table ? 100 : 0;
@@ -55,12 +61,146 @@ class ImportController extends Controller
 
             $session->set('results', $results);
 
-            //return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
+            return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
         }
         $r = $session->get('results', $results);
         $session->remove('results');
 
         return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);
+    }
+
+    protected function importEvent($limit = 100)
+    {
+        // disable the profiler, for it fails with the huge query numbers
+        if ($this->container->has('profiler'))
+        {
+            $this->container->get('profiler')->disable();
+        }
+
+        $n = 0;
+        // get events from old sqlite db
+        $db = $this->get('doctrine.dbal.csaszir_connection');
+        $sql = "SELECT pe.Problem_ID, e.* FROM Events e JOIN ProblemEvents pe ON pe.Event_ID=e.Event_ID";
+        if ($limit) {
+            $sql .= ' LIMIT ' . $limit;
+        }
+        $events = $db->fetchAll($sql);
+
+        //var_dump($events);
+        $id_map = $this->getIdMap();
+
+        $field_map = [
+            'Id' => 'Event_ID',
+            'ProblemId' => 'Problem_ID',
+            'Description' => 'Desciption',
+            'Type' => 'Type',
+            'CreatedAt' => 'CreatedOn',
+            'CreatedBy' => 'CreatedBy_ID',
+            'ModifiedAt' => 'ModifiedOn',
+            'ModifiedBy' => 'ModifiedBy_ID',
+            'TitleCode' => 'TitleCode',
+            'ForwardCode' => 'ForwardCode',
+            'ActivityCode' => 'ActivityCode',
+            'EventDate' => 'EventDate',
+            'ClientVisit' => 'ClientVisit',
+            'ClientCancel' => 'ClientCancel',
+            'Attachment' => 'DocFile',
+        ];
+
+        $date_fields = ['CreatedAt', 'ModifiedAt', 'EventDate'];
+        $user_fields = ['CreatedBy', 'ModifiedBy'];
+        $id_fields = ['Type', 'TitleCode', 'ForwardCode', 'ActivityCode'];
+
+        $this->truncate('event');
+
+        $em = $this->getDoctrine()->getManager();
+
+        foreach ($events as $imp) {
+            $e = new Event();
+
+            foreach ($field_map as $to => $from) {
+                $val = null;
+                $setter = 'Set' . $to;
+                // check and convert date fields
+                if (in_array($to, $date_fields)) {
+                    $val = $this->getDate($imp[$from]);
+                }
+                // user id remap
+                elseif (in_array($to, $user_fields)) {
+                    $val = isset($id_map[$imp[$from]]) ? $id_map[$imp[$from]] : null;
+                }
+                // client visit and cancel
+                elseif (in_array($to, ['ClientVisit', 'ClientCancel'])) {
+                    $val = $imp[$from] == 1 ? 1 : 0;
+                }
+                // convert ID-s to the parameter system
+                elseif(in_array($to, $id_fields)) {
+                    $val = $this->convertId('Event' . $to, $imp[$from]);
+                }
+                // Description
+                elseif ('Description' == $to) {
+                    // remove event dates from the description if it is the same as in the record
+                    $event_dates = [
+                        $this->getDate($imp['EventDate'])->format('Y.m.d.'),
+                        $this->getDate($imp['EventDate'])->format('Y. m. d.')
+                    ];
+                    //$val = trim(str_replace($event_dates, '', $this->conv($imp[$from])));
+                    $val = trim(preg_replace('/(' . $event_dates[0] . '|' . $event_dates[1] . ')/', '', $this->conv($imp[$from]), 1));
+
+                    // check for remaining dates that can differ a few days to the records date
+                    if (preg_match('/(\d{4})\.(\d{2})\.(\d{2})\.\s*-/', substr($val, 0, 13), $m)) {
+                        if (count($m) == 4) {
+                            try {
+                                $ddate = new \DateTime("{$m[1]}-{$m[2]}-{$m[3]}");
+                            }
+                            catch (\Exception $e) {
+                            }
+                            if (!empty($ddate)) {
+                                $rec_date = $this->getDate($imp['EventDate']);
+                                // we overwrite the records date if there is only a few days (4) difference
+                                $days = $ddate->diff($rec_date)->format('%r%a');
+                                if (0 < $days && $days < 5) {
+                                    $real_date = $ddate;
+                                    // ... and remove it from the description
+                                    $val = trim(str_replace($m[0], '', $val));
+                                }
+                            }
+                        }
+                    }
+                    // remove leading dash
+                    if (substr($val, 0, 1) == '-') {
+                        $val = trim(substr($val, 1));
+                    }
+                }
+                // everything else
+                else {
+                    $val = $this->conv($imp[$from]);
+                }
+
+                // set the value in the entity
+                $e->$setter($val);
+            }
+
+            // overwrite the date field
+            if (isset($real_date)) {
+                $e->setEventDate($real_date);
+                unset($real_date);
+            }
+            // manage the object
+            $em->persist($e);
+            unset($e);
+
+            // save the entities to the DB
+            if ($em->getUnitOfWork()->size() >= 1000) {
+                $em->flush();
+                $em->clear();
+            }
+
+            $n++;
+        }
+        $em->flush();
+
+        return $n;
     }
 
     protected function setCaseadmins($limit = 100)
@@ -183,11 +323,10 @@ class ImportController extends Controller
                 // set the value in the entity
                 $p->$setter($val);
             }
-            // TODO: save the utility provider data
-
             // manage the object
             $em->persist($p);
 
+            // save the utility provider debts
             $this->saveDebts($imp);
 
             // save the entities to the DB
@@ -643,6 +782,45 @@ class ImportController extends Controller
                 13 => 47,
                 14 => 48
             ],
+            'EventType' => [
+                2 => 50,
+                3 => 51,
+                4 => 52,
+                5 => 53
+            ],
+            'EventTitleCode' => [
+                2 => 54,
+                3 => 55,
+                4 => 56,
+                5 => 57,
+                6 => 58,
+                7 => 59,
+                8 => 60,
+                9 => 61,
+                10 => 62,
+                11 => 63,
+                12 => 64
+            ],
+            'EventForwardCode' => [
+                2 => 65,
+                3 => 66,
+                4 => 67,
+                5 => 68,
+                6 => 69,
+                7 => 70,
+                8 => 71,
+                9 => 72,
+                10 => 73,
+                11 => 74
+            ],
+            'EventActivityCode' => [
+                2 => 75,
+                3 => 76,
+                4 => 77,
+                5 => 78,
+                6 => 79,
+                7 => 80
+            ]
         ];
 
         return isset($map[$group][$id]) ? $map[$group][$id] : 0;

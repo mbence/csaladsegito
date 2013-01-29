@@ -6,29 +6,31 @@
         <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
     </tr>
 </table>
-<div class="client-sub first-sub togglable">probléma</div>
-<table class="client" cellspacing="0" border="0">
-    <tr>
-        <th>{{ 'Probléma'|trans }}:</th>
-        <td>{{ problem.title }}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Jelleg'|trans }}:</th>
-        <td>{{ param(problem.type) }}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Állapot'|trans }}:</th>
-        <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
-    </tr>
-    {% if problem.attachment %}
+<div class="client-sub first-sub togglable">{{ 'probléma'|trans }}</div>
+<div>
+    <table class="client" cellspacing="0" border="0">
         <tr>
-            <th>{{ 'Csatolt dok.'|trans }}:</th>
-            <td>{{ problem.attachment }}</td>
+            <th>{{ 'Probléma'|trans }}:</th>
+            <td>{{ problem.title }}</td>
+            <th>{{ 'Állapot'|trans }}:</th>
+            <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
         </tr>
-    {% endif %}
-</table>
-
+        <tr>
+            <th>{{ 'Jelleg'|trans }}:</th>
+            <td colspan="3">{{ param(problem.type) }}</td>
+        </tr>
+        {% if problem.attachment %}
+            <tr>
+                <th>{{ 'Csatolt dok.'|trans }}:</th>
+                <td colspan="3">{{ problem.attachment }}</td>
+            </tr>
+        {% endif %}
+    </table>
+</div>
 {% include "JCSGYKAdminBundle:Client:_note.html.twig" with {item: problem} %}
 {% include "JCSGYKAdminBundle:Problem:_debt.html.twig" %}
-{% include "JCSGYKAdminBundle:Problem:_close.html.twig" %}
+
+{% include "JCSGYKAdminBundle:Problem:_events.html.twig" %}
+
 {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: problem} %}
+{% include "JCSGYKAdminBundle:Problem:_close.html.twig" %}

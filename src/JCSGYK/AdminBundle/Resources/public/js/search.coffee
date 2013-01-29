@@ -32,13 +32,6 @@ JcsSearch =
 
             false
         )
-        # init horizontal blocks
-        $("#searchblock").click ->
-            HBlocks.scrollTo(0)
-        $("#clientblock").click ->
-            HBlocks.scrollTo(1)
-        $("#problemblock").click ->
-            HBlocks.scrollTo(2)
 
     qSubmit: ->
         $("#quicksearch").submit();

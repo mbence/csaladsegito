@@ -1,0 +1,18 @@
+{# Events #}
+<div class="client-sub togglable">{{ 'események'|trans }}</div>
+<div>
+    <table id="event-list" class="client problem-list event-list" cellspacing="0" border="0">
+        <tr>
+            <th>Dátum</th>
+            <th>Esemény</th>
+        </tr>
+        <tbody>
+        {% for event in problem.getEvents %}
+        <tr data-eventid="{{ event.id }}">
+            <td>{{ fsdate(event.eventDate) }}</td>
+            <td>{{ event.description|nl2br }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

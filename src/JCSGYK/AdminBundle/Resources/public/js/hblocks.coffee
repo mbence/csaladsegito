@@ -11,8 +11,18 @@ HBlocks =
             @setBlockSizes()
             @setHeights()
 
-        @setCloseButtons()
+        # init horizontal blocks
+        $("#searchblock").click ->
+            HBlocks.scrollTo(0)
+        $("#clientblock").click ->
+            HBlocks.scrollTo(1)
+        $("#problemblock").click ->
+            HBlocks.scrollTo(2)
+        $("#eventblock").click ->
+            HBlocks.scrollTo(3)
 
+        @setCloseButtons()
+        
     setCloseButtons: ->
         # close button functionality
         $("#clientblock .close").click =>
@@ -24,7 +34,12 @@ HBlocks =
 
         $("#problemblock .close").click =>
             $("#problemblock").hide()
-            $("#problemblock .clientcontent").html("")
+            $("#problemblock .problemcontent").html("")
+            @setBlockSizes()
+
+        $("#eventblock .close").click =>
+            $("#eventblock").hide()
+            $("#eventblock .eventcontent").html("")
             @setBlockSizes()
 
     blockW: ->
@@ -61,6 +76,7 @@ HBlocks =
         $('#search-results').height(h - 50)
         $('#clientblock').height(h)
         $('#problemblock').height(h)
+        $('#eventblock').height(h)
 
         true
 

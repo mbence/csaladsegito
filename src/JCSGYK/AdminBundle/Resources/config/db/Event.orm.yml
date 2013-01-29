@@ -1,0 +1,74 @@
+Event:
+    type: entity
+    table: event
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        problemId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: problem_id
+        description:
+            type: text
+            nullable: true
+        type:
+            type: integer
+            unsigned: false
+            nullable: true
+        createdAt:
+            type: datetime
+            nullable: true
+            column: created_at
+        createdBy:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: created_by
+        modifiedAt:
+            type: datetime
+            nullable: true
+            column: modified_at
+        modifiedBy:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: modified_by
+        titleCode:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: title_code
+        forwardCode:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: forward_code
+        activityCode:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: activity_code
+        eventDate:
+            type: datetime
+            nullable: true
+            column: event_date
+        clientVisit:
+            type: boolean
+            nullable: true
+            column: client_visit
+        clientCancel:
+            type: boolean
+            nullable: true
+            column: client_cancel
+        attachment:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+    lifecycleCallbacks: {  }
