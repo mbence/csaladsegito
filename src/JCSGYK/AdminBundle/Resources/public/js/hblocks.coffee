@@ -150,5 +150,9 @@ HBlocks =
         $(".contentscroller > div:nth-child(" + bch + ")").addClass("current")
         if $(".contentscroller > .current .searchfield").length
             $(".contentscroller > .current .searchfield").focus()
+        else if $(".contentscroller > .current .walkable .current").length
+            $(".contentscroller > .current .walkable .current").focus()
+        else if $(".contentscroller > .current .walkable .cursor").length
+            $(".contentscroller > .current .walkable .cursor").focus()
         else
             $(".contentscroller > .current").focus()
