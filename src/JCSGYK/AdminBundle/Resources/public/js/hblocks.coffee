@@ -22,12 +22,60 @@ HBlocks =
             HBlocks.scrollTo(3)
 
         # keyboard events
-        $(document).keyup (event) ->
-            # close current block on ESC
-            if 27 == event.which
-                $(".contentscroller > .current .close").click()
-
+        $(document).keydown (event) ->
+            HBlocks.setKeys(event)
         @setCloseButtons()
+
+    setKeys: (event) ->
+        # close current block on ESC
+        if 27 == event.which
+            $(".contentscroller > .current .close").click()
+        # left
+        if 37 == event.which
+            if $(".contentscroller > .current").prev().is(":visible")
+                $(".contentscroller > .current").prev().click()
+        # right
+        if 39 == event.which
+            if $(".contentscroller > .current .walkable tr.cursor").hasClass("current") and $(".contentscroller > .current").next().is(":visible")
+                $(".contentscroller > .current").next().click()
+            else
+                if $(".contentscroller > .current .walkable tr.cursor").length
+                    $(".contentscroller > .current .walkable tr.cursor").click()
+        # up
+        if 38 == event.which
+            if $(".contentscroller > .current .walkable tr").length
+                if $(".contentscroller > .current .walkable tr.cursor").length == 0
+                    event.stopPropagation()
+                    event.preventDefault()
+                    $(".contentscroller > .current .walkable tr").last().addClass("cursor").focus()
+                else
+                    if $(".contentscroller > .current .walkable tr.cursor").prev().is(":visible")
+                        event.stopPropagation()
+                        event.preventDefault()
+                        $(".contentscroller > .current .walkable tr.cursor").removeClass("cursor").prev().addClass("cursor").focus()
+                    else
+                        $(".contentscroller > .current .searchfield").focus()
+        # down
+        if 40 == event.which
+            if $(".contentscroller > .current .walkable tr").length
+                $(".contentscroller > .current .searchfield").blur()
+                if $(".contentscroller > .current .walkable tr.cursor").length == 0
+                    event.stopPropagation()
+                    event.preventDefault()
+                    $(".contentscroller > .current .walkable tr").first().addClass("cursor").focus()
+                else
+                    if $(".contentscroller > .current .walkable tr.cursor").next().is(":visible")
+                        event.stopPropagation()
+                        event.preventDefault()
+                        $(".contentscroller > .current .walkable tr.cursor").removeClass("cursor").next().addClass("cursor").focus()
+        # enter
+        if 13 == event.which
+            if $(".contentscroller > .current .walkable tr.cursor").length
+                event.stopPropagation()
+                event.preventDefault()
+                $(".contentscroller > .current .walkable tr.cursor").click()
+
+        #console.log event.which
 
     setCloseButtons: ->
         # close button functionality
@@ -100,3 +148,7 @@ HBlocks =
         $(".contentscroller > div").removeClass("current")
         bch = block + 1
         $(".contentscroller > div:nth-child(" + bch + ")").addClass("current")
+        if $(".contentscroller > .current .searchfield").length
+            $(".contentscroller > .current .searchfield").focus()
+        else
+            $(".contentscroller > .current").focus()

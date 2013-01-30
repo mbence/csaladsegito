@@ -19,6 +19,7 @@ JcsSearch =
         # quick search
         $("#quicksearch").submit( ->
             nf.start()
+            HBlocks.scrollTo(0)
             if $("#quicksearch #q").attr('value') == ''
                 $("#search-results").html(orig_results_text)
             $.post($(this).attr("action"), $(this).serialize(), (data) ->
@@ -57,8 +58,8 @@ JcsSearch =
                 $("#clientblock .loading").hide()
                 $("#clientblock .close").click()
             )
-            $("#search-results tr").removeClass("current")
-            $(this).addClass("current")
+            $("#search-results tr").removeClass("current cursor")
+            $(this).addClass("current cursor")
         )
 
         # check for results number and click tr if only 1

@@ -6,9 +6,9 @@
         <th>{{ 'Anyja neve'|trans }}</th>
         <th>{{ 'Cím'|trans }}</th>
     </thead>
-    <tbody>
+    <tbody class="walkable">
         {% for p in clients %}
-        <tr data-userid="{{ p.id }}">
+        <tr data-userid="{{ p.id }}" tabindex="{{ loop.index + 99 }}" {% if loop.first %}class="cursor"{% endif %}>
             <td>
                 <a name="r{{ p.id }}"></a>
                 {{ p.id }}

@@ -1,6 +1,7 @@
 {# Problems #}
 <div class="client-sub togglable">{{ 'problémák'|trans }}</div>
 <div>
+    {% if client.getProblems|length %}
     <div class="smallopt right toppad ">
         <input type="checkbox" id="showAllProblem">
         <label for="showAllProblem">összes probléma</label>
@@ -12,9 +13,9 @@
             <th>Felelős</th>
             <th>Állapot</th>
         </tr>
-        <tbody>
+        <tbody class="walkable">
         {% for problem in client.getProblems %}
-        <tr data-isactive="{{ problem.isActive }}" data-problemid="{{ problem.id }}">
+        <tr data-isactive="{{ problem.isActive }}" data-problemid="{{ problem.id }}" tabindex="{{ loop.index + 200 }}" {% if loop.first %}class="cursor"{% endif %}>
             <td>{{ problem.title }}</td>
             <td>{{ param(problem.type) }}</td>
             <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
@@ -23,4 +24,7 @@
         {% endfor %}
         </tbody>
     </table>
+    {% else %}
+        <div class="noinfo">{{ 'Nincsen megjeleníthető probléma'|trans }}</div>
+    {% endif %}
 </div>

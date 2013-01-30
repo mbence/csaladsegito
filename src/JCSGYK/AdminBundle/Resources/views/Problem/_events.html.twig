@@ -7,9 +7,9 @@
             <th>Dátum</th>
             <th>Esemény</th>
         </tr>
-        <tbody>
+        <tbody class="walkable">
         {% for event in problem.getEvents %}
-        <tr data-eventid="{{ event.id }}">
+        <tr data-eventid="{{ event.id }}" tabindex="{{ loop.index + 300 }}" {% if loop.first %}class="cursor"{% endif %}>
             <td>{{ fsdate(event.eventDate) }}</td>
             <td>{{ event.description|nl2br }}</td>
         </tr>
