@@ -11,29 +11,43 @@
 </div>
 
 <div class="client-sub first-sub togglable">{{ 'adatok'|trans }}</div>
-<table class="client" cellspacing="0" border="0">
-    <tr>
-        <th>{{ 'Megnevezés'|trans }}:</th>
-        <td>{{ param(event.type) }}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Esetkezelés jellege'|trans }}:</th>
-        <td>{{ param(event.titleCode) }}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Továbbirányítás'|trans }}:</th>
-        <td>{{ param(event.forwardCode) }}</td>
-    </tr>
-    <tr>
-        <th>{{ 'Egyéb tevékenység'|trans }}:</th>
-        <td>{{ param(event.activityCode) }}</td>
-    </tr>
-    {% if event.attachment %}
+<div>
+    {% if event.type or event.titleCode or event.forwardCode or event.activityCode or event.attachment %}
+    <table class="client" cellspacing="0" border="0">
+        {% if event.type %}
         <tr>
-            <th>{{ 'Csatolt dok.'|trans }}:</th>
-            <td colspan="3">{{ event.attachment }}</td>
+            <th>{{ 'Megnevezés'|trans }}:</th>
+            <td>{{ param(event.type) }}</td>
         </tr>
+        {% endif %}
+        {% if event.titleCode %}
+        <tr>
+            <th>{{ 'Esetkezelés jellege'|trans }}:</th>
+            <td>{{ param(event.titleCode) }}</td>
+        </tr>
+        {% endif %}
+        {% if event.forwardCode %}
+        <tr>
+            <th>{{ 'Továbbirányítás'|trans }}:</th>
+            <td>{{ param(event.forwardCode) }}</td>
+        </tr>
+        {% endif %}
+        {% if event.activityCode %}
+        <tr>
+            <th>{{ 'Egyéb tevékenység'|trans }}:</th>
+            <td>{{ param(event.activityCode) }}</td>
+        </tr>
+        {% endif %}
+        {% if event.attachment %}
+            <tr>
+                <th>{{ 'Csatolt dok.'|trans }}:</th>
+                <td colspan="3">{{ event.attachment }}</td>
+            </tr>
+        {% endif %}
+    </table>
+    {% else %}
+        <div class="noinfo">{{ 'Nincsen megjeleníthető adat'|trans }}</div>
     {% endif %}
-</table>
+</div>
 
 {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: event} %}

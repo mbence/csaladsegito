@@ -1,6 +1,7 @@
 /* Quicksearch */
 .quicksearch {
     padding: 10px 6px 0 0;
+    width: 100%;
 }
 .searchfield {
     background-color: transparent;
@@ -14,7 +15,7 @@
 }
 .quicksearch input[type=text]{
     height: 20px;
-    width: 485px;
+    width: 360px;
     font: 16px Arial,Helvetica;
     padding: 4px 27px 3px 8px;
     color: #555;

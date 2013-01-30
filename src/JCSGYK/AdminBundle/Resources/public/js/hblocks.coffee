@@ -21,25 +21,38 @@ HBlocks =
         $("#eventblock").click ->
             HBlocks.scrollTo(3)
 
+        # keyboard events
+        $(document).keyup (event) ->
+            # close current block on ESC
+            if 27 == event.which
+                $(".contentscroller > .current .close").click()
+
         @setCloseButtons()
-        
+
     setCloseButtons: ->
         # close button functionality
-        $("#clientblock .close").click =>
+        $("#clientblock .close").click (e) =>
+            e.stopPropagation()
             $("#clientblock").hide()
             $("#clientblock .clientcontent").html("")
             $("#search-results tr").removeClass("current")
             $("#problemblock .close").click()
+            $("#searchblock").click()
             @setBlockSizes()
 
-        $("#problemblock .close").click =>
+        $("#problemblock .close").click (e) =>
+            e.stopPropagation()
             $("#problemblock").hide()
             $("#problemblock .problemcontent").html("")
+            $("#eventblock .close").click()
+            $("#clientblock").click()
             @setBlockSizes()
 
-        $("#eventblock .close").click =>
+        $("#eventblock .close").click (e) =>
+            e.stopPropagation()
             $("#eventblock").hide()
             $("#eventblock .eventcontent").html("")
+            $("#problemblock").click()
             @setBlockSizes()
 
     blockW: ->

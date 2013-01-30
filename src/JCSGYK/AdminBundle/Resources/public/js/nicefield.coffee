@@ -57,8 +57,8 @@ class NiceField
 
         $(o).wrap(@container).after(@indibutt)
         $(o).parent().css({
-            'height': $(o).outerHeight(),
-            'width': $(o).outerWidth()
+            'height': $(o).outerHeight()
+#            'width': $(o).outerWidth()
         });
         @indi = $(o).next()
         $(@indi).css({

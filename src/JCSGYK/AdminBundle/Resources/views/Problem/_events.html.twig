@@ -1,6 +1,7 @@
 {# Events #}
 <div class="client-sub togglable">{{ 'események'|trans }}</div>
 <div>
+    {% if problem.getEvents|length %}
     <table id="event-list" class="client problem-list event-list" cellspacing="0" border="0">
         <tr>
             <th>Dátum</th>
@@ -15,4 +16,8 @@
         {% endfor %}
         </tbody>
     </table>
+    {% else %}
+        <div class="noinfo">{{ 'Nincsen megjeleníthető esemény'|trans }}</div>
+    {% endif %}
+
 </div>

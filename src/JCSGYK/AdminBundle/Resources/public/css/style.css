@@ -375,6 +375,12 @@ table.problem-list td {
     border: 1px solid #F5F5F5;
     margin-bottom: 15px;
 }
+.noinfo {
+    color: #666;
+    text-align: center;
+    font-size: 13px;
+    padding: 6px;
+}
 
 /* Admin */
 .update-output {

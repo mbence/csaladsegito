@@ -43,6 +43,7 @@ JcsClient =
         $("#problem-list tbody tr").click( (event) ->
             event.stopPropagation()
             if $(this).data("problemid")?
+                $("#eventblock .close").click()
                 $("#problemblock .loading").show()
                 $("#problemblock .problemcontent").hide()
                 $("#problemblock").show()
