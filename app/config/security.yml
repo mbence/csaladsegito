@@ -32,10 +32,16 @@ security:
             logout:
                 path:   /logout
                 target: /
+            remember_me:
+                key:      "%secret%"
+                lifetime: 2592000      # 30 days in seconds
+                path:     /
+                domain:   ~
+
 
     access_control:
         - { path: ^/livephpmonitor, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/, role: IS_AUTHENTICATED_FULLY }
+        - { path: ^/, role: IS_AUTHENTICATED_REMEMBERED }

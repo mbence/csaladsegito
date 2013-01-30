@@ -8,8 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 class MenuController extends Controller
 {
     protected $menu = [
-        ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'IS_AUTHENTICATED_FULLY'],
-//       ['route' => 'new_client', 'label' => 'Új ügyfél', 'role' => 'ROLE_ASSISTANCE'],
+        ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
+//       ['route' => 'new_client', 'label' => 'Új ügyfél', 'role' => 'ROLE_USER'],
 
         ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
         ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN'],
