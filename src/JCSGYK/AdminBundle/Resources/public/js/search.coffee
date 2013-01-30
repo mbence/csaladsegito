@@ -51,6 +51,7 @@ JcsSearch =
             $.post($("#getclientform").attr("action"), {id: $(this).data("userid")}, (data) ->
                 $("#clientblock .loading").hide()
                 $("#clientblock .clientcontent").html(data).show()
+                HBlocks.scrollTo(1)
                 JcsClient.init()
             ).error( (data) ->
                 # there was some error :(

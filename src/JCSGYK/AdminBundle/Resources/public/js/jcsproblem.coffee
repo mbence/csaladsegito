@@ -25,6 +25,7 @@ JcsProblem =
                     $("#eventblock .loading").hide()
                     $("#eventblock .eventcontent").html(data).show()
                     JcsToggle.init("eventblock")
+                    HBlocks.scrollTo(3)
                 ).error( (data) ->
                     # there was some error :(
                     AjaxBag.showError(data.statusText)

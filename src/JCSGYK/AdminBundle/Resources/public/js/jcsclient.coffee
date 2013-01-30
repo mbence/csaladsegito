@@ -54,6 +54,7 @@ JcsClient =
                 $.post($("#getproblemform").attr("action"), {id: $(this).data("problemid")}, (data) ->
                     $("#problemblock .loading").hide()
                     $("#problemblock .problemcontent").html(data).show()
+                    HBlocks.scrollTo(2)
                     JcsProblem.init()
                 ).error( (data) ->
                     # there was some error :(
