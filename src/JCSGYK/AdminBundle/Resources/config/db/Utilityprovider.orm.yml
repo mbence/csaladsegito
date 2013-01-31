@@ -9,23 +9,17 @@ Utilityprovider:
             nullable: false
             generator:
                 strategy: IDENTITY
+        clientId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: client_id
+        type:
+            type: smallint
+            nullable: true
         value:
             type: string
             length: 60
             fixed: false
             nullable: true
-        type:
-            type: integer
-            unsigned: false
-            nullable: false
-    manyToOne:
-        client:
-            targetEntity: Client
-            cascade: {  }
-            mappedBy: null
-            inversedBy: null
-            joinColumns:
-                client_id:
-                    referencedColumnName: id
-            orphanRemoval: false
     lifecycleCallbacks: {  }

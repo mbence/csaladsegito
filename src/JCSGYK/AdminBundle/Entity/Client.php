@@ -386,10 +386,17 @@ class Client
      */
     private $problems;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Archive", mappedBy="client")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
+     */
+    private $archives;
+
     public function __construct()
     {
         $this->utilityproviders = new ArrayCollection();
         $this->problems = new ArrayCollection();
+        $this->archives = new ArrayCollection();
     }
 
     /**
@@ -1721,5 +1728,38 @@ class Client
     public function getProblems()
     {
         return $this->problems;
+    }
+
+    /**
+     * Add archives
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Archive $archives
+     * @return Client
+     */
+    public function addArchive(\JCSGYK\AdminBundle\Entity\Archive $archives)
+    {
+        $this->archives[] = $archives;
+    
+        return $this;
+    }
+
+    /**
+     * Remove archives
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Archive $archives
+     */
+    public function removeArchive(\JCSGYK\AdminBundle\Entity\Archive $archives)
+    {
+        $this->archives->removeElement($archives);
+    }
+
+    /**
+     * Get archives
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getArchives()
+    {
+        return $this->archives;
     }
 }

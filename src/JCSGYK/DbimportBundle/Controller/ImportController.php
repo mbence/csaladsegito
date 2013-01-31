@@ -10,6 +10,7 @@ use JCSGYK\DbimportBundle\Entity\Problem;
 use JCSGYK\DbimportBundle\Entity\TmpIdmap;
 use JCSGYK\DbimportBundle\Entity\Debt;
 use JCSGYK\DbimportBundle\Entity\Event;
+use JCSGYK\DbimportBundle\Entity\Archive;
 
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
@@ -43,6 +44,11 @@ class ImportController extends Controller
 
                 $results['client'] = $this->importClient($limit);
             }
+            if ('archive' == $table || 'all' == $table || 'archive100' == $table) {
+                $limit = 'archive100' == $table ? 100 : 0;
+
+                $results['archive'] = $this->importArchive($limit);
+            }
             if ('problem' == $table || 'all' == $table || 'problem100' == $table) {
                 $limit = 'problem100' == $table ? 100 : 0;
 
@@ -67,6 +73,94 @@ class ImportController extends Controller
         $session->remove('results');
 
         return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);
+    }
+
+
+    protected function importArchive($limit = 100)
+    {
+
+        $n = 0;
+        // get archives from old sqlite db
+        $db = $this->get('doctrine.dbal.csaszir_connection');
+        $sql = "SELECT p.Person_ID, a.* from PersonArchives p, Archives a WHERE p.Archive_ID=a.Archive_ID";
+        if ($limit) {
+            $sql .= ' LIMIT ' . $limit;
+        }
+        $events = $db->fetchAll($sql);
+
+        //var_dump($events);
+        $id_map = $this->getIdMap();
+
+        $field_map = [
+            'ClientId' => 'Person_ID',
+            'Description' => 'Reason',
+            'Type' => 'Status',
+            'CreatedAt' => 'ArchivedOn',
+            'CreatedBy' => 'ArchivedBy_ID',
+        ];
+
+        $date_fields = ['CreatedAt'];
+        $user_fields = ['CreatedBy'];
+        $id_fields = ['Type'];
+
+        $this->truncate('archive');
+
+        $em = $this->getDoctrine()->getManager();
+
+        foreach ($events as $imp) {
+            $e = new Archive();
+
+            foreach ($field_map as $to => $from) {
+                $val = null;
+                $setter = 'Set' . $to;
+                // check and convert date fields
+                if (in_array($to, $date_fields)) {
+                    $val = $this->getDate($imp[$from]);
+                }
+                // user id remap
+                elseif (in_array($to, $user_fields)) {
+                    $val = isset($id_map[$imp[$from]]) ? $id_map[$imp[$from]] : null;
+                }
+                // convert ID-s to the parameter system
+                elseif(in_array($to, $id_fields)) {
+                    $val = $this->convertId('Archive' . $to, $imp[$from]);
+                }
+                // Description
+                elseif ('Description' == $to) {
+                    $val = trim(str_replace([
+                            'Lezárás oka..., ',
+                            'Lezárás oka...',
+                            'Megnyitás oka...',
+                            'Lezárás oka, ',
+                            'Lezárás oka:',
+                            'Lezárás oka.',
+                            'Lezárás oka',
+
+                        ], '', $this->conv($imp[$from])));
+                }
+                // everything else
+                else {
+                    $val = $this->conv($imp[$from]);
+                }
+
+                // set the value in the entity
+                $e->$setter($val);
+            }
+            // manage the object
+            $em->persist($e);
+            unset($e);
+
+            // save the entities to the DB
+            if ($em->getUnitOfWork()->size() >= 100) {
+                $em->flush();
+                $em->clear();
+            }
+
+            $n++;
+        }
+        $em->flush();
+
+        return $n;
     }
 
     protected function importEvent($limit = 100)
@@ -312,7 +406,7 @@ class ImportController extends Controller
                 }
                 // description
                 elseif ('Description' == $to) {
-                    $val = str_replace('Ügyfél által hozott probléma részletes leírása...', '', $this->conv($imp[$from]));
+                    $val = trim(str_replace('Ügyfél által hozott probléma részletes leírása...', '', $this->conv($imp[$from])));
                 }
                 // everything else
                 else {
@@ -820,6 +914,19 @@ class ImportController extends Controller
                 5 => 78,
                 6 => 79,
                 7 => 80
+            ],
+            'ArchiveType' => [
+                100 => 81,
+                104 => 82,
+                108 => 83,
+                112 => 84,
+                116 => 85,
+                120 => 86,
+                124 => 87,
+                128 => 88,
+                132 => 89,
+                136 => 90,
+                1 => 91
             ]
         ];
 

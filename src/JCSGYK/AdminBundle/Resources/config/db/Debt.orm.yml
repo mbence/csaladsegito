@@ -13,7 +13,7 @@ Debt:
             type: integer
             unsigned: false
             nullable: true
-            column: client_id
+            column: problem_id
         type:
             type: smallint
             nullable: true

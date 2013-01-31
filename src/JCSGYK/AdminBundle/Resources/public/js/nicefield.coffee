@@ -73,12 +73,6 @@ class NiceField
             if $.isFunction(opt.clearHook)
                 opt.clearHook()
 
-        # ESC to clear the field
-        $(o).keydown (event) =>
-            if 27 == event.which
-                event.stopPropagation()
-                $(@clear).click()
-
         if $.isFunction(opt.onChange)
             $(o).keypress (event) ->
                 if event.which

@@ -1,6 +1,6 @@
-Inquiry:
+Archive:
     type: entity
-    table: inquiry
+    table: archive
     fields:
         id:
             id: true
@@ -9,21 +9,26 @@ Inquiry:
             nullable: false
             generator:
                 strategy: IDENTITY
-        companyId:
+        clientId:
             type: integer
             unsigned: false
             nullable: true
-            column: company_id
+            column: client_id
         type:
             type: smallint
-            nullable: false
-        userId:
-            type: integer
-            unsigned: false
-            nullable: false
-            column: user_id
+            nullable: true
+        description:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
         createdAt:
             type: datetime
-            nullable: false
+            nullable: true
             column: created_at
+        createdBy:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: created_by
     lifecycleCallbacks: {  }

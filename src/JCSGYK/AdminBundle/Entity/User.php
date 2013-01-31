@@ -54,6 +54,11 @@ class User extends BaseUser
      */
     private $clientmodified;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Archive", mappedBy="creator")
+     */
+    private $archivecreated;
+
     public function __construct($salt = null)
     {
         parent::__construct();
@@ -65,6 +70,7 @@ class User extends BaseUser
         $this->clientCaseAdmin = new ArrayCollection();
         $this->clientcreated = new ArrayCollection();
         $this->clientmodified = new ArrayCollection();
+        $this->archivecreated = new ArrayCollection();
     }
 
     /**
@@ -244,5 +250,38 @@ class User extends BaseUser
     public function getClientmodified()
     {
         return $this->clientmodified;
+    }
+
+    /**
+     * Add archivecreated
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Archive $archivecreated
+     * @return User
+     */
+    public function addArchivecreated(\JCSGYK\AdminBundle\Entity\Archive $archivecreated)
+    {
+        $this->archivecreated[] = $archivecreated;
+    
+        return $this;
+    }
+
+    /**
+     * Remove archivecreated
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Archive $archivecreated
+     */
+    public function removeArchivecreated(\JCSGYK\AdminBundle\Entity\Archive $archivecreated)
+    {
+        $this->archivecreated->removeElement($archivecreated);
+    }
+
+    /**
+     * Get archivecreated
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getArchivecreated()
+    {
+        return $this->archivecreated;
     }
 }

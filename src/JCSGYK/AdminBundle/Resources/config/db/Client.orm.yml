@@ -30,7 +30,7 @@ Client:
             fixed: false
             nullable: false
         gender:
-            type: integer
+            type: boolean
             nullable: true
         birthDate:
             type: date
@@ -198,42 +198,43 @@ Client:
             nullable: true
             column: location_flat_number
         maritalStatus:
-            type: integer
+            type: smallint
             nullable: true
             column: marital_status
         citizenshipStatus:
-            type: integer
+            type: boolean
             nullable: true
             column: citizenship_status
         citizenship:
-            type: integer
-            unsigned: false
+            type: boolean
             nullable: true
         educationCode:
-            type: integer
-            unsigned: false
+            type: smallint
             nullable: true
             column: education_code
         note:
             type: text
             nullable: true
         familySize:
-            type: integer
-            unsigned: false
+            type: boolean
             nullable: true
             column: family_size
         ecActivity:
+            type: smallint
+            nullable: true
+            column: ec_activity
+        caseAdmin:
             type: integer
             unsigned: false
             nullable: true
-            column: ec_activity
+            column: case_admin
         createdAt:
             type: datetime
             nullable: true
             column: created_at
         createdBy:
             type: integer
-            unsigned: false
+            unsigned: true
             nullable: true
             column: created_by
         modifiedAt:
@@ -242,12 +243,12 @@ Client:
             column: modified_at
         modifiedBy:
             type: integer
-            unsigned: false
+            unsigned: true
             nullable: true
             column: modified_by
         openedBy:
             type: integer
-            unsigned: false
+            unsigned: true
             nullable: true
             column: opened_by
         docFile:
@@ -256,7 +257,7 @@ Client:
             column: doc_file
         jobType:
             type: integer
-            unsigned: false
+            unsigned: true
             nullable: true
             column: job_type
         guardianFirstname:

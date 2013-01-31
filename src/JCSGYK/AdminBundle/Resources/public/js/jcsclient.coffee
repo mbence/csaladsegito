@@ -62,8 +62,8 @@ JcsClient =
                     $("#problemblock .loading").hide()
                     $("#problemblock .close").click()
                 )
-                $("#problem-list tbody tr").removeClass("current")
-                $(this).addClass("current")
+                $("#problem-list tbody tr").removeClass("current cursor")
+                $(this).addClass("current cursor")
 
             false
         )

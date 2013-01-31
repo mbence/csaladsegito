@@ -31,7 +31,17 @@
             {% endif %}
         </dd>
 
-        <dt>3) Problems</dt>
+        <dt>3) Archives</dt>
+        <dd>
+            <button type="submit" name="import" value="archive100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
+            &nbsp;&nbsp;
+            <button type="submit" name="import" value="archive" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+            {% if results.archive is defined %}
+                Succesfully imported {{ results.archive }}
+            {% endif %}
+        </dd>
+
+        <dt>4) Problems</dt>
         <dd>
             <button type="submit" name="import" value="problem100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
             &nbsp;&nbsp;
@@ -41,7 +51,7 @@
             {% endif %}
         </dd>
 
-        <dt>4) Events</dt>
+        <dt>5) Events</dt>
         <dd>
             <button type="submit" name="import" value="event100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
             &nbsp;&nbsp;
@@ -51,7 +61,7 @@
             {% endif %}
         </dd>
 
-        <dt>5) Case admins</dt>
+        <dt>6) Case admins</dt>
         <dd>
             <button type="submit" name="import" value="caseadmin100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
             &nbsp;&nbsp;

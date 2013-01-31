@@ -1,0 +1,24 @@
+{# Archive #}
+<div class="client-sub togglable" {% if client.getArchives|length == 0 %}style="display:none;"{% endif %}>{{ 'irattár'|trans }}</div>
+<div>
+    {% if client.getArchives|length %}
+    <table id="archive-list" class="client problem-list" cellspacing="0" border="0">
+        <tr>
+            <th>Dátum</th>
+            <th>Típus</th>
+            <th>Megjegyzés</th>
+            <th>Felelős</th>
+        </tr>
+        <tbody>
+        {% for archive in client.getArchives %}
+        <tr>
+            <td>{{ fdatetime(archive.createdAt) }}</td>
+            <td>{{ param(archive.type) }}</td>
+            <td>{{ archive.description|nl2br }}</td>
+            <td>{% if archive.creator.firstname is defined %}{{ fname(archive.creator.firstname, archive.creator.lastname) }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>

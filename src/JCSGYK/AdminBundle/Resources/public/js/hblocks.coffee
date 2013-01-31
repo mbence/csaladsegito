@@ -29,7 +29,17 @@ HBlocks =
     setKeys: (event) ->
         # close current block on ESC
         if 27 == event.which
-            $(".contentscroller > .current .close").click()
+            if $(".contentscroller > .current .close").length
+                event.stopPropagation()
+                event.preventDefault()
+                $(".contentscroller > .current .close").click()
+            # clear the search field
+            else if $(".contentscroller > .current #quicksearch").length
+                event.stopPropagation()
+                event.preventDefault()
+                $("#quicksearch .nf-clear").click()
+                $("#quicksearch .searchfield").focus()
+
         # left
         if 37 == event.which
             if $(".contentscroller > .current").prev().is(":visible")
@@ -55,6 +65,7 @@ HBlocks =
                         $(".contentscroller > .current .walkable tr.cursor").removeClass("cursor").prev().addClass("cursor").focus()
                     else
                         $(".contentscroller > .current .searchfield").focus()
+                        $(".contentscroller > .current .walkable tr.cursor").removeClass("cursor")
         # down
         if 40 == event.which
             if $(".contentscroller > .current .walkable tr").length
@@ -142,17 +153,18 @@ HBlocks =
         true
 
     scrollTo: (block) ->
+        console.log $(document.activeElement)
         blockW = @blockW()
         x = Math.round(block * blockW - (($("#content").width() - blockW) / 2))
         $(".contentwrapper").animate({scrollLeft: x}, 500)
-        $(".contentscroller > div").removeClass("current")
         bch = block + 1
-        $(".contentscroller > div:nth-child(" + bch + ")").addClass("current")
-        if $(".contentscroller > .current .searchfield").length
-            $(".contentscroller > .current .searchfield").focus()
-        else if $(".contentscroller > .current .walkable .current").length
-            $(".contentscroller > .current .walkable .current").focus()
-        else if $(".contentscroller > .current .walkable .cursor").length
-            $(".contentscroller > .current .walkable .cursor").focus()
-        else
-            $(".contentscroller > .current").focus()
+        if not $(".contentscroller > div:nth-child(" + bch + ")").hasClass("current")
+            $(".contentscroller > div").removeClass("current")
+            $(".contentscroller > div:nth-child(" + bch + ")").addClass("current")
+
+            if $(".contentscroller > .current .walkable .current").length
+                $(".contentscroller > .current .walkable .current").focus()
+            else if $(".contentscroller > .current .walkable .cursor").length
+                $(".contentscroller > .current .walkable .cursor").focus()
+            else
+                $(".contentscroller > .current").focus()

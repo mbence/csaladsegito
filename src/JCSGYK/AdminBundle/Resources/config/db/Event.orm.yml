@@ -18,8 +18,7 @@ Event:
             type: text
             nullable: true
         type:
-            type: integer
-            unsigned: false
+            type: smallint
             nullable: true
         createdAt:
             type: datetime
@@ -40,22 +39,19 @@ Event:
             nullable: true
             column: modified_by
         titleCode:
-            type: integer
-            unsigned: false
+            type: smallint
             nullable: true
             column: title_code
         forwardCode:
-            type: integer
-            unsigned: false
+            type: smallint
             nullable: true
             column: forward_code
         activityCode:
-            type: integer
-            unsigned: false
+            type: smallint
             nullable: true
             column: activity_code
         eventDate:
-            type: datetime
+            type: date
             nullable: true
             column: event_date
         clientVisit:

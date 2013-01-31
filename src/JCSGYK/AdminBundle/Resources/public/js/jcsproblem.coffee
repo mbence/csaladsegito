@@ -32,8 +32,8 @@ JcsProblem =
                     $("#eventblock .loading").hide()
                     $("#eventblock .close").click()
                 )
-                $("#event-list tbody tr").removeClass("current")
-                $(this).addClass("current")
+                $("#event-list tbody tr").removeClass("current cursor")
+                $(this).addClass("current cursor")
 
             false
         )

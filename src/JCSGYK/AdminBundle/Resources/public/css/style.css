@@ -359,7 +359,7 @@ table.problem-list td {
     border-bottom: 0;
     color: #555;
 }
-#debt-list td {
+#debt-list td, #archive-list td {
     cursor: auto;
 }
 /* Events */

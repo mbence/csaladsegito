@@ -4,8 +4,7 @@ Parameter:
     fields:
         id:
             id: true
-            type: integer
-            unsigned: false
+            type: smallint
             nullable: false
             generator:
                 strategy: IDENTITY
@@ -15,16 +14,14 @@ Parameter:
             nullable: true
             column: company_id
         group:
-            type: integer
-            unsigned: false
+            type: smallint
             nullable: true
         position:
-            type: integer
-            unsigned: false
+            type: smallint
             nullable: true
         name:
             type: string
-            length: 255
+            length: 100
             fixed: false
             nullable: true
         isActive:

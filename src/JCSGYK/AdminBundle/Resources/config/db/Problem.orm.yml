@@ -23,18 +23,16 @@ Problem:
             type: text
             nullable: true
         type:
-            type: integer
-            unsigned: false
+            type: smallint
             nullable: true
-            column: user_prob
         level:
             type: integer
             unsigned: false
-            nullable: false
-        is_active:
-            type: integer
-            unsigned: false
             nullable: true
+        isActive:
+            type: boolean
+            nullable: true
+            column: is_active
         createdAt:
             type: datetime
             nullable: true
@@ -42,7 +40,7 @@ Problem:
         createdBy:
             type: integer
             unsigned: false
-            nullable: false
+            nullable: true
             column: created_by
         modifiedAt:
             type: datetime
@@ -51,17 +49,17 @@ Problem:
         modifiedBy:
             type: integer
             unsigned: false
-            nullable: false
+            nullable: true
             column: modified_by
         assignedTo:
             type: integer
             unsigned: false
-            nullable: false
+            nullable: true
             column: assigned_to
         closedBy:
             type: integer
             unsigned: false
-            nullable: false
+            nullable: true
             column: closed_by
         closedAt:
             type: datetime
@@ -75,7 +73,7 @@ Problem:
         openedBy:
             type: integer
             unsigned: false
-            nullable: false
+            nullable: true
             column: opened_by
         attachment:
             type: string
