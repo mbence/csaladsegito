@@ -24,7 +24,7 @@ class Event
     /**
      * @var \Problem
      *
-     * @ORM\ManyToOne(targetEntity="Problem", inversedBy="events")
+     * @ORM\ManyToOne(targetEntity="Problem", inversedBy="events", fetch="EAGER")
      * @ORM\JoinColumn(name="problem_id", referencedColumnName="id")
      */
     private $problem;
@@ -126,29 +126,6 @@ class Event
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set problemId
-     *
-     * @param integer $problemId
-     * @return Event
-     */
-    public function setProblemId($problemId)
-    {
-        $this->problemId = $problemId;
-
-        return $this;
-    }
-
-    /**
-     * Get problemId
-     *
-     * @return integer
-     */
-    public function getProblemId()
-    {
-        return $this->problemId;
     }
 
     /**
@@ -448,5 +425,28 @@ class Event
     public function getModifier()
     {
         return $this->modifier;
+    }
+
+    /**
+     * Set problem
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Problem $problem
+     * @return Event
+     */
+    public function setProblem(\JCSGYK\AdminBundle\Entity\Problem $problem = null)
+    {
+        $this->problem = $problem;
+
+        return $this;
+    }
+
+    /**
+     * Get problem
+     *
+     * @return \JCSGYK\AdminBundle\Entity\Problem
+     */
+    public function getProblem()
+    {
+        return $this->problem;
     }
 }

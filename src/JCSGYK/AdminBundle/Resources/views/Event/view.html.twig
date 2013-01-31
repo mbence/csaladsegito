@@ -1,4 +1,8 @@
+{% if not event.getProblem.isActive %}
+<div class="archived bottompad25">Csak olvasható!</div>
+{% else %}
 <h1 class="client">&nbsp;</h1>
+{% endif %}
 
 <table class="client" cellspacing="0" border="0">
     <tr>

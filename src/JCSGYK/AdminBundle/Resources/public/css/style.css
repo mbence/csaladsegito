@@ -288,6 +288,9 @@ table.caseowner td {
 .bottompad {
     margin-bottom: 6px;
 }
+.bottompad25 {
+    margin-bottom: 25px;
+}
 .fullheight {
     height: 100%;
 }

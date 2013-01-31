@@ -1,4 +1,8 @@
+{% if not problem.isActive %}
+<div class="archived bottompad25">Lezárt probléma, csak olvasható!</div>
+{% else %}
 <h1 class="client">&nbsp;</h1>
+{% endif %}
 
 <table class="client caseowner" cellspacing="0" border="0">
     <tr>

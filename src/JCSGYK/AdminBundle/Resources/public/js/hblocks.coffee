@@ -86,8 +86,6 @@ HBlocks =
                 event.preventDefault()
                 $(".contentscroller > .current .walkable tr.cursor").click()
 
-        #console.log event.which
-
     setCloseButtons: ->
         # close button functionality
         $("#clientblock .close").click (e) =>
@@ -153,7 +151,6 @@ HBlocks =
         true
 
     scrollTo: (block) ->
-        console.log $(document.activeElement)
         blockW = @blockW()
         x = Math.round(block * blockW - (($("#content").width() - blockW) / 2))
         $(".contentwrapper").animate({scrollLeft: x}, 500)
