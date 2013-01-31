@@ -272,4 +272,8 @@ Client:
             fixed: false
             nullable: true
             column: guardian_lastname
+        isArchived:
+            type: boolean
+            nullable: true
+            column: is_archived
     lifecycleCallbacks: {  }

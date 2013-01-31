@@ -379,6 +379,13 @@ class Client
     private $guardianLastname;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="is_archived", type="integer", nullable=true)
+     */
+    private $isArchived;
+
+    /**
      * @ORM\OneToMany(targetEntity="Utilityprovider", mappedBy="client")
      */
     private $utilityproviders;
@@ -1641,4 +1648,28 @@ class Client
     {
         return $this->caseAdmin;
     }
+
+    /**
+     * Set isArchived
+     *
+     * @param integer $isArchived
+     * @return Client
+     */
+    public function setIsArchived($isArchived)
+    {
+        $this->isArchived = $isArchived;
+
+        return $this;
+    }
+
+    /**
+     * Get isArchived
+     *
+     * @return integer
+     */
+    public function getIsArchived()
+    {
+        return $this->isArchived;
+    }
+
 }

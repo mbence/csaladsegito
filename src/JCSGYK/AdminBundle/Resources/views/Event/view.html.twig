@@ -9,6 +9,14 @@
 <div class="event-description">
     {{ event.description|nl2br }}
 </div>
+    <table class="client" cellspacing="0" border="0">
+        <tr>
+            <th>{{ 'Ügyfélfogadás'|trans }}:</th>
+            <td>{% if event.clientVisit %}&#10004;{% else %}-{% endif %}</td>
+            <th>{{ 'Ügyfél lemondta'|trans }}:</th>
+            <td>{% if event.clientCancel %}&#10004;{% else %}-{% endif %}</td>
+        </tr>
+    </table>
 
 <div class="client-sub first-sub togglable">{{ 'adatok'|trans }}</div>
 <div>

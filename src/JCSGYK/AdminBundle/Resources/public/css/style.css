@@ -228,6 +228,10 @@ footer#colophon .credits a:hover {
 }
 
 /* Client */
+.archived {
+    font-size: 13px;
+    color: #d04a37;
+}
 h1.client {
     color: #34a;
     margin: 0 0 15px 0;

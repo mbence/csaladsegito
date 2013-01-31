@@ -27,6 +27,12 @@ class ImportController extends Controller
 
     public function indexAction(Request $request)
     {
+        // disable the profiler, for it fails with the huge query numbers
+        if ($this->container->has('profiler'))
+        {
+            $this->container->get('profiler')->disable();
+        }
+        
         $session = $this->get('session');
         $results = [];
 
@@ -70,7 +76,7 @@ class ImportController extends Controller
             return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
         }
         $r = $session->get('results', $results);
-        $session->remove('results');
+        //$session->remove('results');
 
         return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);
     }
@@ -688,6 +694,9 @@ class ImportController extends Controller
             }
 
             $this->setUtilityproviders($p, $imp);
+            // set archived
+            $p->setIsArchived($this->isArchived($imp['Person_ID']));
+
             // manage the object
             $em->persist($p);
 
@@ -702,6 +711,16 @@ class ImportController extends Controller
         $em->flush();
 
         return $n;
+    }
+
+    protected function isArchived($client_id)
+    {
+        $db = $this->get('doctrine.dbal.csaszir_connection');
+        $sql = "SELECT Status FROM PersonArchives pa, Archives a WHERE pa.Archive_ID=a.Archive_ID AND pa.Person_ID={$client_id} ORDER BY ArchivedOn_T DESC LIMIT 1";
+
+        $archived = $db->fetchAll($sql);
+
+        return !empty($archived[0]['Status']) && $archived[0]['Status'] > 1;
     }
 
     protected function getIdMap()

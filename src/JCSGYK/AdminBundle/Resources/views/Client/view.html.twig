@@ -1,3 +1,6 @@
+{% if client.isArchived %}
+<div class="archived">Archivált adatlap, csak olvasható!</div>
+{% endif %}
 {% include "JCSGYKAdminBundle:Client:_personal_data.html.twig" %}
 {% include "JCSGYKAdminBundle:Client:_problems.html.twig" %}
 

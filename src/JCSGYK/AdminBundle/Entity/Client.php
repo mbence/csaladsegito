@@ -18,6 +18,7 @@ class Client
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
@@ -374,6 +375,13 @@ class Client
      * @ORM\Column(name="guardian_lastname", type="string", length=255, nullable=true)
      */
     private $guardianLastname;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="is_archived", type="integer", nullable=true)
+     */
+    private $isArchived;
 
     /**
      * @ORM\OneToMany(targetEntity="Utilityprovider", mappedBy="client")
@@ -1739,7 +1747,7 @@ class Client
     public function addArchive(\JCSGYK\AdminBundle\Entity\Archive $archives)
     {
         $this->archives[] = $archives;
-    
+
         return $this;
     }
 
@@ -1756,10 +1764,33 @@ class Client
     /**
      * Get archives
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getArchives()
     {
         return $this->archives;
+    }
+
+    /**
+     * Set isArchived
+     *
+     * @param integer $isArchived
+     * @return Client
+     */
+    public function setIsArchived($isArchived)
+    {
+        $this->isArchived = $isArchived;
+    
+        return $this;
+    }
+
+    /**
+     * Get isArchived
+     *
+     * @return integer 
+     */
+    public function getIsArchived()
+    {
+        return $this->isArchived;
     }
 }
