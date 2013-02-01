@@ -26,6 +26,9 @@ HBlocks =
             HBlocks.setKeys(event)
         @setCloseButtons()
 
+    ###
+        Set the keyboard actions
+    ###
     setKeys: (event) ->
         # close current block on ESC
         if 27 == event.which
@@ -47,12 +50,12 @@ HBlocks =
                 $(".contentscroller > .current").prev().click()
         # right
         if 39 == event.which
-            # if 
+            # if the cursor is on the actually selected and opened element, we just step right
             if $(".contentscroller > .current .walkable tr.cursor").hasClass("current") and $(".contentscroller > .current").next().is(":visible")
                 $(".contentscroller > .current").next().click()
-            else
-                if $(".contentscroller > .current .walkable tr.cursor").length
-                    $(".contentscroller > .current .walkable tr.cursor").click()
+            # otherwise we click the current element
+            else if $(".contentscroller > .current .walkable tr.cursor").length
+                $(".contentscroller > .current .walkable tr.cursor").click()
         # up
         if 38 == event.which
             # only do anything if there is a list we can walk over, and there is a cursor too
@@ -91,6 +94,9 @@ HBlocks =
                 event.preventDefault()
                 $(".contentscroller > .current .walkable tr.cursor").click()
 
+    ###
+        Set the close button actions
+    ###
     setCloseButtons: ->
         # close button functionality
         $("#clientblock .close").click (e) =>
@@ -139,6 +145,9 @@ HBlocks =
                 @closeBlock(n, false)
             )
 
+    ###
+        Calculate the width of the blocks
+    ###
     blockW: ->
         blockW = Math.round(($(window).innerWidth() - 40) * 0.45)
         if blockW < 470
@@ -148,6 +157,9 @@ HBlocks =
 
         return blockW
 
+    ###
+        Count the visible blocks, and set the widths for scrolling
+    ###
     setBlockSizes: ->
         blockW = @blockW()
 
@@ -167,6 +179,9 @@ HBlocks =
 
         true
 
+    ###
+        Set the heights of the blocks
+    ###
     setHeights: ->
         h = $(window).innerHeight() - $('#header').outerHeight() - $('#colophon').outerHeight() - 36
         # set heights
@@ -177,17 +192,28 @@ HBlocks =
 
         true
 
+    ###
+        Scroll to the given block, and also set is as current
+        1 - search
+        2 - client
+        3 - problems
+        4 - events
+    ###
     scrollTo: (block) ->
         blockW = @blockW()
+        # try to center the selected block
         x = Math.round((block - 1) * blockW - (($("#content").width() - blockW) / 2))
         $(".contentwrapper").animate({scrollLeft: x}, 500)
+        # if not already set, add the "current" class to the selected block
         if not $(".contentscroller > div:nth-child(" + block + ")").hasClass("current")
             $(".contentscroller > div").removeClass("current")
             $(".contentscroller > div:nth-child(" + block + ")").addClass("current")
-
+            # if there is a list, focus on it's current element
             if $(".contentscroller > .current .walkable .current").length
                 $(".contentscroller > .current .walkable .current").focus()
+            # or focus on the one selected by the cursor
             else if $(".contentscroller > .current .walkable .cursor").length
                 $(".contentscroller > .current .walkable .cursor").focus()
+            # or focus on the block itself, if no current, and no cursor exists
             else
                 $(".contentscroller > .current").focus()
