@@ -43,24 +43,24 @@ JcsClient =
         $("#problem-list tbody tr").click( (event) ->
             event.stopPropagation()
             if $(this).data("problemid")?
-                $("#eventblock .close").click()
+                HBlocks.closeBlock(4)
                 $("#problemblock .loading").show()
                 $("#problemblock .problemcontent").hide()
                 $("#problemblock").show()
                 HBlocks.setBlockSizes()
-                HBlocks.scrollTo(2)
+                HBlocks.scrollTo(3)
 
                 # start the ajax request
                 $.post($("#getproblemform").attr("action"), {id: $(this).data("problemid")}, (data) ->
                     $("#problemblock .loading").hide()
                     $("#problemblock .problemcontent").html(data).show()
-                    HBlocks.scrollTo(2)
+                    HBlocks.scrollTo(3)
                     JcsProblem.init()
                 ).error( (data) ->
                     # there was some error :(
                     AjaxBag.showError(data.statusText)
                     $("#problemblock .loading").hide()
-                    $("#problemblock .close").click()
+                    HBlocks.closeBlock(3)
                 )
                 $("#problem-list tbody tr").removeClass("current cursor")
                 $(this).addClass("current cursor")

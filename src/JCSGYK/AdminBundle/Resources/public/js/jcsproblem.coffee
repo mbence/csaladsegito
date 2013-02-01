@@ -18,19 +18,19 @@ JcsProblem =
                 $("#eventblock .eventcontent").hide()
                 $("#eventblock").show()
                 HBlocks.setBlockSizes()
-                HBlocks.scrollTo(3)
+                HBlocks.scrollTo(4)
 
                 # start the ajax request
                 $.post($("#geteventform").attr("action"), {id: $(this).data("eventid")}, (data) ->
                     $("#eventblock .loading").hide()
                     $("#eventblock .eventcontent").html(data).show()
                     JcsToggle.init("eventblock")
-                    HBlocks.scrollTo(3)
+                    HBlocks.scrollTo(4)
                 ).error( (data) ->
                     # there was some error :(
                     AjaxBag.showError(data.statusText)
                     $("#eventblock .loading").hide()
-                    $("#eventblock .close").click()
+                    HBlocks.closeBlock(4)
                 )
                 $("#event-list tbody tr").removeClass("current cursor")
                 $(this).addClass("current cursor")

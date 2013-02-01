@@ -19,7 +19,7 @@ JcsSearch =
         # quick search
         $("#quicksearch").submit( ->
             nf.start()
-            HBlocks.scrollTo(0)
+            HBlocks.scrollTo(1)
             if $("#quicksearch #q").attr('value') == ''
                 $("#search-results").html(orig_results_text)
             $.post($(this).attr("action"), $(this).serialize(), (data) ->
@@ -43,9 +43,9 @@ JcsSearch =
             $("#clientblock .loading").show()
             $("#clientblock .clientcontent").hide()
             $("#clientblock").show()
-            $("#problemblock .close").click()
+            HBlocks.closeBlock(4)
+            HBlocks.closeBlock(3)
             HBlocks.setBlockSizes()
-            HBlocks.scrollTo(1)
 
             # start the ajax request
             $.post($("#getclientform").attr("action"), {id: $(this).data("userid")}, (data) ->
@@ -57,7 +57,7 @@ JcsSearch =
                 # there was some error :(
                 AjaxBag.showError(data.statusText)
                 $("#clientblock .loading").hide()
-                $("#clientblock .close").click()
+                HBlocks.closeBlock(1)
             )
             $("#search-results tr").removeClass("current cursor")
             $(this).addClass("current cursor")
