@@ -204,10 +204,13 @@ HBlocks =
         # try to center the selected block
         x = Math.round((block - 1) * blockW - (($("#content").width() - blockW) / 2))
         $(".contentwrapper").animate({scrollLeft: x}, 500)
-        # if not already set, add the "current" class to the selected block
-        if not $(".contentscroller > div:nth-child(" + block + ")").hasClass("current")
+
+        # if not already set, or we are not on the first block ...
+        if not $(".contentscroller > div:nth-child(" + block + ")").hasClass("current") or block != 1
+            # we add the "current" class to the selected block
             $(".contentscroller > div").removeClass("current")
             $(".contentscroller > div:nth-child(" + block + ")").addClass("current")
+
             # if there is a list, focus on it's current element
             if $(".contentscroller > .current .walkable .current").length
                 $(".contentscroller > .current .walkable .current").focus()

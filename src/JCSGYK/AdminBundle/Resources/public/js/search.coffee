@@ -45,19 +45,19 @@ JcsSearch =
             $("#clientblock").show()
             HBlocks.closeBlock(4)
             HBlocks.closeBlock(3)
-            HBlocks.setBlockSizes()
+            HBlocks.scrollTo(2)
 
             # start the ajax request
             $.post($("#getclientform").attr("action"), {id: $(this).data("userid")}, (data) ->
                 $("#clientblock .loading").hide()
                 $("#clientblock .clientcontent").html(data).show()
-                HBlocks.scrollTo(1)
+                HBlocks.scrollTo(2)
                 JcsClient.init()
             ).error( (data) ->
                 # there was some error :(
                 AjaxBag.showError(data.statusText)
                 $("#clientblock .loading").hide()
-                HBlocks.closeBlock(1)
+                HBlocks.closeBlock(2)
             )
             $("#search-results tr").removeClass("current cursor")
             $(this).addClass("current cursor")
