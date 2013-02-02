@@ -21,7 +21,7 @@
             <td>{{ user.username }}</td>
             <td><a href="mailto:{{ fname(user.firstname, user.lastname) }} &lt;{{ user.email }}&gt;">{{ user.email }}</a></td>
             <td>{{ user.lastLogin|fdate('sdt') }}</td>
-            <td>{{ check(user.enabled) }}</td>
+            <td>{{ user.enabled|check }}</td>
         </tr>
     {% endfor %}
     </tbody>

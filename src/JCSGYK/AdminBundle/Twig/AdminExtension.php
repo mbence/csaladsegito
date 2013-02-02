@@ -18,6 +18,10 @@ class AdminExtension extends \Twig_Extension
     {
         return [
             'fdate' => new \Twig_Filter_Method($this, 'formatDate'),
+            'check' => new \Twig_Filter_Method($this, 'check', ['is_safe' => ['html']]),
+            'fphone' => new \Twig_Filter_Method($this, 'formatPhone'),
+            'gender' => new \Twig_Filter_Method($this, 'gender'),
+            'fcurr' => new \Twig_Filter_Method($this, 'formatCurrency'),
         ];
     }
 
@@ -25,12 +29,8 @@ class AdminExtension extends \Twig_Extension
     {
         return array(
             'fname' => new \Twig_Function_Method($this, 'formatName'),
-            'gender' => new \Twig_Function_Method($this, 'gender'),
-            'fphone' => new \Twig_Function_Method($this, 'formatPhone'),
             'param' => new \Twig_Function_Method($this, 'getParam'),
             'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
-            'fcurr' => new \Twig_Function_Method($this, 'formatCurrency'),
-            'check' => new \Twig_Function_Method($this, 'check', ['is_safe' => ['html']]),
         );
     }
 

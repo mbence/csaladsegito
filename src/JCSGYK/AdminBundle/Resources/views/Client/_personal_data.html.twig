@@ -18,7 +18,7 @@
             <th>{{ 'Ügyfélszám'|trans }}:</th>
             <td>{{ client.id }}</td>
             <th>{{ 'Nem'|trans }}:</th>
-            <td>{{ gender(client.gender)|trans }}</td>
+            <td>{{ client.gender|gender|trans }}</td>
         </tr>
         <tr>
             <th>{{ 'Szül. név'|trans }}:</th>
@@ -47,11 +47,11 @@
         <tr>
             {% if client.mobile %}
             <th>{{ 'Mobil'|trans }}:</th>
-            <td {% if not client.phone %}colspan="3"{% endif %}>{{ fphone(client.mobile) }}</td>
+            <td {% if not client.phone %}colspan="3"{% endif %}>{{ client.mobile|fphone }}</td>
             {% endif %}
             {% if client.phone %}
             <th>{{ 'Telefon'|trans }}:</th>
-            <td>{{ fphone(client.phone) }}</td>
+            <td>{{ client.phone|fphone }}</td>
             {% endif %}
         </tr>
         {% endif %}
@@ -63,7 +63,7 @@
             {% endif %}
             {% if client.fax %}
             <th>{{ 'Fax'|trans }}:</th>
-            <td>{{ fphone(client.fax) }}</td>
+            <td>{{ client.fax|fphone }}</td>
             {% endif %}
         </tr>
         {% endif %}

@@ -13,8 +13,8 @@
             {% for debt in problem.getDebts %}
                 <tr>
                     <td>{{ param(debt.type) }}</td>
-                    <td>{{ fcurr(debt.registeredDebt) }}</td>
-                    <td>{{ fcurr(debt.managedDebt) }}</td>
+                    <td>{{ debt.registeredDebt|fcurr }}</td>
+                    <td>{{ debt.managedDebt|fcurr }}</td>
                 </tr>
                 {% set sumReg = sumReg + debt.registeredDebt %}
                 {% set sumMan = sumMan + debt.managedDebt %}
@@ -22,8 +22,8 @@
             {% if problem.getDebts|length > 1 %}
                 <tr class="debt-sum">
                     <td>{{ 'összesen'|trans }}</td>
-                    <td>{{ fcurr(sumReg) }}</td>
-                    <td>{{ fcurr(sumMan) }}</td>
+                    <td>{{ sumReg|fcurr }}</td>
+                    <td>{{ sumMan|fcurr }}</td>
                 </tr>
             {% endif %}
         </table>

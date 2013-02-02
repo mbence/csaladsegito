@@ -16,9 +16,9 @@
     <table class="client" cellspacing="0" border="0">
         <tr>
             <th>{{ 'Ügyfélfogadás'|trans }}:</th>
-            <td>{{ check(event.clientVisit) }}</td>
+            <td>{{ event.clientVisit|check }}</td>
             <th>{{ 'Ügyfél lemondta'|trans }}:</th>
-            <td>{{ check(event.clientCancel) }}</td>
+            <td>{{ event.clientCancel|check }}</td>
         </tr>
     </table>
 
