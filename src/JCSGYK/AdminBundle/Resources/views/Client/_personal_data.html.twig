@@ -26,7 +26,7 @@
         </tr>
         <tr>
             <th>{{ 'Szül. hely, idő'|trans }}:</th>
-            <td colspan="3">{% if client.birthPlace %}{{ client.birthPlace }}, {% endif %}{{ fdate(client.birthDate) }}</td>
+            <td colspan="3">{% if client.birthPlace %}{{ client.birthPlace }}, {% endif %}{{ client.birthDate|fdate }}</td>
         </tr>
         <tr>
             <th>{{ 'Anyja neve'|trans }}:</th>

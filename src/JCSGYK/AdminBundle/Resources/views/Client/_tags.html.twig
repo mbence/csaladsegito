@@ -5,13 +5,13 @@
         <tr>
             <th>{{ 'Létrehozta'|trans }}:</th>
             <td>{{ fname(item.getCreator.firstname, item.getCreator.lastname) }}</td>
-            <td>({{ fdatetime(item.createdAt) }})</td>
+            <td>({{ item.createdAt|fdate('dt') }})</td>
         </tr>
         {% if item.modifiedAt and item.modifiedAt != item.createdAt %}
         <tr>
             <th>{{ 'Módosította'|trans }}:</th>
             <td>{{ fname(item.getModifier.firstname, item.getModifier.lastname) }}</td>
-            <td>({{ fdatetime(item.modifiedAt) }})</td>
+            <td>({{ item.modifiedAt|fdate('dt') }})</td>
         </tr>
         {% endif %}
     </table>

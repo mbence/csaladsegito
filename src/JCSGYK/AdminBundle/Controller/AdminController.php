@@ -6,6 +6,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 
+use JCSGYK\AdminBundle\Entity\AdminUser;
+use JCSGYK\AdminBundle\Form\Type\AdminUserType;
+
 class AdminController extends Controller
 {
     /**
@@ -16,7 +19,6 @@ class AdminController extends Controller
     {
         $co = $this->container->get('jcs.ds')->getCompany();
 
-
         if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
             $this->get('logger')->info('ROLE_ADMIN');
         }
@@ -25,12 +27,18 @@ class AdminController extends Controller
     }
 
     /**
-    * @Secure(roles="ROLE_ADMIN")
-    */
-
+     * Lists the users from the admin_user table
+     *
+     * @Secure(roles="ROLE_ADMIN")
+     */
     public function usersAction()
     {
-        return $this->render('JCSGYKAdminBundle:Admin:index.html.twig', []);
+        $em = $this->getDoctrine()->getManager();
+//        $users = $em->getRepository('JCSGYKAdminBundle:User')->findAll([], ['lastname, firstname' => 'ASC']);
+        $users = $em->createQuery('SELECT u FROM JCSGYKAdminBundle:User u ORDER BY u.lastname, u.firstname')
+            ->getResult();
+
+        return $this->render('JCSGYKAdminBundle:Admin:users.html.twig', ['users' => $users]);
     }
 
     /**

@@ -1,0 +1,30 @@
+{% extends 'JCSGYKAdminBundle::layout.html.twig' %}
+
+{% block title %}Családsegítő Admin{% endblock %}
+
+{% block content %}
+<div class="adminuser">
+<h1>{{ 'Felhasználók'|trans }}</h1>
+
+<table class="search-results" cellspacing=0 border=0>
+    <thead><tr>
+        <th>{{ 'név'|trans }}</th>
+        <th>{{ 'felhasználói név'|trans }}</th>
+        <th>{{ 'email'|trans }}</th>
+        <th>{{ 'utolsó belépés'|trans }}</th>
+        <th>{{ 'aktív'|trans }}</th>
+    </tr></thead>
+    <tbody>
+    {% for user in users %}
+        <tr>
+            <td>{{ fname(user.firstname, user.lastname) }}</td>
+            <td>{{ user.username }}</td>
+            <td><a href="mailto:{{ fname(user.firstname, user.lastname) }} &lt;{{ user.email }}&gt;">{{ user.email }}</a></td>
+            <td>{{ user.lastLogin|fdate('sdt') }}</td>
+            <td>{{ check(user.enabled) }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

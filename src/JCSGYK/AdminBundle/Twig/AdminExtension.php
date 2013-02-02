@@ -14,19 +14,29 @@ class AdminExtension extends \Twig_Extension
         $this->dbparams = $dbparams;
     }
 
+    public function getFilters()
+    {
+        return [
+            'fdate' => new \Twig_Filter_Method($this, 'formatDate'),
+        ];
+    }
+
     public function getFunctions()
     {
         return array(
             'fname' => new \Twig_Function_Method($this, 'formatName'),
-            'fdate' => new \Twig_Function_Method($this, 'formatDate'),
-            'fsdate' => new \Twig_Function_Method($this, 'formatShortDate'),
-            'fdatetime' => new \Twig_Function_Method($this, 'formatDateTime'),
             'gender' => new \Twig_Function_Method($this, 'gender'),
             'fphone' => new \Twig_Function_Method($this, 'formatPhone'),
             'param' => new \Twig_Function_Method($this, 'getParam'),
             'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
             'fcurr' => new \Twig_Function_Method($this, 'formatCurrency'),
+            'check' => new \Twig_Function_Method($this, 'check', ['is_safe' => ['html']]),
         );
+    }
+
+    public function check($val)
+    {
+        return $val ? '&#10004;' : '-';
     }
 
     public function getInquiryTypes()
@@ -53,25 +63,36 @@ class AdminExtension extends \Twig_Extension
 
         return $re;
     }
-    public function formatShortDate(\Datetime $d)
+
+    /**
+     * Format a date
+     * @param \JCSGYK\AdminBundle\Twig\DateTime $d
+     * @param string $type
+     * @return formatted string or nothing if not a \DateTime given
+     */
+    public function formatDate($d, $type = '')
     {
-        return $this->formatDate($d, true);
-    }
+        if ($d instanceof \DateTime) {
+            // TODO: find a better place for the month names
+            $months = ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];
 
-    public function formatDate(\Datetime $d, $short = false)
-    {
-        // TODO: find a better place for the month names
-        $months = ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];
-
-        return $short ?
-            $d->format('Y.m.d.') :
-            $d->format('Y. ') .  $this->translator->trans($months[$d->format('n') - 1]) . $d->format(' j.');
-    }
-
-    public function formatDateTime(\Datetime $d)
-    {
-        return $this->formatDate($d) . $d->format(' H:i:s');
-
+            // short date
+            if ('sd' == $type) {
+                return $d->format('Y.m.d.');
+            }
+            // date time
+            elseif ('dt' ==  $type) {
+                return $this->formatDate($d) . $d->format(' H:i:s');
+            }
+            // short date time
+            elseif ('sdt' ==  $type) {
+                return $d->format('Y.m.d. H:i:s');
+            }
+            // long date (with month name)
+            else {
+                return $d->format('Y. ') .  $this->translator->trans($months[$d->format('n') - 1]) . $d->format(' j.');
+            }
+        }
     }
 
     /**
@@ -122,13 +143,7 @@ class AdminExtension extends \Twig_Extension
         return $price;
     }
 
-/*    public function getFilters()
-    {
-        return array(
-            'price' => new \Twig_Filter_Method($this, 'priceFilter'),
-        );
-    }
-
+/*
     public function priceFilter($number, $decimals = 0, $decPoint = '.', $thousandsSep = ',')
     {
         $price = number_format($number, $decimals, $decPoint, $thousandsSep);

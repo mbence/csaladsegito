@@ -6,7 +6,7 @@
 
 <table class="client" cellspacing="0" border="0">
     <tr>
-        <td>{{ fsdate(event.eventDate) }}</td>
+        <td>{{ event.eventDate|fdate('sd') }}</td>
     </tr>
 </table>
 
@@ -16,9 +16,9 @@
     <table class="client" cellspacing="0" border="0">
         <tr>
             <th>{{ 'Ügyfélfogadás'|trans }}:</th>
-            <td>{% if event.clientVisit %}&#10004;{% else %}-{% endif %}</td>
+            <td>{{ check(event.clientVisit) }}</td>
             <th>{{ 'Ügyfél lemondta'|trans }}:</th>
-            <td>{% if event.clientCancel %}&#10004;{% else %}-{% endif %}</td>
+            <td>{{ check(event.clientCancel) }}</td>
         </tr>
     </table>
 

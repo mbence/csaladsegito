@@ -6,7 +6,7 @@
             <tr>
                 <th>{{ 'Lezárta'|trans }}:</th>
                 <td>{% if problem.closer.firstname is defined %}{{ fname(problem.closer.firstname, problem.closer.lastname) }}{% endif %}</td>
-                <td>({{ fdatetime(problem.closedAt) }})</td>
+                <td>({{ problem.closedAt|fdate('dt') }})</td>
             </tr>
             <tr>
                 <th>{{ 'Lezárás oka'|trans }}:</th>

@@ -12,7 +12,7 @@
         <tbody>
         {% for archive in client.getArchives %}
         <tr>
-            <td>{{ fsdate(archive.createdAt) }}</td>
+            <td>{{ archive.createdAt|fdate('sd') }}</td>
             <td>{{ param(archive.type) }}</td>
             <td>{{ archive.description|nl2br }}</td>
             <td>{% if archive.creator.firstname is defined %}{{ fname(archive.creator.firstname, archive.creator.lastname) }}{% endif %}</td>
