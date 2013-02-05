@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -44,8 +45,21 @@ class AdminController extends Controller
                 ->findOneBy(['id' => $id, 'companyId' => $company_id]);
 
             if (!empty($user)) {
-
                 $form = $this->createForm(new UserType(), $user);
+
+                //var_dump($request->request->get('user'));
+                # save the user
+                if ($request->request->get('user')) {
+                    $form->bind($request);
+
+                    if ($form->isValid()) {
+                        $user = $form->getData();
+                        var_dump($user);
+
+                        $this->get('session')->setFlash('notice', 'felhasználó elmentve');
+                        return new Response('success');
+                    }
+                }
 
                 return $this->render('JCSGYKAdminBundle:Admin:useredit.html.twig', ['form' => $form->createView()]);
             }

@@ -137,7 +137,7 @@ footer#colophon .credits a:hover {
 .contentscroller > div.current {
     border-color: #989ec2;
 }
-.contentscroller .close {
+.close {
     /*background-image:url(../images/close.png);*/
     position:absolute;
     right:0px;
@@ -153,7 +153,7 @@ footer#colophon .credits a:hover {
     margin: 2px 2px 0 0;
     box-shadow: 0 0 2px 1px #ddd inset;
 }
-.contentscroller .close:hover {
+.close:hover {
     box-shadow: 0 0 2px 1px #ddd, 0 0 2px 1px #ddd inset;
     color: #d04a37;
 }
@@ -285,6 +285,9 @@ table.caseowner td {
 .toppad {
     margin-top: 6px;
 }
+.toppad10 {
+    margin-top: 10px;
+}
 .bottompad {
     margin-bottom: 6px;
 }
@@ -407,6 +410,100 @@ table.problem-list td {
     font-weight: normal;
     font-size: 23px;
 }
+#userlist {
+    height: 100%;
+    overflow: auto;
+}
 #useredit .loading, #useredit #getuserform {
     display: none;
+}
+#useredit {
+    width: 500px;
+    position: relative;
+}
+.editform div {
+    color: #039;
+    line-height: 30px;
+    font-size: 15px;
+}
+.editform div:hover {
+    background-color: #f5f5f5;
+}
+.editform label {
+    width: 130px;
+    text-align: right;
+    margin: 2px 10px 0 0;
+    display: inline-block;
+    vertical-align: center;
+}
+.editform input[type=text], .editform input[type=email], .editform input[type=datetime] {
+    width: 300px;
+    font-size: 15px;
+    background-color: #fcfcfc;
+    border: 1px solid #ccc;
+    padding: 3px 5px 2px;
+    color: #555;
+}
+.editform input[readonly] {
+    border: none;
+    background-color: transparent;
+    color: #89c;
+}
+.editform #user_roles {
+    display: inline-block;
+    line-height: 16px;
+    padding: 3px 10px 2px;
+    border: 1px solid #ccc;
+    width: 190px;
+}
+.editform #user_roles label {
+    clear: right;
+    text-align: left;
+    margin: 0;
+    width: 170px;
+}
+.editform #user_roles input[type=checkbox] {
+    clear: left;
+    margin: 3px 4px 3px 0;
+}
+.editform .formbuttons {
+    margin: 20px 0 0 0;
+    text-align: right;
+}
+.editform .formbuttons:hover {
+    background-color: transparent;
+}
+.editform .formbuttons .cancel {
+    background-color: transparent;
+    color: #00f;
+    border: 0;
+    margin: 0 20px 0 0;
+    cursor: pointer;
+}
+.editform .formbuttons .usersave {
+    display: inline-block;
+    border-radius: 4px;
+    box-shadow: 0 4px 1px #ffc700 inset;
+    background-color: #eec123;
+    width: 100px;
+    height: 28px;
+    color: #fff;
+    cursor: pointer;
+
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: -o-linear-gradient(top, #eec123, #d3a70e);
+}
+.editform .formbuttons .usersave:hover, .editform .formbuttons .cancel:hover {
+    color: #000;
+}
+.editform .formbuttons .form-saving {
+    background:
+        url('../images/nf-loader.gif') no-repeat center,
+        -moz-linear-gradient(top, #eec123, #d3a70e);
+    text-indent: -2000px;
+    overflow: hidden;
+    cursor: wait;
 }

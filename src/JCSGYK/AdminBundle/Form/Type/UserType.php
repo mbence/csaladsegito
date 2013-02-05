@@ -15,24 +15,31 @@ class UserType extends AbstractType
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('id', 'number', ['read_only' => true]);
+        $builder->add('id', 'number', ['read_only' => true, 'mapped' => false]);
         $builder->add('firstname', 'text', ['label' => 'Keresztnév']);
         $builder->add('lastname', 'text', ['label' => 'Vezetéknév']);
         $builder->add('username', 'text', ['label' => 'Felhasználói név']);
-        $builder->add('email', 'email', ['label' => 'E-Mail cím', 'required' => false]);
+        $builder->add('email', 'email', ['label' => 'E-Mail cím', 'required' => true]);
         $builder->add('roles', 'choice', [
             'label' => 'Jogosultságok',
             'choices' => [
                 'ROLE_ASSISTANCE' => 'Asszisztens',
                 'ROLE_FAMILY_HELP' => 'Családsegítő',
                 'ROLE_CHILD_WELFARE' => 'Gyermekvédelem',
-                'ROLE_ADMIN' => 'Admin'
+                'ROLE_ADMIN' => 'Admin',
+                'ROLE_SUPERADMIN' => 'Superadmin'
             ],
             'multiple'  => true,
             'expanded'  => true,
         ]);
-        $builder->add('enabled', 'checkbox');
-        $builder->add('lastlogin', 'datetime', ['read_only' => true, 'widget' => 'single_text']);
+        $builder->add('enabled', 'checkbox', ['label' => 'Aktív']);
+        $builder->add('lastlogin', 'datetime', [
+            'label' => 'Utolsó belépés',
+            'read_only' => true,
+            'widget' => 'single_text',
+            'format' => 'yyyy.MM.dd. HH:mm:ss',
+            'mapped' => false,
+        ]);
     }
 
     public function getName()

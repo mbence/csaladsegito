@@ -1,6 +1,6 @@
-<h1>&nbsp;</h1>
+<h1>{{ 'Felhasználó szerkesztése'|trans }}</h1>
 
-<form action="{{ path('admin_users') }}" method="post" {{ form_enctype(form) }}>
+<form id="editform" class="editform" action="{{ path('admin_users') }}" method="post" novalidate {{ form_enctype(form) }}>
     {{ form_errors(form) }}
 
     {{ form_row(form.id) }}
@@ -12,5 +12,10 @@
     {{ form_row(form.roles) }}
 
     {{ form_rest(form) }}
-    <input type="submit" />
+    <input type="hidden" name="id" value="{{ form.vars.value.id }}">
+    <div class="clear"></div>
+    <div class="formbuttons">
+        <button type="reset" class="cancel">{{ 'mégse'|trans }}</button>
+        <button type="submit" class="usersave" name="usersave">{{ 'Mentés'|trans }}</button>
+    </div>
 </form>
