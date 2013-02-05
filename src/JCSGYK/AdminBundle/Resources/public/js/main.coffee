@@ -6,8 +6,10 @@ $ ->
     AjaxBag.init()
     JcsSearch.init()
     HBlocks.init()
+    JcsAdmin.init()
 
     JcsSearch.qSubmit()
+
 
 ###
     $("body").ajaxComplete (event, XMLHttpRequest, ajaxOption) ->

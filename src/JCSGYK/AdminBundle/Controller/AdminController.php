@@ -5,9 +5,10 @@ namespace JCSGYK\AdminBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use JCSGYK\AdminBundle\Entity\AdminUser;
-use JCSGYK\AdminBundle\Form\Type\AdminUserType;
+use JCSGYK\AdminBundle\Form\Type\UserType;
 
 class AdminController extends Controller
 {
@@ -31,10 +32,30 @@ class AdminController extends Controller
      *
      * @Secure(roles="ROLE_ADMIN")
      */
-    public function usersAction()
+    public function usersAction(Request $request)
     {
+        // only process ajax requests on prod env!
+        $id = $request->request->get('id');
+        if (!empty($id) && ($request->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment'))) {
+
+            $company_id = $this->container->get('jcs.ds')->getCompanyId();
+            // get client data
+            $user = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:User')
+                ->findOneBy(['id' => $id, 'companyId' => $company_id]);
+
+            if (!empty($user)) {
+
+                $form = $this->createForm(new UserType(), $user);
+
+                return $this->render('JCSGYKAdminBundle:Admin:useredit.html.twig', ['form' => $form->createView()]);
+            }
+            else {
+                throw new HttpException(400, "Bad request");
+            }
+        }
+
+        // no id given - list all users
         $em = $this->getDoctrine()->getManager();
-//        $users = $em->getRepository('JCSGYKAdminBundle:User')->findAll([], ['lastname, firstname' => 'ASC']);
         $users = $em->createQuery('SELECT u FROM JCSGYKAdminBundle:User u ORDER BY u.lastname, u.firstname')
             ->getResult();
 

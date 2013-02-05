@@ -6,7 +6,7 @@
 <div class="adminuser">
 <h1>{{ 'Felhasználók'|trans }}</h1>
 
-<table class="search-results" cellspacing=0 border=0>
+<table id="userlist" class="search-results tablesorter" cellspacing=0 border=0>
     <thead><tr>
         <th>{{ 'név'|trans }}</th>
         <th>{{ 'felhasználói név'|trans }}</th>
@@ -16,7 +16,7 @@
     </tr></thead>
     <tbody>
     {% for user in users %}
-        <tr>
+        <tr data-userid="{{ user.id }}" tabindex="{{ loop.index + 99 }}">
             <td>{{ fname(user.firstname, user.lastname) }}</td>
             <td>{{ user.username }}</td>
             <td><a href="mailto:{{ fname(user.firstname, user.lastname) }} &lt;{{ user.email }}&gt;">{{ user.email }}</a></td>
@@ -27,4 +27,14 @@
     </tbody>
 </table>
 </div>
+<div class="adminuser" id="useredit">
+    <div class="leftpad rightpad fullheight">
+        <form action="{{ path('admin_users') }}" method="post" name="getuserform" id="getuserform">
+            <input type="hidden" name="id">
+        </form>
+        <div class="loading">Betöltés...</div>
+        <div class="usercontent"></div>
+    </div>
+</div>
+<div class="clear"></div>
 {% endblock %}

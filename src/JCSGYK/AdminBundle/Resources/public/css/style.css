@@ -173,7 +173,7 @@ footer#colophon .credits a:hover {
     display: none;
 }
 
-#clientblock .loading, #problemblock .loading, #eventblock .loading {
+#clientblock .loading, #problemblock .loading, #eventblock .loading, #useredit .loading {
     color: #666;
     height: 95%;
     background: url('../images/ajax-loader3.gif') no-repeat center center;
@@ -398,11 +398,15 @@ table.problem-list td {
 }
 
 .adminuser {
-    width: 800px;
+    width: 50%;
+    float: left;
 }
 .adminuser h1 {
     color: #34a;
     margin: 15px 0 15px 0;
     font-weight: normal;
     font-size: 23px;
+}
+#useredit .loading, #useredit #getuserform {
+    display: none;
 }

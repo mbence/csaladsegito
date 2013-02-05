@@ -5,6 +5,7 @@ namespace JCSGYK\AdminBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ClientController extends Controller
 {
@@ -16,7 +17,7 @@ class ClientController extends Controller
     public function viewAction(Request $request)
     {
         // only process ajax requests on prod env!
-        if ($this->getRequest()->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment')) {
+        if ($request->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment')) {
 
             $id = $request->request->get('id');
             $company_id = $this->container->get('jcs.ds')->getCompanyId();

@@ -1,0 +1,16 @@
+<h1>&nbsp;</h1>
+
+<form action="{{ path('admin_users') }}" method="post" {{ form_enctype(form) }}>
+    {{ form_errors(form) }}
+
+    {{ form_row(form.id) }}
+    {{ form_row(form.lastname) }}
+    {{ form_row(form.firstname) }}
+
+    {{ form_row(form.username) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.roles) }}
+
+    {{ form_rest(form) }}
+    <input type="submit" />
+</form>
