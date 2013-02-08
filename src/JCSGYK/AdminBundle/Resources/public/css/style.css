@@ -444,9 +444,7 @@ table.problem-list td {
     padding: 3px 5px 2px;
     color: #555;
 }
-.editform input[readonly] {
-    border: none;
-    background-color: transparent;
+.editform .readonly {
     color: #89c;
 }
 .editform #user_roles {
@@ -506,4 +504,9 @@ table.problem-list td {
     text-indent: -2000px;
     overflow: hidden;
     cursor: wait;
+}
+.editform > div > ul {
+    color: #d04a37;
+    width: 100%;
+    text-align: right;
 }

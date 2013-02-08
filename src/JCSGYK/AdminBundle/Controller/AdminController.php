@@ -29,19 +29,24 @@ class AdminController extends Controller
     }
 
     /**
-     * Lists the users from the admin_user table
+     * Lists and edits the users from the admin_user table
      *
      * @Secure(roles="ROLE_ADMIN")
      */
     public function usersAction(Request $request)
     {
+        //var_dump($_POST);
+
+        $um = $this->get('fos_user.user_manager');
+        $em = $this->getDoctrine()->getManager();
+
         // only process ajax requests on prod env!
         $id = $request->request->get('id');
         if (!empty($id) && ($request->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment'))) {
 
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
             // get client data
-            $user = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:User')
+            $user = $em->getRepository('JCSGYKAdminBundle:User')
                 ->findOneBy(['id' => $id, 'companyId' => $company_id]);
 
             if (!empty($user)) {
@@ -53,15 +58,14 @@ class AdminController extends Controller
                     $form->bind($request);
 
                     if ($form->isValid()) {
-                        $user = $form->getData();
-                        var_dump($user);
+                        $em->flush();
 
                         $this->get('session')->setFlash('notice', 'felhasználó elmentve');
                         return new Response('success');
                     }
                 }
 
-                return $this->render('JCSGYKAdminBundle:Admin:useredit.html.twig', ['form' => $form->createView()]);
+                return $this->render('JCSGYKAdminBundle:Admin:useredit.html.twig', ['form' => $form->createView(), 'user' => $user]);
             }
             else {
                 throw new HttpException(400, "Bad request");
@@ -69,7 +73,6 @@ class AdminController extends Controller
         }
 
         // no id given - list all users
-        $em = $this->getDoctrine()->getManager();
         $users = $em->createQuery('SELECT u FROM JCSGYKAdminBundle:User u ORDER BY u.lastname, u.firstname')
             ->getResult();
 
@@ -77,9 +80,10 @@ class AdminController extends Controller
     }
 
     /**
-    * @Secure(roles="ROLE_SUPERADMIN")
-    */
-
+     * System update action
+     *
+     * @Secure(roles="ROLE_SUPERADMIN")
+     */
     public function updateAction(Request $request)
     {
         $ex = [];

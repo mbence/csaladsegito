@@ -2,16 +2,14 @@
 
 <form id="editform" class="editform" action="{{ path('admin_users') }}" method="post" novalidate {{ form_enctype(form) }}>
     {{ form_errors(form) }}
-
-    {{ form_row(form.id) }}
-    {{ form_row(form.lastname) }}
-    {{ form_row(form.firstname) }}
-
-    {{ form_row(form.username) }}
-    {{ form_row(form.email) }}
+    <div><label>{{ 'Id'|trans }}</label><span class="readonly">{{ user.id }}</span></div>
+    <div>{{ form_errors(form.lastname) }}{{ form_label(form.lastname) }}{{ form_widget(form.lastname) }}</div>
+    <div>{{ form_errors(form.firstname) }}{{ form_label(form.firstname) }}{{ form_widget(form.firstname) }}</div>
+    <div>{{ form_errors(form.username) }}{{ form_label(form.username) }}{{ form_widget(form.username) }}</div>
+    <div>{{ form_errors(form.email) }}{{ form_label(form.email) }}{{ form_widget(form.email) }}</div>
     {{ form_row(form.roles) }}
-
     {{ form_rest(form) }}
+    <div><label>{{ 'Utolsó belépés'|trans }}</label><span class="readonly">{{ user.lastlogin|fdate('dt') }}</span></div>
     <input type="hidden" name="id" value="{{ form.vars.value.id }}">
     <div class="clear"></div>
     <div class="formbuttons">

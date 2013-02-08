@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  *
  * @ORM\Table(name="client")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Client
 {
@@ -405,6 +406,16 @@ class Client
         $this->utilityproviders = new ArrayCollection();
         $this->problems = new ArrayCollection();
         $this->archives = new ArrayCollection();
+        $this->setCreatedAt(new \DateTime());
+        $this->setModifiedAt(new \DateTime());
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function setModifiedAtValue()
+    {
+       $this->setModifiedAt(new \DateTime());
     }
 
     /**
@@ -1780,14 +1791,14 @@ class Client
     public function setIsArchived($isArchived)
     {
         $this->isArchived = $isArchived;
-    
+
         return $this;
     }
 
     /**
      * Get isArchived
      *
-     * @return integer 
+     * @return integer
      */
     public function getIsArchived()
     {

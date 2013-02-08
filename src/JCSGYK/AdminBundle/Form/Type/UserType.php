@@ -15,11 +15,10 @@ class UserType extends AbstractType
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('id', 'number', ['read_only' => true, 'mapped' => false]);
         $builder->add('firstname', 'text', ['label' => 'Keresztnév']);
         $builder->add('lastname', 'text', ['label' => 'Vezetéknév']);
         $builder->add('username', 'text', ['label' => 'Felhasználói név']);
-        $builder->add('email', 'email', ['label' => 'E-Mail cím', 'required' => true]);
+        $builder->add('email', 'email', ['label' => 'E-Mail cím', 'required' => false]);
         $builder->add('roles', 'choice', [
             'label' => 'Jogosultságok',
             'choices' => [
@@ -33,13 +32,6 @@ class UserType extends AbstractType
             'expanded'  => true,
         ]);
         $builder->add('enabled', 'checkbox', ['label' => 'Aktív']);
-        $builder->add('lastlogin', 'datetime', [
-            'label' => 'Utolsó belépés',
-            'read_only' => true,
-            'widget' => 'single_text',
-            'format' => 'yyyy.MM.dd. HH:mm:ss',
-            'mapped' => false,
-        ]);
     }
 
     public function getName()

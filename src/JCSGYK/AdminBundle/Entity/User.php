@@ -5,6 +5,7 @@ namespace JCSGYK\AdminBundle\Entity;
 use FOS\UserBundle\Entity\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 /**
  * @ORM\Entity
@@ -25,12 +26,11 @@ class User extends BaseUser
      * @ORM\Column(name="company_id", type="integer", nullable=true)
      */
     private $companyId;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="firstname", type="string", length=255, nullable=false)
-     * @Assert\NotBlank()
      */
     private $firstname;
 
@@ -73,6 +73,16 @@ class User extends BaseUser
         $this->clientcreated = new ArrayCollection();
         $this->clientmodified = new ArrayCollection();
         $this->archivecreated = new ArrayCollection();
+    }
+
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('firstname', new Assert\NotBlank);
+        $metadata->addPropertyConstraint('lastname', new Assert\NotBlank);
+        $metadata->addPropertyConstraint('username', new Assert\NotBlank);
+//        $metadata->addPropertyConstraint('username', new Assert\);
+        $metadata->addPropertyConstraint('email', new Assert\Email);
     }
 
     /**
