@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-use JCSGYK\AdminBundle\Entity\AdminUser;
+use JCSGYK\AdminBundle\Entity\User;
 use JCSGYK\AdminBundle\Form\Type\UserType;
 
 class AdminController extends Controller
@@ -29,35 +29,53 @@ class AdminController extends Controller
     }
 
     /**
-     * Lists and edits the users from the admin_user table
+     * Edits the users from the admin_user table
      *
      * @Secure(roles="ROLE_ADMIN")
      */
-    public function usersAction(Request $request)
+    public function userEditAction($id, Request $request)
     {
+        // TODO: form action
+        //
         //var_dump($_POST);
 
         $um = $this->get('fos_user.user_manager');
         $em = $this->getDoctrine()->getManager();
 
         // only process ajax requests on prod env!
-        $id = $request->request->get('id');
-        if (!empty($id) && ($request->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment'))) {
+        if ($request->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment')) {
 
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
-            // get client data
-            $user = $em->getRepository('JCSGYKAdminBundle:User')
-                ->findOneBy(['id' => $id, 'companyId' => $company_id]);
+            if (empty($id)) {
+                // new user
+                $user = $um->createUser();
+                $user->setCompanyId($company_id);
+                $user->setPlainPassword('x');
+                $form_action = $this->generateUrl('admin_user_new');
+            }
+            else {
+                // get user data
+                $user = $em->getRepository('JCSGYKAdminBundle:User')
+                    ->findOneBy(['id' => $id, 'companyId' => $company_id]);
+                $form_action = $this->generateUrl('admin_user_edit', ['id' => $id]);
+            }
 
             if (!empty($user)) {
-                $form = $this->createForm(new UserType(), $user);
-
-                //var_dump($request->request->get('user'));
-                # save the user
-                if ($request->request->get('user')) {
+                $sec = $this->get('security.context');
+                $form = $this->createForm(new UserType($sec), $user);
+                // only superadmins can see and edit superadmins
+                if (!$sec->isGranted('ROLE_SUPER_ADMIN') && in_array('ROLE_SUPER_ADMIN', $user->getRoles())) {
+                    throw new HttpException(401, "Unauthorized access");
+                }
+                // save the user
+                if ($request->isMethod('POST')) {
                     $form->bind($request);
 
                     if ($form->isValid()) {
+                        // save the user data
+                        if (empty($id)) {
+                            $em->persist($user);
+                        }
                         $em->flush();
 
                         $this->get('session')->setFlash('notice', 'felhasználó elmentve');
@@ -65,15 +83,27 @@ class AdminController extends Controller
                     }
                 }
 
-                return $this->render('JCSGYKAdminBundle:Admin:useredit.html.twig', ['form' => $form->createView(), 'user' => $user]);
-            }
-            else {
-                throw new HttpException(400, "Bad request");
+                return $this->render('JCSGYKAdminBundle:Admin:useredit.html.twig', ['form' => $form->createView(), 'user' => $user, 'action' => $form_action]);
             }
         }
+        throw new HttpException(400, "Bad request");
+    }
 
-        // no id given - list all users
-        $users = $em->createQuery('SELECT u FROM JCSGYKAdminBundle:User u ORDER BY u.lastname, u.firstname')
+    /**
+     * Lists the users from the admin_user table
+     *
+     * @Secure(roles="ROLE_ADMIN")
+     */
+    public function usersAction(Request $request)
+    {
+        // only superadmins can see and edit superadmins
+        $sql = 'SELECT u FROM JCSGYKAdminBundle:User u';
+        if (!$this->get('security.context')->isGranted('ROLE_SUPER_ADMIN')) {
+            $sql .= " WHERE u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'";
+        }
+        $sql .= ' ORDER BY u.lastname, u.firstname';
+        $em = $this->getDoctrine()->getManager();
+        $users = $em->createQuery($sql)
             ->getResult();
 
         return $this->render('JCSGYKAdminBundle:Admin:users.html.twig', ['users' => $users]);
@@ -82,7 +112,7 @@ class AdminController extends Controller
     /**
      * System update action
      *
-     * @Secure(roles="ROLE_SUPERADMIN")
+     * @Secure(roles="ROLE_SUPER_ADMIN")
      */
     public function updateAction(Request $request)
     {

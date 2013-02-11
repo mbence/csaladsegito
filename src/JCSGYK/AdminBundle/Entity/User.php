@@ -6,6 +6,7 @@ use FOS\UserBundle\Entity\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
@@ -83,6 +84,7 @@ class User extends BaseUser
         $metadata->addPropertyConstraint('username', new Assert\NotBlank);
 //        $metadata->addPropertyConstraint('username', new Assert\);
         $metadata->addPropertyConstraint('email', new Assert\Email);
+        $metadata->addPropertyConstraint('roles', new Assert\NotBlank);
     }
 
     /**

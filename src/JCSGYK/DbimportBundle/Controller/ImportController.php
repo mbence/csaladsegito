@@ -22,7 +22,7 @@ class ImportController extends Controller
     private $user_id_map = [];
 
     /**
-     * @Secure(roles="ROLE_SUPERADMIN")
+     * @Secure(roles="ROLE_SUPER_ADMIN")
      */
 
     public function indexAction(Request $request)
@@ -32,7 +32,7 @@ class ImportController extends Controller
         {
             $this->container->get('profiler')->disable();
         }
-        
+
         $session = $this->get('session');
         $results = [];
 
@@ -499,7 +499,7 @@ class ImportController extends Controller
         $user->setUsername('bence');
         $user->setPassword('tknMFBTjss49Q4QeXpslTbKJptBGMGknSRsCfCCsrUqtB8PTk1BviF1J5qehhHwlvCJ5JEtQYAA3qGurfv4ylw==');
         $user->setEmail('mxbence@gmail.com');
-        $user->setRoles(['ROLE_SUPERADMIN']);
+        $user->setRoles(['ROLE_SUPER_ADMIN']);
         $user->setEnabled(true);
         $user->setCompanyId($this->companyID);
         $user->setFirstname('Bence');

@@ -39,6 +39,15 @@ admin_home:
 admin_users:
     pattern:  /admin/users
     defaults: { _controller: JCSGYKAdminBundle:Admin:users }
+admin_user_edit:
+    pattern:  /admin/user/edit/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:userEdit, id: 0 }
+    requirements:
+        id:  \d+
+admin_user_new:
+    pattern:  /admin/user/new
+    defaults: { _controller: JCSGYKAdminBundle:Admin:userEdit, id: 0 }
+
 admin_update:
     pattern:  /admin/update
     defaults: { _controller: JCSGYKAdminBundle:Admin:update }

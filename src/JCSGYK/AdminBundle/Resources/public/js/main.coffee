@@ -2,8 +2,10 @@
     Init all js elements
 ###
 $ ->
+
     JcsMenu.init()
     AjaxBag.init()
+    # TODO: only start the appropriate init!
     JcsSearch.init()
     HBlocks.init()
     JcsAdmin.init()

@@ -1,19 +1,45 @@
 JcsAdmin =
     init: ->
+        $("#useredit").hide()
         @setupUsers()
         $("#userlist table").tablesorter()
         @setHeights()
+        $(window).resize =>
+            @setHeights()
 
-        $("#userlist tbody tr")[1].click()
+#        $("#userlist tbody tr")[1].click()
 
     setupUsers: ->
         $("#userlist tbody tr").click( (event) ->
-            event.stopPropagation()
+            if $(this).data("userid")
+                event.stopPropagation()
+                $("#useredit").show()
+                $("#useredit .loading").show()
+                $("#useredit .usercontent").hide()
+
+                # start the ajax request
+                $.get($("#getuserform").attr("action") + "/" + $(this).data("userid"), (data) ->
+                    $("#useredit .loading").hide()
+                    $("#useredit .usercontent").html(data).show()
+                    JcsAdmin.setupForm()
+                ).error( (data) ->
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $("#useredit .loading").hide()
+                    $("#useredit .usercontent").html("")
+                )
+                $("#userlist tr").removeClass("current cursor")
+                $(this).addClass("current cursor")
+        )
+
+        # new user
+        $("#new_user").click ->
+            $("#useredit").show()
             $("#useredit .loading").show()
             $("#useredit .usercontent").hide()
 
             # start the ajax request
-            $.post($("#getuserform").attr("action"), {id: $(this).data("userid")}, (data) ->
+            $.get($(this).attr("href"), (data) ->
                 $("#useredit .loading").hide()
                 $("#useredit .usercontent").html(data).show()
                 JcsAdmin.setupForm()
@@ -23,9 +49,8 @@ JcsAdmin =
                 $("#useredit .loading").hide()
                 $("#useredit .usercontent").html("")
             )
-            $("#userlist tr").removeClass("current cursor")
-            $(this).addClass("current cursor")
-        )
+
+            false
 
     setHeights: ->
         h = $(window).innerHeight() - $('#header').outerHeight() - $('#colophon').outerHeight() - 36
@@ -38,6 +63,7 @@ JcsAdmin =
         $("#useredit .formbuttons .cancel").add("#useredit .close").click ->
             $("#useredit .usercontent").html("")
             $("#userlist tr").removeClass("current cursor")
+            $("#useredit").hide()
 
         $("#useredit #editform").submit ->
             if !$("#useredit .formbuttons .usersave").hasClass('form-saving')

@@ -4,38 +4,42 @@
 
 {% block content %}
 <div class="adminuser" id="userlist">
-<div class="rightpad toppad10 fullheight">
-    <h1>{{ 'Felhasználók'|trans }}</h1>
+    <div class="rightpad fullheight nocollapse">
+        <div class="button-row">
+            <a href="{{ path('admin_user_new') }}" class="top-button" id="new_user">új felhsználó</a>
+        </div>
+        <h1>{{ 'Felhasználók'|trans }}</h1>
 
-    <table class="search-results tablesorter" cellspacing=0 border=0>
-        <thead><tr>
-            <th>{{ 'név'|trans }}</th>
-            <th>{{ 'felhasználói név'|trans }}</th>
-    {#        <th>{{ 'email'|trans }}</th> #}
-            <th>{{ 'utolsó belépés'|trans }}</th>
-            <th>{{ 'aktív'|trans }}</th>
-        </tr></thead>
-        <tbody>
-        {% for user in users %}
-            <tr data-userid="{{ user.id }}" tabindex="{{ loop.index + 99 }}">
-                <td>{{ fname(user.firstname, user.lastname) }}</td>
-                <td>{{ user.username }}</td>
-    {#            <td><a href="mailto:{{ fname(user.firstname, user.lastname) }} &lt;{{ user.email }}&gt;">{{ user.email }}</a></td> #}
-                <td>{{ user.lastLogin|fdate('sdt') }}</td>
-                <td>{{ user.enabled|check }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div></div>
+        <table class="search-results tablesorter" cellspacing=0 border=0>
+            <thead><tr>
+                <th>{{ 'név'|trans }}</th>
+                <th>{{ 'felhasználói név'|trans }}</th>
+        {#        <th>{{ 'email'|trans }}</th> #}
+                <th>{{ 'utolsó belépés'|trans }}</th>
+                <th>{{ 'aktív'|trans }}</th>
+            </tr></thead>
+            <tbody>
+            {% for user in users %}
+                <tr data-userid="{{ user.id }}" tabindex="{{ loop.index + 99 }}">
+                    <td>{{ fname(user.firstname, user.lastname) }}</td>
+                    <td>{{ user.username }}</td>
+        {#            <td><a href="mailto:{{ fname(user.firstname, user.lastname) }} &lt;{{ user.email }}&gt;">{{ user.email }}</a></td> #}
+                    <td>{{ user.lastLogin|fdate('sdt') }}</td>
+                    <td>{{ user.enabled|check }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <div class="adminuser" id="useredit">
-    <div class="leftpad20 rightpad toppad10 fullheight">
+    <div class="leftpad20 rightpad fullheight nocollapse">
         <div class="close">x</div>
-        <form action="{{ path('admin_users') }}" method="post" name="getuserform" id="getuserform">
+        <form action="{{ path('admin_user_edit') }}" method="get" name="getuserform" id="getuserform">
             <input type="hidden" name="id">
         </form>
-        <div class="loading">Betöltés...</div>
+        <div class="loading"><br>Betöltés...</div>
         <div class="usercontent"></div>
     </div>
 </div>

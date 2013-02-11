@@ -20,7 +20,7 @@ class UserController extends Controller
         // to add user roles:
 //        $userManager = $this->get('fos_user.user_manager');
 //        $user = $userManager->findUserByUsername('bence');
-//        $user->addRole('ROLE_SUPERADMIN');
+//        $user->addRole('ROLE_SUPER_ADMIN');
 //        $userManager->updateUser($user);
 
 

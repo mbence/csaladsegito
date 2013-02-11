@@ -12,14 +12,14 @@ class MenuController extends Controller
 //       ['route' => 'new_client', 'label' => 'Új ügyfél', 'role' => 'ROLE_USER'],
 
         ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
-        ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPERADMIN'],
+        ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
     ];
 
     public function mainAction()
     {
         // add the db import menu only for the dev enver
         if ('dev' == $this->container->getParameter('kernel.environment')) {
-            $this->menu[] = ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPERADMIN'];
+            $this->menu[] = ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPER_ADMIN'];
         }
 
         $router = $this->get("router");
@@ -46,7 +46,7 @@ class MenuController extends Controller
             if (!empty($r['_route']) && $m['route'] == $r['_route']) {
                 $class_list[] = 'current';
             }
-            if (in_array($m['role'], ['ROLE_ADMIN', 'ROLE_SUPERADMIN'])) {
+            if (in_array($m['role'], ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])) {
                 $class_list[] = 'adm-menu';
             }
             $m['class'] = implode(' ', $class_list);
