@@ -5,10 +5,11 @@ namespace JCSGYK\AdminBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use JMS\SecurityExtraBundle\Annotation\Secure;
 
 use JCSGYK\AdminBundle\Entity\User;
+use JCSGYK\AdminBundle\Entity\Parameter;
 use JCSGYK\AdminBundle\Form\Type\UserType;
 
 class AdminController extends Controller
@@ -114,20 +115,61 @@ class AdminController extends Controller
      *
      * @Secure(roles="ROLE_ADMIN")
      */
-    public function paramsAction(Request $request)
+    public function paramsAction($group, Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+        $co = $this->container->get('jcs.ds')->getCompanyId();
+
+        // save the current param group
+        if ($request->isMethod('POST')) {
+            $paramsave = $request->request->get('parameter');
+
+            foreach ($paramsave as $param_id => $param) {
+                if (!empty($param['id'])) {
+                    // update a parameter
+                    try {
+                        //get the original param
+                        $orig = $em->createQuery('SELECT p FROM JCSGYKAdminBundle:Parameter p WHERE p.id=:id AND p.companyId=:company')
+                            ->setParameter('id', $param['id'])
+                            ->setParameter('company', $co)
+                            ->setMaxResults(1)
+                            ->getSingleResult();
+                    }
+                    catch (\Exception $e) {
+                        // original parameter not found, exit
+                        throw new HttpException(400, "Bad request");
+                    }
+
+                    $orig->setPosition($param['position']);
+                    $orig->setName($param['name']);
+                    $orig->setIsActive(isset($param['isActive']));
+                }
+                else {
+                    // insert new param
+                    var_dump($param);
+                    if (!empty($param['name'])) {
+                        $new_param = new \JCSGYK\AdminBundle\Entity\Parameter;
+                        $new_param->setCompanyId($co);
+                        $new_param->setPosition($param['position']);
+                        $new_param->setGroup($param['group']);
+                        $new_param->setName($param['name']);
+                        $new_param->setIsActive(isset($param['isActive']));
+
+                        $em->persist($new_param);
+                    }
+                }
+            }
+            $em->flush();
+            $act_grp = $request->request->get('group', 1);
+            $this->get('session')->setFlash('notice', 'paraméterek elmentve');
+            return $this->redirect($this->generateUrl('admin_params', ['group' => $request->request->get('group', 1)]));
+        }
+
+        // get all params
         $params = $this->get('jcs.ds')->getAll();
         $groups = $this->container->getParameter('param_groups');
 
-        //var_dump($groups);
-        if ($request->isMethod('POST')) {
-            $paramsave = $request->request->get('parameter');
-            foreach ($paramsave as $param_id => $param) {
-                var_dump($param);
-            }
-        }
-
-        return $this->render('JCSGYKAdminBundle:Admin:params.html.twig', ['params' => $params, 'groups' => $groups]);
+        return $this->render('JCSGYKAdminBundle:Admin:params.html.twig', ['params' => $params, 'groups' => $groups, 'act' => $group]);
     }
 
     /**

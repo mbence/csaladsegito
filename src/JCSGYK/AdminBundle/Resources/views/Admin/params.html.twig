@@ -8,7 +8,7 @@
         <h1>{{ 'Paraméterek'|trans }}</h1>
         <ul>
         {% for id, group in groups %}
-            <li data-groupid="{{ id }}">{{ group|trans }}</li>
+            <li data-groupid="{{ id }}" {% if act == id %}class="current"{% endif %}>{{ group|trans }}</li>
         {% endfor %}
         </ul>
     </div>
@@ -18,7 +18,8 @@
         <h1>&nbsp;</h1>
         {% for id, group in groups %}
             <div class="paramlist" id="paramlist-{{ id }}">
-                <form action="" method="POST" name="paramform-{{ id }}" id="paramform-{{ id }}">
+                <form action="{{ path('admin_params') }}" method="POST" name="paramform-{{ id }}" id="paramform-{{ id }}" class="paramform">
+                    <input type="hidden" name="group" value="{{ id }}">
                     {% for param in params if id == param.group %}
                     <div class="param">
                         <input type="hidden" name="parameter[{{ loop.index }}][id]" value="{{ param.id }}">
@@ -26,10 +27,14 @@
                         <input type="hidden" name="parameter[{{ loop.index }}][group]" value="{{ id }}">
                         <span class="pos">- {{ param.position }} - </span>
                         <input type="text" value="{{ param.name }}" name="parameter[{{ loop.index }}][name]">
-                        <input type="checkbox" checked="{% if param.isActive %}checked{% endif %}" name="parameter[{{ loop.index }}][isActive]" value="1">
+                        <input type="checkbox" {% if param.isActive %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][isActive]" value="1">
                     </div>
                     {% endfor %}
-                    <br>
+
+                    <div class="center toppad10">
+                        <button class="new-param top-button" type="button">{{ 'új paraméter hozzáadása'|trans }}</button>
+                    </div>
+                    <br><br>
                     <div class="formbuttons">
                         <button type="reset" class="cancel button">{{ 'mégse'|trans }}</button>
                         <button type="submit" class="paramsave button" name="paramsave" value="save">{{ 'mentés'|trans }}</button>
@@ -37,6 +42,15 @@
                 </form>
             </div>
         {% endfor %}
+        <div id="newparam-template">
+            <div class="param newparam">
+                <input type="hidden" name="parameter[%pos%][position]" value="%pos%">
+                <input type="hidden" name="parameter[%pos%][group]" value="%grp%">
+                <span class="pos">- %pos% - </span>
+                <input type="text" value="" name="parameter[%pos%][name]">
+                <input type="checkbox" checked="checked" name="parameter[%pos%][isActive]" value="1">
+            </div>
+        </div>
     </div>
 </div>
 <div class="clear"></div>

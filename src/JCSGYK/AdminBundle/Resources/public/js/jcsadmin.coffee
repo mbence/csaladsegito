@@ -14,7 +14,12 @@ JcsAdmin =
         if $("#parameter-groups").length
             @setupParams()
 
+    ###
+        setup the parameter editor
+    ###
     setupParams: ->
+        $(".paramlist").hide()
+        # group selector
         $("#parameter-groups li").click (event) ->
             grp = $(this).data("groupid")
             if grp
@@ -27,10 +32,26 @@ JcsAdmin =
 
                 $("#parameter-groups li").removeClass("current cursor")
                 $(this).addClass("current cursor")
+        # add new parameter
+        $(".new-param").click ->
+            pos = $(this).parent().parent().children(".param").length + 1
+            group = $(this).parent().parent().children("[name=group]").val()
+            $(this).parent().before($("#newparam-template").html().replace(/%pos%/g, pos).replace('%grp%', group))
+            $(this).parent().prev().children(":text").focus()
 
-        $(".paramlist").hide()
-        $("#parameter-groups li")[0].click()
+        # form submit animation
+        $("#parameter-lists .paramform").submit ->
+            if !$(".paramsave", this).hasClass('form-saving')
+                $(".paramsave", this).addClass('form-saving')
+            else
+                return false
 
+        $("#parameter-lists").show()
+        $("#parameter-groups li.current").click()
+
+    ###
+        setup the user editor
+    ###
     setupUsers: ->
         $("#userlist tbody tr").click( (event) ->
             if $(this).data("userid")

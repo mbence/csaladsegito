@@ -31,7 +31,7 @@ class Parameter
     /**
      * @var integer
      *
-     * @ORM\Column(name="group", type="integer", nullable=true)
+     * @ORM\Column(name="`group`", type="integer", nullable=true)
      */
     private $group;
 

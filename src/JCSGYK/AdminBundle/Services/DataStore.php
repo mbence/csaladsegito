@@ -100,19 +100,22 @@ class DataStore
      * if unknown group id received, false will return
      *
      * @param integer $id
+     * @param boolean $all return all, or only the active params?
      * @return mixed
      */
-    public function getGroup($id = null)
+    public function getGroup($id = null, $all = false)
     {
         if (empty($this->groups)) {
             $this->groups = [];
             $params = $this->getAll();
 
             foreach ($params as $para) {
-                if (empty($this->groups[$para->getGroup()])) {
-                    $this->groups[$para->getGroup()] = [];
+                if ($all || $para->getIsActive()) {
+                    if (empty($this->groups[$para->getGroup()])) {
+                        $this->groups[$para->getGroup()] = [];
+                    }
+                    $this->groups[$para->getGroup()][$para->getId()] = $para->getName();
                 }
-                $this->groups[$para->getGroup()][$para->getId()] = $para->getName();
             }
         }
 

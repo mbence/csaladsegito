@@ -301,6 +301,9 @@ table.caseowner td {
     padding-top: 1px;
     margin-top: -1px;
 }
+.center {
+    text-align: center;
+}
 .client-sub {
     font-size: 12px;
     color: #666;
@@ -555,6 +558,7 @@ table.problem-list td {
 }
 #parameter-lists {
     width: 440px;
+    display: none;
 }
 #parameter-lists .formbuttons {
     margin: 20px 0 0 0;
@@ -589,4 +593,7 @@ table.problem-list td {
 }
 #parameter-lists input[type=text] {
     width: 330px;
+}
+#newparam-template {
+    display: none;
 }
