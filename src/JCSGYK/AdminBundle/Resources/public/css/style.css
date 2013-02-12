@@ -583,13 +583,11 @@ table.problem-list td {
     background-color: #f5f5f5;
 }
 #parameter-lists .pos {
-    color: #888;
-    font-size: 13px;
+    background: url('../images/sprs.png') no-repeat -64px 2px;
     cursor: move;
-    width: 40px;
-    display: inline-block;
-    text-align: right;
-    padding: 2px;
+    width: 26px;
+    height: 22px;
+    float: left;
 }
 #parameter-lists input[type=text] {
     width: 330px;

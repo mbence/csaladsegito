@@ -19,21 +19,22 @@
         {% for id, group in groups %}
             <div class="paramlist" id="paramlist-{{ id }}">
                 <form action="{{ path('admin_params') }}" method="POST" name="paramform-{{ id }}" id="paramform-{{ id }}" class="paramform">
-                    <input type="hidden" name="group" value="{{ id }}">
-                    {% for param in params if id == param.group %}
-                    <div class="param">
-                        <input type="hidden" name="parameter[{{ loop.index }}][id]" value="{{ param.id }}">
-                        <input type="hidden" name="parameter[{{ loop.index }}][position]" value="{{ param.position }}">
-                        <input type="hidden" name="parameter[{{ loop.index }}][group]" value="{{ id }}">
-                        <span class="pos">- {{ param.position }} - </span>
-                        <input type="text" value="{{ param.name }}" name="parameter[{{ loop.index }}][name]">
-                        <input type="checkbox" {% if param.isActive %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][isActive]" value="1">
+                    <div class="paramcontainer">
+                        {% for param in params if id == param.group %}
+                        <div class="param">
+                            <input type="hidden" name="parameter[{{ loop.index }}][id]" value="{{ param.id }}">
+                            <input class="hiddenpos" type="hidden" name="parameter[{{ loop.index }}][position]" value="{{ param.position }}">
+                            <input type="hidden" name="parameter[{{ loop.index }}][group]" value="{{ id }}">
+                            <span class="pos"> </span>
+                            <input type="text" value="{{ param.name }}" name="parameter[{{ loop.index }}][name]">
+                            <input type="checkbox" {% if param.isActive %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][isActive]" value="1">
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-
                     <div class="center toppad10">
                         <button class="new-param top-button" type="button">{{ 'új paraméter hozzáadása'|trans }}</button>
                     </div>
+                    <input type="hidden" name="group" value="{{ id }}">
                     <br><br>
                     <div class="formbuttons">
                         <button type="reset" class="cancel button">{{ 'mégse'|trans }}</button>
@@ -46,7 +47,7 @@
             <div class="param newparam">
                 <input type="hidden" name="parameter[%pos%][position]" value="%pos%">
                 <input type="hidden" name="parameter[%pos%][group]" value="%grp%">
-                <span class="pos">- %pos% - </span>
+                <span class="pos"> </span>
                 <input type="text" value="" name="parameter[%pos%][name]">
                 <input type="checkbox" checked="checked" name="parameter[%pos%][isActive]" value="1">
             </div>

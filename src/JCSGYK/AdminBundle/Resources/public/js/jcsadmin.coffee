@@ -34,10 +34,16 @@ JcsAdmin =
                 $(this).addClass("current cursor")
         # add new parameter
         $(".new-param").click ->
-            pos = $(this).parent().parent().children(".param").length + 1
+            pos = $(this).parent().prev().children(".param").length + 1
             group = $(this).parent().parent().children("[name=group]").val()
-            $(this).parent().before($("#newparam-template").html().replace(/%pos%/g, pos).replace('%grp%', group))
-            $(this).parent().prev().children(":text").focus()
+            $(this).parent().prev().append($("#newparam-template").html().replace(/%pos%/g, pos).replace('%grp%', group))
+            $(this).parent().prev().children().last().children(":text").focus()
+            $( ".paramcontainer" ).sortable( "refresh" );
+
+        # cancel button
+        $("#parameter-lists .paramform .cancel").click ->
+            $(".paramcontainer .newparam").remove()
+            $( ".paramcontainer" ).sortable("cancel");
 
         # form submit animation
         $("#parameter-lists .paramform").submit ->
@@ -45,6 +51,19 @@ JcsAdmin =
                 $(".paramsave", this).addClass('form-saving')
             else
                 return false
+        # sortable parameters
+        $( ".paramcontainer" ).sortable({
+            axis: "y"
+            cursor: "move"
+            containment: "parent"
+            handle: ".pos"
+            helper: "clone"
+            items: ".param"
+            opacity: 0.7
+            tolerance: "pointer"
+        }).on "sortupdate", (event, ui) ->
+            $(ui.item).parent().children(".param").each (index) ->
+                $(".hiddenpos", this).val(index + 1)
 
         $("#parameter-lists").show()
         $("#parameter-groups li.current").click()
