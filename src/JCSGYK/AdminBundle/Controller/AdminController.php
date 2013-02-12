@@ -110,6 +110,27 @@ class AdminController extends Controller
     }
 
     /**
+     * Lists the params from the parameters table
+     *
+     * @Secure(roles="ROLE_ADMIN")
+     */
+    public function paramsAction(Request $request)
+    {
+        $params = $this->get('jcs.ds')->getAll();
+        $groups = $this->container->getParameter('param_groups');
+
+        //var_dump($groups);
+        if ($request->isMethod('POST')) {
+            $paramsave = $request->request->get('parameter');
+            foreach ($paramsave as $param_id => $param) {
+                var_dump($param);
+            }
+        }
+
+        return $this->render('JCSGYKAdminBundle:Admin:params.html.twig', ['params' => $params, 'groups' => $groups]);
+    }
+
+    /**
      * System update action
      *
      * @Secure(roles="ROLE_SUPER_ADMIN")

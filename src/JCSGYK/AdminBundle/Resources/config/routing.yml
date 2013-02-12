@@ -36,6 +36,7 @@ register_inquiry:
 admin_home:
     pattern:  /admin
     defaults: { _controller: JCSGYKAdminBundle:Admin:index }
+# Admin Users #
 admin_users:
     pattern:  /admin/users
     defaults: { _controller: JCSGYKAdminBundle:Admin:users }
@@ -47,7 +48,11 @@ admin_user_edit:
 admin_user_new:
     pattern:  /admin/user/new
     defaults: { _controller: JCSGYKAdminBundle:Admin:userEdit, id: 0 }
-
+# Admin Params #
+admin_params:
+    pattern:  /admin/params
+    defaults: { _controller: JCSGYKAdminBundle:Admin:params }
+# Admin Systemupdate #
 admin_update:
     pattern:  /admin/update
     defaults: { _controller: JCSGYKAdminBundle:Admin:update }

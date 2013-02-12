@@ -12,6 +12,7 @@ class MenuController extends Controller
 //       ['route' => 'new_client', 'label' => 'Új ügyfél', 'role' => 'ROLE_USER'],
 
         ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
+        ['route' => 'admin_params', 'label' => 'Paraméterek', 'role' => 'ROLE_ADMIN'],
         ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
     ];
 

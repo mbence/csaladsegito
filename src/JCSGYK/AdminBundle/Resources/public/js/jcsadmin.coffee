@@ -1,13 +1,35 @@
 JcsAdmin =
     init: ->
-        $("#useredit").hide()
-        @setupUsers()
-        $("#userlist table").tablesorter()
-        @setHeights()
-        $(window).resize =>
+        # users
+        if $("#userlist").length
+            $("#useredit").hide()
+            @setupUsers()
+            $("#userlist table").tablesorter()
             @setHeights()
+            $(window).resize =>
+                @setHeights()
+    #        $("#userlist tbody tr")[1].click()
 
-#        $("#userlist tbody tr")[1].click()
+        # params
+        if $("#parameter-groups").length
+            @setupParams()
+
+    setupParams: ->
+        $("#parameter-groups li").click (event) ->
+            grp = $(this).data("groupid")
+            if grp
+                event.stopPropagation()
+                $("#paramedit").show()
+                $("#paramedit .loading").show()
+                $("#paramedit .usercontent").hide()
+                $(".paramlist").hide()
+                $("#paramlist-" + grp).show();
+
+                $("#parameter-groups li").removeClass("current cursor")
+                $(this).addClass("current cursor")
+
+        $(".paramlist").hide()
+        $("#parameter-groups li")[0].click()
 
     setupUsers: ->
         $("#userlist tbody tr").click( (event) ->

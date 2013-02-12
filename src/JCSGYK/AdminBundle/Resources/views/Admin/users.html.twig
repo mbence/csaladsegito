@@ -3,7 +3,7 @@
 {% block title %}Családsegítő Admin{% endblock %}
 
 {% block content %}
-<div class="adminuser" id="userlist">
+<div class="adminblock" id="userlist">
     <div class="rightpad fullheight nocollapse">
         <div class="button-row">
             <a href="{{ path('admin_user_new') }}" class="top-button" id="new_user">új felhasználó</a>
@@ -33,7 +33,7 @@
     </div>
 </div>
 
-<div class="adminuser" id="useredit">
+<div class="adminblock" id="useredit">
     <div class="leftpad20 rightpad fullheight nocollapse">
         <div class="close">x</div>
         <form action="{{ path('admin_user_edit') }}" method="get" name="getuserform" id="getuserform">
