@@ -15,13 +15,15 @@
     <div>{{ form_errors(form.firstname) }}{{ form_label(form.firstname) }}{{ form_widget(form.firstname) }}</div>
     <div>{{ form_errors(form.username) }}{{ form_label(form.username) }}{{ form_widget(form.username) }}</div>
     <div>{{ form_errors(form.email) }}{{ form_label(form.email) }}{{ form_widget(form.email) }}</div>
-    {{ form_row(form.roles) }}
-    <div>{{ form_errors(form.plainPassword.first) }}{{ form_label(form.plainPassword.first) }}{{ form_widget(form.plainPassword.first) }}</div>
-    <div>{{ form_errors(form.plainPassword.second) }}{{ form_label(form.plainPassword.second) }}{{ form_widget(form.plainPassword.second) }}</div>
-    {{ form_rest(form) }}
+    <div>{{ form_errors(form.roles) }}{{ form_label(form.roles) }}{{ form_widget(form.roles) }}</div>
+    <div>{{ form_errors(form.enabled) }}{{ form_label(form.enabled) }}{{ form_widget(form.enabled) }}</div>
     {% if user.id %}
         <div><label>{{ 'Utolsó belépés'|trans }}</label><span class="readonly">{{ user.lastlogin|fdate('dt') }}</span></div>
     {% endif %}
+    <br>
+    <div>{{ form_errors(form.plainPassword.first) }}{{ form_label(form.plainPassword.first) }}{{ form_widget(form.plainPassword.first) }}</div>
+    <div>{{ form_errors(form.plainPassword.second) }}{{ form_label(form.plainPassword.second) }}{{ form_widget(form.plainPassword.second) }}</div>
+    {{ form_rest(form) }}
     <div class="clear"></div>
     <div class="formbuttons">
         <button type="reset" class="cancel button">{{ 'mégse'|trans }}</button>
