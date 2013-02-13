@@ -1,0 +1,24 @@
+<h1>{{ 'Érdeklődés statisztika'|trans }}</h1>
+<br>
+
+<table class="stat-legend"><tbody>
+    {% for inq in types %}
+    <tr class="jqplot-table-legend">
+        <td class="jqplot-table-legend jqplot-table-legend-swatch" style="text-align: center; padding-top: 0px;">
+            <div class="jqplot-table-legend-swatch-outline">
+                <div class="jqplot-table-legend-swatch" style="background-color: {{ colors[loop.index0] }}; border-color: {{ colors[loop.index0] }};"></div>
+            </div>
+        </td>
+        <td class="jqplot-table-legend jqplot-table-legend-label" style="padding-top: 0px;">{{ inq }}</td>
+    </tr>
+    {% endfor %}
+</tbody></table>
+
+<script>
+    var day_charts = {{ detailed_json|raw }};
+</script>
+
+{% for chartdiv in detailed %}
+    <div id="{{ chartdiv.selector }}" style="height:140px;width:320px; "></div>
+{% endfor %}
+

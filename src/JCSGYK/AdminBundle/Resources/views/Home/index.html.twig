@@ -6,7 +6,9 @@
     {% if debug is defined %}
         {{ debug }}<br>
     {% endif %}
-    <div class="contentwrapper">
-        Welcome!
-    </div>
+    Welcome!
+
+    {% if is_granted(['ROLE_ASSISTANCE']) %}
+        {% render "JCSGYKAdminBundle:Assistance:inquiryStat" %}
+    {% endif %}
 {% endblock %}

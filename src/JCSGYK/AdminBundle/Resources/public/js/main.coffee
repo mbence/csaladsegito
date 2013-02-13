@@ -19,3 +19,7 @@ $ ->
             $('.sf-toolbar').empty()
             $.get window.location.protocol+'//'+window.location.hostname+'/app_dev.php/_wdt/'+XMLHttpRequest.getResponseHeader('x-debug-token'), (data) ->
                 $('.sf-toolbar').append(data)
+
+    if day_charts?
+        for day in day_charts
+            JcsChart.drawDay(day)

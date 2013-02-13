@@ -25,29 +25,29 @@ class Inquiry
     /**
      * @var integer
      *
-     * @ORM\Column(name="company_id", type="integer", nullable=true)
+     * @ORM\Column(name="user_id", type="integer", nullable=false)
      */
-    private $companyId;
+    private $userId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="type", type="integer", nullable=false)
+     * @ORM\Column(name="type", type="smallint", nullable=false)
      */
     private $type;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     * @ORM\Column(name="counter", type="integer", nullable=true)
      */
-    private $userId;
+    private $counter;
 
     /**
      * @var \DateTime
      *
      * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @ORM\Column(name="created_at", type="date", nullable=false)
      */
     private $createdAt;
 
@@ -64,26 +64,26 @@ class Inquiry
     }
 
     /**
-     * Set companyId
+     * Set userId
      *
-     * @param integer $companyId
+     * @param integer $userId
      * @return Inquiry
      */
-    public function setCompanyId($companyId)
+    public function setUserId($userId)
     {
-        $this->companyId = $companyId;
+        $this->userId = $userId;
 
         return $this;
     }
 
     /**
-     * Get companyId
+     * Get userId
      *
      * @return integer
      */
-    public function getCompanyId()
+    public function getUserId()
     {
-        return $this->companyId;
+        return $this->userId;
     }
 
     /**
@@ -110,26 +110,26 @@ class Inquiry
     }
 
     /**
-     * Set userId
+     * Set counter
      *
-     * @param integer $userId
+     * @param integer $counter
      * @return Inquiry
      */
-    public function setUserId($userId)
+    public function setCounter($counter)
     {
-        $this->userId = $userId;
+        $this->counter = $counter;
 
         return $this;
     }
 
     /**
-     * Get userId
+     * Get counter
      *
      * @return integer
      */
-    public function getUserId()
+    public function getCounter()
     {
-        return $this->userId;
+        return $this->counter;
     }
 
     /**
