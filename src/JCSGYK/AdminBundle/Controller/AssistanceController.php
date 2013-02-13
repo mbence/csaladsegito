@@ -46,8 +46,15 @@ class AssistanceController extends Controller
     */
     public function inquiryStatAction(Request $request)
     {
+        $colors = ['#E07628', '#A0D8F1', '#E9AF32', '#BF381A', '#0A224E'];
+        $jq_colors = [];
+        foreach ($colors as $c) {
+            $jq_colors[] = ['color' => $c];
+        }
+
         $user = $this->get('security.context')->getToken()->getUser();
         $inquiry_types = $this->container->get('jcs.ds')->getGroup(1);
+        $inquiry_map = array_flip(array_reverse(array_keys($inquiry_types)));
 
         // get the inquiry events
         $em = $this->getDoctrine()->getManager();
@@ -60,7 +67,7 @@ class AssistanceController extends Controller
         $stat_sum = [];
 
         // number of days to show in detailed view
-        $detailed_days = $day_count = 3;
+        $detailed_days = $day_count = 4;
         $act_day = 0;
         $day_max = 0;
 
@@ -76,12 +83,15 @@ class AssistanceController extends Controller
                 if (empty($stat_detailed[$day_num])) {
                     $stat_detailed[$day_num] = [
                         'selector' => 'daychart_' . $day_num,
-                        'data' => [],
+                        'data' => array_pad([], count($inquiry_types), [0]),
                         'tick' => [$day->getCreatedAt()->format('m.d.')],
-                        'max' => 0
+                        'max' => 0,
+                        'colors' => json_encode($jq_colors)
                     ];
                 }
-                $stat_detailed[$day_num]['data'][] = [$day->getCounter(), $day->getType()];
+                if (isset($inquiry_map[$day->getType()])) {
+                    $stat_detailed[$day_num]['data'][$inquiry_map[$day->getType()]] = [$day->getCounter()];
+                }
                 if ($day->getCounter() > $day_max) {
                     $day_max = $day->getCounter();
                 }
@@ -95,21 +105,8 @@ class AssistanceController extends Controller
         }
         // add the max numbers
         foreach ($stat_detailed as $k => $v) {
-            $stat_detailed[$k]['max'] = (int) ceil($day_max * 1.2);
+            $stat_detailed[$k]['max'] = (int) ceil($day_max * 1.15);
         }
-
-        /*
-        selector: 'chart_prev',
-        data: [[1], [6], [16]],
-        tick: ['02.10.'],
-        max: 20
-
-         */
-
-
-        $colors = ['#0A224E', '#BF381A', '#A0D8F1', '#E9AF32', '#E07628'];
-
-        //var_dump($stat_detailed[0]);
 
         return $this->render('JCSGYKAdminBundle:Home:inquiryStat.html.twig', [
             'detailed_json' => json_encode($stat_detailed),

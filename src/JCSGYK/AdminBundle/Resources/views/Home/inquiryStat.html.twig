@@ -6,7 +6,7 @@
     <tr class="jqplot-table-legend">
         <td class="jqplot-table-legend jqplot-table-legend-swatch" style="text-align: center; padding-top: 0px;">
             <div class="jqplot-table-legend-swatch-outline">
-                <div class="jqplot-table-legend-swatch" style="background-color: {{ colors[loop.index0] }}; border-color: {{ colors[loop.index0] }};"></div>
+                <div class="jqplot-table-legend-swatch" style="background-color: {{ colors[types|length - loop.index] }}; border-color: {{ colors[types|length - loop.index] }};"></div>
             </div>
         </td>
         <td class="jqplot-table-legend jqplot-table-legend-label" style="padding-top: 0px;">{{ inq }}</td>
