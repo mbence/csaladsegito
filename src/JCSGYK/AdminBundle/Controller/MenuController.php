@@ -69,7 +69,7 @@ class MenuController extends Controller
         $sec = $this->get('security.context');
 
         if ($sec->isGranted('ROLE_ADMIN')) {
-            return $this->redirect($this->generateUrl('admin_home'), 301);
+            return $this->redirect($this->generateUrl('home'), 301);
         }
         elseif ($sec->isGranted('ROLE_FAMILY_HELP')) {
             return $this->redirect($this->generateUrl('home'), 301);
