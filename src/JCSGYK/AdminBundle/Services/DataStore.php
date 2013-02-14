@@ -121,4 +121,16 @@ class DataStore
 
         return is_null($id) ? $this->groups : (isset($this->groups[$id]) ? $this->groups[$id] : false);
     }
+
+    /**
+     * Return the month array, or a single month
+     * @param type $month
+     * @return type
+     */
+    public function getMonth($month = 0)
+    {
+        $months = ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];
+
+        return empty($month) || !isset($months[$month - 1]) ? $months : $months[$month - 1];
+    }
 }

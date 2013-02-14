@@ -1,4 +1,4 @@
-<h1>{{ 'Érdeklődés statisztika'|trans }}</h1>
+<h1 class="center">{{ 'Érdeklődés statisztika'|trans }}</h1>
 <br>
 
 <table class="stat-legend"><tbody>
@@ -13,12 +13,14 @@
     </tr>
     {% endfor %}
 </tbody></table>
+<div class="clear"></div>
 
 <script>
     var day_charts = {{ detailed_json|raw }};
+    var month_charts = {{ month_json|raw }};
 </script>
 
 {% for chartdiv in detailed %}
-    <div id="{{ chartdiv.selector }}" style="height:140px;width:320px; "></div>
+    <div id="{{ chartdiv.selector }}" class="toppad10" style="height:140px;width:320px; "></div>
 {% endfor %}
-
+<div id="monthchart" style="height:200px;width:320px; "class="toppad10"></div>

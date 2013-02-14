@@ -90,7 +90,7 @@ class AdminExtension extends \Twig_Extension
             }
             // long date (with month name)
             else {
-                return $d->format('Y. ') .  $this->translator->trans($months[$d->format('n') - 1]) . $d->format(' j.');
+                return $d->format('Y. ') .  $this->translator->trans($this->dbparams->getMonth($d->format('n'))) . $d->format(' j.');
             }
         }
     }

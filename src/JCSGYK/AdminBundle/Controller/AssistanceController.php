@@ -64,12 +64,24 @@ class AssistanceController extends Controller
 
         // create an easy to use table of days and types
         $stat_detailed = [];
-        $stat_sum = [];
+        // format the monthly stat
+        $stat_month = [
+            'selector' => 'monthchart',
+            'data' => array_pad([], count($inquiry_types), array_pad([], date('t'), 0)),
+            'title' => $this->container->get('jcs.ds')->getMonth(date('n')),
+            'colors' => json_encode($jq_colors)
+        ];
 
         // number of days to show in detailed view
-        $detailed_days = $day_count = 4;
+        $detailed_days = $day_count = 2;
         $act_day = 0;
         $day_max = 0;
+
+        // helper array for the title
+        $daynames = [
+            date('Ymd') => 'ma',
+            date('Ymd', strtotime("yesterday")) => 'tegnap'
+        ];
 
         foreach ($stat as $day) {
             $idate = $day->getCreatedAt()->format('Ymd');
@@ -84,7 +96,10 @@ class AssistanceController extends Controller
                     $stat_detailed[$day_num] = [
                         'selector' => 'daychart_' . $day_num,
                         'data' => array_pad([], count($inquiry_types), [0]),
-                        'tick' => [$day->getCreatedAt()->format('m.d.')],
+                        // hide the ticks
+                        'tick' => ['   '], //[$day->getCreatedAt()->format("m.\nd.")],
+                        // show 'today', 'yesterday', or the date as tht title
+                        'title' => $this->container->get('translator')->trans(!empty($daynames[$day->getCreatedAt()->format('Ymd')]) ? $daynames[$day->getCreatedAt()->format('Ymd')] : $day->getCreatedAt()->format('Y.m.d.')),
                         'max' => 0,
                         'colors' => json_encode($jq_colors)
                     ];
@@ -96,13 +111,12 @@ class AssistanceController extends Controller
                     $day_max = $day->getCounter();
                 }
             }
-            if (empty($stat_sum[$day->getType()])) {
-                $stat_sum[$day->getType()] = $day->getCounter();
-            }
-            else {
-                $stat_sum[$day->getType()] += $day->getCounter();
-            }
+            // add monthly stats
+            $stat_month['data'][$inquiry_map[$day->getType()]][$day->getCreatedAt()->format('j')-1] = $day->getCounter();
         }
+
+        //var_dump($stat_month);
+
         // add the max numbers
         foreach ($stat_detailed as $k => $v) {
             $stat_detailed[$k]['max'] = (int) ceil($day_max * 1.15);
@@ -111,7 +125,8 @@ class AssistanceController extends Controller
         return $this->render('JCSGYKAdminBundle:Home:inquiryStat.html.twig', [
             'detailed_json' => json_encode($stat_detailed),
             'detailed' => $stat_detailed,
-            'sum' => $stat_sum,
+            'month_json' => json_encode($stat_month),
+            //'sum' => $stat_sum,
             'types' => $inquiry_types,
             'colors' => $colors,
         ]);

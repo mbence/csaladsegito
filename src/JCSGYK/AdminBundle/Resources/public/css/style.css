@@ -54,6 +54,12 @@ a {
     min-height: 100%;
     margin: 0 0 -28px 0;
 }
+h1 {
+    color: #34a;
+    margin: 15px 0 15px 0;
+    font-weight: normal;
+    font-size: 23px;
+}
 
 /* Footer */
 footer#colophon {
@@ -411,12 +417,6 @@ table.problem-list td {
     width: 50%;
     float: left;
 }
-.adminblock h1 {
-    color: #34a;
-    margin: 15px 0 15px 0;
-    font-weight: normal;
-    font-size: 23px;
-}
 #userlist, #useredit {
     height: 100%;
     overflow: auto;
@@ -594,6 +594,13 @@ table.problem-list td {
 }
 #newparam-template {
     display: none;
+}
+.inquiry-stats {
+    float: right;
+    width: 320px
+}
+.stat-legend {
+    float: right;
 }
 .stat-legend td {
     padding: 1px 2px;

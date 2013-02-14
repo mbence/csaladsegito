@@ -48,6 +48,11 @@ JcsMenu =
                 $.post($(this).attr('href'), (data) ->
                     $(that).removeClass('ajax-loading2')
                     AjaxBag.showNotice(data)
+                    if $(".inquiry-stats").length and $(".inquiry-stats").data("action")
+                        $.get($(".inquiry-stats").data("action"), (data) ->
+                            $(".inquiry-stats").html(data)
+                            JcsChart.init()
+                        )
                 )
 
             false

@@ -1,19 +1,18 @@
 JcsChart =
+    init: ->
+        if day_charts?
+            for day in day_charts
+                @drawDay(day)
+        if month_charts?
+            @drawMonth(month_charts)
+
     drawDay: (opt) ->
         $.jqplot(opt.selector,  opt.data, {
-            axesDefaults:
-                show: false,
-            #title:"Ma"
+            title: opt.title
             seriesDefaults:
                 renderer: $.jqplot.BarRenderer
-                # Show point labels to the right ("e"ast) of each bar.
-                # edgeTolerance of -15 allows labels flow outside the grid
-                # up to 15 pixels.  If they flow out more than that, they
-                # will be hidden.
                 pointLabels: {show: true, location: "e", edgeTolerance: -15}
-                # Rotate the bar shadow as if bar is lit from top right.
                 shadowAngle: 135
-                # Here"s where we tell the chart it is oriented horizontally.
                 rendererOptions:
                     barDirection: "horizontal"
                     shadowDepth: 4
@@ -22,7 +21,26 @@ JcsChart =
                     renderer: $.jqplot.CategoryAxisRenderer
                     ticks: opt.tick
                 xaxis:
-                    #min: 0
                     max: opt.max
+            series: JSON.parse(opt.colors)
+        })
+
+    drawMonth: (opt) ->
+        $.jqplot(opt.selector,  opt.data, {
+            stackSeries: true
+            axesDefaults:
+                show: false
+            title: opt.title
+            seriesDefaults:
+                renderer: $.jqplot.BarRenderer
+                rendererOptions:
+                    barMargin: 0
+                pointLabels: {show: true}
+            axes:
+                xaxis:
+                    renderer: $.jqplot.CategoryAxisRenderer
+                    max: opt.max
+                yaxis:
+                    padMin: 0
             series: JSON.parse(opt.colors)
         })
