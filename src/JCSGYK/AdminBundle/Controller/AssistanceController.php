@@ -112,7 +112,9 @@ class AssistanceController extends Controller
                 }
             }
             // add monthly stats
-            $stat_month['data'][$inquiry_map[$day->getType()]][$day->getCreatedAt()->format('j')-1] = $day->getCounter();
+            if (isset($inquiry_map[$day->getType()])) {
+                $stat_month['data'][$inquiry_map[$day->getType()]][$day->getCreatedAt()->format('j')-1] = $day->getCounter();
+            }
         }
 
         //var_dump($stat_month);
