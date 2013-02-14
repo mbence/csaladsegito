@@ -80,6 +80,8 @@ class MenuController extends Controller
         elseif ($sec->isGranted('ROLE_ASSISTANCE')) {
             return $this->redirect($this->generateUrl('clients'), 301);
         }
+        
+        return $this->redirect($this->generateUrl('home'), 301);
     }
 
     /**
