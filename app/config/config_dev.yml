@@ -25,8 +25,11 @@ assetic:
     filters:
         cssrewrite: ~
         coffee:
-            bin: "C:/Users/Bence/AppData/Roaming/npm/node_modules/coffee-script/bin/coffee"
-            node: "C:/Program\ Files/nodejs/node.exe"
+            bin: /usr/local/bin/coffee
+            node: /usr/local/bin/node
+
+#            bin: "C:/Users/Bence/AppData/Roaming/npm/node_modules/coffee-script/bin/coffee"
+#            node: "C:/Program\ Files/nodejs/node.exe"
             apply_to: "\.coffee$"
             bare: true
 
