@@ -12,12 +12,14 @@
                 <h1 class="client left">{{ 'Ügyfelek'|trans }}</h1>
                 {% include "JCSGYKAdminBundle:Elements:quicksearch.html.twig" %}
                 <div id="search-results">
-                    <p><br></p>
+                    <div class="info">
                     <p>A gyorskereső mezőben ügyfélszám, név, TAJ szám vagy utcanév és házszám szerint is kereshet.</p>
                     <p>Ügyfélszám vagy TAJ szám esetében csak számokat írjon be!</p>
                     <p>Házszámra való keresés esetében a számnak mindig utolsóként kell szerepelni, és pontosan kell
                        megadni a házszámot (Pl 'Üllői 54-56').<br>
-                       A szám végére *-ot téve résztalálatokra is kereshet. (Pl: Üllői 66*)</p>
+                       A szám végére *-ot téve résztalálatokra is kereshet.<br>
+                       (Pl: Üllői 66*)</p>
+                    </div>
                 </div>
             </div>
 

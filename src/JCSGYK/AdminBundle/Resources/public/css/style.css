@@ -64,6 +64,22 @@ h1 {
     font-size: 23px;
 }
 
+.info {
+    color: #039;
+    line-height: 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #c8ddf1;
+    padding: 30px 20px 0;
+    background: url('../images/info-icon.png') no-repeat 5px 5px #edf2f6;
+    margin: 20px auto;
+    width: 70%;
+    text-align: center;
+}
+.info p {
+    margin-bottom: 10px;
+}
+
 /* Footer */
 footer#colophon {
     height: 22px;
@@ -528,9 +544,11 @@ table.problem-list td {
     margin: 0 4px 0 20px;
 }
 .editform .formbuttons .form-saving {
-    background:
-        url('../images/nf-loader.gif') no-repeat center,
-        -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: url('../images/nf-loader.gif') no-repeat center, -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -o-linear-gradient(top, #eec123, #d3a70e);
     text-indent: -2000px;
     overflow: hidden;
     cursor: wait;
@@ -573,9 +591,11 @@ table.problem-list td {
     margin: 0 4px 0 20px;
 }
 #parameter-lists .formbuttons .form-saving {
-    background:
-        url('../images/nf-loader.gif') no-repeat center,
-        -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: url('../images/nf-loader.gif') no-repeat center, -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -o-linear-gradient(top, #eec123, #d3a70e);
     text-indent: -2000px;
     overflow: hidden;
     cursor: wait;

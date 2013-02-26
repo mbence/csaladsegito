@@ -6,7 +6,7 @@
 <div class="adminblock" id="userlist">
     <div class="rightpad fullheight nocollapse">
         <div class="button-row">
-            <a href="{{ path('admin_user_new') }}" class="top-button" id="new_user">új felhasználó</a>
+            <a href="{{ path('admin_users', {'id': 'new'}) }}" class="top-button" id="new_user">új felhasználó</a>
         </div>
         <h1>{{ 'Felhasználók'|trans }}</h1>
 
@@ -20,7 +20,8 @@
             </tr></thead>
             <tbody>
             {% for user in users %}
-                <tr data-userid="{{ user.id }}" tabindex="{{ loop.index + 99 }}">
+                <tr data-user-edit="{{ path('admin_users', {'id': user.id}) }}" tabindex="{{ loop.index + 99 }}"
+                    {% if id and id == user.id %} class="current cursor"{% endif %}>
                     <td>{{ fname(user.firstname, user.lastname) }}</td>
                     <td>{{ user.username }}</td>
         {#            <td><a href="mailto:{{ fname(user.firstname, user.lastname) }} &lt;{{ user.email }}&gt;">{{ user.email }}</a></td> #}
@@ -35,12 +36,21 @@
 
 <div class="adminblock" id="useredit">
     <div class="leftpad20 rightpad fullheight nocollapse">
-        <div class="close">x</div>
-        <form action="{{ path('admin_user_edit') }}" method="get" name="getuserform" id="getuserform">
-            <input type="hidden" name="id">
-        </form>
-        <div class="loading"><br>Betöltés...</div>
-        <div class="usercontent"></div>
+        <div class="usercontent">
+        {% if form %}
+            {% include "JCSGYKAdminBundle:Admin:useredit.html.twig" %}
+        {% else %}
+        <br>
+        <div class="info">
+            <p>
+                {{ 'A felhasználók szerkesztéséhez kattintson a bal oldai listában a megfelelő sorra!'|trans }}
+            </p>
+            <p>
+                {{ "Új felhasználót a narancsárga 'Új felhasználó' gombra katttintve hozhat létre."|trans }}
+            </p>
+        </div>
+        {% endif %}
+        </div>
     </div>
 </div>
 <div class="clear"></div>
