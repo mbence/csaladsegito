@@ -58,7 +58,7 @@ class AssistanceController extends Controller
 
         // get the inquiry events
         $em = $this->getDoctrine()->getManager();
-        $stat = $em->createQuery("SELECT i FROM JCSGYKAdminBundle:Inquiry i WHERE i.userId=:userid AND i.createdAt>DATE_SUB(CURRENT_DATE(), 30, 'day') ORDER BY i.createdAt DESC, i.type")
+        $stat = $em->createQuery("SELECT i FROM JCSGYKAdminBundle:Inquiry i WHERE i.userId=:userid AND i.createdAt>DATE_SUB(CURRENT_DATE(), 31, 'day') ORDER BY i.createdAt DESC, i.type")
             ->setParameter('userid', $user->getId())
             ->getResult();
 
@@ -111,8 +111,8 @@ class AssistanceController extends Controller
                     $day_max = $day->getCounter();
                 }
             }
-            // add monthly stats
-            if (isset($inquiry_map[$day->getType()])) {
+            // add monthly stats, but only for this month, and only if the inquiry type is known
+            if (isset($inquiry_map[$day->getType()]) && $day->getCreatedAt()->format('m') == date('m')) {
                 $stat_month['data'][$inquiry_map[$day->getType()]][$day->getCreatedAt()->format('j')-1] = $day->getCounter();
             }
         }
