@@ -164,19 +164,17 @@ footer#colophon .credits a:hover {
 }
 .close {
     /*background-image:url(../images/close.png);*/
-    position:absolute;
-    right:0px;
-    top:10px;
     cursor:pointer;
-    height:19px;
+    height:21px;
     width:24px;
     border-radius: 2px;
     border: 1px solid #ccc;
     color: #888;
-    font-size: 16px;
+    font-size: 17px;
     text-align: center;
-    margin: 2px 2px 0 0;
+    margin: 1px 2px 0 6px;
     box-shadow: 0 0 2px 1px #ddd inset;
+    display: inline-block;
 }
 .close:hover {
     box-shadow: 0 0 2px 1px #ddd, 0 0 2px 1px #ddd inset;

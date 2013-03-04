@@ -5,7 +5,7 @@ JcsProblem =
     init: ->
         # init toggles
         JcsToggle.init("problemblock")
-
+        HBlocks.setCloseButtons()
         @setupEvents()
 
         true
@@ -26,6 +26,7 @@ JcsProblem =
                     $("#eventblock .eventcontent").html(data).show()
                     JcsToggle.init("eventblock")
                     HBlocks.scrollTo(4)
+                    HBlocks.setCloseButtons()
                 ).error( (data) ->
                     # there was some error :(
                     AjaxBag.showError(data.statusText)

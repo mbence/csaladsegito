@@ -24,29 +24,35 @@
             </div>
 
             <div id="clientblock" tabindex="200"><div class="leftpad rightpad fullheight">
-                <div class="close">x</div>
                 <form action="{{ path('client_view') }}" method="post" name="getclientform" id="getclientform">
                     <input type="hidden" name="id">
                 </form>
-                <div class="loading">Betöltés...</div>
+                <div class="loading">
+                    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" %}
+                    Betöltés...
+                </div>
                 <div class="clientcontent"></div>
             </div></div>
 
             <div id="problemblock" tabindex="300"><div class="leftpad rightpad fullheight">
-                <div class="close">x</div>
                 <form action="{{ path('problem_view') }}" method="post" name="getproblemform" id="getproblemform">
                     <input type="hidden" name="id">
                 </form>
-                <div class="loading">Betöltés...</div>
+                <div class="loading">
+                    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" %}
+                    Betöltés...
+                </div>
                 <div class="problemcontent"></div>
             </div></div>
 
             <div id="eventblock" tabindex="400"><div class="leftpad rightpad fullheight">
-                <div class="close">x</div>
                 <form action="{{ path('event_view') }}" method="post" name="geteventform" id="geteventform">
                     <input type="hidden" name="id">
                 </form>
-                <div class="loading">Betöltés...</div>
+                <div class="loading">
+                    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" %}
+                    Betöltés...
+                </div>
                 <div class="eventcontent"></div>
             </div></div>
         </div>

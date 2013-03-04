@@ -99,24 +99,24 @@ HBlocks =
     ###
     setCloseButtons: ->
         # close button functionality
-        $("#clientblock .close").click (e) =>
+        $("#clientblock .close").off('click').on('click', (e) =>
             e.stopPropagation()
             $("#search-results tr").removeClass("current")
             @closeBlock(4)
             @closeBlock(3)
             @closeBlock(2, true)
-
-        $("#problemblock .close").click (e) =>
+        )
+        $("#problemblock .close").off('click').on('click', (e) =>
             e.stopPropagation()
             $("#problem-list tr").removeClass("current")
             @closeBlock(4)
             @closeBlock(3, true)
-
-        $("#eventblock .close").click (e) =>
+        )
+        $("#eventblock .close").off('click').on('click', (e) =>
             e.stopPropagation()
             $("#event-list tr").removeClass("current")
             @closeBlock(4, true)
-
+        )
     ###
         Close a block with or without animation
         To hide a block and clear it's content, call with animate = false

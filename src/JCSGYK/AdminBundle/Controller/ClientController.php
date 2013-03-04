@@ -25,7 +25,13 @@ class ClientController extends Controller
 
     public function newAction(Request $request)
     {
+
+    }
+
+    public function editAction($id, Request $request)
+    {
         
+
     }
 
     public function viewAction(Request $request)

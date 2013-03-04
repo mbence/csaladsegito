@@ -36,7 +36,7 @@
 }
 .inquiry li a {
     display: block;
-    height: 28px;
+    height: 35px;
     text-align: center;
     font: 17px "Optima Regular", "Optima Regular IE";
     color: #fff;
@@ -60,5 +60,4 @@
     text-indent: -2000px;
     overflow: hidden;
     cursor: wait;
-    padding-top: 6px;
 }
