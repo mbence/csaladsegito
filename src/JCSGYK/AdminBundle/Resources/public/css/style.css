@@ -502,7 +502,6 @@ table.problem-list td {
     border: 1px solid #777;
     box-shadow: 0 2px 1px #ffc700 inset;
     height: 30px;
-    line-height: 26px;
     padding: 0 10px 2px;
     cursor: pointer;
     color: #fff;
@@ -519,8 +518,8 @@ table.problem-list td {
     text-shadow: 0 1px 0 rgba(0,0,0,0.1);
 }
 .top-button {
-    line-height: 21px;
-    height: 25px;
+    /*line-height: 21px;*/
+    /*height: 25px;*/
 }
 .cancel {
     background: #eee;
@@ -536,6 +535,9 @@ table.problem-list td {
     position:absolute;
     right: 10px;
     top: 10px;
+}
+.button-row img {
+    
 }
 .editform .formbuttons .usersave {
     width: 100px;
