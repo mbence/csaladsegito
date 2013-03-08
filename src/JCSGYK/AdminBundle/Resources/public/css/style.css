@@ -162,23 +162,7 @@ footer#colophon .credits a:hover {
 .contentscroller > div.current {
     border-color: #989ec2;
 }
-.close {
-    /*background-image:url(../images/close.png);*/
-    cursor:pointer;
-    height:21px;
-    width:24px;
-    border-radius: 2px;
-    border: 1px solid #ccc;
-    color: #888;
-    font-size: 17px;
-    text-align: center;
-    margin: 1px 2px 0 6px;
-    padding: 1px 0 0 0;
-    box-shadow: 0 0 2px 1px #ddd inset;
-    display: inline-block;
-}
 .close:hover {
-    box-shadow: 0 0 2px 1px #ddd, 0 0 2px 1px #ddd inset;
     color: #d04a37;
 }
 #searchblock {
@@ -498,17 +482,18 @@ table.problem-list td {
 .editform .formbuttons:hover {
     background-color: transparent;
 }
-.button, .top-button {
-    border-radius: 4px;
-    border: 1px solid #777;
-    box-shadow: 0 2px 1px #ffc700 inset;
-    height: 30px;
-    padding: 0 10px 2px;
+.button, .greybutton {
+    border-radius: 2px;
+    border: 1px solid transparent;
+
+    height: 27px;
+    line-height: 25px;
+    padding: 0 12px;
     cursor: pointer;
     color: #fff;
     font-size: 15px;
 
-    background-color: #eec123;
+    background-color: #d3a70e;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
     background: -webkit-linear-gradient(top, #eec123, #d3a70e);
     background: -moz-linear-gradient(top, #eec123, #d3a70e);
@@ -520,28 +505,50 @@ table.problem-list td {
     display: inline-block;
     vertical-align: bottom;
 }
-.top-button {
-    line-height: 21px;
-    height: 21px;
-    padding: 1px 10px 0;
+.button img, .greybutton img {
+    vertical-align: text-top;
+    display: inline-block;
 }
-.cancel {
-    background: #eee;
-    box-shadow: 0 2px 1px #f5f5f5 inset;
-    border-color: #bbb;
+.button:hover {
+    border-color: #a3820e;
+    background-color: #b28e13;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#b28e13));
+    background: -webkit-linear-gradient(top, #eec123, #b28e13);
+    background: -moz-linear-gradient(top, #eec123, #b28e13);
+    background: -ms-linear-gradient(top, #eec123, #b28e13);
+    background: -o-linear-gradient(top, #eec123, #b28e13);
+}
+.greybutton {
+    background: #f5f5f5;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f5f5f5), to(#f1f1f1));
+    background: -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: -ms-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: -o-linear-gradient(top, #f5f5f5, #f1f1f1);
+    border-color: rgba(0,0,0,0.1);
     color: #777;
-    width: 100px;
 }
-.button:hover, .cancel:hover {
-    color: #000;
+.greybutton:hover {
+    border-color: #c6c6c6;
+    background: #f8f8f8;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f8f8f8), to(#f1f1f1));
+    background: -webkit-linear-gradient(top, #f8f8f8, #f1f1f1);
+    background: -moz-linear-gradient(top, #f8f8f8, #f1f1f1);
+    background: -ms-linear-gradient(top, #f8f8f8, #f1f1f1);
+    background: -o-linear-gradient(top, #f8f8f8, #f1f1f1);
+}
+
+button.button, button.greybutton {
+    height: 29px;
+}
+
+.cancel {
+    width: 100px;
 }
 .button-row {
     position:absolute;
     right: 10px;
     top: 10px;
-}
-.button-row img {
-    
 }
 .editform .formbuttons .usersave {
     width: 100px;

@@ -35,21 +35,8 @@
 }
 .quicksearch button.searchbutton {
     width: 60px;
-    height: 29px;
-    border: 1px solid #c2b39f;
-    border-radius: 2px;
-    box-shadow: 0 2px 0 #ffc700 inset;
-    background-color: #eec123;
-    text-align: center;
     margin: 0 0 0 12px;
-    padding: 0;
-    display: inline-block;
-
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
-    background: -webkit-linear-gradient(top, #eec123, #d3a70e);
-    background: -moz-linear-gradient(top, #eec123, #d3a70e);
-    background: -ms-linear-gradient(top, #eec123, #d3a70e);
-    background: -o-linear-gradient(top, #eec123, #d3a70e);
+    height: 29px;
 }
 .quicksearch .searchbutton span.searchicon {
     background: url('../images/sprs.png') no-repeat 0 0;
@@ -58,7 +45,7 @@
     display: inline-block;
 }
 .quicksearch .searchbutton:hover span.searchicon {
-    background: url('../images/sprs.png') no-repeat -34px 0;
+    /*background: url('../images/sprs.png') no-repeat -34px 0;*/
 }
 
 /* Nicefield */
