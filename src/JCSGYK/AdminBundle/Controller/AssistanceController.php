@@ -53,6 +53,7 @@ class AssistanceController extends Controller
         }
 
         $user = $this->get('security.context')->getToken()->getUser();
+        // store the inquiry types in an easy to use array map
         $inquiry_types = $this->container->get('jcs.ds')->getGroup(1);
         $inquiry_map = array_flip(array_reverse(array_keys($inquiry_types)));
 
@@ -110,14 +111,26 @@ class AssistanceController extends Controller
                 if ($day->getCounter() > $day_max) {
                     $day_max = $day->getCounter();
                 }
+                // make sure that there is an entry for the actual day
+                if (count($stat_detailed) == 1 && $idate != date("Ymd")) {
+                    // add the actual day if there is no data
+                    // duplicate the entry
+                    array_unshift($stat_detailed, $stat_detailed[0]);
+                    $day_count--;
+                    $stat_detailed[0]['title'] = $this->container->get('translator')->trans($daynames[date('Ymd')]);
+                    $stat_detailed[1]['selector'] = 'daychart_1';
+                    foreach ($stat_detailed[0]['data'] as $k => $v) {
+                        $stat_detailed[0]['data'][$k] = [0];
+                    }
+
+                    //echo '<pre>', print_r($stat_detailed), '</pre>';
+                }
             }
             // add monthly stats, but only for this month, and only if the inquiry type is known
             if (isset($inquiry_map[$day->getType()]) && $day->getCreatedAt()->format('m') == date('m')) {
                 $stat_month['data'][$inquiry_map[$day->getType()]][$day->getCreatedAt()->format('j')-1] = $day->getCounter();
             }
         }
-
-        //var_dump($stat_month);
 
         // add the max numbers
         foreach ($stat_detailed as $k => $v) {
