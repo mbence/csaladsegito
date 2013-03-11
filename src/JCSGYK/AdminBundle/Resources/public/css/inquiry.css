@@ -1,18 +1,16 @@
 /* Inquiry */
 .inquiry {
     text-align: right;
-    vertical-align: top;
-
     border-top: 1px solid #c7baac;
     background-color: #f5f5f5;
-    padding: 0 10px 2px;
+    padding: 0 10px 1px;
 }
-.inquiry span {
+.inquiry > span {
     text-align: right;
-    font: 13px "Optima Regular", "Optima Regular IE";
+    font-size: 12px;
     display: inline-block;
     margin: 0 0 2px 0;
-    line-height: 15px;
+    line-height: 14px;
     vertical-align: bottom;
 }
 .inquiry ul {
@@ -21,43 +19,5 @@
 .inquiry li {
     display: inline-block;
     margin: 4px 0 2px 12px;
-    height: 34px;
-    width: 180px;
     vertical-align: bottom;
-    border-radius: 5px;
-    box-shadow: 0 4px 1px #ffc700 inset;
-    background-color: #eec123;
-
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
-    background: -webkit-linear-gradient(top, #eec123, #d3a70e);
-    background: -moz-linear-gradient(top, #eec123, #d3a70e);
-    background: -ms-linear-gradient(top, #eec123, #d3a70e);
-    background: -o-linear-gradient(top, #eec123, #d3a70e);
-}
-.inquiry li a {
-    display: block;
-    height: 35px;
-    text-align: center;
-    font: 17px "Optima Regular", "Optima Regular IE";
-    color: #fff;
-    border-radius: 5px;
-    border: 0;
-    margin: 0;
-    line-height: 36px;
-}
-.inquiry li a:hover {
-    color: #000;
-}
-.inquiry a:active {
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d3a70e), to(#eec123));
-    background: -webkit-linear-gradient(bottom, #eec123, #d3a70e);
-    background: -moz-linear-gradient(bottom, #eec123, #d3a70e);
-    background: -ms-linear-gradient(bottom, #eec123, #d3a70e);
-    background: -o-linear-gradient(bottom, #eec123, #d3a70e);
-}
-.ajax-loading2 {
-    background: url('../images/ajax-loader2.gif') no-repeat center;
-    text-indent: -2000px;
-    overflow: hidden;
-    cursor: wait;
 }

@@ -42,11 +42,11 @@ JcsMenu =
     ###
     inquiry: ->
         $(".inquiry a").click( ->
-            if !$(this).hasClass('ajax-loading2') && $(this).attr('href')
-                $(this).addClass('ajax-loading2')
+            if !$(this).hasClass('animbutton') && $(this).attr('href')
+                $(this).addClass('animbutton')
                 that = this
                 $.post($(this).attr('href'), (data) ->
-                    $(that).removeClass('ajax-loading2')
+                    $(that).removeClass('animbutton')
                     AjaxBag.showNotice(data)
                     if $(".inquiry-stats").length and $(".inquiry-stats").data("action")
                         $.get($(".inquiry-stats").data("action"), (data) ->

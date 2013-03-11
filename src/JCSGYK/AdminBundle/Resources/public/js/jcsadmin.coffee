@@ -46,8 +46,8 @@ JcsAdmin =
 
         # form submit animation
         $("#parameter-lists .paramform").submit ->
-            if !$(".paramsave", this).hasClass('form-saving')
-                $(".paramsave", this).addClass('form-saving')
+            if !$(".paramsave", this).hasClass('animbutton')
+                $(".paramsave", this).addClass('animbutton')
             else
                 return false
         # sortable parameters
@@ -93,5 +93,5 @@ JcsAdmin =
             document.location = $(this).data('url')
 
         $("#useredit #editform").submit ->
-            if !$("#useredit .formbuttons .usersave").hasClass('form-saving')
-                $("#useredit .formbuttons .usersave").addClass('form-saving')
+            if !$("#useredit .formbuttons .usersave").hasClass('animbutton')
+                $("#useredit .formbuttons .usersave").addClass('animbutton')

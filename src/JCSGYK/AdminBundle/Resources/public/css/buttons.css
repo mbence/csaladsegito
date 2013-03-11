@@ -1,0 +1,102 @@
+.button, .greybutton {
+    border-radius: 2px;
+    border: 1px solid transparent;
+
+    height: 27px;
+    padding: 0 12px;
+    margin: 0 0 0 2px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 13px;
+
+    background-color: #d3a70e;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: -o-linear-gradient(top, #eec123, #d3a70e);
+
+    text-decoration: none;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+    display: inline-table;
+    vertical-align: bottom;
+    text-align: center;
+}
+.button span, .greybutton span {
+    display: table-cell;
+    vertical-align: middle;
+}
+.button .icon {
+    width: 13px;
+    height: 13px;
+    display: inline-block;
+}
+button.button span, button.greybutton span {
+    padding-bottom: 2px;
+}
+a.button .icon {
+    margin: 6px 0 0 0;
+}
+button.button .icon {
+    vertical-align: top;
+    padding: 0;
+}
+.button .edit-icon {
+    background: url('../images/iconset.png') no-repeat -180px 0;
+}
+.button .search-icon {
+    background: url('../images/iconset.png') no-repeat -77px 0;
+}
+.button img, .greybutton img {
+    vertical-align: text-top;
+    display: inline-block;
+    margin: 0 0 -1px 0;
+}
+.button:hover {
+    border-color: #a3820e;
+    background-color: #b28e13;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#b28e13));
+    background: -webkit-linear-gradient(top, #eec123, #b28e13);
+    background: -moz-linear-gradient(top, #eec123, #b28e13);
+    background: -ms-linear-gradient(top, #eec123, #b28e13);
+    background: -o-linear-gradient(top, #eec123, #b28e13);
+}
+.greybutton {
+    background: #f5f5f5;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f5f5f5), to(#f1f1f1));
+    background: -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: -ms-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: -o-linear-gradient(top, #f5f5f5, #f1f1f1);
+    border-color: rgba(0,0,0,0.1);
+    color: #777;
+}
+.greybutton:hover {
+    border-color: #c6c6c6;
+    background: #f8f8f8;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f8f8f8), to(#f1f1f1));
+    background: -webkit-linear-gradient(top, #f8f8f8, #f1f1f1);
+    background: -moz-linear-gradient(top, #f8f8f8, #f1f1f1);
+    background: -ms-linear-gradient(top, #f8f8f8, #f1f1f1);
+    background: -o-linear-gradient(top, #f8f8f8, #f1f1f1);
+}
+
+button.button, button.greybutton {
+    height: 29px;
+}
+.button-row {
+    position:absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.animbutton, .animbutton:hover {
+    background: url('../images/nf-loader.gif') no-repeat center, webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: url('../images/nf-loader.gif') no-repeat center, -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -o-linear-gradient(top, #eec123, #d3a70e);
+    cursor: wait;
+    color: transparent;
+    text-shadow: none;
+}

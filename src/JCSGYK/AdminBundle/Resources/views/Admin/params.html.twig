@@ -32,13 +32,13 @@
                         {% endfor %}
                     </div>
                     <div class="center toppad10">
-                        <button class="new-param top-button" type="button">{{ 'új paraméter hozzáadása'|trans }}</button>
+                        <button class="new-param button" type="button"><span>{{ 'új paraméter hozzáadása'|trans }}</span></button>
                     </div>
                     <input type="hidden" name="group" value="{{ id }}">
                     <br><br>
                     <div class="formbuttons">
-                        <button type="reset" class="cancel button">{{ 'mégse'|trans }}</button>
-                        <button type="submit" class="paramsave button" name="paramsave" value="save">{{ 'mentés'|trans }}</button>
+                        <button type="reset" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
+                        <button type="submit" class="paramsave button" name="paramsave" value="save"><span>{{ 'mentés'|trans }}</span></button>
                     </div>
                 </form>
             </div>

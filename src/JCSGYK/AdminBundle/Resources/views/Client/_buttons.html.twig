@@ -1,7 +1,7 @@
 <div class="button-row">
     {% if client is defined %}
-        <a href="{{ path('clients') }}" class="button" id="edit_client" title="{{ 'szerkeszt'|trans }}"><img src="/images/edit-icon.png"></a>
+        <a href="{{ path('clients') }}" class="button" id="edit_client" title="{{ 'szerkeszt'|trans }}"><span class="icon edit-icon"></span></a>
     {% endif %}
 
-    <div class="close greybutton">x</div>
+    <div class="close greybutton"><span>x</span></div>
 </div>
