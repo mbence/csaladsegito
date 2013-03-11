@@ -18,6 +18,6 @@
 }
 .inquiry li {
     display: inline-block;
-    margin: 4px 0 2px 12px;
+    margin: 4px 0 2px 0;
     vertical-align: bottom;
 }

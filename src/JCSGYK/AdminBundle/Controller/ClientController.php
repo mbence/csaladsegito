@@ -30,8 +30,12 @@ class ClientController extends Controller
 
     public function editAction($id, Request $request)
     {
-        
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        // get client data
+        $client = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')
+            ->findOneBy(['id' => $id, 'companyId' => $company_id]);
 
+        return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client]);
     }
 
     public function viewAction(Request $request)
@@ -39,7 +43,7 @@ class ClientController extends Controller
         // only process ajax requests on prod env!
         if ($request->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment')) {
 
-            $id = $request->request->get('id');
+            $id = $request->query->get('id');
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
             // get client data
             $client = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')
@@ -60,7 +64,7 @@ class ClientController extends Controller
         $re = [];
         $sql = '';
 
-        $q = $request->request->get('q');
+        $q = $request->query->get('q');
 
         // save the search string
         $this->get('session')->set('quicksearch', $q);

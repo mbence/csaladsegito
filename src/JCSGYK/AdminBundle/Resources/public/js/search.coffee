@@ -22,7 +22,7 @@ JcsSearch =
             HBlocks.scrollTo(1)
             if $("#quicksearch #q").attr('value') == ''
                 $("#search-results").html(orig_results_text)
-            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+            $.get($(this).attr("action"), $(this).serialize(), (data) ->
                 nf.stop()
                 if $("#quicksearch #q").attr('value') != ''
                     # display search results
@@ -48,7 +48,7 @@ JcsSearch =
             HBlocks.scrollTo(2)
 
             # start the ajax request
-            $.post($("#getclientform").attr("action"), {id: $(this).data("userid")}, (data) ->
+            $.get($("#getclientform").attr("action"), {id: $(this).data("userid")}, (data) ->
                 $("#clientblock .loading").hide()
                 $("#clientblock .clientcontent").html(data).show()
                 HBlocks.scrollTo(2)

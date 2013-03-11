@@ -41,12 +41,6 @@ button.button .icon {
     vertical-align: top;
     padding: 0;
 }
-.button .edit-icon {
-    background: url('../images/iconset.png') no-repeat -180px 0;
-}
-.button .search-icon {
-    background: url('../images/iconset.png') no-repeat -77px 0;
-}
 .button img, .greybutton img {
     vertical-align: text-top;
     display: inline-block;
@@ -99,4 +93,19 @@ button.button, button.greybutton {
     cursor: wait;
     color: transparent;
     text-shadow: none;
+}
+
+.animbutton span {
+    background-image: none !important;
+}
+
+/* button icons */
+.button .edit-icon {
+    background: url('../images/iconset.png') no-repeat -180px 0;
+}
+.button .search-icon {
+    background: url('../images/iconset.png') no-repeat -77px 0;
+}
+.button .back-icon {
+    background: url('../images/iconset.png') no-repeat -25px -336px;
 }

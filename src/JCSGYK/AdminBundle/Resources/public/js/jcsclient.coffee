@@ -6,9 +6,32 @@ JcsClient =
         # init toggles
         JcsToggle.init("clientblock")
         HBlocks.setCloseButtons()
+
+        @initButtonRow()
+
         @initProblems()
 
         true
+
+    initButtonRow: ->
+        $("#edit_client").click (event) ->
+            event.stopPropagation()
+            if !$(this).hasClass('animbutton')
+                $(this).addClass('animbutton')
+                HBlocks.scrollTo(2)
+
+                $.get($(this).attr("href"), (data) ->
+                    $("#clientblock .clientcontent").html(data).show()
+                    HBlocks.setCloseButtons()
+                ).error( (data) =>
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $(this).removeClass('animbutton')
+                )
+
+            false
+
+
 
     initProblems: ->
         $("#showAllProblem").click (event) ->
