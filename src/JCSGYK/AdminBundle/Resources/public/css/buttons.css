@@ -95,6 +95,16 @@ button.button, button.greybutton {
     text-shadow: none;
 }
 
+.greybutton.animbutton, .greybutton.animbutton:hover {
+    background: url('../images/nf-loader.gif') no-repeat center, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f5f5f5), to(#f1f1f1));
+    background: url('../images/nf-loader.gif') no-repeat center, -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: url('../images/nf-loader.gif') no-repeat center, -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: url('../images/nf-loader.gif') no-repeat center, -ms-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: url('../images/nf-loader.gif') no-repeat center, -o-linear-gradient(top, #f5f5f5, #f1f1f1);
+    cursor: wait;
+    color: transparent;
+    text-shadow: none;
+}
 .animbutton span {
     background-image: none !important;
 }

@@ -105,17 +105,20 @@ HBlocks =
             @closeBlock(4)
             @closeBlock(3)
             @closeBlock(2, true)
+            false
         )
         $("#problemblock .close").off('click').on('click', (e) =>
             e.stopPropagation()
             $("#problem-list tr").removeClass("current")
             @closeBlock(4)
             @closeBlock(3, true)
+            false
         )
         $("#eventblock .close").off('click').on('click', (e) =>
             e.stopPropagation()
             $("#event-list tr").removeClass("current")
             @closeBlock(4, true)
+            false
         )
     ###
         Close a block with or without animation

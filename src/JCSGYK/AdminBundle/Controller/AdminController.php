@@ -49,7 +49,7 @@ class AdminController extends Controller
             $sql .= " WHERE u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'";
         }
         $sql .= ' ORDER BY u.lastname, u.firstname';
-        $em = $this->getDoctrine()->getManager();
+
         $users = $em->createQuery($sql)
             ->getResult();
 
@@ -57,7 +57,6 @@ class AdminController extends Controller
             // new user
             $user = $um->createUser();
             $user->setCompanyId($company_id);
-            $user->setPlainPassword('x');
         }
         else {
             $user = $em->getRepository('JCSGYKAdminBundle:User')

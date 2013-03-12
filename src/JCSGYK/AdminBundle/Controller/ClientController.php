@@ -9,45 +9,49 @@ use Symfony\Component\HttpFoundation\Response;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
+use JCSGYK\AdminBundle\Entity\Client;
+use JCSGYK\AdminBundle\Form\Type\ClientType;
+
 class ClientController extends Controller
 {
     public function indexAction(Request $request)
     {
-        $route = $request->attributes->get('_route');
+        return $this->render('JCSGYKAdminBundle:Client:index.html.twig');
+    }
 
-        if ($this->getRequest()->isXmlHttpRequest() || $request->request->get('q')) {
-            return $this->quickSearch($request);
+    /**
+     * Edits the client data
+     */
+    public function editAction($id = null, Request $request)
+    {
+        $client = null;
+        $em = $this->getDoctrine()->getManager();
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+
+        if (!empty($id)) {
+            // get the client data
+            $client = $this->getClient($id);
+        }
+        else {
+            // new client
+            $client = new Client();
+            $client->setCompanyId($company_id);
         }
 
-        return $this->render('JCSGYKAdminBundle:Client:index.html.twig', []);
+        if (!empty($client)) {
+            $form = $this->createForm(new ClientType(), $client);
+
+            return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client, 'form' => $form->createView()]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
     }
 
-
-    public function newAction(Request $request)
+    public function viewAction($id, Request $request)
     {
-
-    }
-
-    public function editAction($id, Request $request)
-    {
-        $company_id = $this->container->get('jcs.ds')->getCompanyId();
-        // get client data
-        $client = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')
-            ->findOneBy(['id' => $id, 'companyId' => $company_id]);
-
-        return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client]);
-    }
-
-    public function viewAction(Request $request)
-    {
-        // only process ajax requests on prod env!
-        if ($request->isXmlHttpRequest() || 'dev' == $this->container->getParameter('kernel.environment')) {
-
-            $id = $request->query->get('id');
-            $company_id = $this->container->get('jcs.ds')->getCompanyId();
-            // get client data
-            $client = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')
-                ->findOneBy(['id' => $id, 'companyId' => $company_id]);
+        if (!empty($id)) {
+            $client = $this->getClient($id);
 
             return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client]);
         }
@@ -56,15 +60,23 @@ class ClientController extends Controller
         }
     }
 
-    protected function quickSearch(Request $request)
+    protected function getClient($id)
+    {
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+
+        // get client data
+
+        return $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')
+            ->findOneBy(['id' => $id, 'companyId' => $company_id]);
+    }
+
+    public function searchAction($q, Request $request)
     {
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
         $limit = 100;
 
         $re = [];
         $sql = '';
-
-        $q = $request->query->get('q');
 
         // save the search string
         $this->get('session')->set('quicksearch', $q);

@@ -1,8 +1,39 @@
 <div class="button-row">
-    {% if client is defined %}
-        <a href="{{ path('client_view', {'id': client.id}) }}" class="greybutton" id="edit_view" title="{{ 'szerkesztés'|trans }}"><span class="icon back-icon"></span></a>
-        <a href="{{ path('client_edit', {'id': client.id}) }}" class="button" id="edit_client" title="{{ 'szerkesztés'|trans }}"><span class="icon edit-icon"></span></a>
+    {% if buttons is not defined %}
+        {% set buttons = ['close'] %}
     {% endif %}
 
-    <div class="close greybutton"><span>x</span></div>
+    {% for button in buttons %}
+
+        {# back to view client #}
+        {% if button == 'back' and client.id is defined %}
+            {% if client.id %}
+                <a href="{{ path('client_view', {'id': client.id}) }}" class="greybutton" id="back_to_view" title="{{ 'mégse'|trans }}">
+                    <span>{{ 'mégse'|trans }}</span>
+                </a>
+            {% else %}
+                <a href="{{ path('clients') }}" class="close greybutton" title="{{ 'mégse'|trans }}">
+                    <span>{{ 'mégse'|trans }}</span>
+                </a>
+            {% endif %}
+        {% endif %}
+
+        {# save #}
+        {% if button == 'save' and client.id is defined %}
+            <a href="{{ path('client_edit', {'id': client.id}) }}" class="button" id="save_client" title="{{ 'mentés'|trans }}">
+                <span>{{ 'mentés'|trans }}</span>
+            </a>
+        {% endif %}
+
+        {# edit client #}
+        {% if button == 'edit' and client.id is defined %}
+            <a href="{{ path('client_edit', {'id': client.id}) }}" class="button" id="edit_client" title="{{ 'szerkeszt'|trans }}">
+                <span>{{ 'szerkeszt'|trans }}</span>
+            </a>
+        {% endif %}
+
+        {% if button == 'close' %}
+            <div class="close greybutton"><span>x</span></div>
+        {% endif %}
+    {% endfor %}
 </div>

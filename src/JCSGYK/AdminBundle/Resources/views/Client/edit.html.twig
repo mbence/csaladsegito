@@ -1,2 +1,8 @@
-{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" %}
 
+{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back', 'save']} %}
+
+<form action="{{ path('client_edit') }}" method="post" {{ form_enctype(form) }}>
+    {{ form_widget(form) }}
+
+    <input type="submit" />
+</form>

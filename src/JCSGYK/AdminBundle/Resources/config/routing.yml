@@ -2,20 +2,21 @@ home:
     pattern:  /
     defaults: { _controller: JCSGYKAdminBundle:Home:index }
 
-# Client Search #
+# Clients #
 clients:
     pattern:  /clients
     defaults: { _controller: JCSGYKAdminBundle:Client:index }
-
-# Client #
+client_search:
+    pattern:  /clients/search/{q}
+    defaults: { _controller: JCSGYKAdminBundle:Client:search, q: '' }
 client_view:
-    pattern:  /clients/view
-    defaults: { _controller: JCSGYKAdminBundle:Client:view }
-client_new:
-    pattern:  /clients/new
-    defaults: { _controller: JCSGYKAdminBundle:Client:new }
+    pattern:  /clients/view/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:view, id: '' }
 client_edit:
     pattern:  /clients/edit/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:edit, id: '' }
+client_new:
+    pattern:  /clients/new
     defaults: { _controller: JCSGYKAdminBundle:Client:edit }
 
 

@@ -7,7 +7,7 @@
         <div class="contentscroller">
             <div id="searchblock">
                 <div class="button-row">
-                    <a href="{{ path('client_new') }}" class="button" id="new_user"><span>{{ 'új ügyfél'|trans }}</span></a>
+                    <a href="{{ path('client_new') }}" class="button" id="new_client"><span>{{ 'új ügyfél'|trans }}</span></a>
                 </div>
                 <h1 class="client left">{{ 'Ügyfelek'|trans }}</h1>
                 {% include "JCSGYKAdminBundle:Elements:quicksearch.html.twig" %}
@@ -24,7 +24,8 @@
             </div>
 
             <div id="clientblock" tabindex="200"><div class="leftpad rightpad fullheight">
-                <form action="{{ path('client_view') }}" method="post" name="getclientform" id="getclientform">
+                                    {# client_view #}
+                <form action="{{ path('client_edit') }}" method="post" name="getclientform" id="getclientform">
                     <input type="hidden" name="id">
                 </form>
                 <div class="loading">

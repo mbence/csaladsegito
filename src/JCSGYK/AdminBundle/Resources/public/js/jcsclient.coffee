@@ -6,29 +6,54 @@ JcsClient =
         # init toggles
         JcsToggle.init("clientblock")
         HBlocks.setCloseButtons()
+        $("#clientblock").show()
+        HBlocks.setBlockSizes()
 
         @initButtonRow()
-
         @initProblems()
-
         true
 
     initButtonRow: ->
-        $("#edit_client").click (event) ->
+        # get buttons
+        $("#edit_client").add("#back_to_view").add("#new_client").click (event) ->
             event.stopPropagation()
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
-                HBlocks.scrollTo(2)
 
-                $.get($(this).attr("href"), (data) ->
+                $.get($(this).attr("href"), (data) =>
+                    $(this).removeClass('animbutton')
                     $("#clientblock .clientcontent").html(data).show()
-                    HBlocks.setCloseButtons()
+                    JcsClient.init()
+
                 ).error( (data) =>
                     # there was some error :(
                     AjaxBag.showError(data.statusText)
                     $(this).removeClass('animbutton')
                 )
+            false
 
+        $("#new_client").click (event) ->
+            $("#clientblock .clientcontent").hide()
+            HBlocks.closeBlock(4)
+            HBlocks.closeBlock(3)
+            false
+
+        # post buttons
+        $("#save_client").click (event) ->
+            event.stopPropagation()
+            if !$(this).hasClass('animbutton')
+                $(this).addClass('animbutton')
+                HBlocks.scrollTo(2)
+
+                $.post($(this).attr("href"), (data) ->
+                    $("#clientblock .clientcontent").html(data).show()
+                    JcsClient.init()
+
+                ).error( (data) =>
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $(this).removeClass('animbutton')
+                )
             false
 
 

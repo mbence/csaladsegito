@@ -22,13 +22,17 @@ JcsSearch =
             HBlocks.scrollTo(1)
             if $("#quicksearch #q").attr('value') == ''
                 $("#search-results").html(orig_results_text)
-            $.get($(this).attr("action"), $(this).serialize(), (data) ->
+            $.get($(this).attr("action") + '/' + $("#q").attr('value'), (data) ->
                 nf.stop()
                 if $("#quicksearch #q").attr('value') != ''
                     # display search results
                     $("#search-results").html(data)
                     # bind click events on the results
                     _this.setupResults()
+            ).error( (data) ->
+                nf.stop()
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
             )
 
             false
@@ -48,7 +52,7 @@ JcsSearch =
             HBlocks.scrollTo(2)
 
             # start the ajax request
-            $.get($("#getclientform").attr("action"), {id: $(this).data("userid")}, (data) ->
+            $.get($("#getclientform").attr("action") + '/' + $(this).data("userid"), (data) ->
                 $("#clientblock .loading").hide()
                 $("#clientblock .clientcontent").html(data).show()
                 HBlocks.scrollTo(2)
