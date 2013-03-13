@@ -25,6 +25,7 @@ class ClientController extends Controller
     public function editAction($id = null, Request $request)
     {
         $client = null;
+        $result = null;
         $em = $this->getDoctrine()->getManager();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
@@ -41,7 +42,24 @@ class ClientController extends Controller
         if (!empty($client)) {
             $form = $this->createForm(new ClientType(), $client);
 
-            return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client, 'form' => $form->createView()]);
+            // save the user
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    // save the new user data
+                    if ('new' == $id) {
+                        $em->persist($client);
+                    }
+                    $em->flush();
+
+                    $result = 'Ügyfél elmentve';
+
+                    //return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'result' => $result]);
+                }
+            }
+
+            return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client, 'form' => $form->createView(), 'result' => $result]);
         }
         else {
             throw new HttpException(400, "Bad request");

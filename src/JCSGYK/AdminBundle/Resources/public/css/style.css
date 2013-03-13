@@ -196,8 +196,10 @@ footer#colophon .credits a:hover {
 .nothing-found {
     color: #333;
 }
+#search-head {
+    margin: 0 0 10px 0;
+}
 #search-results {
-    margin: 10px 0 0 0;
     padding: 0 6px 0 0;
     color: #039;
     overflow: auto;

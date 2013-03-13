@@ -22,7 +22,9 @@ JcsSearch =
             HBlocks.scrollTo(1)
             if $("#quicksearch #q").attr('value') == ''
                 $("#search-results").html(orig_results_text)
-            $.get($(this).attr("action") + '/' + $("#q").attr('value'), (data) ->
+            search_url = $(this).attr("action")
+            if $("#q").attr('value') then search_url += '/' + $("#q").attr('value')
+            $.get(search_url, (data) ->
                 nf.stop()
                 if $("#quicksearch #q").attr('value') != ''
                     # display search results

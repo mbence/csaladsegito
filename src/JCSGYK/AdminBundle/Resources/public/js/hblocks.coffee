@@ -186,9 +186,9 @@ HBlocks =
         Set the heights of the blocks
     ###
     setHeights: ->
-        h = $(window).innerHeight() - $('#header').outerHeight() - $('#colophon').outerHeight() - 36
+        h = $(window).innerHeight() - $('#header').outerHeight(true) - $('#colophon').outerHeight(true) - 30
         # set heights
-        $('#search-results').height(h - 50)
+        $('#search-results').height(h - $("#search-head").outerHeight(true))
         $('#clientblock').height(h)
         $('#problemblock').height(h)
         $('#eventblock').height(h)
@@ -209,17 +209,19 @@ HBlocks =
         $(".contentwrapper").animate({scrollLeft: x}, 500)
 
         # if not already set, or we are not on the first block ...
-        if not $(".contentscroller > div:nth-child(" + block + ")").hasClass("current") or block != 1
+        if not $(".contentscroller > div:nth-child(" + block + ")").hasClass("current")
             # we add the "current" class to the selected block
             $(".contentscroller > div").removeClass("current")
             $(".contentscroller > div:nth-child(" + block + ")").addClass("current")
 
-            # if there is a list, focus on it's current element
-            if $(".contentscroller > .current .walkable .current").length
-                $(".contentscroller > .current .walkable .current").focus()
-            # or focus on the one selected by the cursor
-            else if $(".contentscroller > .current .walkable .cursor").length
-                $(".contentscroller > .current .walkable .cursor").focus()
-            # or focus on the block itself, if no current, and no cursor exists
-            else
-                $(".contentscroller > .current").focus()
+            # only change the focus, if it's not on an imput field
+            if not $(document.activeElement).is('input, select, textarea')
+              # if there is a list, focus on it's current element
+              if $(".contentscroller > .current .walkable .current").length
+                  $(".contentscroller > .current .walkable .current").focus()
+              # or focus on the one selected by the cursor
+              else if $(".contentscroller > .current .walkable .cursor").length
+                  $(".contentscroller > .current .walkable .cursor").focus()
+              # or focus on the block itself, if no current, and no cursor exists
+              else
+                  $(".contentscroller > .current").focus()

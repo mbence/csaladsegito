@@ -9,8 +9,10 @@
                 <div class="button-row">
                     <a href="{{ path('client_new') }}" class="button" id="new_client"><span>{{ 'új ügyfél'|trans }}</span></a>
                 </div>
-                <h1 class="client left">{{ 'Ügyfelek'|trans }}</h1>
-                {% include "JCSGYKAdminBundle:Elements:quicksearch.html.twig" %}
+                <div id="search-head">
+                    <h1 class="client left">{{ 'Ügyfelek'|trans }}</h1>
+                    {% include "JCSGYKAdminBundle:Elements:quicksearch.html.twig" %}
+                </div>
                 <div id="search-results">
                     <div class="info">
                     <p>A gyorskereső mezőben ügyfélszám, név, TAJ szám vagy utcanév és házszám szerint is kereshet.</p>

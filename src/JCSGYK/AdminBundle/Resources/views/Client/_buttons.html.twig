@@ -20,7 +20,7 @@
 
         {# save #}
         {% if button == 'save' and client.id is defined %}
-            <a href="{{ path('client_edit', {'id': client.id}) }}" class="button" id="save_client" title="{{ 'mentés'|trans }}">
+            <a href="{{ path('client_edit', {'id': client.id}) }}" class="button save_client" title="{{ 'mentés'|trans }}">
                 <span>{{ 'mentés'|trans }}</span>
             </a>
         {% endif %}

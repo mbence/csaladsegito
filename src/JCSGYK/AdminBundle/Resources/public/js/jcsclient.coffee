@@ -10,8 +10,27 @@ JcsClient =
         HBlocks.setBlockSizes()
 
         @initButtonRow()
+        @initForm()
         @initProblems()
         true
+
+    initForm: ->
+        # client edit
+        $("#client_edit").submit ->
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                $("#clientblock .clientcontent").html(data).show()
+                # display the result message
+                if $("#result").length
+                    AjaxBag.showNotice($("#result").html())
+                    $("#result").hide()
+                JcsClient.init()
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $(".save_client").removeClass('animbutton')
+            )
+
+            false
 
     initButtonRow: ->
         # get buttons
@@ -39,24 +58,13 @@ JcsClient =
             false
 
         # post buttons
-        $("#save_client").click (event) ->
+        $(".save_client").click (event) ->
             event.stopPropagation()
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
                 HBlocks.scrollTo(2)
-
-                $.post($(this).attr("href"), (data) ->
-                    $("#clientblock .clientcontent").html(data).show()
-                    JcsClient.init()
-
-                ).error( (data) =>
-                    # there was some error :(
-                    AjaxBag.showError(data.statusText)
-                    $(this).removeClass('animbutton')
-                )
+                $("#client_edit").submit()
             false
-
-
 
     initProblems: ->
         $("#showAllProblem").click (event) ->

@@ -38,4 +38,4 @@ assetic:
 live_php:
     dirs: [., ../src, ../web]
     ignore: [logs, cache, public]
-    timelimit: 125
+    timelimit: 100
