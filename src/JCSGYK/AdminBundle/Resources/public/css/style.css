@@ -554,24 +554,33 @@ table.problem-list td {
 }
 
 /* Client edit form */
-.client-edit {
+.client-edit, .client-edit-inner {
     color: #039;
     font-size: 13px;
-    /*width: 100%;*/
+    width: 100%;
 }
 .client-edit > tbody > tr > th {
     vertical-align: middle;
     width: 10%;
     color: #5661a2;
     font-weight: normal;
-    padding: 2px 6px;
+    padding: 2px 3px 2px 6px;
     border-bottom: 1px solid #DDD;
     text-align: right;
     white-space: nowrap;
 }
+.client-edit > tbody > tr > th:first-child {
+    padding-left: 0;
+}
 .client-edit > tbody > tr > td {
-    padding: 2px 6px;
+    padding: 2px 0;
     border-bottom: 1px solid #DDD;
+}
+.client-edit-inner td {
+    padding: 0 0 0 6px;
+}
+.client-edit-inner td:first-child {
+    padding: 0;
 }
 .client-edit label.above {
     color: #858cb7;
@@ -594,12 +603,16 @@ table.problem-list td {
     width: 100%;
     padding: 2px;
     box-shadow: 1px 1px 1px rgba(200, 200, 200, 0.3) inset;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    outline: medium none;
 }
 .client-edit td.short {
     width: 40px;
 }
 .client-edit table.client-edit {
-    margin: -2px -6px;
+    /*margin: -2px -6px;*/
 }
 .client-edit table.client-edit td {
     border: none;

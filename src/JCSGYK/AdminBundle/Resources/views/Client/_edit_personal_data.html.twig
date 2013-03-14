@@ -9,7 +9,7 @@
         <tr>
             <th>{{ 'Név'|trans }}:</th>
             <td colspan="3">
-                <table class="client-edit" cellspacing="0" border="0">
+                <table class="client-edit-inner" cellspacing="0" border="0">
                     <tr>
                         <td class="short">
                             {{ form_label(form.title, null, {'label_attr': {'class': 'above'}}) }}<br>
@@ -39,7 +39,7 @@
         <tr>
             <th>{{ 'Szül. név'|trans }}:</th>
             <td colspan="3">
-                <table class="client-edit" cellspacing="0" border="0">
+                <table class="client-edit-inner" cellspacing="0" border="0">
                     <tr>
                         <td class="short">
                             {{ form_label(form.birth_title, null, {'label_attr': {'class': 'above'}}) }}<br>
@@ -60,7 +60,7 @@
         <tr>
             <th>{{ 'Szül. hely, idő'|trans }}:</th>
             <td colspan="3">
-                <table class="client-edit" cellspacing="0" border="0">
+                <table class="client-edit-inner" cellspacing="0" border="0">
                     <tr>
                         <td>{{ form_errors(form.birth_place) }} {{ form_widget(form.birth_place) }} </td>
                         <td>{{ form_errors(form.birth_date) }} {{ form_widget(form.birth_date) }} </td>
@@ -71,7 +71,7 @@
         <tr>
             <th>{{ 'Anyja neve'|trans }}:</th>
             <td colspan="3">
-                <table class="client-edit" cellspacing="0" border="0">
+                <table class="client-edit-inner" cellspacing="0" border="0">
                     <tr>
                         <td class="short">
                             {{ form_label(form.mother_title, null, {'label_attr': {'class': 'above'}}) }}<br>
@@ -92,7 +92,7 @@
         <tr>
             <td colspan="4">
                 <label>{{ 'Lakóhely'|trans }}</label>
-                <table class="client-edit" cellspacing="0" border="0">
+                <table class="client-edit-inner" cellspacing="0" border="0">
                     <tr>
                         <td class="short">
                             {{ form_label(form.zip_code, null, {'label_attr': {'class': 'above'}}) }}<br>
@@ -125,7 +125,7 @@
 <tr>
             <td colspan="4">
                 <label>{{ 'Tartózkodási hely'|trans }}</label>
-                <table class="client-edit" cellspacing="0" border="0">
+                <table class="client-edit-inner" cellspacing="0" border="0">
                     <tr>
                         <td class="short">
                             {{ form_label(form.location_zip_code, null, {'label_attr': {'class': 'above'}}) }}<br>
@@ -171,7 +171,7 @@
         <tr>
             <th>{{ 'Megbízott'|trans }}:</th>
             <td colspan="3">
-                <table class="client-edit" cellspacing="0" border="0">
+                <table class="client-edit-inner" cellspacing="0" border="0">
                     <tr>
                         <td>
                             {{ form_label(form.guardian_lastname, null, {'label_attr': {'class': 'above'}}) }}<br>
