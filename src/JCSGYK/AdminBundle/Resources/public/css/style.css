@@ -242,6 +242,8 @@ table.search-results tr.current td, table.search-results tr.current:hover td, .p
 .archived {
     font-size: 13px;
     color: #d04a37;
+    line-height: 16px;
+    text-align: center;
 }
 h1.client {
     color: #34a;
@@ -255,7 +257,7 @@ table.client {
     font-size: 13px;
     width: 100%;
 }
-table.client th {
+table.client > tbody > tr > th {
     color: #5661a2;
     font-weight: normal;
     padding: 5px 6px 5px;
@@ -264,12 +266,12 @@ table.client th {
     width: 25%;
     white-space: nowrap;
 }
-table.client td {
+table.client > tbody > tr > td {
     /*font-weight: bold;*/
     padding: 5px 6px 5px;
     border-bottom: 1px solid #DDD;
 }
-table.client tr:hover td, table.client tr:hover th  {
+table.client > tbody > tr:hover td, table.client > tbody > tr:hover > th  {
     background-color: #f5f5f5;
 }
 table.caseowner th {
@@ -319,7 +321,7 @@ table.caseowner td {
     font-size: 12px;
     color: #666;
     margin: 14px 0 0 0;
-    background-color: #eee;
+    background-color: #ddd;
     text-align: center;
     padding: 2px 4px 4px;
 }
@@ -549,4 +551,63 @@ table.problem-list td {
 }
 .stat-legend td {
     padding: 1px 2px;
+}
+
+/* Client edit form */
+.client-edit {
+    color: #039;
+    font-size: 13px;
+    /*width: 100%;*/
+}
+.client-edit > tbody > tr > th {
+    vertical-align: middle;
+    width: 10%;
+    color: #5661a2;
+    font-weight: normal;
+    padding: 2px 6px;
+    border-bottom: 1px solid #DDD;
+    text-align: right;
+    white-space: nowrap;
+}
+.client-edit > tbody > tr > td {
+    padding: 2px 6px;
+    border-bottom: 1px solid #DDD;
+}
+.client-edit label.above {
+    color: #858cb7;
+    font-weight: normal;
+    white-space: nowrap;
+    line-height: 12px;
+    font-size: 11px;
+    font-style: italic;
+}
+.client-edit label {
+    color: #5661A2;
+    font-weight: normal;
+    white-space: nowrap;
+}
+.client-edit input[type=text] {
+    border: 1px solid #ccc;
+    background-color: #f5f5f5;
+    color: #003399;
+    font-size: 13px;
+    width: 100%;
+    padding: 2px;
+    box-shadow: 1px 1px 1px rgba(200, 200, 200, 0.3) inset;
+}
+.client-edit td.short {
+    width: 40px;
+}
+.client-edit table.client-edit {
+    margin: -2px -6px;
+}
+.client-edit table.client-edit td {
+    border: none;
+}
+.client-edit select {
+    font-size: 12px;
+}
+.client-edit input[type=text]:hover, .client-edit input[type=text]:focus {
+    border-color: #aaa;
+    background-color: #fafafa;
 }

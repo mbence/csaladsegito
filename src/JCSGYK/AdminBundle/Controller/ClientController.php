@@ -40,6 +40,10 @@ class ClientController extends Controller
         }
 
         if (!empty($client)) {
+            if ($client->getIsArchived()) {
+                return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'result' => $result]);
+            }
+
             $form = $this->createForm(new ClientType(), $client);
 
             // save the user

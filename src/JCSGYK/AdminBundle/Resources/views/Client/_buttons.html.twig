@@ -26,7 +26,7 @@
         {% endif %}
 
         {# edit client #}
-        {% if button == 'edit' and client.id is defined %}
+        {% if button == 'edit' and client.id is defined and not client.isArchived %}
             <a href="{{ path('client_edit', {'id': client.id}) }}" class="button" id="edit_client" title="{{ 'szerkeszt'|trans }}">
                 <span>{{ 'szerkeszt'|trans }}</span>
             </a>

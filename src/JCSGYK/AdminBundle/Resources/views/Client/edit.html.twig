@@ -1,31 +1,8 @@
 
 {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back', 'save']} %}
-
-<form action="{{ path('client_edit', {id: client.id}) }}" id="client_edit" method="post" {{ form_enctype(form) }}>
-    {{ form_errors(form) }}
-    <h1 class="client">&nbsp;</h1>
-    <div>
-        <table class="client client-edit" cellspacing="0" border="0">
-            <tr>
-                <th style="width:auto;">{{ 'Név'|trans }}:</th>
-                <td>
-                    <div>
-                        {{ form_errors(form.lastname) }}{{ form_errors(form.firstname) }}
-                        {{ form_widget(form.title) }}
-                        {{ form_widget(form.lastname) }}
-                        {{ form_widget(form.firstname) }}
-                    </div>
-                </td>
-            </tr>
-        </table>
+{% include "JCSGYKAdminBundle:Client:_edit_personal_data.html.twig" %}
 
 
-        {{ form_rest(form) }}
-        <div class="clear"></div>
-
-
-    </div>
-</form>
 
 {% if result %}
     <div id="result">{{ result }}</div>

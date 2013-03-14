@@ -11,7 +11,7 @@
         </td>
     </tr>
 </table>
-<div class="client-sub first-sub togglable">személyes adatok</div>
+<div class="client-sub first-sub togglable">{{ 'személyes adatok'|trans }}</div>
 <div>
     <table class="client" cellspacing="0" border="0">
         <tr>
@@ -33,7 +33,7 @@
             <td colspan="3">{{ fname(client.motherFirstname, client.motherLastname, client.motherTitle) }}</td>
         </tr>
         <tr>
-            <th>{{ 'Állandó lakcím'|trans }}:</th>
+            <th>{{ 'Lakóhely'|trans }}:</th>
             <td colspan="3">{{ client.zipCode }} {{ client.city }}, {{ client.street }} {{ client.streetType }} {{ client.streetNumber }}
             {% if client.flatNumber %}({{ client.flatNumber }}){% endif %}</td>
         </tr>

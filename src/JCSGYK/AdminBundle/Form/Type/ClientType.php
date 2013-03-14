@@ -29,12 +29,12 @@ class ClientType extends AbstractType
             'format' => 'yMMdd',
         ]);
         $builder->add('birth_place', 'text', ['label' => 'Születési hely']);
-        $builder->add('birth_title', 'text', ['label' => 'Születési titulus']);
-        $builder->add('birth_firstname', 'text', ['label' => 'Születési keresztnév']);
-        $builder->add('birth_lastname', 'text', ['label' => 'Születési vezetéknév']);
-        $builder->add('mother_title', 'text', ['label' => 'Anyja titulusa']);
-        $builder->add('mother_firstname', 'text', ['label' => 'Anyja keresztneve']);
-        $builder->add('mother_lastname', 'text', ['label' => 'Anyja vezetékneve']);
+        $builder->add('birth_title', 'text', ['label' => 'Titulus']);
+        $builder->add('birth_firstname', 'text', ['label' => 'Keresztnév']);
+        $builder->add('birth_lastname', 'text', ['label' => 'Vezetéknév']);
+        $builder->add('mother_title', 'text', ['label' => 'Titulus']);
+        $builder->add('mother_firstname', 'text', ['label' => 'Keresztnév']);
+        $builder->add('mother_lastname', 'text', ['label' => 'Vezetéknév']);
         $builder->add('social_security_number', 'text', ['label' => 'TAJ']);
         $builder->add('identity_number', 'text', ['label' => 'Szem.a.j']);
         $builder->add('id_card_number', 'text', ['label' => 'Szig.sz.']);
@@ -44,18 +44,18 @@ class ClientType extends AbstractType
         $builder->add('fax', 'text', ['label' => 'Fax']);
         $builder->add('email', 'text', ['label' => 'E-Mail']);
 
-        $builder->add('zip_code', 'text', ['label' => 'irányítószám']);
+        $builder->add('zip_code', 'text', ['label' => 'Irsz.']);
         $builder->add('city', 'text', ['label' => 'Város']);
         $builder->add('street', 'text', ['label' => 'Utca']);
-        $builder->add('street_type', 'text', ['label' => 'Közterület jellege']);
-        $builder->add('street_number', 'text', ['label' => 'Házszám']);
+        $builder->add('street_type', 'text', ['label' => 'Közt.jell.']);
+        $builder->add('street_number', 'text', ['label' => 'Házsz.']);
         $builder->add('flat_number', 'text', ['label' => 'Ajtó']);
 
-        $builder->add('location_zip_code', 'text', ['label' => 'irányítószám']);
+        $builder->add('location_zip_code', 'text', ['label' => 'Irsz.']);
         $builder->add('location_city', 'text', ['label' => 'Város']);
         $builder->add('location_street', 'text', ['label' => 'Utca']);
-        $builder->add('location_street_type', 'text', ['label' => 'Közterület jellege']);
-        $builder->add('location_street_number', 'text', ['label' => 'Házszám']);
+        $builder->add('location_street_type', 'text', ['label' => 'Közt.jell.']);
+        $builder->add('location_street_number', 'text', ['label' => 'Házsz.']);
         $builder->add('location_flat_number', 'text', ['label' => 'Ajtó']);
 
         $builder->add('marital_status', 'text', ['label' => 'családi állapot']);
@@ -69,8 +69,8 @@ class ClientType extends AbstractType
 
 //        $builder->add('case_admin', 'text', ['label' => 'Esetgazda']);
 
-        $builder->add('guardian_firstname', 'text', ['label' => 'Megbízott keresztneve']);
-        $builder->add('guardian_lastname', 'text', ['label' => 'Megbízott vezetékneve']);
+        $builder->add('guardian_firstname', 'text', ['label' => 'Keresztnév']);
+        $builder->add('guardian_lastname', 'text', ['label' => 'Vezetéknév']);
 
 
         // missing fields: country, location_country, doc_file, job_type
