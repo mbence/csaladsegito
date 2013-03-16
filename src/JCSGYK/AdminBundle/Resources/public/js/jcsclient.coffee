@@ -15,14 +15,9 @@ JcsClient =
         true
 
     initForm: ->
-        # textarea auto height
-        $("#client_note").elastic()
-
         # count the current utilityproviders we have (e.g. 2), use that as the new
         # index when inserting a new item (e.g. 2)
         $(".utilityproviders").data('index', $(".utilityproviders").find('tr').length);
-        console.log $(".utilityproviders").data('index')
-
         $(".add_utilityprovider").on 'click', (e) =>
             # prevent the link from creating a "#" on the URL
             e.preventDefault()
@@ -30,6 +25,7 @@ JcsClient =
             # add a new tag form (see next code block)
             @addTagForm($(".utilityproviders"))
 
+            false
 
         # client edit
         $("#client_edit").submit ->
@@ -49,6 +45,10 @@ JcsClient =
 
             false
 
+        # textarea auto height
+        $("#client_note").elastic()
+
+
     addTagForm: (collectionHolder) ->
         prototype = collectionHolder.data('prototype')
         index = collectionHolder.data('index')
@@ -61,7 +61,7 @@ JcsClient =
         collectionHolder.data('index', index + 1)
 
         # Display the form in the page in an li, before the "Add a tag" link li
-        collectionHolder.append(newForm)   
+        collectionHolder.append(newForm)
 
     initButtonRow: ->
         # get buttons
