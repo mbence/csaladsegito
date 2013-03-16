@@ -1,0 +1,36 @@
+{# Other data #}
+<div class="client-sub">{{ 'egyéb adatok'|trans }}</div>
+<div>
+    <table class="client-edit" cellspacing="0" border="0">
+        <tr>
+            <th>{{ form_label(form.education_code) }}:</th>
+            <td>
+                {{ form_errors(form.education_code) }}
+                {{ form_widget(form.education_code) }}
+            </td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.ec_activity) }}:</th>
+            <td>
+                {{ form_errors(form.ec_activity) }}
+                {{ form_widget(form.ec_activity) }}
+            </td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.marital_status) }}:</th>
+            <td>
+                {{ form_errors(form.marital_status) }}
+                {{ form_widget(form.marital_status) }}
+            </td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.family_size) }}:</th>
+            <td>
+                <div class="short">
+                {{ form_errors(form.family_size) }}
+                {{ form_widget(form.family_size) }}
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>

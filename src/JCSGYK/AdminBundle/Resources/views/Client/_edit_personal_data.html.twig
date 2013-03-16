@@ -1,7 +1,5 @@
 {# Edit Personal Data #}
 
-<form action="{{ path('client_edit', {id: client.id}) }}" id="client_edit" novalidate method="post" {{ form_enctype(form) }}>
-    {{ form_errors(form) }}
     <h1 class="client">&nbsp;</h1>
     <div class="client-sub first-sub">{{ 'személyes adatok'|trans }}</div>
     <div>
@@ -188,9 +186,4 @@
             </td>
         </tr>
         </table>
-        {{ form_rest(form) }}
-        <div class="clear"></div>
-
-
     </div>
-</form>

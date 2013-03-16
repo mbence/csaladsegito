@@ -15,8 +15,25 @@ JcsClient =
         true
 
     initForm: ->
+        # textarea auto height
+        $("#client_note").elastic()
+
+        # count the current utilityproviders we have (e.g. 2), use that as the new
+        # index when inserting a new item (e.g. 2)
+        $(".utilityproviders").data('index', $(".utilityproviders").find('tr').length);
+        console.log $(".utilityproviders").data('index')
+
+        $(".add_utilityprovider").on 'click', (e) =>
+            # prevent the link from creating a "#" on the URL
+            e.preventDefault()
+
+            # add a new tag form (see next code block)
+            @addTagForm($(".utilityproviders"))
+
+
         # client edit
         $("#client_edit").submit ->
+            $(".save_client").addClass('animbutton')
             $.post($(this).attr("action"), $(this).serialize(), (data) ->
                 $("#clientblock .clientcontent").html(data).show()
                 # display the result message
@@ -32,9 +49,23 @@ JcsClient =
 
             false
 
+    addTagForm: (collectionHolder) ->
+        prototype = collectionHolder.data('prototype')
+        index = collectionHolder.data('index')
+
+        # Replace '__name__' in the prototype's HTML to
+        # instead be a number based on how many items we have
+        newForm = prototype.replace(/__name__/g, index)
+
+        # increase the index with one for the next item
+        collectionHolder.data('index', index + 1)
+
+        # Display the form in the page in an li, before the "Add a tag" link li
+        collectionHolder.append(newForm)   
+
     initButtonRow: ->
         # get buttons
-        $("#edit_client").add("#back_to_view").add("#new_client").click (event) ->
+        $(".edit_client").add(".back_to_view").add(".new_client").click (event) ->
             event.stopPropagation()
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
@@ -51,19 +82,10 @@ JcsClient =
                 )
             false
 
-        $("#new_client").click (event) ->
+        $(".new_client").click (event) ->
             $("#clientblock .clientcontent").hide()
             HBlocks.closeBlock(4)
             HBlocks.closeBlock(3)
-            false
-
-        # post buttons
-        $(".save_client").click (event) ->
-            event.stopPropagation()
-            if !$(this).hasClass('animbutton')
-                $(this).addClass('animbutton')
-                HBlocks.scrollTo(2)
-                $("#client_edit").submit()
             false
 
     initProblems: ->

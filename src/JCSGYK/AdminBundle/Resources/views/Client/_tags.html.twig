@@ -4,13 +4,13 @@
     <table class="client" cellspacing="0" border="0">
         <tr>
             <th>{{ 'Létrehozta'|trans }}:</th>
-            <td>{{ fname(item.getCreator.firstname, item.getCreator.lastname) }}</td>
+            <td>{{ fname(item.creator.firstname, item.creator.lastname) }}</td>
             <td>({{ item.createdAt|fdate('dt') }})</td>
         </tr>
         {% if item.modifiedAt and item.modifiedAt != item.createdAt %}
         <tr>
             <th>{{ 'Módosította'|trans }}:</th>
-            <td>{{ fname(item.getModifier.firstname, item.getModifier.lastname) }}</td>
+            <td>{{ fname(item.modifier.firstname, item.modifier.lastname) }}</td>
             <td>({{ item.modifiedAt|fdate('dt') }})</td>
         </tr>
         {% endif %}

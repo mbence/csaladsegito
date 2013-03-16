@@ -30,6 +30,10 @@ HBlocks =
         Set the keyboard actions
     ###
     setKeys: (event) ->
+        # we don't need kayboard navigation if there is an editor open
+        if ($(".client-edit").length > 0)
+            return true
+
         # close current block on ESC
         if 27 == event.which
             if $(".contentscroller > .current .close").length

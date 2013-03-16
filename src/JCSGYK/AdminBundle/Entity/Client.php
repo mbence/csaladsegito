@@ -1592,39 +1592,6 @@ class Client
     }
 
     /**
-     * Add utilityproviders
-     *
-     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
-     * @return Client
-     */
-    public function addUtilityproviderid(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
-    {
-        $this->utilityproviders[] = $utilityproviders;
-
-        return $this;
-    }
-
-    /**
-     * Remove utilityproviders
-     *
-     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
-     */
-    public function removeUtilityproviderid(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
-    {
-        $this->utilityproviderids->removeElement($utilityproviders);
-    }
-
-    /**
-     * Get utilityproviders
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getUtilityproviders()
-    {
-        return $this->utilityproviders;
-    }
-
-    /**
      * Set creator
      *
      * @param \JCSGYK\AdminBundle\Entity\User $creator
@@ -1668,6 +1635,28 @@ class Client
     public function removeUtilityprovider(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
     {
         $this->utilityproviders->removeElement($utilityproviders);
+    }
+
+    /**
+     * Set utilityproviders
+     *
+     * @return Client
+     */
+    public function setUtilityproviders(ArrayCollection $utilityproviders)
+    {
+        $this->utilityproviders = $utilityproviders;
+        
+        return $this;
+    }
+
+    /**
+     * Get utilityproviders
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUtilityproviders()
+    {
+        return $this->utilityproviders;
     }
 
     /**

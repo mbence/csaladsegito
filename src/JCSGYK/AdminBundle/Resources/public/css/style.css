@@ -198,6 +198,7 @@ footer#colophon .credits a:hover {
 }
 #search-head {
     margin: 0 0 10px 0;
+    padding: 0 6px 0 0;
 }
 #search-results {
     padding: 0 6px 0 0;
@@ -595,7 +596,7 @@ table.problem-list td {
     font-weight: normal;
     white-space: nowrap;
 }
-.client-edit input[type=text] {
+.client-edit input[type=text], .edit-note textarea {
     border: 1px solid #ccc;
     background-color: #f5f5f5;
     color: #003399;
@@ -608,7 +609,7 @@ table.problem-list td {
     -webkit-box-sizing: border-box;
     outline: medium none;
 }
-.client-edit td.short {
+.client-edit .short {
     width: 40px;
 }
 .client-edit table.client-edit {
@@ -623,4 +624,9 @@ table.problem-list td {
 .client-edit input[type=text]:hover, .client-edit input[type=text]:focus {
     border-color: #aaa;
     background-color: #fafafa;
+}
+.edit-note textarea {
+    margin-top: 2px;
+    padding: 3px;
+    min-height: 80px;
 }

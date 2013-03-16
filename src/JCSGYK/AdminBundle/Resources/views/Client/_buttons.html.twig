@@ -5,29 +5,38 @@
 
     {% for button in buttons %}
 
+        {# new client #}
+        {% if button == 'new_client' %}
+            <a href="{{ path('client_new') }}" class="button new_client"><span>{{ 'új ügyfél'|trans }}</span></a>
+        {% endif %}
+        {# add utility provider #}
+        {% if button == 'add_utilityprovider' %}
+            <a href="#" class="greybutton add_utilityprovider"><span>{{ 'új szolgáltató'|trans }}</span></a>
+        {% endif %}
+
         {# back to view client #}
         {% if button == 'back' and client.id is defined %}
             {% if client.id %}
-                <a href="{{ path('client_view', {'id': client.id}) }}" class="greybutton" id="back_to_view" title="{{ 'mégse'|trans }}">
+                <button type="reset" href="{{ path('client_view', {'id': client.id}) }}" class="greybutton back_to_view" title="{{ 'mégse'|trans }}">
                     <span>{{ 'mégse'|trans }}</span>
-                </a>
+                </button>
             {% else %}
-                <a href="{{ path('clients') }}" class="close greybutton" title="{{ 'mégse'|trans }}">
+                <button type="reset" href="{{ path('clients') }}" class="close greybutton" title="{{ 'mégse'|trans }}">
                     <span>{{ 'mégse'|trans }}</span>
-                </a>
+                </button>
             {% endif %}
         {% endif %}
 
         {# save #}
         {% if button == 'save' and client.id is defined %}
-            <a href="{{ path('client_edit', {'id': client.id}) }}" class="button save_client" title="{{ 'mentés'|trans }}">
+            <button type="submit" href="{{ path('client_edit', {'id': client.id}) }}" class="button save_client" title="{{ 'mentés'|trans }}">
                 <span>{{ 'mentés'|trans }}</span>
-            </a>
+            </button>
         {% endif %}
 
         {# edit client #}
         {% if button == 'edit' and client.id is defined and not client.isArchived %}
-            <a href="{{ path('client_edit', {'id': client.id}) }}" class="button" id="edit_client" title="{{ 'szerkeszt'|trans }}">
+            <a href="{{ path('client_edit', {'id': client.id}) }}" class="button edit_client" title="{{ 'szerkeszt'|trans }}">
                 <span>{{ 'szerkeszt'|trans }}</span>
             </a>
         {% endif %}

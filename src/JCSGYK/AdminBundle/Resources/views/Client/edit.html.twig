@@ -1,7 +1,30 @@
 
+
+<form action="{{ path('client_edit', {id: client.id}) }}" id="client_edit" novalidate method="post" {{ form_enctype(form) }}>
+    {{ form_errors(form) }}
+
 {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back', 'save']} %}
 {% include "JCSGYKAdminBundle:Client:_edit_personal_data.html.twig" %}
+{% include "JCSGYKAdminBundle:Client:_problems.html.twig" %}
 
+{% if is_granted(['ROLE_FAMILY_HELP','ROLE_CHILD_WELFARE']) %}
+    {% include "JCSGYKAdminBundle:Client:_edit_ids.html.twig" %}
+    {% include "JCSGYKAdminBundle:Client:_edit_other_data.html.twig" %}
+{% endif %}
+
+{% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: client} %}
+
+{% if client.creator %}
+    {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: client} %}
+{% endif %}
+
+<div class="toppad10">
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back', 'save']} %}
+    <div class="clear"></div>
+</div>
+{{ form_rest(form) }}
+</form>
+<br>
 
 
 {% if result %}

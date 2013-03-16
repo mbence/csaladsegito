@@ -44,17 +44,38 @@ class ClientController extends Controller
                 return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'result' => $result]);
             }
 
-            $form = $this->createForm(new ClientType(), $client);
+            $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
 
             // save the user
             if ($request->isMethod('POST')) {
                 $form->bind($request);
 
                 if ($form->isValid()) {
+                    // TODO: save modifier user
+
                     // save the new user data
                     if ('new' == $id) {
                         $em->persist($client);
                     }
+                    // handle/save the utilityproviders
+
+                    foreach ($client->getUtilityproviders() as $up) {
+                        $val = $up->getValue();
+                        if (empty($val)) {
+                            // remove the empty providers
+                            $client->removeUtilityprovider($up);
+                            $em->remove($up);
+
+                            // TODO: remove deleted fields form the form
+                        }
+                        else {
+                            // set the client id
+                            $up->setClient($client);
+                            // save the rest
+                            $em->persist($up);
+                        }
+                    }
+
                     $em->flush();
 
                     $result = 'Ügyfél elmentve';

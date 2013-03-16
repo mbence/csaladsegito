@@ -6,10 +6,9 @@
     <div class="contentwrapper">
         <div class="contentscroller">
             <div id="searchblock">
-                <div class="button-row">
-                    <a href="{{ path('client_new') }}" class="button" id="new_client"><span>{{ 'új ügyfél'|trans }}</span></a>
-                </div>
                 <div id="search-head">
+                    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_client']} %}
+                        
                     <h1 class="client left">{{ 'Ügyfelek'|trans }}</h1>
                     {% include "JCSGYKAdminBundle:Elements:quicksearch.html.twig" %}
                 </div>

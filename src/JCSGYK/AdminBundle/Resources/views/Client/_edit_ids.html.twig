@@ -1,0 +1,52 @@
+{# IDs #}
+<div class="client-sub">{{ 'azonosítók'|trans }}</div>
+<div>
+    <div class="halfbox"><div class="rightpad">
+        <table class="client-edit" cellspacing="0" border="0">
+            <tr>
+                <th>{{ form_label(form.social_security_number) }}:</th>
+                <td>
+                    {{ form_errors(form.social_security_number) }}
+                    {{ form_widget(form.social_security_number) }}
+                </td>
+            </tr>
+            <tr>
+                <th>{{ form_label(form.identity_number) }}:</th>
+                <td>
+                    {{ form_errors(form.identity_number) }}
+                    {{ form_widget(form.identity_number) }}
+                </td>
+            </tr>
+            <tr>
+                <th>{{ form_label(form.id_card_number) }}:</th>
+                <td>
+                    {{ form_errors(form.id_card_number) }}
+                    {{ form_widget(form.id_card_number) }}
+                </td>
+            </tr>
+        </table>
+    </div></div>
+
+    {# utility providers #}
+    <div class="halfbox"><div class="leftpad">
+        <table class="client-edit utilityproviders" cellspacing="0" border="0" data-prototype="<tr><th>{{ form_widget(form.utilityproviders.vars.prototype.type)|e }}</th><td>{{ form_widget(form.utilityproviders.vars.prototype.value)|e }}</td></tr>">
+        {% for provider in form.utilityproviders %}
+            <tr>
+                <th>
+                    {{ form_errors(provider.type) }}
+                    {{ form_widget(provider.type) }}
+                </th>
+                <td>
+                    {{ form_errors(provider.value) }}
+                    {{ form_widget(provider.value) }}
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+        <div class="toppad">
+            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['add_utilityprovider']} %}
+            <div class="clear"></div>
+        </div>
+    </div></div>
+    <div class="clear"></div>
+</div>

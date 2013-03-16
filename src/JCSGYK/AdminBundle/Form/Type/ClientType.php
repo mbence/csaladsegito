@@ -5,8 +5,23 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
+use JCSGYK\AdminBundle\Services\DataStore;
+use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
+
 class ClientType extends AbstractType
 {
+    protected $ds;
+
+    /**
+     * Save the Datastore for parameter retrieval
+     *
+     * @param \JCSGYK\AdminBundle\Services\DataStore $ds
+     */
+    public function __construct(DataStore $ds)
+    {
+        $this->ds = $ds;
+    }
+
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
@@ -20,8 +35,7 @@ class ClientType extends AbstractType
         $builder->add('lastname', 'text', ['label' => 'Vezetéknév']);
         $builder->add('gender', 'choice', [
             'label' => 'Nem',
-            'choices'   => array('1' => 'Férfi', '2' => 'Nő'),
-            'required'  => false,
+            'choices'   => ['1' => 'Férfi', '2' => 'Nő'],
         ]);
         $builder->add('birth_date', 'birthday', [
             'label' => 'Születési idő',
@@ -58,11 +72,23 @@ class ClientType extends AbstractType
         $builder->add('location_street_number', 'text', ['label' => 'Házsz.']);
         $builder->add('location_flat_number', 'text', ['label' => 'Ajtó']);
 
-        $builder->add('marital_status', 'text', ['label' => 'családi állapot']);
-        $builder->add('citizenship', 'text', ['label' => 'állampolgárság']);
-        $builder->add('citizenship_status', 'text', ['label' => 'állampolgársági jogállás']);
-        $builder->add('education_code', 'text', ['label' => 'végzettség']);
-        $builder->add('ec_activity', 'text', ['label' => 'gazd. aktiv.']);
+        $builder->add('marital_status', 'choice', [
+            'label' => 'Családi összetétel',
+            'choices'   => $this->ds->getGroup(5),
+        ]);
+
+        // TODO: do we need this two?
+        //$builder->add('citizenship', 'text', ['label' => 'állampolgárság']);
+        //$builder->add('citizenship_status', 'text', ['label' => 'állampolgársági jogállás']);
+
+        $builder->add('education_code', 'choice', [
+            'label' => 'Végzettség',
+            'choices'   => $this->ds->getGroup(3),
+        ]);
+        $builder->add('ec_activity', 'choice', [
+            'label' => 'Gazd. aktiv.',
+            'choices'   => $this->ds->getGroup(4),
+        ]);
 
         $builder->add('family_size', 'text', ['label' => 'Igénylők']);
         $builder->add('note', 'textarea', ['label' => 'Megjegyzés']);
@@ -72,6 +98,11 @@ class ClientType extends AbstractType
         $builder->add('guardian_firstname', 'text', ['label' => 'Keresztnév']);
         $builder->add('guardian_lastname', 'text', ['label' => 'Vezetéknév']);
 
+        $builder->add('utilityproviders', 'collection', [
+            'type' => new UtilityproviderType($this->ds),
+            'allow_add'    => true,
+            'by_reference' => false,
+        ]);
 
         // missing fields: country, location_country, doc_file, job_type
     }
