@@ -22,11 +22,9 @@
     {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back', 'save']} %}
     <div class="clear"></div>
 </div>
-{{ form_rest(form) }}
+
+{{ form_widget(form._token) }}
 </form>
 <br>
 
-
-{% if result %}
-    <div id="result">{{ result }}</div>
-{% endif %}
+{% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}

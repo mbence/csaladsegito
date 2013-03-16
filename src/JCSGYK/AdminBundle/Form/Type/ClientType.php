@@ -99,6 +99,7 @@ class ClientType extends AbstractType
         $builder->add('guardian_lastname', 'text', ['label' => 'Vezetéknév']);
 
         $builder->add('utilityproviders', 'collection', [
+            'label' => '',
             'type' => new UtilityproviderType($this->ds),
             'allow_add'    => true,
             'by_reference' => false,

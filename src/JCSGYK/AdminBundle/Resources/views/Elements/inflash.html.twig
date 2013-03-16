@@ -1,0 +1,7 @@
+<div id="result"
+{% for msgType, msgs in app.session.flashbag.all %}
+    {% for flashMessage in msgs %}
+        data-result-{{ msgType }}="{{ flashMessage|trans }}"
+    {% endfor %}
+{% endfor %}
+></div>

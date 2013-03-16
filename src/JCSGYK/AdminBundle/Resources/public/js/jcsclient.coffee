@@ -33,9 +33,10 @@ JcsClient =
             $.post($(this).attr("action"), $(this).serialize(), (data) ->
                 $("#clientblock .clientcontent").html(data).show()
                 # display the result message
-                if $("#result").length
-                    AjaxBag.showNotice($("#result").html())
-                    $("#result").hide()
+                if $("#result").data("result-notice")
+                    AjaxBag.showNotice($("#result").data("result-notice"))
+                if $("#result").data("result-error")
+                    AjaxBag.showError($("#result").data("result-error"))
                 JcsClient.init()
             ).error( (data) =>
                 # there was some error :(

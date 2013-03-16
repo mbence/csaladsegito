@@ -65,8 +65,6 @@ class ClientController extends Controller
                             // remove the empty providers
                             $client->removeUtilityprovider($up);
                             $em->remove($up);
-
-                            // TODO: remove deleted fields form the form
                         }
                         else {
                             // set the client id
@@ -78,9 +76,10 @@ class ClientController extends Controller
 
                     $em->flush();
 
-                    $result = 'Ügyfél elmentve';
+                    $this->get('session')->setFlash('notice', 'Ügyfél elmentve');
 
-                    //return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'result' => $result]);
+                    return $this->redirect($this->generateUrl('client_edit', ['id' => $client->getId()]));
+                    //return $this->redirect($this->generateUrl('client_view', ['id' => $client->getId()]));
                 }
             }
 

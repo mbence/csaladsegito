@@ -15,6 +15,4 @@
 {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: client} %}
 {% include "JCSGYKAdminBundle:Client:_archive.html.twig" %}
 
-{% if result is defined and result %}
-    <div id="result">{{ result }}</div>
-{% endif %}
+{% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
