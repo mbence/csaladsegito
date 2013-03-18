@@ -1,4 +1,4 @@
-{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['edit', 'close']} %}
+{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['archive', 'edit', 'close']} %}
 
 {% if client.isArchived %}
 <div class="archived">Archivált adatlap, csak olvasható!</div>
@@ -14,5 +14,10 @@
 {% include "JCSGYKAdminBundle:Client:_note.html.twig" with {item: client} %}
 {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: client} %}
 {% include "JCSGYKAdminBundle:Client:_archive.html.twig" %}
+
+<div class="toppad10">
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['archive', 'edit']} %}
+    <div class="clear"></div>
+</div>
 
 {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}

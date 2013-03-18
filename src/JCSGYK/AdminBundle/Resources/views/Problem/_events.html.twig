@@ -3,10 +3,12 @@
 <div>
     {% if problem.getEvents|length %}
     <table id="event-list" class="client problem-list event-list" cellspacing="0" border="0">
-        <tr>
-            <th>Dátum</th>
-            <th>Esemény</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>Dátum</th>
+                <th>Esemény</th>
+            </tr>
+        </thead>
         <tbody class="walkable">
         {% for event in problem.getEvents %}
         <tr data-eventid="{{ event.id }}" tabindex="{{ loop.index + 300 }}" {% if loop.first %}class="cursor"{% endif %}>

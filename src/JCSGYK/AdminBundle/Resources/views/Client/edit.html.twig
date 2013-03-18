@@ -1,9 +1,10 @@
+{% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
 
 
 <form action="{{ path('client_edit', {id: client.id}) }}" id="client_edit" novalidate method="post" {{ form_enctype(form) }}>
     {{ form_errors(form) }}
 
-{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back', 'save']} %}
+{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_client', 'save_client']} %}
 {% include "JCSGYKAdminBundle:Client:_edit_personal_data.html.twig" %}
 {% include "JCSGYKAdminBundle:Client:_problems.html.twig" %}
 
@@ -19,7 +20,7 @@
 {% endif %}
 
 <div class="toppad10">
-    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back', 'save']} %}
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_client', 'save_client']} %}
     <div class="clear"></div>
 </div>
 

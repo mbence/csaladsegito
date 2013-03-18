@@ -1,8 +1,8 @@
 {# Archive #}
 <div class="client-sub togglable" {% if client.getArchives|length == 0 %}style="display:none;"{% endif %}>{{ 'irattár'|trans }}</div>
-<div>
+<div class="archives">
     {% if client.getArchives|length %}
-    <table id="archive-list" class="client problem-list" cellspacing="0" border="0">
+    <table class="archive-list client problem-list" cellspacing="0" border="0">
         <tr>
             <th>Dátum</th>
             <th>Típus</th>

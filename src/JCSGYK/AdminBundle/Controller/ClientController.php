@@ -11,6 +11,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Form\Type\ClientType;
+use JCSGYK\AdminBundle\Entity\Archive;
+use JCSGYK\AdminBundle\Form\Type\ArchiveType;
 
 class ClientController extends Controller
 {
@@ -24,8 +26,9 @@ class ClientController extends Controller
      */
     public function editAction($id = null, Request $request)
     {
+        // TODO: utca adatbázis + ellenőrzés
+
         $client = null;
-        $result = null;
         $em = $this->getDoctrine()->getManager();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
@@ -36,12 +39,11 @@ class ClientController extends Controller
         else {
             // new client
             $client = new Client();
-            $client->setCompanyId($company_id);
         }
 
         if (!empty($client)) {
             if ($client->getIsArchived()) {
-                return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'result' => $result]);
+                return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client]);
             }
 
             $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
@@ -51,10 +53,17 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-                    // TODO: save modifier user
+
+                    $user= $this->get('security.context')->getToken()->getUser();
+                    // set modifier user
+                    $client->setModifier($user);
 
                     // save the new user data
-                    if ('new' == $id) {
+                    if (is_null($client->getId())) {
+                        // set the creator
+                        $client->setCreator($user);
+                        $client->setCompanyId($company_id);
+                        $client->setIsArchived(false);
                         $em->persist($client);
                     }
                     // handle/save the utilityproviders
@@ -78,8 +87,8 @@ class ClientController extends Controller
 
                     $this->get('session')->setFlash('notice', 'Ügyfél elmentve');
 
-                    return $this->redirect($this->generateUrl('client_edit', ['id' => $client->getId()]));
-                    //return $this->redirect($this->generateUrl('client_view', ['id' => $client->getId()]));
+                    //return $this->redirect($this->generateUrl('client_edit', ['id' => $client->getId()]));
+                    return $this->redirect($this->generateUrl('client_view', ['id' => $client->getId()]));
                 }
             }
 
@@ -89,6 +98,75 @@ class ClientController extends Controller
             throw new HttpException(400, "Bad request");
         }
     }
+
+    public function archiveAction($id, Request $request)
+    {
+        if (!empty($id)) {
+            // get the client
+            $client = $this->getClient($id);
+            if (empty($client)) {
+                throw new HttpException(400, "Bad request");
+            }
+
+            // check for any open problems, only arhivable if no problems are open
+            $open_problems = 0;
+            foreach ($client->getProblems() as $problem) {
+                if ($problem->getIsActive()) {
+                    $open_problems++;
+                }
+            }
+
+            if ($open_problems > 0) {
+                // can't archive, show the popup
+
+                return $this->render('JCSGYKAdminBundle:Dialog:archive.html.twig', [
+                    'client' => $client,
+                    'open_problems' => $open_problems
+                ]);
+            }
+
+            $archive = new Archive;
+            $form = $this->createForm(new ArchiveType($this->container->get('jcs.ds'), $client->getIsArchived()), $archive);
+
+            // save
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                $operation = $form->get('operation')->getData();
+                if ($form->isValid()) {
+                    $em = $this->getDoctrine()->getManager();
+                    $user= $this->get('security.context')->getToken()->getUser();
+                    $archive->setClient($client);
+                    // set modifier user
+                    $archive->setCreator($user);
+                    $archive->setCreatedAt(new \DateTime());
+
+                    $em->persist($archive);
+
+                    // archive the client
+                    $client->setIsArchived(1 - $operation);
+
+                    $em->flush();
+
+                    $this->get('session')->setFlash('notice', 'Ügyfél elmentve');
+
+                    return $this->render('JCSGYKAdminBundle:Dialog:archive.html.twig', [
+                        'success' => true,
+                    ]);
+                }
+            }
+
+            return $this->render('JCSGYKAdminBundle:Dialog:archive.html.twig', [
+                'client' => $client,
+                'form' => $form->createView(),
+                'open_problems' => $open_problems
+            ]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
+
 
     public function viewAction($id, Request $request)
     {

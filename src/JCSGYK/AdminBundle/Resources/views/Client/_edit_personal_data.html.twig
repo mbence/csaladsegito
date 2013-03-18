@@ -1,11 +1,17 @@
 {# Edit Personal Data #}
 
     <h1 class="client">&nbsp;</h1>
+    <table class="client caseowner" cellspacing="0" border="0">
+        <tr>
+            <th>{{ form_label(form.case_admin) }}:</th>
+            <td>{{ form_errors(form.case_admin) }}{{ form_widget(form.case_admin) }}</td>
+        </tr>
+    </table>
     <div class="client-sub first-sub">{{ 'személyes adatok'|trans }}</div>
     <div>
         <table class="client-edit" cellspacing="0" border="0">
         <tr>
-            <th>{{ 'Név'|trans }}:</th>
+            <th class="high">{{ 'Név'|trans }}:</th>
             <td colspan="3">
                 <table class="client-edit-inner" cellspacing="0" border="0">
                     <tr>
@@ -30,7 +36,7 @@
         </tr>
         <tr>
             <th>{{ 'Ügyfélszám'|trans }}:</th>
-            <td>{% if client is defined %}{{ client.id }}{% endif %}</td>
+            <td><div class="bottompad4">{% if client is defined %}{{ client.id }}{% endif %}</td></td>
             <th>{{ form_label(form.gender) }}:</th>
             <td>{{ form_errors(form.gender) }}{{ form_widget(form.gender) }}</td>
         </tr>

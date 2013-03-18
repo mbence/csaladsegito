@@ -70,8 +70,11 @@ class AdminExtension extends \Twig_Extension
      * @param string $type
      * @return formatted string or nothing if not a \DateTime given
      */
-    public function formatDate($d, $type = '')
+    public function formatDate($d = null, $type = '')
     {
+        if (is_null($d)) {
+            $d = new \DateTime();
+        }
         if ($d instanceof \DateTime) {
             // TODO: find a better place for the month names
             $months = ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];

@@ -40,6 +40,9 @@ JcsSearch =
             false
         )
 
+        # new client button
+        JcsClient.initButtonRow()
+
     qSubmit: ->
         $("#quicksearch").submit();
 
@@ -54,9 +57,11 @@ JcsSearch =
             HBlocks.scrollTo(2)
 
             # start the ajax request
-            $.get($("#getclientform").attr("action") + '/' + $(this).data("userid"), (data) ->
+            client_url = $("#getclientform").attr("action") + '/' + $(this).data("userid")
+            $.get(client_url, (data) ->
                 $("#clientblock .loading").hide()
                 $("#clientblock .clientcontent").html(data).show()
+                $("#clientblock .clientcontent").data("url", client_url)
                 HBlocks.scrollTo(2)
                 JcsClient.init()
             ).error( (data) ->

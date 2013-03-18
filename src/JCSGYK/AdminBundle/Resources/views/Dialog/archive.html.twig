@@ -1,0 +1,63 @@
+{# Archive #}
+
+{# if all went well, we just need to close the popup #}
+{% if success is defined and success %}
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% elseif open_problems %}
+<div class="center">
+    <h1 class="client">{{ 'Hiba'|trans }}</h1>
+    <br>
+    <p>
+        {{ 'Az ügyfél nem archiválható, mert %problems% nyitott problémája van.'|trans({'%problems%': open_problems}) }}
+    </p>
+    <br><br>
+    <p>
+        <button class="greybutton close"> OK </button>
+    </p>
+</div>
+{% else %}
+    {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+    <form action="{{ path('client_archive', {'id': client.id}) }}" id="archive_form" method="post" {{ form_enctype(form) }}>
+        <h1 class="client">
+            {% if client.isArchived %}
+                {{ 'Újranyitás'|trans }}
+            {% else %}
+                {{ 'Archiválás'|trans }}
+            {% endif %}
+        </h1>
+
+        {{ form_errors(form) }}
+        <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Ügyfél'|trans }}:</th>
+                <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Esetgazda'|trans }}:</th>
+                <td class="caseowner">
+                    {% if client.getCaseAdmin %}
+                        {{ fname(client.getCaseAdmin.firstname, client.getCaseAdmin.lastname) }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>{{ 'Időpont'|trans }}:</th>
+                <td>{{ null|fdate }}</td>
+            </tr>
+            <tr>
+                <th>{{ form_label(form.type) }}:</th>
+                <td>{{ form_errors(form.type) }}{{ form_widget(form.type) }}</td>
+            </tr>
+        </table>
+        {% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: client} %}
+
+        <div class="toppad10">
+            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', 'save_archive'] } %}
+            <div class="clear"></div>
+        </div>
+        {{ form_widget(form.operation) }}
+        {{ form_widget(form._token) }}
+    </form>
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+    {% include "JCSGYKAdminBundle:Client:_archive.html.twig" %}
+{% endif %}

@@ -9,8 +9,8 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity
  * @ORM\Table(name="admin_user")
+ * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\UserRepository")
  */
 class User extends BaseUser
 {
@@ -75,7 +75,10 @@ class User extends BaseUser
         $this->clientmodified = new ArrayCollection();
         $this->archivecreated = new ArrayCollection();
     }
-
+    public function __toString()
+    {
+        return $this->getLastname() . ' ' . $this->getFirstname();
+    }
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {

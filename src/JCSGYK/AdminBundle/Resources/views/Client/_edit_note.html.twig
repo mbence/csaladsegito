@@ -1,6 +1,17 @@
 {# Note #}
-<div class="client-sub">{{ form_label(form.note) }}</div>
+<div class="client-sub">
+    {% if form.note is defined %}
+        {{ form_label(form.note) }}
+    {% elseif form.description is defined %}
+        {{ form_label(form.description) }}
+    {% endif %}
+</div>
 <div class="edit-note">
-    {{ form_errors(form.note) }}
-    {{ form_widget(form.note) }}
+    {% if form.note is defined %}
+        {{ form_errors(form.note) }}
+        {{ form_widget(form.note) }}
+    {% elseif form.description is defined %}
+        {{ form_errors(form.description) }}
+        {{ form_widget(form.description) }}
+    {% endif %}
 </div>

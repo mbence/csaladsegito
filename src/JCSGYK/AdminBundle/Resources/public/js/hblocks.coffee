@@ -30,8 +30,8 @@ HBlocks =
         Set the keyboard actions
     ###
     setKeys: (event) ->
-        # we don't need kayboard navigation if there is an editor open
-        if ($(".client-edit").length > 0)
+        # we don't need kayboard navigation if there is an editor or modal popup open
+        if $(".client-edit").length > 0 or $(".modal").is(":visible")
             return true
 
         # close current block on ESC

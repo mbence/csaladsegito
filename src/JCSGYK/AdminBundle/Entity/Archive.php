@@ -61,7 +61,7 @@ class Archive
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -77,14 +77,14 @@ class Archive
     public function setType($type)
     {
         $this->type = $type;
-    
+
         return $this;
     }
 
     /**
      * Get type
      *
-     * @return integer 
+     * @return integer
      */
     public function getType()
     {
@@ -100,14 +100,14 @@ class Archive
     public function setDescription($description)
     {
         $this->description = $description;
-    
+
         return $this;
     }
 
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -123,14 +123,14 @@ class Archive
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
-    
+
         return $this;
     }
 
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -146,14 +146,14 @@ class Archive
     public function setClient(\JCSGYK\AdminBundle\Entity\Client $client = null)
     {
         $this->client = $client;
-    
+
         return $this;
     }
 
     /**
      * Get client
      *
-     * @return \JCSGYK\AdminBundle\Entity\Client 
+     * @return \JCSGYK\AdminBundle\Entity\Client
      */
     public function getClient()
     {
@@ -169,14 +169,14 @@ class Archive
     public function setCreator(\JCSGYK\AdminBundle\Entity\User $creator = null)
     {
         $this->creator = $creator;
-    
+
         return $this;
     }
 
     /**
      * Get creator
      *
-     * @return \JCSGYK\AdminBundle\Entity\User 
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
     public function getCreator()
     {

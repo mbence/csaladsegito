@@ -11,6 +11,7 @@ JcsClient =
 
         @initButtonRow()
         @initForm()
+        @setDelProvider()
         @initProblems()
         true
 
@@ -23,7 +24,7 @@ JcsClient =
             e.preventDefault()
 
             # add a new tag form (see next code block)
-            @addTagForm($(".utilityproviders"))
+            @addProviderForm($(".utilityproviders"))
 
             false
 
@@ -33,10 +34,10 @@ JcsClient =
             $.post($(this).attr("action"), $(this).serialize(), (data) ->
                 $("#clientblock .clientcontent").html(data).show()
                 # display the result message
-                if $("#result").data("result-notice")
-                    AjaxBag.showNotice($("#result").data("result-notice"))
-                if $("#result").data("result-error")
-                    AjaxBag.showError($("#result").data("result-error"))
+                if $("#clientblock .clientcontent").find(".result").data("result-notice")
+                    AjaxBag.showNotice($("#clientblock .clientcontent").find(".result").data("result-notice"))
+                if $("#clientblock .clientcontent").find(".result").data("result-error")
+                    AjaxBag.showError($("#clientblock .clientcontent").find(".result").data("result-error"))
                 JcsClient.init()
             ).error( (data) =>
                 # there was some error :(
@@ -49,24 +50,68 @@ JcsClient =
         # textarea auto height
         $("#client_note").elastic()
 
+    initArchive: ->
 
-    addTagForm: (collectionHolder) ->
+        $(".modal .modal-content .close").off("click").on "click", ->
+            $(".modal").overlay().close()
+
+        # form submit
+        $("#archive_form").submit ->
+            $(".save_archive").addClass('animbutton')
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                $(".modal .modal-content").html(data).show()
+
+                # display the result message
+                if $(".modal .modal-content").find(".result").data("result-notice")
+                    AjaxBag.showNotice($(".modal .modal-content").find(".result").data("result-notice"))
+                    $(".modal").overlay().close()
+                    # refresh the client block
+                    client_url = $("#clientblock .clientcontent").data("url")
+                    $.get(client_url, (data) ->
+                        $("#clientblock .clientcontent").html(data).show()
+                        HBlocks.scrollTo(2)
+                        JcsClient.init()
+                    ).error( (data) ->
+                        # there was some error :(
+                        AjaxBag.showError(data.statusText)
+                        HBlocks.closeBlock(2)
+                    )
+                else
+                    JcsClient.initArchive()
+                    
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $(".save_archive").removeClass('animbutton')
+            )
+
+            false
+
+        # textarea auto height
+        $("#archive_description").elastic()
+
+        $(".modal").overlay().load()
+        $("#archive_type").focus()
+
+    setDelProvider: ->
+        # provider delete
+        $(".delete_provider").off("click").on "click", (event) ->
+            $(this).parent().parent().hide().find("input").attr('value', '')
+
+    addProviderForm: (collectionHolder) ->
         prototype = collectionHolder.data('prototype')
         index = collectionHolder.data('index')
-
         # Replace '__name__' in the prototype's HTML to
         # instead be a number based on how many items we have
         newForm = prototype.replace(/__name__/g, index)
-
         # increase the index with one for the next item
         collectionHolder.data('index', index + 1)
-
-        # Display the form in the page in an li, before the "Add a tag" link li
         collectionHolder.append(newForm)
+        @setDelProvider()
 
     initButtonRow: ->
         # get buttons
-        $(".edit_client").add(".back_to_view").add(".new_client").click (event) ->
+        $(".edit_client").add(".back_to_view").add(".new_client").off('click').on 'click', (event) ->
             event.stopPropagation()
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
@@ -83,11 +128,48 @@ JcsClient =
                 )
             false
 
-        $(".new_client").click (event) ->
+        $(".new_client").on 'click', (event) ->
             $("#clientblock .clientcontent").hide()
             HBlocks.closeBlock(4)
             HBlocks.closeBlock(3)
             false
+
+        # archive
+        $(".archive_client").on "click", (event) ->
+            event.stopPropagation()
+
+            if !$(this).hasClass('animbutton')
+                $(this).addClass('animbutton')
+
+                $.get($(this).attr("href"), (data) =>
+                    $(this).removeClass('animbutton')
+                    $(".modal .modal-content").html(data).show()
+                    JcsClient.initArchive()
+
+                ).error( (data) =>
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $(this).removeClass('animbutton')
+                )
+            false
+
+        # modal dialog
+        $(".modal").overlay
+            # some mask tweaks suitable for modal dialogs
+            mask:
+                color: '#ebecfe'
+                loadSpeed: 0
+                closeSpeed: 0
+                opacity: 0.9
+            closeOnClick: true
+            left: "center"
+            target: ".modal"
+            load: false
+            speed: 0
+            closeSpeed: 0
+
+        # only while development
+        #$(".archive_client").click()
 
     initProblems: ->
         $("#showAllProblem").click (event) ->

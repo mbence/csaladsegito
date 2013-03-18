@@ -4,6 +4,8 @@ namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * Client
@@ -41,6 +43,7 @@ class Client
      * @var string
      *
      * @ORM\Column(name="firstname", type="string", length=255, nullable=false)
+     * @Assert\NotBlank()
      */
     private $firstname;
 
@@ -48,6 +51,7 @@ class Client
      * @var string
      *
      * @ORM\Column(name="lastname", type="string", length=255, nullable=false)
+     * @Assert\NotBlank()
      */
     private $lastname;
 
@@ -160,6 +164,7 @@ class Client
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=128, nullable=true)
+     * @Assert\Email()
      */
     private $email;
 
@@ -1645,7 +1650,7 @@ class Client
     public function setUtilityproviders(ArrayCollection $utilityproviders)
     {
         $this->utilityproviders = $utilityproviders;
-        
+
         return $this;
     }
 
