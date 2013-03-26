@@ -4,7 +4,9 @@
 <div class="archived">Archivált adatlap, csak olvasható!</div>
 {% endif %}
 {% include "JCSGYKAdminBundle:Client:_personal_data.html.twig" %}
-{% include "JCSGYKAdminBundle:Client:_problems.html.twig" %}
+<div class="problem_container" data-url="{{ path('client_problems', {id: client.id}) }}">
+    {% include "JCSGYKAdminBundle:Client:_problems.html.twig" %}
+</div>
 
 {% if is_granted(['ROLE_FAMILY_HELP','ROLE_CHILD_WELFARE']) %}
     {% include "JCSGYKAdminBundle:Client:_ids.html.twig" %}
@@ -15,9 +17,9 @@
 {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: client} %}
 {% include "JCSGYKAdminBundle:Client:_archive.html.twig" %}
 
-<div class="toppad10">
+{#<div class="toppad10">
     {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['archive', 'edit']} %}
     <div class="clear"></div>
-</div>
+</div>#}
 
 {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}

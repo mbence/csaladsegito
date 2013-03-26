@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="problem")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Problem
 {
@@ -35,6 +36,7 @@ class Problem
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255, nullable=true)
+     * @Assert\NotBlank()
      */
     private $title;
 
@@ -147,8 +149,18 @@ class Problem
     {
         $this->debts = new ArrayCollection();
         $this->events = new ArrayCollection();
+        $this->setCreatedAt(new \DateTime());
+        $this->setModifiedAt(new \DateTime());
     }
 
+    /**
+     * @ORM\PreUpdate
+     */
+    public function setModifiedAtValue()
+    {
+       $this->setModifiedAt(new \DateTime());
+    }
+    
     /**
      * Get id
      *

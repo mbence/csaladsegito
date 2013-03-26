@@ -1,32 +1,32 @@
 {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
 
-
-<form action="{{ path('problem_edit', {client_id: client.id}) }}" id="problem_edit" novalidate method="post" {{ form_enctype(form) }}>
+<form action="{{ path('problem_edit', {client_id: client.id, id: problem.id}) }}" id="problem_edit" novalidate method="post" {{ form_enctype(form) }}>
     {{ form_errors(form) }}
-
-
-{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_problem', 'save_problem']} %}
-
-<h1 class="client">&nbsp;</h1>
 
 <table class="client caseowner" cellspacing="0" border="0">
     <tr>
-        <th>{{ 'Felelős'|trans }}:</th>
-        <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
+        <th>{{ form_label(form.assignee) }}:</th>
+        <td>{{ form_errors(form.assignee) }}{{ form_widget(form.assignee) }}</td>
     </tr>
 </table>
+
 <div class="client-sub first-sub togglable">{{ 'probléma'|trans }}</div>
 <div>
-    <table class="client" cellspacing="0" border="0">
+    <table class="client-edit" cellspacing="0" border="0">
         <tr>
-            <th>{{ 'Probléma'|trans }}:</th>
-            <td>{{ problem.title }}</td>
+            <th>{{ form_label(form.title) }}:</th>
+            <td>{{ form_errors(form.title) }}{{ form_widget(form.title) }}</td>
             <th>{{ 'Állapot'|trans }}:</th>
-            <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
+            <td valign="middle">
+                <div class="bottompad4">
+                {% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}
+                </div>
+            </td>
+
         </tr>
         <tr>
-            <th>{{ 'Jelleg'|trans }}:</th>
-            <td colspan="3">{{ param(problem.type) }}</td>
+            <th>{{ form_label(form.type) }}:</th>
+            <td colspan="3">{{ form_errors(form.type) }}{{ form_widget(form.type) }}</td>
         </tr>
         {% if problem.attachment %}
             <tr>
@@ -36,7 +36,7 @@
         {% endif %}
     </table>
 </div>
-{% include "JCSGYKAdminBundle:Client:_note.html.twig" with {item: problem} %}
+{% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: problem} %}
 {% include "JCSGYKAdminBundle:Problem:_debt.html.twig" %}
 
 {% include "JCSGYKAdminBundle:Problem:_events.html.twig" %}
@@ -44,6 +44,11 @@
 {% if problem.creator %}
     {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: problem} %}
 {% endif %}
+
+<div class="toppad10">
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_problem', 'save_problem']} %}
+    <div class="clear"></div>
+</div>
 
 {{ form_widget(form._token) }}
 </form>

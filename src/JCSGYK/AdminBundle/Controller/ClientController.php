@@ -180,6 +180,18 @@ class ClientController extends Controller
         }
     }
 
+    public function getProblemsAction($id, Request $request)
+    {
+        if (!empty($id)) {
+            $client = $this->getClient($id);
+
+            return $this->render('JCSGYKAdminBundle:Client:_problems.html.twig', ['client' => $client]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
+
     protected function getClient($id)
     {
         $company_id = $this->container->get('jcs.ds')->getCompanyId();

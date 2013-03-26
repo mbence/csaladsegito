@@ -34,10 +34,11 @@ JcsClient =
             $.post($(this).attr("action"), $(this).serialize(), (data) ->
                 $("#clientblock .clientcontent").html(data).show()
                 # display the result message
-                if $("#clientblock .clientcontent").find(".result").data("result-notice")
-                    AjaxBag.showNotice($("#clientblock .clientcontent").find(".result").data("result-notice"))
-                if $("#clientblock .clientcontent").find(".result").data("result-error")
-                    AjaxBag.showError($("#clientblock .clientcontent").find(".result").data("result-error"))
+                msg_container = $("#clientblock .clientcontent").find(".result")
+                if $(msg_container).data("result-notice")
+                    AjaxBag.showNotice($(msg_container).data("result-notice"))
+                if $(msg_container).data("result-error")
+                    AjaxBag.showError($(msg_container).data("result-error"))
                 JcsClient.init()
             ).error( (data) =>
                 # there was some error :(
@@ -49,6 +50,32 @@ JcsClient =
 
         # textarea auto height
         $("#client_note").elastic()
+
+    reloadProblems: ->
+        # save the cursor and current rows
+        cursor = $("#clientblock .problem_container .cursor").data("problemid")
+        current = $("#clientblock .problem_container .current").data("problemid")
+
+        # get the url
+        url = $("#clientblock .problem_container").data("url")
+        if url
+            $.get(url, (data) =>
+                $("#clientblock .problem_container").html(data)
+                JcsClient.initProblems()
+                # restore the cursor and current classes
+                $("#clientblock .problem_container tr").removeClass("current cursor")
+                $("#clientblock .problem_container tr").each ->
+                    if $(this).data("problemid") == cursor
+                        $(this).addClass("cursor")
+                    if $(this).data("problemid") == current
+                        $(this).addClass("current")
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $(this).removeClass('animbutton')
+            )
+        false
 
     initArchive: ->
 
@@ -195,7 +222,7 @@ JcsClient =
 
         # new client button
         JcsProblem.initButtonRow()
-        @setupProblems()        
+        @setupProblems()
 
     toggleClosed: ()->
         $("#problem-list tr").each ->

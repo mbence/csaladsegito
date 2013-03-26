@@ -4,9 +4,11 @@
 <form action="{{ path('client_edit', {id: client.id}) }}" id="client_edit" novalidate method="post" {{ form_enctype(form) }}>
     {{ form_errors(form) }}
 
-{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_client', 'save_client']} %}
+{#{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_client', 'save_client']} %}#}
 {% include "JCSGYKAdminBundle:Client:_edit_personal_data.html.twig" %}
-{% include "JCSGYKAdminBundle:Client:_problems.html.twig" %}
+<div class="problem_container" data-url="{{ path('client_problems', {id: client.id}) }}">
+    {% include "JCSGYKAdminBundle:Client:_problems.html.twig" with {'no_new_problem': true} %}
+</div>
 
 {% if is_granted(['ROLE_FAMILY_HELP','ROLE_CHILD_WELFARE']) %}
     {% include "JCSGYKAdminBundle:Client:_edit_ids.html.twig" %}

@@ -35,8 +35,6 @@ class ProblemController extends Controller
      */
     public function editAction($id = null, $client_id = null, Request $request)
     {
-        // TODO: utca adatbázis + ellenőrzés
-
         $problem = null;
         $client = null;
         if (!empty($client_id)) {
@@ -88,8 +86,8 @@ class ProblemController extends Controller
 
                     $this->get('session')->setFlash('notice', 'Probléma elmentve');
 
-                    return $this->redirect($this->generateUrl('problem_edit', ['id' => $problem->getId()]));
-                    //return $this->redirect($this->generateUrl('problem_view', ['id' => $problem->getId()]));
+                    //return $this->redirect($this->generateUrl('problem_edit', ['id' => $problem->getId(), 'client_id' => $client->getId()]));
+                    return $this->redirect($this->generateUrl('problem_view', ['id' => $problem->getId()]));
                 }
             }
 

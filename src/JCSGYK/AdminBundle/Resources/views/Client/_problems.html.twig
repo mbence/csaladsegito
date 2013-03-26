@@ -1,7 +1,9 @@
 {# Problems #}
 <div class="client-sub togglable">{{ 'problémák'|trans }}</div>
 <div>
-    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_problem']} %}
+    {% if no_new_problem is not defined %}
+        {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_problem']} %}
+    {% endif %}
 
     {% if client.getProblems|length %}
         <div class="smallopt right toppad ">

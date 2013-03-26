@@ -21,6 +21,9 @@ client_new:
 client_archive:
     pattern:  /clients/archive/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:archive, id: null }
+client_problems:
+    pattern:  /clients/{id}/problems
+    defaults: { _controller: JCSGYKAdminBundle:Client:getProblems }
 
 
 # Problem #
