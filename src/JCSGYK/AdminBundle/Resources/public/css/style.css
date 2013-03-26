@@ -384,10 +384,13 @@ table.problem-list td {
 .smallopt label {
     font-size: 13px;
     color: #333;
-    vertical-align: 2px;
+    line-height: 29px;
 }
 .smallopt input {
     margin: 0;
+}
+.button.new_problem {
+    margin-left: 10px;
 }
 
 /* Debts */

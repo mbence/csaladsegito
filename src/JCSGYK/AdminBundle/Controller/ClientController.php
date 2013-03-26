@@ -92,7 +92,7 @@ class ClientController extends Controller
                 }
             }
 
-            return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client, 'form' => $form->createView(), 'result' => $result]);
+            return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client, 'form' => $form->createView()]);
         }
         else {
             throw new HttpException(400, "Bad request");

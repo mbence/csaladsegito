@@ -25,8 +25,14 @@ client_archive:
 
 # Problem #
 problem_view:
-    pattern:  /problem/view
-    defaults: { _controller: JCSGYKAdminBundle:Problem:view }
+    pattern:  /problem/view/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Problem:view, id: null }
+problem_edit:
+    pattern:  /client/{client_id}/problem/edit/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Problem:edit, id: null, client_id: null  }
+problem_new:
+    pattern:  /client/{client_id}/problem/new
+    defaults: { _controller: JCSGYKAdminBundle:Problem:edit, client_id: null }
 
 # Event #
 event_view:

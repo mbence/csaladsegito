@@ -1,10 +1,13 @@
-{% include "JCSGYKAdminBundle:Client:_buttons.html.twig"  with {'buttons': ['edit_problem', 'close']} %}
+{% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
 
-{% if not problem.isActive %}
-<div class="archived bottompad25">Lezárt probléma, csak olvasható!</div>
-{% else %}
+
+<form action="{{ path('problem_edit', {client_id: client.id}) }}" id="problem_edit" novalidate method="post" {{ form_enctype(form) }}>
+    {{ form_errors(form) }}
+
+
+{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_problem', 'save_problem']} %}
+
 <h1 class="client">&nbsp;</h1>
-{% endif %}
 
 <table class="client caseowner" cellspacing="0" border="0">
     <tr>
@@ -38,5 +41,12 @@
 
 {% include "JCSGYKAdminBundle:Problem:_events.html.twig" %}
 
-{% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: problem} %}
-{% include "JCSGYKAdminBundle:Problem:_close.html.twig" %}
+{% if problem.creator %}
+    {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: problem} %}
+{% endif %}
+
+{{ form_widget(form._token) }}
+</form>
+<br>
+
+{% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}

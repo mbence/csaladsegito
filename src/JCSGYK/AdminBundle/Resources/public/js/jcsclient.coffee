@@ -78,7 +78,7 @@ JcsClient =
                     )
                 else
                     JcsClient.initArchive()
-                    
+
             ).error( (data) =>
                 # there was some error :(
                 AjaxBag.showError(data.statusText)
@@ -193,7 +193,9 @@ JcsClient =
         if n
             $("#showAllProblem").next().append(" (+" + n + ")")
 
-        @setupProblems()
+        # new client button
+        JcsProblem.initButtonRow()
+        @setupProblems()        
 
     toggleClosed: ()->
         $("#problem-list tr").each ->
@@ -212,7 +214,7 @@ JcsClient =
                 HBlocks.scrollTo(3)
 
                 # start the ajax request
-                $.post($("#getproblemform").attr("action"), {id: $(this).data("problemid")}, (data) ->
+                $.get($("#getproblemform").attr("action") + "/" + $(this).data("problemid"), (data) ->
                     $("#problemblock .loading").hide()
                     $("#problemblock .problemcontent").html(data).show()
                     HBlocks.scrollTo(3)

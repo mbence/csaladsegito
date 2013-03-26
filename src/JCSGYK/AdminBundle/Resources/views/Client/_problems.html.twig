@@ -1,29 +1,31 @@
 {# Problems #}
 <div class="client-sub togglable">{{ 'problémák'|trans }}</div>
 <div>
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_problem']} %}
+
     {% if client.getProblems|length %}
-    <div class="smallopt right toppad ">
-        <input type="checkbox" id="showAllProblem">
-        <label for="showAllProblem">összes probléma</label>
-    </div>
-    <table id="problem-list" class="client problem-list" cellspacing="0" border="0">
-        <tr>
-            <th>Cím</th>
-            <th>Jelleg</th>
-            <th>Felelős</th>
-            <th>Állapot</th>
-        </tr>
-        <tbody class="walkable">
-        {% for problem in client.getProblems %}
-        <tr data-isactive="{{ problem.isActive }}" data-problemid="{{ problem.id }}" tabindex="{{ loop.index + 200 }}" {% if loop.first %}class="cursor"{% endif %}>
-            <td>{{ problem.title }}</td>
-            <td>{{ param(problem.type) }}</td>
-            <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
-            <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <div class="smallopt right toppad ">
+            <input type="checkbox" id="showAllProblem">
+            <label for="showAllProblem">összes probléma</label>
+        </div>
+        <table id="problem-list" class="client problem-list" cellspacing="0" border="0">
+            <tr>
+                <th>Cím</th>
+                <th>Jelleg</th>
+                <th>Felelős</th>
+                <th>Állapot</th>
+            </tr>
+            <tbody class="walkable">
+            {% for problem in client.getProblems %}
+            <tr data-isactive="{{ problem.isActive }}" data-problemid="{{ problem.id }}" tabindex="{{ loop.index + 200 }}" {% if loop.first %}class="cursor"{% endif %}>
+                <td>{{ problem.title }}</td>
+                <td>{{ param(problem.type) }}</td>
+                <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
+                <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     {% else %}
         <div class="noinfo">{{ 'Nincsen megjeleníthető probléma'|trans }}</div>
     {% endif %}

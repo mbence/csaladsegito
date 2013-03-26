@@ -5,9 +5,43 @@
 
     {% for button in buttons %}
 
+{# Problems #}
+        {# new problem #}
+        {% if button == 'new_problem' and client.id and not client.isArchived%}
+            <a href="{{ path('problem_new', {client_id: client.id}) }}" class="button new_problem" title="új probléma létrehozása"><span>{{ 'új probléma'|trans }}</span></a>
+        {% endif %}
+
+        {# edit problem #}
+        {% if button == 'edit_problem' and problem.id is defined and client.id and not client.isArchived %}
+            <a href="{{ path('problem_edit', {id: problem.id, client_id: client.id}) }}" class="button edit_problem" title="{{ 'Probléma szerkesztése'|trans }}">
+                <span>{{ 'szerkeszt'|trans }}</span>
+            </a>
+        {% endif %}
+
+        {# back to view problem #}
+        {% if button == 'back_to_problem' and problem.id is defined %}
+            {% if client.id %}
+                <button type="reset" href="{{ path('problem_view', {'id': problem.id}) }}" class="greybutton back_to_problem" title="{{ 'visszalépés'|trans }}">
+                    <span>{{ 'mégse'|trans }}</span>
+                </button>
+            {% else %}
+                <button type="reset" href="{{ path('clients') }}" class="close greybutton" title="{{ 'visszalépés'|trans }}">
+                    <span>{{ 'mégse'|trans }}</span>
+                </button>
+            {% endif %}
+        {% endif %}
+
+        {# save problem #}
+        {% if button == 'save_problem' and problem.id is defined and client.id %}
+            <button type="submit" href="{{ path('problem_edit', {'id': problem.id, 'client_id': client.id}) }}" class="button save_problem" title="{{ 'Probléma mentése'|trans }}">
+                <span>{{ 'mentés'|trans }}</span>
+            </button>
+        {% endif %}
+
+{# Clients #}
         {# new client #}
         {% if button == 'new_client' %}
-            <a href="{{ path('client_new') }}" class="button new_client"><span>{{ 'új ügyfél'|trans }}</span></a>
+            <a href="{{ path('client_new') }}" class="button new_client" title="új ügyfél létrehozása"><span>{{ 'új ügyfél'|trans }}</span></a>
         {% endif %}
 
         {# add utility provider #}
@@ -42,7 +76,7 @@
                     <span>{{ 'újranyitás'|trans }}</span>
                 </button>
             {% else %}
-                <button href="{{ path('client_archive', {'id': client.id}) }}" class="button archive_client" title="{{ 'Ügyfél archiválása'|trans }}">
+                <button href="{{ path('client_archive', {'id': client.id}) }}" class="greybutton archive_client" title="{{ 'Ügyfél archiválása'|trans }}">
                     <span>{{ 'archivál'|trans }}</span>
                 </button>
             {% endif %}
