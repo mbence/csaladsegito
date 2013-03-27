@@ -61,7 +61,7 @@ doctrine:
             csaszir:
                 driver:   pdo_sqlite
                 dbname:   main
-                path:     D:\www\csaladsegito\src\JCSGYK\DbimportBundle\db\csaszir.db
+                path:     %kernel.root_dir%/../src/JCSGYK/DbimportBundle/db/csaszir.db
                 user:     root
                 password: null
     orm:

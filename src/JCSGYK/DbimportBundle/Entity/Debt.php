@@ -50,18 +50,9 @@ class Debt
     private $managedDebt;
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(name="is_active", type="boolean", nullable=true)
-     */
-    private $isActive;
-
-
-
-    /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -77,14 +68,14 @@ class Debt
     public function setProblemId($problemId)
     {
         $this->problemId = $problemId;
-    
+
         return $this;
     }
 
     /**
      * Get problemId
      *
-     * @return integer 
+     * @return integer
      */
     public function getProblemId()
     {
@@ -100,14 +91,14 @@ class Debt
     public function setType($type)
     {
         $this->type = $type;
-    
+
         return $this;
     }
 
     /**
      * Get type
      *
-     * @return integer 
+     * @return integer
      */
     public function getType()
     {
@@ -123,14 +114,14 @@ class Debt
     public function setRegisteredDebt($registeredDebt)
     {
         $this->registeredDebt = $registeredDebt;
-    
+
         return $this;
     }
 
     /**
      * Get registeredDebt
      *
-     * @return float 
+     * @return float
      */
     public function getRegisteredDebt()
     {
@@ -146,14 +137,14 @@ class Debt
     public function setManagedDebt($managedDebt)
     {
         $this->managedDebt = $managedDebt;
-    
+
         return $this;
     }
 
     /**
      * Get managedDebt
      *
-     * @return float 
+     * @return float
      */
     public function getManagedDebt()
     {
@@ -169,14 +160,14 @@ class Debt
     public function setIsActive($isActive)
     {
         $this->isActive = $isActive;
-    
+
         return $this;
     }
 
     /**
      * Get isActive
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsActive()
     {

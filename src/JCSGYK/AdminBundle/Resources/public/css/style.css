@@ -653,7 +653,7 @@ table.problem-list td {
 .errors + input[type=text], .errors + input[type=text]:hover, .errors + input[type=text]:focus {
     border-color: red;
 }
-.delete_provider {
+.delete_provider, .delete_debt {
     line-height: 22px;
     display: inline-block;
     color: #666;
@@ -675,4 +675,7 @@ table.problem-list td {
 .modal .archives {
     overflow: auto;
     max-height: 200px;
+}
+.client-edit td.normal-text-width input[type=text] {
+    width: auto;
 }

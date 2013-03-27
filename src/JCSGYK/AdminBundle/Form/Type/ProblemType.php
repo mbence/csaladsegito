@@ -47,6 +47,13 @@ class ProblemType extends AbstractType
                     ->orderBy('u.lastname', 'ASC', 'u.firstname', 'ASC');
             },
         ]);
+
+        $builder->add('debts', 'collection', [
+            'label' => '',
+            'type' => new DebtType($this->ds),
+            'allow_add'    => true,
+            'by_reference' => false,
+        ]);
     }
 
     public function getName()

@@ -1,0 +1,33 @@
+{# Debt #}
+<div class="client-sub">{{ 'hátralékok'|trans }}</div>
+<div>
+    <table id="debt-list" class="client-edit debts" cellspacing="0" border="0" data-prototype="">
+    <tr>
+        <td> </td>
+        <td>{{ 'Nyilvántartott hátralék'|trans }}</td>
+        <td>{{ 'Kezelt hátralék'|trans }}</td>
+        <td> </td>
+        <td> </td>
+    </tr>
+    {% for debt in form.debts %}
+        <tr>
+            <td nowrap>{{ form_errors(debt.type) }}{{ form_widget(debt.type) }}&nbsp;</td>
+            <td class="normal-text-width">
+                {{ form_errors(debt.registered_debt) }}
+                {{ form_widget(debt.registered_debt) }}
+            </td>
+            <td class="normal-text-width">
+                {{ form_errors(debt.managed_debt) }}
+                {{ form_widget(debt.managed_debt) }}
+            </td>
+            <td>
+                <a href="#" class="delete_debt" title="Hátralék törlése">&nbsp;⌫ </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <div class="toppad">
+        {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['add_debt']} %}
+        <div class="clear"></div>
+    </div>
+</div>

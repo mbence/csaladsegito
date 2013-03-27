@@ -51,15 +51,6 @@ class Debt
     private $managedDebt;
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(name="is_active", type="boolean", nullable=true)
-     */
-    private $isActive;
-
-
-
-    /**
      * Get id
      *
      * @return integer
@@ -170,14 +161,14 @@ class Debt
     public function setProblem(\JCSGYK\AdminBundle\Entity\Problem $problem = null)
     {
         $this->problem = $problem;
-    
+
         return $this;
     }
 
     /**
      * Get problem
      *
-     * @return \JCSGYK\AdminBundle\Entity\Problem 
+     * @return \JCSGYK\AdminBundle\Entity\Problem
      */
     public function getProblem()
     {

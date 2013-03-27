@@ -353,6 +353,7 @@ class ImportController extends Controller
         $n = 0;
         // get problems from old sqlite db
         $db = $this->get('doctrine.dbal.csaszir_connection');
+
         $sql = "SELECT Person_ID, p.* FROM Problems p JOIN PersonProblems ON RootProblem_ID=Problem_ID";
         if ($limit) {
             $sql .= ' LIMIT ' . $limit;
@@ -464,7 +465,6 @@ class ImportController extends Controller
                 $debt->setRegisteredDebt(trim($problem[$reg_field]));
                 $debt->setManagedDebt(trim($problem[$man_field]));
                 $debt->setType($type);
-                $debt->setIsActive(true);
 
                 $em->persist($debt);
             }

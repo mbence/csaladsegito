@@ -1,5 +1,5 @@
 {# Tags #}
-<div class="client-sub togglable">{{ 'előzmények'|trans }}</div>
+<div class="client-sub {% if notoggle is not defined %}togglable{% endif %}">{{ 'előzmények'|trans }}</div>
 <div>
     <table class="client" cellspacing="0" border="0">
         <tr>

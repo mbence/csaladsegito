@@ -7,7 +7,7 @@
 {#{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_client', 'save_client']} %}#}
 {% include "JCSGYKAdminBundle:Client:_edit_personal_data.html.twig" %}
 <div class="problem_container" data-url="{{ path('client_problems', {id: client.id}) }}">
-    {% include "JCSGYKAdminBundle:Client:_problems.html.twig" with {'no_new_problem': true} %}
+    {% include "JCSGYKAdminBundle:Client:_problems.html.twig" with {notoggle: true} %}
 </div>
 
 {% if is_granted(['ROLE_FAMILY_HELP','ROLE_CHILD_WELFARE']) %}
@@ -18,7 +18,7 @@
 {% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: client} %}
 
 {% if client.creator %}
-    {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: client} %}
+    {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: client, notoggle:true} %}
 {% endif %}
 
 <div class="toppad10">

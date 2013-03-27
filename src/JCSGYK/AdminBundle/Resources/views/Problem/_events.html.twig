@@ -1,5 +1,5 @@
 {# Events #}
-<div class="client-sub togglable">{{ 'események'|trans }}</div>
+<div class="client-sub {% if notoggle is not defined %}togglable{% endif %}">{{ 'események'|trans }}</div>
 <div>
     {% if problem.getEvents|length %}
     <table id="event-list" class="client problem-list event-list" cellspacing="0" border="0">
