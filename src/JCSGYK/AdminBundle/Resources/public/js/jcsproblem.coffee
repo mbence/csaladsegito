@@ -8,6 +8,7 @@ JcsProblem =
         HBlocks.setCloseButtons()
         @setupEvents()
         @initForm()
+        @setDelDebt()
         @initButtonRow()
 
         true
@@ -42,6 +43,18 @@ JcsProblem =
         )
 
     initForm: ->
+        # count the current debt records we have (e.g. 2), use that as the new
+        # index when inserting a new item (e.g. 2)
+        $(".debts").data('index', $(".debts").find('tr').length - 1);
+        $(".add_debt").on 'click', (e) =>
+            # prevent the link from creating a "#" on the URL
+            e.preventDefault()
+
+            # add a new tag form (see next code block)
+            @addDebtForm($(".debts"))
+
+            false
+
         # problem edit
         $("#problem_edit").submit ->
             $(".save_problem").addClass('animbutton')
@@ -65,6 +78,23 @@ JcsProblem =
 
         # textarea auto height
         $("#problem_description").elastic()
+
+    addDebtForm: (collectionHolder) ->
+        prototype = collectionHolder.data('prototype')
+        index = collectionHolder.data('index')
+        # Replace '__name__' in the prototype's HTML to
+        # instead be a number based on how many items we have
+        newForm = prototype.replace(/__name__/g, index)
+        # increase the index with one for the next item
+        collectionHolder.data('index', index + 1)
+        collectionHolder.append(newForm)
+        @setDelDebt()
+
+    setDelDebt: ->
+        # debt delete
+        $(".delete_debt").off("click").on "click", (event) ->
+            $(this).parent().parent().hide().find("input").each ->
+                $(this).attr('value', '')
 
     initButtonRow: ->
         # get buttons

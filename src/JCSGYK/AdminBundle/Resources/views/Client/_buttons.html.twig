@@ -38,6 +38,11 @@
             </button>
         {% endif %}
 
+        {# add debt #}
+        {% if button == 'add_debt' %}
+            <a href="#" class="greybutton add_debt" title="{{ 'Új hátralék hozzáadása'| trans }}"><span>{{ 'új hátralék'|trans }}</span></a>
+        {% endif %}
+
 {# Clients #}
         {# new client #}
         {% if button == 'new_client' %}

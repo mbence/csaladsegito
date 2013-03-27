@@ -676,6 +676,6 @@ table.problem-list td {
     overflow: auto;
     max-height: 200px;
 }
-.client-edit td.normal-text-width input[type=text] {
-    width: auto;
+.client-edit td.td-right-pad {
+    padding-right: 6px;
 }

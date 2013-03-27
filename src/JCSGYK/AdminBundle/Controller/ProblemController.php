@@ -82,6 +82,22 @@ class ProblemController extends Controller
                         $em->persist($problem);
                     }
 
+                    // handle/save the debts
+                    foreach ($problem->getDebts() as $de) {
+                        $val = $de->getManagedDebt() + $de->getRegisteredDebt();
+                        if (empty($val)) {
+                            // remove the empty debts
+                            $problem->removeDebt($de);
+                            $em->remove($de);
+                        }
+                        else {
+                            // set the client id
+                            $de->setProblem($problem);
+                            // save the rest
+                            $em->persist($de);
+                        }
+                    }
+
                     $em->flush();
 
                     $this->get('session')->setFlash('notice', 'Probléma elmentve');
