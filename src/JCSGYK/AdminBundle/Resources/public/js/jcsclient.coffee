@@ -241,9 +241,11 @@ JcsClient =
                 HBlocks.scrollTo(3)
 
                 # start the ajax request
-                $.get($("#getproblemform").attr("action") + "/" + $(this).data("problemid"), (data) ->
+                problem_url = $("#getproblemform").attr("action") + "/" + $(this).data("problemid")
+                $.get(problem_url, (data) ->
                     $("#problemblock .loading").hide()
                     $("#problemblock .problemcontent").html(data).show()
+                    $("#problemblock .problemcontent").data("url", problem_url)
                     HBlocks.scrollTo(3)
                     JcsProblem.init()
                 ).error( (data) ->

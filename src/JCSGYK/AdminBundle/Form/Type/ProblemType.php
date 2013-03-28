@@ -6,7 +6,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use JCSGYK\AdminBundle\Services\DataStore;
-use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
 use JCSGYK\AdminBundle\Entity\UserRepository;
 
 class ProblemType extends AbstractType

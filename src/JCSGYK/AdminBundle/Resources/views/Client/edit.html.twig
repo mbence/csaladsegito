@@ -4,7 +4,6 @@
 <form action="{{ path('client_edit', {id: client.id}) }}" id="client_edit" novalidate method="post" {{ form_enctype(form) }}>
     {{ form_errors(form) }}
 
-{#{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_client', 'save_client']} %}#}
 {% include "JCSGYKAdminBundle:Client:_edit_personal_data.html.twig" %}
 <div class="problem_container" data-url="{{ path('client_problems', {id: client.id}) }}">
     {% include "JCSGYKAdminBundle:Client:_problems.html.twig" with {notoggle: true} %}
@@ -22,7 +21,7 @@
 {% endif %}
 
 <div class="toppad10">
-    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_client', 'save_client']} %}
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_client', {type:'submit', class:'save_client', title:'Ügyfél mentése', label:'mentés'}] } %}
     <div class="clear"></div>
 </div>
 

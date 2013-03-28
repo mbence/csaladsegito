@@ -119,7 +119,7 @@ class ClientController extends Controller
             if ($open_problems > 0) {
                 // can't archive, show the popup
 
-                return $this->render('JCSGYKAdminBundle:Dialog:archive.html.twig', [
+                return $this->render('JCSGYKAdminBundle:Dialog:client_archive.html.twig', [
                     'client' => $client,
                     'open_problems' => $open_problems
                 ]);
@@ -150,13 +150,13 @@ class ClientController extends Controller
 
                     $this->get('session')->setFlash('notice', 'Ügyfél elmentve');
 
-                    return $this->render('JCSGYKAdminBundle:Dialog:archive.html.twig', [
+                    return $this->render('JCSGYKAdminBundle:Dialog:client_archive.html.twig', [
                         'success' => true,
                     ]);
                 }
             }
 
-            return $this->render('JCSGYKAdminBundle:Dialog:archive.html.twig', [
+            return $this->render('JCSGYKAdminBundle:Dialog:client_archive.html.twig', [
                 'client' => $client,
                 'form' => $form->createView(),
                 'open_problems' => $open_problems

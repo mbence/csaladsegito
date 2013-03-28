@@ -122,5 +122,76 @@ JcsProblem =
             HBlocks.closeBlock(4)
             false
 
-        # only while development
-        #$(".new_problem").click()
+        # close problem
+        $(".close_problem").on "click", (event) ->
+            event.stopPropagation()
+
+            if !$(this).hasClass('animbutton')
+                $(this).addClass('animbutton')
+
+                $.get($(this).attr("href"), (data) =>
+                    $(this).removeClass('animbutton')
+                    $(".modal .modal-content").html(data).show()
+                    JcsProblem.initCloseProblem()
+
+                ).error( (data) =>
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $(this).removeClass('animbutton')
+                )
+            false
+
+        # modal dialog
+        $(".modal").overlay
+            # some mask tweaks suitable for modal dialogs
+            mask:
+                color: '#ebecfe'
+                loadSpeed: 0
+                closeSpeed: 0
+                opacity: 0.9
+            closeOnClick: true
+            left: "center"
+            target: ".modal"
+            load: false
+            speed: 0
+            closeSpeed: 0
+
+    initCloseProblem: ->
+        $(".modal .modal-content .close").off("click").on "click", ->
+            $(".modal").overlay().close()
+
+        # form submit
+        $("#problem_close_form").submit ->
+            $(".save_problem").addClass('animbutton')
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                $(".modal .modal-content").html(data).show()
+
+                # display the result message
+                if $(".modal .modal-content").find(".result").data("result-notice")
+                    AjaxBag.showNotice($(".modal .modal-content").find(".result").data("result-notice"))
+                    $(".modal").overlay().close()
+                    # refresh the problem block
+                    problem_url = $("#problemblock .problemcontent").data("url")
+                    $.get(problem_url, (data) ->
+                        $("#problemblock .problemcontent").html(data).show()
+                        HBlocks.scrollTo(3)
+                        JcsProblem.init()
+                        JcsClient.reloadProblems()
+                    ).error( (data) ->
+                        # there was some error :(
+                        AjaxBag.showError(data.statusText)
+                        HBlocks.closeBlock(2)
+                    )
+                else
+                    JcsProblem.initCloseProblem()
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $(".save_problem").removeClass('animbutton')
+            )
+
+            false
+
+        $(".modal").overlay().load()
+        $("#problem_close_code").focus()

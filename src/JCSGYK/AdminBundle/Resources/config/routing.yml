@@ -36,6 +36,9 @@ problem_edit:
 problem_new:
     pattern:  /client/{client_id}/problem/new
     defaults: { _controller: JCSGYKAdminBundle:Problem:edit, client_id: null }
+problem_close:
+    pattern:  /problem/close/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Problem:close, id: null }
 
 # Event #
 event_view:

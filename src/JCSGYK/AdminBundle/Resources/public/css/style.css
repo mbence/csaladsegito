@@ -679,3 +679,9 @@ table.problem-list td {
 .client-edit td.td-right-pad {
     padding-right: 6px;
 }
+.problem-open-alert {
+    margin: 20px 0;
+    color: red;
+    font-size: 15px;
+    text-align: center;
+}

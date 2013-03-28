@@ -1,0 +1,70 @@
+{# Clode Problem #}
+
+{# if all went well, we just need to close the popup #}
+{% if success is defined and success %}
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% else %}
+    {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+    <form action="{{ path('problem_close', {'id': problem.id}) }}" id="problem_close_form" method="post" {{ form_enctype(form) }}>
+        <h1 class="client">
+            {% if problem.isActive %}
+                {{ 'Probléma lezárása'|trans }}
+            {% else %}
+                {{ 'Probléma újranyitása'|trans }}
+            {% endif %}
+        </h1>
+
+        {{ form_errors(form) }}
+        <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Ügyfél'|trans }}:</th>
+                <td>{{ fname(problem.client.firstname, problem.client.lastname, problem.client.title) }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Probléma'|trans }}:</th>
+                <td>{{ problem.title }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Felelős'|trans }}:</th>
+                <td class="caseowner">
+                    {% if problem.assignee %}
+                        {{ fname(problem.assignee.firstname, problem.assignee.lastname) }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>{{ 'Időpont'|trans }}:</th>
+                <td>{{ null|fdate }}</td>
+            </tr>
+            {% if problem.isActive %}
+            <tr>
+                <th>{{ form_label(form.close_code) }}:</th>
+                <td>{{ form_errors(form.close_code) }}{{ form_widget(form.close_code) }}</td>
+            </tr>
+            {% endif %}
+        </table>
+        {% if not problem.isActive %}
+        <div class="problem-open-alert">
+            <p>
+                {{ 'Biztosan újranyitja a problémát?'| trans }}
+            </p>
+            <p>
+                {{ 'Az újranyitás hatással van a statisztikákra!'|trans }}
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="toppad10">
+            {% if problem.isActive %}
+                {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_problem', title:'Probléma lezárása', label:'lezárás'}] } %}
+            {% else %}
+                {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_problem', title:'Probléma újranyitása', label:'újranyitás'}] } %}
+            {% endif %}
+
+            <div class="clear"></div>
+        </div>
+        {{ form_widget(form.operation) }}
+        {{ form_widget(form._token) }}
+    </form>
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% endif %}

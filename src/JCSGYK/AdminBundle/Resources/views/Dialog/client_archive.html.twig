@@ -52,7 +52,11 @@
         {% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: client} %}
 
         <div class="toppad10">
-            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', 'save_archive'] } %}
+            {% if not client.isArchived %}
+                {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_archive', title:'Ügyfél archiválása', label:'archiválás'}] } %}
+            {% else %}
+                {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_archive', title:'Ügyfél újranyitása', label:'újranyitás'}] } %}
+            {% endif %}
             <div class="clear"></div>
         </div>
         {{ form_widget(form.operation) }}

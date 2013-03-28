@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use JCSGYK\AdminBundle\Entity\Problem;
 use JCSGYK\AdminBundle\Form\Type\ProblemType;
+use JCSGYK\AdminBundle\Form\Type\CloseProblemType;
 
 class ProblemController extends Controller
 {
@@ -38,7 +39,7 @@ class ProblemController extends Controller
         $problem = null;
         $client = null;
         if (!empty($client_id)) {
-            // get client data
+            // get client
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
             $client = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')
                 ->findOneBy(['id' => $client_id, 'companyId' => $company_id]);
@@ -47,7 +48,7 @@ class ProblemController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         if (!empty($id)) {
-            // get the problem data
+            // get the problem
             $problem = $this->getProblem($id);
         }
         elseif (!empty($client)) {
@@ -108,6 +109,62 @@ class ProblemController extends Controller
             }
 
             return $this->render('JCSGYKAdminBundle:Problem:edit.html.twig', ['client' => $client, 'problem' => $problem, 'form' => $form->createView()]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
+
+    public function closeAction($id, Request $request)
+    {
+        if (!empty($id)) {
+            // get the client
+            $problem = $this->getProblem($id);
+            if (empty($problem)) {
+                throw new HttpException(400, "Bad request");
+            }
+
+            $form = $this->createForm(new CloseProblemType($this->container->get('jcs.ds'), $problem->getIsActive()), $problem);
+
+            // save
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                $operation = $form->get('operation')->getData();
+                if ($form->isValid()) {
+                    $em = $this->getDoctrine()->getManager();
+                    $user= $this->get('security.context')->getToken()->getUser();
+
+                    if ($operation == 1) {
+                        // close problem
+                        $problem->setCloser($user);
+                        $problem->setClosedAt(new \DateTime());
+                    }
+                    else {
+                        // reopen the problem
+                        $problem->setOpener($user);
+                    }
+                    // set modifier user
+                    $problem->setModifier($user);
+
+                    // set the problem status
+                    $problem->setIsActive(1 - $operation);
+
+                    $em->flush();
+
+                    $this->get('session')->setFlash('notice', ($operation ? 'Probléma lezárva' : 'Probléma újranyitva'));
+
+                    return $this->render('JCSGYKAdminBundle:Dialog:problem_close.html.twig', [
+                        'success' => true,
+                    ]);
+                }
+            }
+
+            return $this->render('JCSGYKAdminBundle:Dialog:problem_close.html.twig', [
+                'problem' => $problem,
+                'client' => $problem->getClient(),
+                'form' => $form->createView(),
+            ]);
         }
         else {
             throw new HttpException(400, "Bad request");

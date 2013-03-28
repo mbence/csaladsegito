@@ -46,7 +46,7 @@
 {% endif %}
 
 <div class="toppad10">
-    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['back_to_problem', 'save_problem']} %}
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_problem', {type:'submit', class:'save_problem', title:'Probléma mentése', label:'mentés'}] } %}
     <div class="clear"></div>
 </div>
 
