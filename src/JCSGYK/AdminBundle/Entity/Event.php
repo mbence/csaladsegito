@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="event")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Event
 {
@@ -117,6 +118,21 @@ class Event
      * @ORM\Column(name="attachment", type="string", length=255, nullable=true)
      */
     private $attachment;
+
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTime());
+        $this->setModifiedAt(new \DateTime());
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function setModifiedAtValue()
+    {
+       $this->setModifiedAt(new \DateTime());
+    }
 
     /**
      * Get id
