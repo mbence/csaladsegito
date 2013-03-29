@@ -1,3 +1,5 @@
+<div id="problem-id" data-problemid="{{ problem.id }}"></div>
+
 {% include "JCSGYKAdminBundle:Client:_buttons.html.twig"  with {'buttons': ['close_problem', 'edit_problem', 'close']} %}
 
 {% if not problem.isActive %}
@@ -36,7 +38,9 @@
 {% include "JCSGYKAdminBundle:Client:_note.html.twig" with {item: problem} %}
 {% include "JCSGYKAdminBundle:Problem:_debt.html.twig" %}
 
-{% include "JCSGYKAdminBundle:Problem:_events.html.twig" %}
+<div class="event_container" data-url="{{ path('problem_events', {id: problem.id}) }}">
+    {% include "JCSGYKAdminBundle:Problem:_events.html.twig" %}
+</div>
 
 {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: problem} %}
 {% include "JCSGYKAdminBundle:Problem:_close.html.twig" %}

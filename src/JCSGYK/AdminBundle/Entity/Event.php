@@ -100,14 +100,14 @@ class Event
     /**
      * @var integer
      *
-     * @ORM\Column(name="client_visit", type="integer", nullable=true)
+     * @ORM\Column(name="client_visit", type="boolean", nullable=true)
      */
     private $clientVisit;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="client_cancel", type="integer", nullable=true)
+     * @ORM\Column(name="client_cancel", type="boolean", nullable=true)
      */
     private $clientCancel;
 

@@ -11,10 +11,35 @@
                 <span>{{ button.label|trans }}</span>
             </button>
         {% endif %}
+{# Events #}
+        {# new event #}
+        {% if button == 'new_event' and problem.id and problem.isActive %}
+            <a href="{{ path('event_new', {problem_id: problem.id}) }}" class="button new_event" title="{{ 'Új esemény létrehozása'|trans }}"><span>{{ 'új esemény'|trans }}</span></a>
+        {% endif %}
+
+        {# edit event #}
+        {% if button == 'edit_event' and event.id and event.problem is defined and event.problem.isActive %}
+            <a href="{{ path('event_edit', {id: event.id, problem_id: event.problem.id}) }}" class="button edit_event" title="{{ 'Esemény szerkesztése'|trans }}">
+                <span>{{ 'szerkesztés'|trans }}</span>
+            </a>
+        {% endif %}
+
+        {# back to view event #}
+        {% if button == 'back_to_event' and event.id is defined %}
+            {% if event.id %}
+                <button type="reset" href="{{ path('event_view', {'id': event.id}) }}" class="greybutton back_to_event" title="{{ 'Visszalépés'|trans }}">
+                    <span>{{ 'mégse'|trans }}</span>
+                </button>
+            {% else %}
+                <button type="reset" href="{{ path('clients') }}" class="close greybutton" title="{{ 'Visszalépés'|trans }}">
+                    <span>{{ 'mégse'|trans }}</span>
+                </button>
+            {% endif %}
+        {% endif %}
 
 {# Problems #}
         {# new problem #}
-        {% if button == 'new_problem' and client.id and not client.isArchived%}
+        {% if button == 'new_problem' and client.id and not client.isArchived %}
             <a href="{{ path('problem_new', {client_id: client.id}) }}" class="button new_problem" title="{{ 'Új probléma létrehozása'|trans }}"><span>{{ 'új probléma'|trans }}</span></a>
         {% endif %}
 

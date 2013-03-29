@@ -1,0 +1,65 @@
+{% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+
+<form action="{{ path('event_edit', {problem_id: problem.id, id: event.id}) }}" id="event_edit" novalidate method="post" {{ form_enctype(form) }}>
+    {{ form_errors(form) }}
+
+<table class="client-edit" cellspacing="0" border="0">
+    <tr>
+        <th>{{ form_label(form.event_date) }}:</th>
+        <td colspan="3">{{ form_errors(form.event_date) }}{{ form_widget(form.event_date) }}</td>
+    </tr>
+    <tr><td colspan="4">
+        {{ form_label(form.description) }}:<br>
+        <div class="edit-note">
+            {{ form_errors(form.description) }}
+            {{ form_widget(form.description) }}
+        </div>
+    </td></tr>
+    <tr>
+        <th>{{ form_label(form.client_visit) }}:</th>
+        <td>{{ form_errors(form.client_visit) }}{{ form_widget(form.client_visit) }}</td>
+        <th>{{ form_label(form.client_cancel) }}:</th>
+        <td>{{ form_errors(form.client_cancel) }}{{ form_widget(form.client_cancel) }}</td>
+    </tr>
+    <tr><td colspan="4">
+        <div class="client-sub first-sub">{{ 'adatok'|trans }}</div>
+    </td></tr>
+    <tr>
+        <th>{{ form_label(form.type) }}:</th>
+        <td colspan="3">{{ form_errors(form.type) }}{{ form_widget(form.type) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.title_code) }}:</th>
+        <td colspan="3">{{ form_errors(form.title_code) }}{{ form_widget(form.title_code) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.forward_code) }}:</th>
+        <td colspan="3">{{ form_errors(form.forward_code) }}{{ form_widget(form.forward_code) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.activity_code) }}:</th>
+        <td colspan="3">{{ form_errors(form.activity_code) }}{{ form_widget(form.activity_code) }}</td>
+    </tr>
+    {% if event.attachment %}
+        <tr>
+            <th>{{ 'Csatolt dok.'|trans }}:</th>
+            <td colspan="3"><div class="bottompad4">{{ event.attachment }}</div></td>
+        </tr>
+    {% endif %}
+</table>
+
+{% if event.creator %}
+    {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: event, notoggle: true} %}
+{% endif %}
+
+
+<div class="toppad10">
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_event', {type:'submit', class:'save_event', title:'Esemény mentése', label:'mentés'}] } %}
+    <div class="clear"></div>
+</div>
+
+{{ form_widget(form._token) }}
+</form>
+<br>
+
+{% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}

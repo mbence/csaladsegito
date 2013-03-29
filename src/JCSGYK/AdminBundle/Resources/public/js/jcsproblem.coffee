@@ -1,5 +1,5 @@
 ###
-    Sets up the client block actions
+    Sets up the Problem block actions
 ###
 JcsProblem =
     init: ->
@@ -10,7 +10,6 @@ JcsProblem =
         @initForm()
         @setDelDebt()
         @initButtonRow()
-
         true
 
     setupEvents: ->
@@ -24,12 +23,12 @@ JcsProblem =
                 HBlocks.scrollTo(4)
 
                 # start the ajax request
-                $.post($("#geteventform").attr("action"), {id: $(this).data("eventid")}, (data) ->
+                event_url = $("#geteventform").attr("action") + "/" + $(this).data("eventid")
+                $.get(event_url, (data) ->
                     $("#eventblock .loading").hide()
                     $("#eventblock .eventcontent").html(data).show()
-                    JcsToggle.init("eventblock")
-                    HBlocks.scrollTo(4)
-                    HBlocks.setCloseButtons()
+                    $("#eventblock .eventcontent").data("url", event_url)
+                    JcsEvent.init()
                 ).error( (data) ->
                     # there was some error :(
                     AjaxBag.showError(data.statusText)
@@ -41,6 +40,7 @@ JcsProblem =
 
             false
         )
+        JcsEvent.init()
 
     initForm: ->
         # count the current debt records we have (e.g. 2), use that as the new
@@ -67,7 +67,7 @@ JcsProblem =
                 if $(msg_container).data("result-error")
                     AjaxBag.showError($(msg_container).data("result-error"))
                 JcsProblem.init()
-                JcsClient.reloadProblems()
+                JcsClient.reloadProblems($("#problemblock #problem-id").data("problemid"))
             ).error( (data) =>
                 # there was some error :(
                 AjaxBag.showError(data.statusText)
@@ -176,7 +176,8 @@ JcsProblem =
                         $("#problemblock .problemcontent").html(data).show()
                         HBlocks.scrollTo(3)
                         JcsProblem.init()
-                        JcsClient.reloadProblems()
+                        JcsClient.reloadProblems($("#problemblock #problem-id").data("problemid"))
+                        HBlocks.closeBlock(4)
                     ).error( (data) ->
                         # there was some error :(
                         AjaxBag.showError(data.statusText)
@@ -195,3 +196,23 @@ JcsProblem =
 
         $(".modal").overlay().load()
         $("#problem_close_code").focus()
+
+    reloadEvents: (eventid) ->
+        # get the url
+        url = $("#problemblock .event_container").data("url")
+        if url
+            $.get(url, (data) =>
+                $("#problemblock .event_container").html(data)
+                JcsProblem.setupEvents()
+
+                # restore the cursor and current classes
+                $("#problemblock .event_container tr").removeClass("current cursor")
+                $("#problemblock .event_container tr").each ->
+                    if $(this).data("eventid") == eventid
+                        $(this).addClass("cursor current")
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+            )
+        false

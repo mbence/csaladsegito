@@ -51,10 +51,8 @@ JcsClient =
         # textarea auto height
         $("#client_note").elastic()
 
-    reloadProblems: ->
+    reloadProblems: (problemid) ->
         # save the cursor and current rows
-        cursor = $("#clientblock .problem_container .cursor").data("problemid")
-        current = $("#clientblock .problem_container .current").data("problemid")
 
         # get the url
         url = $("#clientblock .problem_container").data("url")
@@ -65,15 +63,12 @@ JcsClient =
                 # restore the cursor and current classes
                 $("#clientblock .problem_container tr").removeClass("current cursor")
                 $("#clientblock .problem_container tr").each ->
-                    if $(this).data("problemid") == cursor
-                        $(this).addClass("cursor")
-                    if $(this).data("problemid") == current
-                        $(this).addClass("current")
+                    if $(this).data("problemid") == problemid
+                        $(this).addClass("cursor current")
 
             ).error( (data) =>
                 # there was some error :(
                 AjaxBag.showError(data.statusText)
-                $(this).removeClass('animbutton')
             )
         false
 

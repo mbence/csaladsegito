@@ -140,7 +140,7 @@ class Problem
 
     /**
      * @ORM\OneToMany(targetEntity="Event", mappedBy="problem")
-     * @ORM\OrderBy({"createdAt" = "DESC"})
+     * @ORM\OrderBy({"eventDate" = "DESC", "createdAt" = "DESC"})
      */
     private $events;
 
@@ -160,7 +160,7 @@ class Problem
     {
        $this->setModifiedAt(new \DateTime());
     }
-    
+
     /**
      * Get id
      *

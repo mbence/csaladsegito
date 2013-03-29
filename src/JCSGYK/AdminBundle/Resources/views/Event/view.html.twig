@@ -1,4 +1,6 @@
-{% include "JCSGYKAdminBundle:Client:_buttons.html.twig" %}
+<div id="event-id" data-eventid="{{ event.id }}"></div>
+
+{% include "JCSGYKAdminBundle:Client:_buttons.html.twig"  with {'buttons': ['edit_event', 'close']} %}
 
 {% if not event.getProblem.isActive %}
 <div class="archived bottompad25">Csak olvasható!</div>

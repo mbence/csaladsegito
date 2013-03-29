@@ -39,11 +39,20 @@ problem_new:
 problem_close:
     pattern:  /problem/close/{id}
     defaults: { _controller: JCSGYKAdminBundle:Problem:close, id: null }
+problem_events:
+    pattern:  /problem/{id}/events
+    defaults: { _controller: JCSGYKAdminBundle:Problem:getEvents }
 
 # Event #
 event_view:
-    pattern:  /event/view
-    defaults: { _controller: JCSGYKAdminBundle:Event:view }
+    pattern:  /event/view/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Event:view, id: null }
+event_edit:
+    pattern:  /problem/{problem_id}/event/edit/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Event:edit, id: null, problem_id: null  }
+event_new:
+    pattern:  /problem/{problem_id}/event/new
+    defaults: { _controller: JCSGYKAdminBundle:Event:edit, problem_id: null }
 
 # Assistance #
 register_inquiry:

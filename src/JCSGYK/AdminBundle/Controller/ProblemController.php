@@ -171,4 +171,15 @@ class ProblemController extends Controller
         }
     }
 
+    public function getEventsAction($id, Request $request)
+    {
+        if (!empty($id)) {
+            $problem = $this->getProblem($id);
+
+            return $this->render('JCSGYKAdminBundle:Problem:_events.html.twig', ['problem' => $problem]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
 }
