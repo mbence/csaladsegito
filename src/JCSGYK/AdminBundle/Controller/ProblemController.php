@@ -37,7 +37,7 @@ class ProblemController extends Controller
     /**
      * Edits the problem
      */
-    public function editAction($id = null, $client_id = null, Request $request)
+    public function editAction(Request $request, $id = null, $client_id = null)
     {
         $problem = null;
         $client = null;

@@ -34,7 +34,7 @@ class EventController extends Controller
     /**
      * Edits the event
      */
-    public function editAction($id = null, $problem_id = null, Request $request)
+    public function editAction(Request $request, $id = null, $problem_id = null)
     {
         $event = null;
         $problem = null;
