@@ -62,3 +62,68 @@ JcsEvent =
             $("#eventblock").show()
             HBlocks.setBlockSizes()
             false
+
+        # delete event
+        $(".delete_event").on "click", (event) ->
+            event.stopPropagation()
+
+            if !$(this).hasClass('animbutton')
+                $(this).addClass('animbutton')
+
+                $.get($(this).attr("href"), (data) =>
+                    $(this).removeClass('animbutton')
+                    $(".modal .modal-content").html(data).show()
+                    JcsEvent.initDeleteEvent()
+
+                ).error( (data) =>
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $(this).removeClass('animbutton')
+                )
+            false
+
+        # modal dialog
+        $(".modal").overlay
+            # some mask tweaks suitable for modal dialogs
+            mask:
+                color: '#ebecfe'
+                loadSpeed: 0
+                closeSpeed: 0
+                opacity: 0.9
+            closeOnClick: true
+            left: "center"
+            target: ".modal"
+            load: false
+            speed: 0
+            closeSpeed: 0
+
+    initDeleteEvent: ->
+        $(".modal .modal-content .close").off("click").on "click", ->
+            $(".modal").overlay().close()
+
+        # form submit
+        $("#event_delete_form").submit ->
+            $(".delete_event").addClass('animbutton')
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                $(".modal .modal-content").html(data).show()
+
+                # display the result message
+                if $(".modal .modal-content").find(".result").data("result-notice")
+                    AjaxBag.showNotice($(".modal .modal-content").find(".result").data("result-notice"))
+                    $(".modal").overlay().close()
+                    JcsProblem.reloadEvents($("#eventblock #event-id").data("eventid"))
+                    HBlocks.closeBlock(4)
+                else
+                    JcsEvent.initDeleteEvent()
+
+                $(".delete_event").removeClass('animbutton')
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $(".delete_event").removeClass('animbutton')
+            )
+
+            false
+
+        $(".modal").overlay().load()

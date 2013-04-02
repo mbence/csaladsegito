@@ -43,7 +43,7 @@ class ClientController extends Controller
 
         if (!empty($client)) {
             if ($client->getIsArchived()) {
-                return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client]);
+                return $this->redirect($this->generateUrl('client_view', ['id' => $id]));
             }
 
             $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
@@ -91,8 +91,9 @@ class ClientController extends Controller
                     return $this->redirect($this->generateUrl('client_view', ['id' => $client->getId()]));
                 }
             }
+            $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
 
-            return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client, 'form' => $form->createView()]);
+            return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client, 'problems' => $problems ,'form' => $form->createView()]);
         }
         else {
             throw new HttpException(400, "Bad request");
@@ -172,8 +173,10 @@ class ClientController extends Controller
     {
         if (!empty($id)) {
             $client = $this->getClient($id);
-
-            return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client]);
+            $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
+        }
+        if (!empty($client)) {
+            return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'problems' => $problems]);
         }
         else {
             throw new HttpException(400, "Bad request");
@@ -184,8 +187,9 @@ class ClientController extends Controller
     {
         if (!empty($id)) {
             $client = $this->getClient($id);
+            $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
 
-            return $this->render('JCSGYKAdminBundle:Client:_problems.html.twig', ['client' => $client]);
+            return $this->render('JCSGYKAdminBundle:Client:_problems.html.twig', ['client' => $client, 'problems' => $problems]);
         }
         else {
             throw new HttpException(400, "Bad request");

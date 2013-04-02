@@ -11,6 +11,8 @@
                 <span>{{ button.label|trans }}</span>
             </button>
         {% endif %}
+
+
 {# Events #}
         {# new event #}
         {% if button == 'new_event' and problem.id and problem.isActive %}
@@ -36,6 +38,14 @@
                 </button>
             {% endif %}
         {% endif %}
+
+        {# delete event #}
+        {% if button == 'delete_event' and event.id and event.problem is defined and event.problem.isActive %}
+            <a href="{{ path('event_delete', {id: event.id}) }}" class="redtext greybutton delete_event" title="{{ 'Esemény törlése'|trans }}">
+                <span>{{ 'törlés'|trans }}</span>
+            </a>
+        {% endif %}
+
 
 {# Problems #}
         {# new problem #}
@@ -79,6 +89,13 @@
                     <span>{{ 'lezárás'|trans }}</span>
                 </a>
             {% endif %}
+        {% endif %}
+
+        {# delete problem #}
+        {% if button == 'delete_problem' and problem.id and problem.isActive %}
+            <a href="{{ path('problem_delete', {id: problem.id}) }}" class="redtext greybutton delete_problem" title="{{ 'Probléma törlése'|trans }}">
+                <span>{{ 'törlés'|trans }}</span>
+            </a>
         {% endif %}
 
 {# Clients #}

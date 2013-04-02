@@ -42,6 +42,9 @@ problem_close:
 problem_events:
     pattern:  /problem/{id}/events
     defaults: { _controller: JCSGYKAdminBundle:Problem:getEvents }
+problem_delete:
+    pattern:  /problem/delete/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Problem:delete, id: null }
 
 # Event #
 event_view:
@@ -53,6 +56,9 @@ event_edit:
 event_new:
     pattern:  /problem/{problem_id}/event/new
     defaults: { _controller: JCSGYKAdminBundle:Event:edit, problem_id: null }
+event_delete:
+    pattern:  /event/delete/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Event:delete, id: null }
 
 # Assistance #
 register_inquiry:

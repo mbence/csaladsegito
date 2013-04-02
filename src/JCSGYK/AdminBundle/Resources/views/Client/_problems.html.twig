@@ -3,7 +3,7 @@
 <div>
     {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_problem']} %}
 
-    {% if client.getProblems|length %}
+    {% if problems is defined and problems|length %}
         <div class="smallopt right toppad ">
             <input type="checkbox" id="showAllProblem">
             <label for="showAllProblem">összes probléma</label>
@@ -16,7 +16,7 @@
                 <th>Állapot</th>
             </tr>
             <tbody class="walkable">
-            {% for problem in client.getProblems %}
+            {% for problem in problems %}
             <tr data-isactive="{{ problem.isActive }}" data-problemid="{{ problem.id }}" tabindex="{{ loop.index + 200 }}" {% if loop.first %}class="cursor"{% endif %}>
                 <td>{{ problem.title }}</td>
                 <td>{{ param(problem.type) }}</td>

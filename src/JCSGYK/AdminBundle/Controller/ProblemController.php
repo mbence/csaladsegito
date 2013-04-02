@@ -18,8 +18,10 @@ class ProblemController extends Controller
         if (!empty($id)) {
             // get problem data
             $problem = $this->getProblem($id);
-
-            return $this->render('JCSGYKAdminBundle:Problem:view.html.twig', ['client' => $problem->getClient(), 'problem' => $problem]);
+            $events = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->getEventList($id);
+        }
+        if (!empty($problem)) {
+            return $this->render('JCSGYKAdminBundle:Problem:view.html.twig', ['client' => $problem->getClient(), 'problem' => $problem, 'events' => $events]);
         }
         else {
             throw new HttpException(400, "Bad request");
@@ -28,7 +30,8 @@ class ProblemController extends Controller
 
     protected function getProblem($id)
     {
-        return $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->find($id);
+        return $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')
+            ->findOneBy(['id' => $id, 'isDeleted' => 0]);
     }
 
     /**
@@ -59,7 +62,7 @@ class ProblemController extends Controller
 
         if (!empty($problem)) {
             if (!$problem->getIsActive()) {
-                return $this->render('JCSGYKAdminBundle:Problem:view.html.twig', ['problem' => $problem]);
+                return $this->redirect($this->generateUrl('problem_view', ['id' => $id]));
             }
 
             $form = $this->createForm(new ProblemType($this->container->get('jcs.ds')), $problem);
@@ -79,7 +82,7 @@ class ProblemController extends Controller
                         $problem->setClient($client);
                         // set the creator
                         $problem->setCreator($user);
-                        $problem->setIsActive(true);
+
                         $em->persist($problem);
                     }
 
@@ -107,8 +110,9 @@ class ProblemController extends Controller
                     return $this->redirect($this->generateUrl('problem_view', ['id' => $problem->getId()]));
                 }
             }
+            $events = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->getEventList($id);
 
-            return $this->render('JCSGYKAdminBundle:Problem:edit.html.twig', ['client' => $client, 'problem' => $problem, 'form' => $form->createView()]);
+            return $this->render('JCSGYKAdminBundle:Problem:edit.html.twig', ['client' => $client, 'problem' => $problem, 'events' => $events, 'form' => $form->createView()]);
         }
         else {
             throw new HttpException(400, "Bad request");
@@ -118,7 +122,7 @@ class ProblemController extends Controller
     public function closeAction($id, Request $request)
     {
         if (!empty($id)) {
-            // get the client
+            // get the problem
             $problem = $this->getProblem($id);
             if (empty($problem)) {
                 throw new HttpException(400, "Bad request");
@@ -175,8 +179,56 @@ class ProblemController extends Controller
     {
         if (!empty($id)) {
             $problem = $this->getProblem($id);
+            $events = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->getEventList($id);
+        }
+        if (!empty($problem)) {
+            return $this->render('JCSGYKAdminBundle:Problem:_events.html.twig', ['problem' => $problem, 'events' => $events]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
 
-            return $this->render('JCSGYKAdminBundle:Problem:_events.html.twig', ['problem' => $problem]);
+    public function deleteAction($id, Request $request)
+    {
+        if (!empty($id)) {
+            // get the event
+            $problem = $this->getProblem($id);
+            if (empty($problem)) {
+                throw new HttpException(400, "Bad request");
+            }
+
+            $form = $this->createFormBuilder()->getForm();
+
+            // save
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    $em = $this->getDoctrine()->getManager();
+                    $user= $this->get('security.context')->getToken()->getUser();
+
+                    // set modifier user
+                    $problem->setModifier($user);
+                    $problem->setIsDeleted(true);
+
+                    $em->flush();
+
+                    $this->get('session')->setFlash('notice', 'Probléma törölve');
+
+                    return $this->render('JCSGYKAdminBundle:Dialog:problem_delete.html.twig', [
+                        'success' => true,
+                    ]);
+                }
+            }
+
+            $events = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->getEventList($id);
+
+            return $this->render('JCSGYKAdminBundle:Dialog:problem_delete.html.twig', [
+                'problem' => $problem,
+                'form' => $form->createView(),
+                'events' => $events
+            ]);
         }
         else {
             throw new HttpException(400, "Bad request");

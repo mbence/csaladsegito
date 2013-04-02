@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Problem
  *
  * @ORM\Table(name="problem")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\ProblemRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class Problem
@@ -144,6 +144,13 @@ class Problem
      */
     private $events;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="is_deleted", type="integer", nullable=true)
+     */
+    private $isDeleted;
+
 
     public function __construct()
     {
@@ -151,6 +158,8 @@ class Problem
         $this->events = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setModifiedAt(new \DateTime());
+        $this->setIsActive(true);
+        $this->setIsDeleted(false);
     }
 
     /**
@@ -603,5 +612,28 @@ class Problem
     public function getEvents()
     {
         return $this->events;
+    }
+
+    /**
+     * Set isDeleted
+     *
+     * @param integer $isDeleted
+     * @return Problem
+     */
+    public function setIsDeleted($isDeleted)
+    {
+        $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    /**
+     * Get isDeleted
+     *
+     * @return integer
+     */
+    public function getIsDeleted()
+    {
+        return $this->isDeleted;
     }
 }

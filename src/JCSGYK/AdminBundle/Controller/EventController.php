@@ -16,7 +16,8 @@ class EventController extends Controller
     {
         if (!empty($id)) {
             $event = $this->getEvent($id);
-
+        }
+        if (!empty($event)) {
             return $this->render('JCSGYKAdminBundle:Event:view.html.twig', ['event' => $event]);
         }
         else {
@@ -26,7 +27,8 @@ class EventController extends Controller
 
     protected function getEvent($id)
     {
-        return $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Event')->find($id);
+        return $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Event')
+            ->findOneBy(['id' => $id, 'isDeleted' => 0]);
     }
 
     /**
@@ -56,7 +58,7 @@ class EventController extends Controller
 
         if (!empty($event)) {
             if (!empty($problem) && !$problem->getIsActive()) {
-                return $this->render('JCSGYKAdminBundle:Event:view.html.twig', ['event' => $event]);
+                return $this->redirect($this->generateUrl('event_view', ['id' => $id]));
             }
 
             $form = $this->createForm(new EventType($this->container->get('jcs.ds')), $event);
@@ -76,6 +78,7 @@ class EventController extends Controller
                         $event->setProblem($problem);
                         // set the creator
                         $event->setCreator($user);
+
                         $em->persist($event);
                     }
 
@@ -95,4 +98,46 @@ class EventController extends Controller
         }
     }
 
+    public function deleteAction($id, Request $request)
+    {
+        if (!empty($id)) {
+            // get the event
+            $event = $this->getEvent($id);
+            if (empty($event)) {
+                throw new HttpException(400, "Bad request");
+            }
+
+            $form = $this->createFormBuilder()->getForm();
+
+            // save
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    $em = $this->getDoctrine()->getManager();
+                    $user= $this->get('security.context')->getToken()->getUser();
+
+                    // set modifier user
+                    $event->setModifier($user);
+                    $event->setIsDeleted(true);
+
+                    $em->flush();
+
+                    $this->get('session')->setFlash('notice', 'Esemény törölve');
+
+                    return $this->render('JCSGYKAdminBundle:Dialog:event_delete.html.twig', [
+                        'success' => true,
+                    ]);
+                }
+            }
+
+            return $this->render('JCSGYKAdminBundle:Dialog:event_delete.html.twig', [
+                'event' => $event,
+                'form' => $form->createView(),
+            ]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
 }

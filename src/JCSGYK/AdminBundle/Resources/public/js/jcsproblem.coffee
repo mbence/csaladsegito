@@ -141,6 +141,25 @@ JcsProblem =
                 )
             false
 
+        # delete problem
+        $(".delete_problem").on "click", (event) ->
+            event.stopPropagation()
+
+            if !$(this).hasClass('animbutton')
+                $(this).addClass('animbutton')
+
+                $.get($(this).attr("href"), (data) =>
+                    $(this).removeClass('animbutton')
+                    $(".modal .modal-content").html(data).show()
+                    JcsProblem.initDeleteProblem()
+
+                ).error( (data) =>
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $(this).removeClass('animbutton')
+                )
+            false
+
         # modal dialog
         $(".modal").overlay
             # some mask tweaks suitable for modal dialogs
@@ -181,7 +200,7 @@ JcsProblem =
                     ).error( (data) ->
                         # there was some error :(
                         AjaxBag.showError(data.statusText)
-                        HBlocks.closeBlock(2)
+                        HBlocks.closeBlock(3)
                     )
                 else
                     JcsProblem.initCloseProblem()
@@ -196,6 +215,37 @@ JcsProblem =
 
         $(".modal").overlay().load()
         $("#problem_close_code").focus()
+
+    initDeleteProblem: ->
+        $(".modal .modal-content .close").off("click").on "click", ->
+            $(".modal").overlay().close()
+
+        # form submit
+        $("#problem_delete_form").submit ->
+            $(".delete_problem").addClass('animbutton')
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                $(".modal .modal-content").html(data).show()
+
+                # display the result message
+                if $(".modal .modal-content").find(".result").data("result-notice")
+                    AjaxBag.showNotice($(".modal .modal-content").find(".result").data("result-notice"))
+                    $(".modal").overlay().close()
+                    JcsClient.reloadProblems($("#problemblock #problem-id").data("problemid"))
+                    HBlocks.closeBlock(3)
+                else
+                    JcsProblem.initDeleteProblem()
+
+                $(".delete_problem").removeClass('animbutton')
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $(".delete_problem").removeClass('animbutton')
+            )
+
+            false
+
+        $(".modal").overlay().load()
 
     reloadEvents: (eventid) ->
         # get the url

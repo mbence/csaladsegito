@@ -1,0 +1,40 @@
+{# Delete Event #}
+
+{# if all went well, we just need to close the popup #}
+{% if success is defined and success %}
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% else %}
+    {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+    <form action="{{ path('event_delete', {'id': event.id}) }}" id="event_delete_form" method="post" {{ form_enctype(form) }}>
+        <h1 class="client">
+            {{ 'Esemény törlése'|trans }}
+        </h1>
+
+        {{ form_errors(form) }}
+        <table class="client" cellspacing="0" border="0">
+            <tr>
+                <td>{{ event.eventDate|fdate('sd') }}</td>
+            </tr>
+        </table>
+
+        <div class="event-description">
+            {{ event.description|nl2br }}
+        </div>
+
+        {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: event} %}
+
+        <div class="problem-open-alert">
+            <p>
+                {{ 'Biztosan törli az eseményt?'| trans }}
+            </p>
+        </div>
+
+        <div class="toppad10">
+            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'delete_event redtext', title:'Esemény törlése', label:'törlés'}] } %}
+
+            <div class="clear"></div>
+        </div>
+        {{ form_widget(form._token) }}
+    </form>
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% endif %}

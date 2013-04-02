@@ -5,7 +5,7 @@
         {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_event']} %}
         <div class="clear"></div>
     </div>
-    {% if problem.getEvents|length %}
+    {% if events is defined and events|length %}
     <table id="event-list" class="client problem-list event-list" cellspacing="0" border="0">
         <thead>
             <tr>
@@ -14,7 +14,7 @@
             </tr>
         </thead>
         <tbody class="walkable">
-        {% for event in problem.getEvents %}
+        {% for event in events %}
         <tr data-eventid="{{ event.id }}" tabindex="{{ loop.index + 300 }}" {% if loop.first %}class="cursor"{% endif %}>
             <td>{{ event.eventDate|fdate('sd') }}</td>
             <td>{{ event.description|nl2br }}</td>

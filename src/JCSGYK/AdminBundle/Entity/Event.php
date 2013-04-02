@@ -119,11 +119,18 @@ class Event
      */
     private $attachment;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="is_deleted", type="integer", nullable=true)
+     */
+    private $isDeleted;
 
     public function __construct()
     {
         $this->setCreatedAt(new \DateTime());
         $this->setModifiedAt(new \DateTime());
+        $this->setIsDeleted(false);
     }
 
     /**
@@ -464,5 +471,28 @@ class Event
     public function getProblem()
     {
         return $this->problem;
+    }
+
+    /**
+     * Set isDeleted
+     *
+     * @param integer $isDeleted
+     * @return Event
+     */
+    public function setIsDeleted($isDeleted)
+    {
+        $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    /**
+     * Get isDeleted
+     *
+     * @return integer
+     */
+    public function getIsDeleted()
+    {
+        return $this->isDeleted;
     }
 }

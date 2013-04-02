@@ -109,8 +109,9 @@ button.button, button.greybutton {
     color: transparent;
     text-shadow: none;
 }
-.animbutton span {
+.animbutton span, .animbutton.redtext span {
     background-image: none !important;
+    color: transparent;
 }
 
 /* button icons */
@@ -122,4 +123,7 @@ button.button, button.greybutton {
 }
 .button .back-icon {
     background: url('../images/iconset.png') no-repeat -25px -336px;
+}
+.redtext span {
+    color: #a33;
 }
