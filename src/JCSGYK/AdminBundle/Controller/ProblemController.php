@@ -13,7 +13,7 @@ use JCSGYK\AdminBundle\Form\Type\CloseProblemType;
 
 class ProblemController extends Controller
 {
-    public function viewAction($id, Request $request)
+    public function viewAction($id)
     {
         if (!empty($id)) {
             // get problem data
@@ -37,8 +37,10 @@ class ProblemController extends Controller
     /**
      * Edits the problem
      */
-    public function editAction(Request $request, $id = null, $client_id = null)
+    public function editAction($id = null, $client_id = null)
     {
+        $request = $this->getRequest();
+
         $problem = null;
         $client = null;
         if (!empty($client_id)) {
@@ -119,8 +121,10 @@ class ProblemController extends Controller
         }
     }
 
-    public function closeAction($id, Request $request)
+    public function closeAction($id)
     {
+        $request = $this->getRequest();
+
         if (!empty($id)) {
             // get the problem
             $problem = $this->getProblem($id);
@@ -175,7 +179,7 @@ class ProblemController extends Controller
         }
     }
 
-    public function getEventsAction($id, Request $request)
+    public function getEventsAction($id)
     {
         if (!empty($id)) {
             $problem = $this->getProblem($id);
@@ -189,8 +193,10 @@ class ProblemController extends Controller
         }
     }
 
-    public function deleteAction($id, Request $request)
+    public function deleteAction($id)
     {
+        $request = $this->getRequest();
+        
         if (!empty($id)) {
             // get the event
             $problem = $this->getProblem($id);

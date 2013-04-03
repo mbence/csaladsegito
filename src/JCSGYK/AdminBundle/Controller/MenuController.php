@@ -4,13 +4,12 @@ namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 class MenuController extends Controller
 {
     protected $menu = [
         ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
-//       ['route' => 'new_client', 'label' => 'Új ügyfél', 'role' => 'ROLE_USER'],
-
         ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
         ['route' => 'admin_params', 'label' => 'Paraméterek', 'role' => 'ROLE_ADMIN'],
         ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
@@ -37,14 +36,16 @@ class MenuController extends Controller
      */
     protected function checkMenu()
     {
-        $router = $this->get("router");
-        $r = $router->match($this->getRequest()->getPathInfo());
+        $request = Request::createFromGlobals();
+
+        $url = $request->getPathInfo();
+        $route = $this->get("router")->match($url);
         $sec = $this->get('security.context');
 
         $user_menu = [];
         foreach ($this->menu as $m) {
             $class_list = [];
-            if (!empty($r['_route']) && $m['route'] == $r['_route']) {
+            if (!empty($route['_route']) && $m['route'] == $route['_route']) {
                 $class_list[] = 'current';
             }
             if (in_array($m['role'], ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])) {
@@ -80,7 +81,7 @@ class MenuController extends Controller
         elseif ($sec->isGranted('ROLE_ASSISTANCE')) {
             return $this->redirect($this->generateUrl('clients'), 301);
         }
-        
+
         return $this->redirect($this->generateUrl('home'), 301);
     }
 

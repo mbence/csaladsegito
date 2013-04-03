@@ -16,7 +16,7 @@ use JCSGYK\AdminBundle\Form\Type\ArchiveType;
 
 class ClientController extends Controller
 {
-    public function indexAction(Request $request)
+    public function indexAction()
     {
         return $this->render('JCSGYKAdminBundle:Client:index.html.twig');
     }
@@ -24,8 +24,10 @@ class ClientController extends Controller
     /**
      * Edits the client data
      */
-    public function editAction($id = null, Request $request)
+    public function editAction($id = null)
     {
+        $request = $this->getRequest();
+
         // TODO: utca adatbázis + ellenőrzés
 
         $client = null;
@@ -100,8 +102,10 @@ class ClientController extends Controller
         }
     }
 
-    public function archiveAction($id, Request $request)
+    public function archiveAction($id)
     {
+        $request = $this->getRequest();
+
         if (!empty($id)) {
             // get the client
             $client = $this->getClient($id);
@@ -111,7 +115,10 @@ class ClientController extends Controller
 
             // check for any open problems, only arhivable if no problems are open
             $open_problems = 0;
-            foreach ($client->getProblems() as $problem) {
+            // get only the undeleted problems
+            $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
+
+            foreach ($problems as $problem) {
                 if ($problem->getIsActive()) {
                     $open_problems++;
                 }
@@ -169,7 +176,7 @@ class ClientController extends Controller
     }
 
 
-    public function viewAction($id, Request $request)
+    public function viewAction($id)
     {
         if (!empty($id)) {
             $client = $this->getClient($id);
@@ -183,7 +190,7 @@ class ClientController extends Controller
         }
     }
 
-    public function getProblemsAction($id, Request $request)
+    public function getProblemsAction($id)
     {
         if (!empty($id)) {
             $client = $this->getClient($id);
@@ -206,7 +213,7 @@ class ClientController extends Controller
             ->findOneBy(['id' => $id, 'companyId' => $company_id]);
     }
 
-    public function searchAction($q, Request $request)
+    public function searchAction($q)
     {
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
         $limit = 100;

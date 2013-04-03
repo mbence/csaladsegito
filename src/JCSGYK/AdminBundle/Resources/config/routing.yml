@@ -77,7 +77,7 @@ admin_home:
 # Admin Users #
 admin_users:
     pattern:  /admin/users/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Admin:users, id: 0 }
+    defaults: { _controller: JCSGYKAdminBundle:Admin:users, id: null }
 # Admin Params #
 admin_params:
     pattern:  /admin/params/{group}

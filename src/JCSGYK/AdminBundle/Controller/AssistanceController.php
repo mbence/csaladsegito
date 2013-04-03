@@ -14,8 +14,10 @@ class AssistanceController extends Controller
     /**
     * @Secure(roles="ROLE_ASSISTANCE")
     */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
+        $request = $this->getRequest();
+
 //        var_dump($this->container->get('templating.helper.assets')->getVersion());
 //        var_dump($this->container->getParameter('app.version'));
 //
@@ -44,8 +46,10 @@ class AssistanceController extends Controller
     /**
     * @Secure(roles="ROLE_ASSISTANCE")
     */
-    public function inquiryStatAction(Request $request)
+    public function inquiryStatAction()
     {
+        $request = $this->getRequest();
+        
         $colors = ['#E07628', '#A0D8F1', '#E9AF32', '#BF381A', '#0A224E'];
         $jq_colors = [];
         foreach ($colors as $c) {

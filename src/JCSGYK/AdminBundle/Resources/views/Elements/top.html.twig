@@ -8,12 +8,10 @@
         {% endif %}
     </div>
 
-    {% render "JCSGYKAdminBundle:Menu:main" %}
+    {% render(controller('JCSGYKAdminBundle:Menu:main')) %}
     <div class="clear"></div>
 
     {% if is_granted('ROLE_ASSISTANCE') %}
         {% include "JCSGYKAdminBundle:Elements:inquiry.html.twig" %}
     {% endif %}
 </header>
-
-{# render "JCSGYKAdminBundle:Menu:breadcrumb" #}

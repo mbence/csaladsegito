@@ -18,7 +18,7 @@
     <div>{{ form_errors(form.roles) }}{{ form_label(form.roles) }}{{ form_widget(form.roles) }}</div>
     <div>{{ form_errors(form.enabled) }}{{ form_label(form.enabled) }}{{ form_widget(form.enabled) }}</div>
     {% if user.id %}
-        <div><label>{{ 'Utolsó belépés'|trans }}</label><span class="readonly">{{ user.lastlogin|fdate('dt') }}</span></div>
+        <div><label>{{ 'Utolsó belépés'|trans }}</label><span class="readonly">{% if user.lastLogin %}{{ user.lastLogin|fdate('dt') }}{% endif %}</span></div>
     {% endif %}
     <br>
     <div>{{ form_errors(form.plainPassword.first) }}{{ form_label(form.plainPassword.first) }}{{ form_widget(form.plainPassword.first) }}</div>

@@ -79,7 +79,7 @@
         {% endif %}
 
         {# close problem #}
-        {% if button == 'close_problem' and problem.id is defined %}
+        {% if button == 'close_problem' and problem.id is defined and not client.isArchived %}
             {% if not problem.isActive %}
                 <a href="{{ path('problem_close', {'id': problem.id}) }}" class="button close_problem" title="{{ 'Probléma újranyitása'|trans }}">
                     <span>{{ 'újranyitás'|trans }}</span>

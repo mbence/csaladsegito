@@ -10,7 +10,7 @@
 
     {% if is_granted(['ROLE_ASSISTANCE']) %}
     <div class="inquiry-stats" data-action="{{ path('inquiry_stat') }}">
-        {% render "JCSGYKAdminBundle:Assistance:inquiryStat" %}
+        {% render(controller('JCSGYKAdminBundle:Assistance:inquiryStat')) %}
     </div>
     {% endif %}
 {% endblock %}

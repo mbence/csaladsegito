@@ -92,6 +92,7 @@ JcsClient =
                     $.get(client_url, (data) ->
                         $("#clientblock .clientcontent").html(data).show()
                         HBlocks.scrollTo(2)
+                        HBlocks.closeBlock(3)
                         JcsClient.init()
                     ).error( (data) ->
                         # there was some error :(

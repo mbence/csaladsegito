@@ -12,7 +12,7 @@ use JCSGYK\AdminBundle\Form\Type\EventType;
 
 class EventController extends Controller
 {
-    public function viewAction($id, Request $request)
+    public function viewAction($id)
     {
         if (!empty($id)) {
             $event = $this->getEvent($id);
@@ -34,8 +34,10 @@ class EventController extends Controller
     /**
      * Edits the event
      */
-    public function editAction(Request $request, $id = null, $problem_id = null)
+    public function editAction($id = null, $problem_id = null)
     {
+        $request = $this->getRequest();
+
         $event = null;
         $problem = null;
         if (!empty($problem_id)) {
@@ -98,8 +100,10 @@ class EventController extends Controller
         }
     }
 
-    public function deleteAction($id, Request $request)
+    public function deleteAction($id)
     {
+        $request = $this->getRequest();
+        
         if (!empty($id)) {
             // get the event
             $event = $this->getEvent($id);

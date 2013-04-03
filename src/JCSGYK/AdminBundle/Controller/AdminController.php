@@ -36,8 +36,10 @@ class AdminController extends Controller
      *
      * @Secure(roles="ROLE_ADMIN")
      */
-    public function usersAction($id, Request $request)
+    public function usersAction($id)
     {
+        $request = $this->getRequest();
+
         $user = null;
         $um = $this->get('fos_user.user_manager');
         $em = $this->getDoctrine()->getManager();
@@ -58,7 +60,7 @@ class AdminController extends Controller
             $user = $um->createUser();
             $user->setCompanyId($company_id);
         }
-        else {
+        elseif (!is_null($id)) {
             $user = $em->getRepository('JCSGYKAdminBundle:User')
                 ->findOneBy(['id' => $id, 'companyId' => $company_id]);
         }
@@ -101,8 +103,10 @@ class AdminController extends Controller
      *
      * @Secure(roles="ROLE_ADMIN")
      */
-    public function paramsAction($group, Request $request)
+    public function paramsAction($group)
     {
+        $request = $this->getRequest();
+
         $em = $this->getDoctrine()->getManager();
         $co = $this->container->get('jcs.ds')->getCompanyId();
 
@@ -162,8 +166,10 @@ class AdminController extends Controller
      *
      * @Secure(roles="ROLE_SUPER_ADMIN")
      */
-    public function updateAction(Request $request)
+    public function updateAction()
     {
+        $request = $this->getRequest();
+        
         $ex = [];
         $re = [];
         $session = $this->get('session');
