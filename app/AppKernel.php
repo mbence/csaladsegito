@@ -22,6 +22,7 @@ class AppKernel extends Kernel
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new JCSGYK\AdminBundle\JCSGYKAdminBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+            new MBence\OpenTBSBundle\OpenTBSBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

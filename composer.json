@@ -21,6 +21,7 @@
         "stof/doctrine-extensions-bundle": "dev-master",
         "jdorn/sql-formatter": "*",
         "friendsofsymfony/user-bundle": "*",
+        "mbence/opentbs-bundle": "dev-master",
         "mbence/livephp-bundle": "dev-master"
     },
     "scripts": {

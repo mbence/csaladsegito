@@ -1,0 +1,17 @@
+
+==============================================
+ Probléma:	{{ problem.title }}
+ Felelős:	{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}
+
+ Állapot:	{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}
+
+==============================================
+
+{% if events is defined and events|length %}{% for event in events %}
+[{{ event.eventDate|fdate('sd') }}]
+{{ event.description|nl2br }}
+
+ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+{% endfor %}
+{% else %}{{ 'Nincsen megjeleníthető esemény'|trans }}{% endif %}

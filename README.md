@@ -1,12 +1,13 @@
 Családsegítő Admin / Family Helper Admin
 ========================================
 
-Családsegítő és Gyermekjóléti szolgálatok adminisztrációs rendszere / 
+Családsegítő és Gyermekjóléti szolgálatok adminisztrációs rendszere /
 Administration system of family helper and child welfare services
 
 ## Requirements
 
 * PHP 5.4
+* Symfony 2.2
 * Node.js / Coffeescript
 
 To recompile the coffee assets during development, run the assetic compiler:
