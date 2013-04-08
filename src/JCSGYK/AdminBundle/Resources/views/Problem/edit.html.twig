@@ -39,7 +39,7 @@
 {% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: problem} %}
 {% include "JCSGYKAdminBundle:Problem:_edit_debt.html.twig" %}
 
-<div class="event_container" data-url="{{ path('problem_events', {id: problem.id}) }}">
+<div class="event_container" {% if problem.id %}data-url="{{ path('problem_events', {id: problem.id}) }}"{% endif %}>
     {% include "JCSGYKAdminBundle:Problem:_events.html.twig" with {notoggle: true} %}
 </div>
 

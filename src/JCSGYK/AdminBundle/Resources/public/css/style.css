@@ -650,7 +650,8 @@ table.problem-list td {
 .errors {
     color: red;
 }
-.errors + input[type=text], .errors + input[type=text]:hover, .errors + input[type=text]:focus {
+.errors + input[type=text], .errors + input[type=text]:hover, .errors + input[type=text]:focus,
+.errors + textarea, .errors + textarea:hover, .errors + textarea:focus{
     border-color: red;
 }
 .delete_provider, .delete_debt {

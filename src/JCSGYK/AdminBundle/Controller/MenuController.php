@@ -118,7 +118,7 @@ class MenuController extends Controller
                 'url'   => $this->generateUrl('problem_delete', ['id' => $problem->getId()]),
                 'label' => 'törlés',
                 'title' => 'Probléma törlése',
-                'class' => 'delete_problem',
+                'class' => 'delete_problem redtext',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
                 'requirement' => $problem->getIsActive()
@@ -146,7 +146,7 @@ class MenuController extends Controller
                 'url'   => $this->generateUrl('event_delete', ['id' => $event->getId()]),
                 'label' => 'törlés',
                 'title' => 'Esemény törlése',
-                'class' => 'delete_event',
+                'class' => 'delete_event redtext',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
                 'requirement' => $event->getProblem()->getIsActive()

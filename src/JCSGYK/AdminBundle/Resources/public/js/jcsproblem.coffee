@@ -41,7 +41,8 @@ JcsProblem =
 
             false
         )
-        # JcsEvent.init()
+        # init the new event button
+        JcsEvent.initButtonRow()
 
     initForm: ->
         # count the current debt records we have (e.g. 2), use that as the new

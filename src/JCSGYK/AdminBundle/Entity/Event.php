@@ -3,6 +3,7 @@
 namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Event
@@ -34,6 +35,7 @@ class Event
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @Assert\NotBlank()
      */
     private $description;
 
