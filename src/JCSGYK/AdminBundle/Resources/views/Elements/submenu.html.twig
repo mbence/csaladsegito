@@ -1,0 +1,30 @@
+
+<div class="button-row">
+    <div class="close greybutton" title="{{ 'Vissza'|trans }}"><span class="icon"></span></div>
+    {% if menu is defined and menu|length %}
+        {% for item in menu %}
+            {% spaceless %}
+            <a href="{{item.url }}"
+                {% if item.class is defined %} class="{{ item.class }}" {% endif %}
+                {% if item.title is defined %} title="{{ item.title|trans }}" {% endif %}
+                ><span>{{ item.label|trans }}</span></a>
+            {% endspaceless %}
+        {% endfor %}
+    {% endif %}
+    {% if more is defined and more|length %}
+        <div class="morebutton greybutton" title="{{ 'További lehetőségek'|trans }}">
+            <span>egyéb</span>
+            <span class="icon"></span>
+            <div class="sub-vertical">
+                {% for item in more %}
+                    {% spaceless %}
+                    <a href="{{item.url }}"
+                        {% if item.class is defined %} class="{{ item.class }}" {% endif %}
+                        {% if item.title is defined %} title="{{ item.title|trans }}" {% endif %}
+                        ><span>{{ item.label|trans }}</span></a>
+                    {% endspaceless %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>

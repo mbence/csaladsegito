@@ -4,6 +4,7 @@
 JcsClient =
     init: ->
         # init toggles
+        JcsMenu.submenu()
         JcsToggle.init("clientblock")
         HBlocks.setCloseButtons()
         $("#clientblock").show()

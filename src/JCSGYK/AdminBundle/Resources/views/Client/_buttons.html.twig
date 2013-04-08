@@ -78,41 +78,7 @@
             <a href="#" class="greybutton add_debt" title="{{ 'Új hátralék hozzáadása'| trans }}"><span>{{ 'új hátralék'|trans }}</span></a>
         {% endif %}
 
-        {# close problem #}
-        {% if button == 'close_problem' and problem.id is defined and not client.isArchived %}
-            {% if not problem.isActive %}
-                <a href="{{ path('problem_close', {'id': problem.id}) }}" class="button close_problem" title="{{ 'Probléma újranyitása'|trans }}">
-                    <span>{{ 'újranyitás'|trans }}</span>
-                </a>
-            {% else %}
-                <a href="{{ path('problem_close', {'id': problem.id}) }}" class="greybutton close_problem" title="{{ 'Probléma lezárása'|trans }}">
-                    <span>{{ 'lezárás'|trans }}</span>
-                </a>
-            {% endif %}
-        {% endif %}
-
-        {# delete problem #}
-        {% if button == 'delete_problem' and problem.id and problem.isActive %}
-            <a href="{{ path('problem_delete', {id: problem.id}) }}" class="redtext greybutton delete_problem" title="{{ 'Probléma törlése'|trans }}">
-                <span>{{ 'törlés'|trans }}</span>
-            </a>
-        {% endif %}
-
-        {# problem history #}
-        {% if button == 'problem_history' and client.id is defined and problem.id is defined %}
-            <a href="{{ path('client_history', {'id': client.id, 'problem_id' : problem.id}) }}" class="greybutton problem_history" title="{{ 'Esettörténet'|trans }}">
-                <span>{{ 'esettörténet'|trans }}</span>
-            </a>
-        {% endif %}
-
 {# Clients #}
-        {# client history #}
-        {% if button == 'client_histroy' and client.id is defined %}
-            <a href="{{ path('client_history', {'id': client.id}) }}" class="greybutton client_history" title="{{ 'Esettörténet'|trans }}">
-                <span>{{ 'esettörténet'|trans }}</span>
-            </a>
-        {% endif %}
-
         {# new client #}
         {% if button == 'new_client' %}
             <a href="{{ path('client_new') }}" class="button new_client" title="{{ 'Új ügyfél létrehozása'|trans }}"><span>{{ 'új ügyfél'|trans }}</span></a>
@@ -134,26 +100,6 @@
                     <span>{{ 'mégse'|trans }}</span>
                 </button>
             {% endif %}
-        {% endif %}
-
-        {# archive client #}
-        {% if button == 'archive' and client.id is defined and is_granted('ROLE_ADMIN') %}
-            {% if client.isArchived %}
-                <a href="{{ path('client_archive', {'id': client.id}) }}" class="button archive_client" title="{{ 'Ügyfél újranyitása'|trans }}">
-                    <span>{{ 'újranyitás'|trans }}</span>
-                </a>
-            {% else %}
-                <a href="{{ path('client_archive', {'id': client.id}) }}" class="greybutton archive_client" title="{{ 'Ügyfél archiválása'|trans }}">
-                    <span>{{ 'archiválás'|trans }}</span>
-                </a>
-            {% endif %}
-        {% endif %}
-
-        {# edit client #}
-        {% if button == 'edit' and client.id is defined and not client.isArchived %}
-            <a href="{{ path('client_edit', {'id': client.id}) }}" class="button edit_client" title="{{ 'Ügyfél szerkesztése'|trans }}">
-                <span>{{ 'szerkesztés'|trans }}</span>
-            </a>
         {% endif %}
 
         {% if button == 'close_dialog' %}

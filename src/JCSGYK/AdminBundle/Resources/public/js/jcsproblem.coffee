@@ -3,6 +3,7 @@
 ###
 JcsProblem =
     init: ->
+        JcsMenu.submenu()
         # init toggles
         JcsToggle.init("problemblock")
         HBlocks.setCloseButtons()

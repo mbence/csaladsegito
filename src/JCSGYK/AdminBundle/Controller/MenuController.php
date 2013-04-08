@@ -6,6 +6,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
+use JCSGYK\AdminBundle\Entity\Client;
+use JCSGYK\AdminBundle\Entity\Problem;
+
 class MenuController extends Controller
 {
     protected $menu = [
@@ -26,6 +29,124 @@ class MenuController extends Controller
         $user_menu = $this->checkMenu();
 
         return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', ['menu' => $user_menu]);
+    }
+
+    public function clientAction(Client $client)
+    {
+        $items = [
+            // client_histroy
+            [
+                'url'   => $this->generateUrl('client_history', ['id' => $client->getId()]),
+                'label' => 'esettörténet',
+                'title' => 'Esettörténet',
+                'class' => 'submenu',
+                'more'  => true,
+                'role'  => 'ROLE_USER',
+                'requirement' => true
+            ],
+            // archive_client
+            [
+                'url'   => $this->generateUrl('client_archive', ['id' => $client->getId()]),
+                'label' => 'archiválás',
+                'title' => 'Ügyfél archiválása',
+                'class' => 'submenu archive_client',
+                'more'  => true,
+                'role'  => 'ROLE_ADMIN',
+                'requirement' => $client->getIsArchived() == 0
+            ],
+            // reopen_client
+            [
+                'url'   => $this->generateUrl('client_archive', ['id' => $client->getId()]),
+                'label' => 'újranyitás',
+                'title' => 'Ügyfél újranyitása',
+                'class' => 'submenu archive_client',
+                'more'  => true,
+                'role'  => 'ROLE_ADMIN',
+                'requirement' => $client->getIsArchived() == 1
+            ],
+            // edit_client
+            [
+                'url'   => $this->generateUrl('client_edit', ['id' => $client->getId()]),
+                'label' => 'szerkesztés',
+                'title' => 'Ügyfél szerkesztése',
+                'class' => 'button edit_client',
+                'more'  => false,
+                'role'  => 'ROLE_USER',
+                'requirement' => $client->getIsArchived() == 0
+            ]
+        ];
+
+        return $this->subMenu($items);
+    }
+
+    public function problemAction(Problem $problem)
+    {
+        // 'problem_history', 'delete_problem', 'close_problem', 'edit_problem'
+
+        $items = [
+            // problem_history
+            [
+                'url'   => $this->generateUrl('client_history', ['id' => $problem->getClient()->getId(), 'problem_id' => $problem->getId()]),
+                'label' => 'esettörténet',
+                'title' => 'Esettörténet',
+                'class' => 'submenu',
+                'more'  => true,
+                'role'  => 'ROLE_USER',
+                'requirement' => true
+            ],
+            // delete problem
+            [
+                'url'   => $this->generateUrl('problem_delete', ['id' => $problem->getId()]),
+                'label' => 'törlés',
+                'title' => 'Probléma törlése',
+                'class' => 'submenu delete_problem',
+                'more'  => true,
+                'role'  => 'ROLE_USER',
+                'requirement' => $problem->getIsActive()
+            ],
+            // close problem
+            [
+                'url'   => $this->generateUrl('problem_close', ['id' => $problem->getId()]),
+                'label' => 'lezárás',
+                'title' => 'Probléma lezárása',
+                'class' => 'submenu close_problem',
+                'more'  => true,
+                'role'  => 'ROLE_USER',
+                'requirement' => !$problem->getClient()->getIsArchived() && $problem->getIsActive()
+            ],
+            // reopen problem
+            [
+                'url'   => $this->generateUrl('problem_close', ['id' => $problem->getId()]),
+                'label' => 'újranyitás',
+                'title' => 'Probléma újranyitása',
+                'class' => 'submenu close_problem',
+                'more'  => true,
+                'role'  => 'ROLE_USER',
+                'requirement' => !$problem->getClient()->getIsArchived() && !$problem->getIsActive()
+            ],
+        ];
+
+        return $this->subMenu($items);
+    }
+
+    protected function subMenu($items)
+    {
+        $sec = $this->get('security.context');
+        $menu = [];
+        $more = [];
+
+        foreach ($items as $item) {
+            if ($sec->isGranted($item['role']) && $item['requirement']) {
+                if (empty($item['more'])) {
+                    $menu[] = $item;
+                }
+                else {
+                    $more[] = $item;
+                }
+            }
+        };
+
+        return $this->render('JCSGYKAdminBundle:Elements:submenu.html.twig', ['menu' => $menu, 'more' => $more]);
     }
 
     /**

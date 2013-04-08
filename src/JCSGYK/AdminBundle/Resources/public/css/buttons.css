@@ -3,6 +3,7 @@
     border: 1px solid transparent;
 
     height: 27px;
+    min-width: 7px;
     padding: 0 12px;
     margin: 0 0 0 2px;
     cursor: pointer;
@@ -26,7 +27,7 @@
     display: table-cell;
     vertical-align: middle;
 }
-.button .icon {
+.button .icon, .morebutton .icon, .close .icon {
     width: 13px;
     height: 13px;
     display: inline-block;
@@ -34,7 +35,7 @@
 button.button span, button.greybutton span {
     padding-bottom: 2px;
 }
-a.button .icon {
+a.button .icon, .morebutton .icon  {
     margin: 6px 0 0 0;
 }
 button.button .icon {
@@ -99,7 +100,7 @@ button.button, button.greybutton {
     text-shadow: none;
 }
 
-.greybutton.animbutton, .greybutton.animbutton:hover {
+.greybutton.animbutton, .greybutton.animbutton:hover, .submenu.animbutton, .submenu.animbutton:hover  {
     background: url('../images/nf-loader.gif') no-repeat center, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f5f5f5), to(#f1f1f1));
     background: url('../images/nf-loader.gif') no-repeat center, -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
     background: url('../images/nf-loader.gif') no-repeat center, -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
@@ -126,4 +127,44 @@ button.button, button.greybutton {
 }
 .redtext span {
     color: #a33;
+}
+
+.morebutton {
+    position: relative;
+}
+.morebutton .sub-vertical {
+    display: none;
+    position: absolute;
+    top: 28px;
+    right: 0px;
+    border: 1px solid #ccc;
+    width: 140px;
+    background-color: #fff;
+    z-index: 900;
+    padding: 6px 0;
+    box-shadow: 0 1px 1px 1px rgba(0,0,0,0.1);
+}
+.morebutton span.icon {
+    background: url('../images/sprs.png') no-repeat -52px 0;
+    width: 7px;
+    height: 4px;
+    margin: 13px 0 0 5px;
+}
+.close span.icon {
+    background: url('../images/sprs.png') no-repeat -52px -11px;
+    width: 4px;
+    height: 7px;
+    margin: 11px 0 0 0;
+}
+.sub-vertical .submenu {
+    line-height: 25px;
+    display: block;
+    color: #656565;
+    text-align: left;
+    padding: 0 20px;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}
+
+.sub-vertical .submenu:hover {
+    background-color: #eee;
 }

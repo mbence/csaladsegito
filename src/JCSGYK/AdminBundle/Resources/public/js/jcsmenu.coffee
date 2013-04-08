@@ -8,6 +8,11 @@ JcsMenu =
         #JcsMenu.menu()
         JcsMenu.inquiry()
 
+        # close the vertical-submenus on click
+        $(document).on "click", ->
+            $(".sub-vertical").hide()
+
+
     ###
         Set up the menu tabs
     ###
@@ -56,4 +61,10 @@ JcsMenu =
                 )
 
             false
+        )
+
+    submenu: ->
+        $(".morebutton").off("click").on("click", (event) ->
+            event.stopPropagation()
+            $(".sub-vertical", this).toggle()
         )
