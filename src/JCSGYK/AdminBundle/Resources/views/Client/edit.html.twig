@@ -5,7 +5,8 @@
     {{ form_errors(form) }}
 
 {% include "JCSGYKAdminBundle:Client:_edit_personal_data.html.twig" %}
-<div class="problem_container" data-url="{{ path('client_problems', {id: client.id}) }}">
+
+<div class="problem_container" {% if client.id %}data-url="{{ path('client_problems', {id: client.id}) }}"{% endif %}>
     {% include "JCSGYKAdminBundle:Client:_problems.html.twig" with {notoggle: true} %}
 </div>
 
