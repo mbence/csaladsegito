@@ -1,6 +1,6 @@
 <div id="problem-id" data-problemid="{{ problem.id }}"></div>
 
-{% include "JCSGYKAdminBundle:Client:_buttons.html.twig"  with {'buttons': ['delete_problem', 'close_problem', 'edit_problem', 'close']} %}
+{% include "JCSGYKAdminBundle:Client:_buttons.html.twig"  with {'buttons': ['problem_history', 'delete_problem', 'close_problem', 'edit_problem', 'close']} %}
 
 {% if not problem.isActive %}
 <div class="archived bottompad25">Lezárt probléma, csak olvasható!</div>

@@ -1,4 +1,4 @@
-
+{% for problem in problems %}
 ==============================================
  Probléma:	{{ problem.title }}
  Felelős:	{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}
@@ -7,11 +7,11 @@
 
 ==============================================
 
-{% if events is defined and events|length %}{% for event in events %}
-[{{ event.eventDate|fdate('sd') }}]
-{{ event.description|nl2br }}
+{% if events is defined and events[problem.id] is defined and events[problem.id]|length %}{% for event in events[problem.id] %}
+[{{ event.eventDate|fdate('sd') }}] {{ event.description|nl2br }}
 
  ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 {% endfor %}
 {% else %}{{ 'Nincsen megjeleníthető esemény'|trans }}{% endif %}
+ {% endfor %}

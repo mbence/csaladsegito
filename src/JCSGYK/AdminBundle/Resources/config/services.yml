@@ -7,6 +7,10 @@ services:
         class:        JCSGYK\AdminBundle\Services\DataStore
         arguments:    ["@service_container"]
 
+    jcs.docx:
+        class:        JCSGYK\AdminBundle\Services\Docx
+        arguments:    ["@opentbs"]
+
     jcs.twig.adminextension:
         class:        JCSGYK\AdminBundle\Twig\AdminExtension
         arguments:    ["@translator", "@jcs.ds"]

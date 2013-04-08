@@ -98,7 +98,21 @@
             </a>
         {% endif %}
 
+        {# problem history #}
+        {% if button == 'problem_history' and client.id is defined and problem.id is defined %}
+            <a href="{{ path('client_history', {'id': client.id, 'problem_id' : problem.id}) }}" class="greybutton problem_history" title="{{ 'Esettörténet'|trans }}">
+                <span>{{ 'esettörténet'|trans }}</span>
+            </a>
+        {% endif %}
+
 {# Clients #}
+        {# client history #}
+        {% if button == 'client_histroy' and client.id is defined %}
+            <a href="{{ path('client_history', {'id': client.id}) }}" class="greybutton client_history" title="{{ 'Esettörténet'|trans }}">
+                <span>{{ 'esettörténet'|trans }}</span>
+            </a>
+        {% endif %}
+
         {# new client #}
         {% if button == 'new_client' %}
             <a href="{{ path('client_new') }}" class="button new_client" title="{{ 'Új ügyfél létrehozása'|trans }}"><span>{{ 'új ügyfél'|trans }}</span></a>

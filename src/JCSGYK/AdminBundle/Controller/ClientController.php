@@ -190,7 +190,7 @@ class ClientController extends Controller
         }
     }
 
-    public function getProblemsAction($id)
+    public function problemsAction($id)
     {
         if (!empty($id)) {
             $client = $this->getClient($id);
@@ -297,4 +297,54 @@ class ClientController extends Controller
 
         return $this->render('JCSGYKAdminBundle:Client:results.html.twig', ['clients' => $re, 'time' => $time, 'sql' => $sql, 'resnum' => count($re)]);
     }
+
+    public function historyAction($id, $problem_id = null)
+    {
+        if (!empty($id)) {
+            $client = $this->getClient($id);
+        }
+        if (!empty($client)) {
+            // get problems
+            if (is_null($problem_id)) {
+                $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id, 'ASC');
+            }
+            else {
+                $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->findBy(['id' => $problem_id, 'isDeleted' => 0]);
+            }
+            // get events
+            $problem_repo = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem');
+            $events = [];
+            foreach ($problems as $problem) {
+                $events[$problem->getId()] = $problem_repo->getEventList($problem->getId(), 'ASC');
+            }
+
+            $content = $this->renderView(
+                'JCSGYKAdminBundle:Elements:history.html.twig',
+                array('problems' => $problems, 'events' => $events)
+            );
+
+            $template = 'esemeny_lista.docx';
+
+            $fields = [
+                'client' => [
+                    'name' => 'Zuzu Petáz',
+                    'id' => 'Ü-1234',
+                    'birthdate' => '2013-10-12',
+                    'nonex' => 'ez nem lesz meg!'
+                ],
+                'doc' => [
+                    'date' => date('Y-m-d'),
+                    'body' => $content
+                ]
+            ];
+
+            $this->container->get('jcs.docx')->show($template, $fields, 'hello.docx');
+
+            exit;
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
+
 }
