@@ -155,7 +155,7 @@ button.button, button.greybutton {
     background: url('../images/sprs.png') no-repeat -52px -11px;
     width: 4px;
     height: 7px;
-    margin: 11px 0 0 0;
+    margin: 10px 0 0 0;
 }
 .sub-vertical .submenu {
     line-height: 25px;
