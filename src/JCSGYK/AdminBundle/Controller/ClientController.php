@@ -298,13 +298,26 @@ class ClientController extends Controller
         return $this->render('JCSGYKAdminBundle:Client:results.html.twig', ['clients' => $re, 'time' => $time, 'sql' => $sql, 'resnum' => count($re)]);
     }
 
+
+    /**
+     * Genarate a docx file with the case history of the client
+     * If no problem id given, then all the problems will be listed
+     * If a problem is is sopecified, then only that problem will be shown
+     *
+     * The generated docx file will be sent back as a downloadable file
+     *
+     * Uses the OpenTBS library with the OpenTBSBundle / jcs.docx service
+     *
+     * @param int $id Client ID
+     * @param int $problem_id Problem ID (optional)
+     */
     public function historyAction($id, $problem_id = null)
     {
         if (!empty($id)) {
             $client = $this->getClient($id);
         }
         if (!empty($client)) {
-            // get problems
+            // get all problems, or the specified problem if a $problem_id is provided
             if (is_null($problem_id)) {
                 $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id, 'ASC');
             }
@@ -312,12 +325,14 @@ class ClientController extends Controller
                 $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->findBy(['id' => $problem_id, 'isDeleted' => 0]);
             }
             // get events
+            // we cant use the Doctrine realtion to get the events, because we only need undeleted events and in ascending order
             $problem_repo = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem');
             $events = [];
             foreach ($problems as $problem) {
                 $events[$problem->getId()] = $problem_repo->getEventList($problem->getId(), 'ASC');
             }
 
+            // render the sub-template for the event list
             $content = $this->renderView(
                 'JCSGYKAdminBundle:Elements:history.html.twig',
                 array('problems' => $problems, 'events' => $events)
@@ -325,24 +340,33 @@ class ClientController extends Controller
 
             $template = 'esemeny_lista.docx';
 
+            // admin twig extension for formatting
+            $ae = $this->container->get('jcs.twig.adminextension');
+
+            // field map for the template
             $fields = [
                 'client' => [
-                    'name' => 'Zuzu Petáz',
-                    'id' => 'Ü-1234',
-                    'birthdate' => '2013-10-12',
-                    'nonex' => 'ez nem lesz meg!'
+                    'name' => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
+                    'id' => $ae->formatId($client->getId()),
+                    'birthdate' => $ae->formatDate($client->getBirthDate())
                 ],
                 'doc' => [
-                    'date' => date('Y-m-d'),
+                    'date' => $ae->formatDate(),
                     'body' => $content
                 ]
             ];
 
-            $this->container->get('jcs.docx')->show($template, $fields, 'hello.docx');
+            // file name is the client name, with the optional problem title
+            $file = $fields['client']['name'] . ' esettortenet' . (is_null($problem_id) ? '' : ' (' . $problem->getTitle() . ')');
+            // remove accented and special characters from the filename
+            $file = $ae->formatFilename($file) . '.docx';
+
+            $this->container->get('jcs.docx')->show($template, $fields, $file);
 
             exit;
         }
         else {
+            // wrong client id given, no fun
             throw new HttpException(400, "Bad request");
         }
     }

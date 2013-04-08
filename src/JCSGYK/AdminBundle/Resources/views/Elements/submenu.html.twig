@@ -18,8 +18,7 @@
             <div class="sub-vertical">
                 {% for item in more %}
                     {% spaceless %}
-                    <a href="{{item.url }}"
-                        {% if item.class is defined %} class="{{ item.class }}" {% endif %}
+                    <a href="{{item.url }}" class="submenu {{ item.class }}"
                         {% if item.title is defined %} title="{{ item.title|trans }}" {% endif %}
                         ><span>{{ item.label|trans }}</span></a>
                     {% endspaceless %}

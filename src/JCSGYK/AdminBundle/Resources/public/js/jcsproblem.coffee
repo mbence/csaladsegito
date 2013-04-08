@@ -41,7 +41,7 @@ JcsProblem =
 
             false
         )
-        JcsEvent.init()
+        # JcsEvent.init()
 
     initForm: ->
         # count the current debt records we have (e.g. 2), use that as the new
@@ -100,7 +100,6 @@ JcsProblem =
     initButtonRow: ->
         # get buttons
         $(".edit_problem").add(".back_to_problem").add(".new_problem").off('click').on 'click', (event) ->
-            event.stopPropagation()
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
                 HBlocks.scrollTo(3)
@@ -125,8 +124,6 @@ JcsProblem =
 
         # close problem
         $(".close_problem").on "click", (event) ->
-            event.stopPropagation()
-
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
 
@@ -134,6 +131,8 @@ JcsProblem =
                     $(this).removeClass('animbutton')
                     $(".modal .modal-content").html(data).show()
                     JcsProblem.initCloseProblem()
+                    # hide the submenu
+                    $(this).parent().hide()
 
                 ).error( (data) =>
                     # there was some error :(
@@ -144,8 +143,6 @@ JcsProblem =
 
         # delete problem
         $(".delete_problem").on "click", (event) ->
-            event.stopPropagation()
-
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
 
@@ -153,6 +150,8 @@ JcsProblem =
                     $(this).removeClass('animbutton')
                     $(".modal .modal-content").html(data).show()
                     JcsProblem.initDeleteProblem()
+                    # hide the submenu
+                    $(this).parent().hide()
 
                 ).error( (data) =>
                     # there was some error :(

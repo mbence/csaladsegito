@@ -22,6 +22,7 @@ class AdminExtension extends \Twig_Extension
             'fphone' => new \Twig_Filter_Method($this, 'formatPhone'),
             'gender' => new \Twig_Filter_Method($this, 'gender'),
             'fcurr' => new \Twig_Filter_Method($this, 'formatCurrency'),
+            'cid' => new \Twig_Filter_Method($this, 'formatId'),
         ];
     }
 
@@ -32,6 +33,18 @@ class AdminExtension extends \Twig_Extension
             'param' => new \Twig_Function_Method($this, 'getParam'),
             'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
         );
+    }
+
+    public function formatId($val)
+    {
+        return 'Ü-' . str_pad($val, 5, '0', STR_PAD_LEFT);
+    }
+
+    public function formatFilename($in)
+    {
+        $tr = array('á' => 'a', 'Á' => 'A', 'é' => 'e', 'É' => 'E', 'í' => 'i', 'Í' => 'I', 'ó' => 'o', 'Ó' => 'O', 'ö' => 'o', 'Ö' => 'O', 'ő' => 'o', 'Ő' => 'O', 'ú' => 'u', 'Ú' => 'U', 'ü' => 'u', 'Ü' => 'U', 'ű' => 'u', 'Ű' => 'U', ' ' => '_', '.' => '');
+
+        return str_replace(array_keys($tr), array_values($tr), $in);
     }
 
     public function check($val)

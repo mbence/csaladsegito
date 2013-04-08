@@ -1,6 +1,6 @@
 <div id="event-id" data-eventid="{{ event.id }}"></div>
 
-{% include "JCSGYKAdminBundle:Client:_buttons.html.twig"  with {'buttons': ['delete_event', 'edit_event', 'close']} %}
+{% render(controller('JCSGYKAdminBundle:Menu:event', { 'event': event })) %}
 
 {% if not event.getProblem.isActive %}
 <div class="archived bottompad25">Csak olvasható!</div>

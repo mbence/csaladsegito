@@ -3,6 +3,7 @@
 ###
 JcsEvent =
     init: ->
+        JcsMenu.submenu()
         # init toggles
         JcsToggle.init("eventblock")
         HBlocks.scrollTo(4)
@@ -65,8 +66,6 @@ JcsEvent =
 
         # delete event
         $(".delete_event").on "click", (event) ->
-            event.stopPropagation()
-
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
 
@@ -74,6 +73,8 @@ JcsEvent =
                     $(this).removeClass('animbutton')
                     $(".modal .modal-content").html(data).show()
                     JcsEvent.initDeleteEvent()
+                    # hide the submenu
+                    $(this).parent().hide()
 
                 ).error( (data) =>
                     # there was some error :(

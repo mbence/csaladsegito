@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\Problem;
+use JCSGYK\AdminBundle\Entity\Event;
 
 class MenuController extends Controller
 {
@@ -39,7 +40,7 @@ class MenuController extends Controller
                 'url'   => $this->generateUrl('client_history', ['id' => $client->getId()]),
                 'label' => 'esettörténet',
                 'title' => 'Esettörténet',
-                'class' => 'submenu',
+                'class' => '',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
                 'requirement' => true
@@ -49,7 +50,7 @@ class MenuController extends Controller
                 'url'   => $this->generateUrl('client_archive', ['id' => $client->getId()]),
                 'label' => 'archiválás',
                 'title' => 'Ügyfél archiválása',
-                'class' => 'submenu archive_client',
+                'class' => 'archive_client',
                 'more'  => true,
                 'role'  => 'ROLE_ADMIN',
                 'requirement' => $client->getIsArchived() == 0
@@ -59,7 +60,7 @@ class MenuController extends Controller
                 'url'   => $this->generateUrl('client_archive', ['id' => $client->getId()]),
                 'label' => 'újranyitás',
                 'title' => 'Ügyfél újranyitása',
-                'class' => 'submenu archive_client',
+                'class' => 'archive_client',
                 'more'  => true,
                 'role'  => 'ROLE_ADMIN',
                 'requirement' => $client->getIsArchived() == 1
@@ -81,35 +82,23 @@ class MenuController extends Controller
 
     public function problemAction(Problem $problem)
     {
-        // 'problem_history', 'delete_problem', 'close_problem', 'edit_problem'
-
         $items = [
             // problem_history
             [
                 'url'   => $this->generateUrl('client_history', ['id' => $problem->getClient()->getId(), 'problem_id' => $problem->getId()]),
                 'label' => 'esettörténet',
                 'title' => 'Esettörténet',
-                'class' => 'submenu',
+                'class' => '',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
                 'requirement' => true
-            ],
-            // delete problem
-            [
-                'url'   => $this->generateUrl('problem_delete', ['id' => $problem->getId()]),
-                'label' => 'törlés',
-                'title' => 'Probléma törlése',
-                'class' => 'submenu delete_problem',
-                'more'  => true,
-                'role'  => 'ROLE_USER',
-                'requirement' => $problem->getIsActive()
             ],
             // close problem
             [
                 'url'   => $this->generateUrl('problem_close', ['id' => $problem->getId()]),
                 'label' => 'lezárás',
                 'title' => 'Probléma lezárása',
-                'class' => 'submenu close_problem',
+                'class' => 'close_problem',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
                 'requirement' => !$problem->getClient()->getIsArchived() && $problem->getIsActive()
@@ -119,10 +108,58 @@ class MenuController extends Controller
                 'url'   => $this->generateUrl('problem_close', ['id' => $problem->getId()]),
                 'label' => 'újranyitás',
                 'title' => 'Probléma újranyitása',
-                'class' => 'submenu close_problem',
+                'class' => 'close_problem',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
                 'requirement' => !$problem->getClient()->getIsArchived() && !$problem->getIsActive()
+            ],
+            // delete problem
+            [
+                'url'   => $this->generateUrl('problem_delete', ['id' => $problem->getId()]),
+                'label' => 'törlés',
+                'title' => 'Probléma törlése',
+                'class' => 'delete_problem',
+                'more'  => true,
+                'role'  => 'ROLE_USER',
+                'requirement' => $problem->getIsActive()
+            ],
+            // edit problem
+            [
+                'url'   => $this->generateUrl('problem_edit', ['client_id' => $problem->getClient()->getId(), 'id' => $problem->getId()]),
+                'label' => 'szerkesztés',
+                'title' => 'Probléma szerkesztése',
+                'class' => 'button edit_problem',
+                'more'  => false,
+                'role'  => 'ROLE_USER',
+                'requirement' => $problem->getIsActive()
+            ],
+        ];
+
+        return $this->subMenu($items);
+    }
+
+    public function eventAction(Event $event)
+    {
+        $items = [
+            // delete event
+            [
+                'url'   => $this->generateUrl('event_delete', ['id' => $event->getId()]),
+                'label' => 'törlés',
+                'title' => 'Esemény törlése',
+                'class' => 'delete_event',
+                'more'  => true,
+                'role'  => 'ROLE_USER',
+                'requirement' => $event->getProblem()->getIsActive()
+            ],
+            // edit event
+            [
+                'url'   => $this->generateUrl('event_edit', ['id' => $event->getId(), 'problem_id' => $event->getProblem()->getId()]),
+                'label' => 'szerkesztés',
+                'title' => 'Esemény szerkesztése',
+                'class' => 'button edit_event',
+                'more'  => false,
+                'role'  => 'ROLE_USER',
+                'requirement' => $event->getProblem()->getIsActive()
             ],
         ];
 

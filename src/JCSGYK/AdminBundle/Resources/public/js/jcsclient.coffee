@@ -169,6 +169,8 @@ JcsClient =
                     $(this).removeClass('animbutton')
                     $(".modal .modal-content").html(data).show()
                     JcsClient.initArchive()
+                    # hide the submenu
+                    $(this).parent().hide()
 
                 ).error( (data) =>
                     # there was some error :(

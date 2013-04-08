@@ -16,7 +16,7 @@
     <table class="client" cellspacing="0" border="0">
         <tr>
             <th>{{ 'Ügyfélszám'|trans }}:</th>
-            <td>{{ client.id }}</td>
+            <td>{{ client.id|cid }}</td>
             <th>{{ 'Nem'|trans }}:</th>
             <td>{{ client.gender|gender|trans }}</td>
         </tr>
