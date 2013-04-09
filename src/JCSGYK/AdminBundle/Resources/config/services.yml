@@ -9,7 +9,7 @@ services:
 
     jcs.docx:
         class:        JCSGYK\AdminBundle\Services\Docx
-        arguments:    ["@opentbs"]
+        arguments:    ["@opentbs", "@jcs.twig.adminextension"]
 
     jcs.twig.adminextension:
         class:        JCSGYK\AdminBundle\Twig\AdminExtension

@@ -34,13 +34,11 @@
         </tr>
         <tr>
             <th>{{ 'Lakóhely'|trans }}:</th>
-            <td colspan="3">{{ client.zipCode }} {{ client.city }}, {{ client.street }} {{ client.streetType }} {{ client.streetNumber }}
-            {% if client.flatNumber %}({{ client.flatNumber }}){% endif %}</td>
+            <td colspan="3">{{ faddr(client.zipCode, client.city, client.street, client.streetType, client.streetNumber, client.flatNumber) }}</td>
         </tr>
         <tr>
             <th>{{ 'Tartózkodási hely'|trans }}:</th>
-            <td colspan="3">{{ client.locationZipCode }} {{ client.locationCity }}, {{ client.locationStreet }} {{ client.locationStreetType }} {{ client.locationStreetNumber }}
-            {% if client.locationFlatNumber %}({{ client.locationFlatNumber }}){% endif %}</td>
+            <td colspan="3">{{ faddr(client.locationZipCode, client.locationCity, client.locationStreet, client.locationStreetType, client.locationStreetNumber, client.locationFlatNumber) }}</td>
         </tr>
     {# Kapcsolat #}
         {% if client.mobile or client.phone %}

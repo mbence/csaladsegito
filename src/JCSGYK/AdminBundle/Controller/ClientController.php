@@ -344,24 +344,18 @@ class ClientController extends Controller
             $ae = $this->container->get('jcs.twig.adminextension');
 
             // field map for the template
-            $fields = [
-                'client' => [
-                    'name' => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
-                    'id' => $ae->formatId($client->getId()),
-                    'birthdate' => $ae->formatDate($client->getBirthDate())
-                ],
-                'doc' => [
-                    'date' => $ae->formatDate(),
-                    'body' => $content
-                ]
+            $data = [
+                'client' => $client,
+                'history' => $content,
             ];
 
             // file name is the client name, with the optional problem title
-            $file = $fields['client']['name'] . ' esettortenet' . (is_null($problem_id) ? '' : ' (' . $problem->getTitle() . ')');
+            $file = $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle());
+            $file .= ' esettortenet' . (is_null($problem_id) ? '' : ' (' . $problem->getTitle() . ')');
             // remove accented and special characters from the filename
             $file = $ae->formatFilename($file) . '.docx';
 
-            $this->container->get('jcs.docx')->show($template, $fields, $file);
+            $this->container->get('jcs.docx')->show($template, $data, $file);
 
             exit;
         }

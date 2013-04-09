@@ -32,6 +32,7 @@ class AdminExtension extends \Twig_Extension
             'fname' => new \Twig_Function_Method($this, 'formatName'),
             'param' => new \Twig_Function_Method($this, 'getParam'),
             'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
+            'faddr' => new \Twig_Function_Method($this, 'formatAddress'),
         );
     }
 
@@ -73,6 +74,27 @@ class AdminExtension extends \Twig_Extension
         $re = '';
         $re .= $title ? $title . ' ' : '';
         $re .= $lastname . ' ' . $firstname;
+
+        return $re;
+    }
+
+    /**
+     * Address formatter
+     *
+     * @param string $zipCode
+     * @param string $city
+     * @param string $street
+     * @param string $streetType
+     * @param string $streetNumber
+     * @param string $flatNumber
+     * @return string The formatted address
+     */
+    public function formatAddress($zipCode, $city, $street, $streetType, $streetNumber, $flatNumber = '')
+    {
+        $re = sprintf('%s %s, %s %s %s', $zipCode, $city, $street, $streetType, $streetNumber);
+        if (!empty($flatNumber)) {
+            $re .= sprintf(' (%s)', $flatNumber);
+        }
 
         return $re;
     }
