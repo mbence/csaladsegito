@@ -11,6 +11,8 @@ use JMS\SecurityExtraBundle\Annotation\Secure;
 use JCSGYK\AdminBundle\Entity\User;
 use JCSGYK\AdminBundle\Entity\Parameter;
 use JCSGYK\AdminBundle\Form\Type\UserType;
+use JCSGYK\AdminBundle\Entity\Template;
+use JCSGYK\AdminBundle\Form\Type\TemplateType;
 
 class AdminController extends Controller
 {
@@ -169,7 +171,7 @@ class AdminController extends Controller
     public function updateAction()
     {
         $request = $this->getRequest();
-        
+
         $ex = [];
         $re = [];
         $session = $this->get('session');
@@ -204,5 +206,101 @@ class AdminController extends Controller
             $session->remove('update');
         }
         return $this->render('JCSGYKAdminBundle:Admin:update.html.twig', ['result' => $re]);
+    }
+
+
+    /**
+     * Edit and upload document templates
+     */
+    public function templatesAction($id = null)
+    {
+        $template = null;
+        $form_view = null;
+
+        $request = $this->getRequest();
+
+        $em = $this->getDoctrine()->getManager();
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+
+        if ('new' == $id) {
+            // new template
+            $template = new Template;
+            $template->setCompanyId($company_id);
+        }
+        elseif (!is_null($id)) {
+            $template = $em->getRepository('JCSGYKAdminBundle:Template')
+                ->findOneBy(['id' => $id, 'companyId' => $company_id]);
+        }
+
+        if (is_null($id) || !empty($template)) {
+
+            if (!empty($template)) {
+                $form = $this->createForm(new TemplateType(), $template);
+            }
+
+            // save the template
+            if ($request->isMethod('POST')) {
+
+                $form->bind($request);
+
+                if ($form->isValid()) {
+
+                    $template->setModifiedAt(new \DateTime());
+
+                    if (is_null($template->getId())) {
+                        //$em->persist($template);
+                    }
+
+                    $em->flush();
+
+                    $this->get('session')->setFlash('notice', 'Nyomtatvány elmentve');
+
+                    return $this->redirect($this->generateUrl('admin_templates', ['id' => $template->getId()]));
+                }
+            }
+
+            if (!empty($form)) {
+                $form_view = $form->createView();
+            }
+            // get all templates
+            $templates = $em->getRepository('JCSGYKAdminBundle:Template')->findBy([], ['name' => 'ASC']);;
+
+            return $this->render('JCSGYKAdminBundle:Admin:templates.html.twig', ['templates' => $templates, 'act' => $template, 'form' => $form_view]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
+
+    /**
+     * Download document templates
+     */
+    public function templatesDownloadAction($id = null)
+    {
+        if (!empty($id)) {
+            $em = $this->getDoctrine()->getManager();
+            $template = $em->getRepository('JCSGYKAdminBundle:Template')->find($id);
+        }
+
+        if (!empty($template)) {
+
+            $docpath = $template->getAbsolutePath();
+
+            if (!file_exists($docpath)) {
+                throw new HttpException(400, "Bad request");
+            }
+
+            $response = new Response();
+
+            $response->headers->set('Content-Type', $template->getMimeType());
+            $response->headers->set('Content-Disposition', 'attachment;filename="' . $template->getOriginalName());
+
+            $response->setContent(file_get_contents($docpath));
+
+            return $response;
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
     }
 }

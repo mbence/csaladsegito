@@ -505,29 +505,29 @@ table.problem-list td {
 }
 
 /* parameters */
-#parameter-groups {
+#parameter-groups, #template-list {
     width: 260px;
 }
-#parameter-groups ul li {
+#parameter-groups ul li, #template-list a.tpl-list {
     text-align: right;
-    /*line-height: 24px;*/
     border-bottom: 1px solid #CCCCCC;
     color: #3344AA;
     cursor: pointer;
     font-size: 13px;
     padding: 5px 10px;
+    display: block;
 }
-#parameter-groups ul li:hover {
+#parameter-groups ul li:hover, #template-list a.tpl-list:hover  {
     background-color: #f5f5f5;
 }
-#parameter-groups ul li.current {
+#parameter-groups ul li.current, #template-list a.tpl-list.current {
     background-color: #e6e6e6 !important;
 }
 #parameter-lists {
     width: 440px;
     display: none;
 }
-#parameter-lists .formbuttons {
+#parameter-lists .formbuttons, #template-edit .formbuttons {
     margin: 20px 0 0 0;
     text-align: right;
 }
@@ -553,6 +553,15 @@ table.problem-list td {
 #newparam-template {
     display: none;
 }
+
+/* Templates */
+.template-top {
+    width: 700px;
+}
+#template-edit {
+    width: 440px;
+}
+
 .inquiry-stats {
     float: right;
     width: 320px

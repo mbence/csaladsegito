@@ -10,19 +10,21 @@ use JCSGYK\AdminBundle\Entity\Client;
  */
 class Docx
 {
-    private $template_dir;
-
     /** OpenTBS service */
     private $tbs;
     /** Admin twig extension for formatting */
     private $ae;
+    /** Doctrine Entity Manager */
+    private $em;
+
 
     /** Constructor */
-    public function __construct($tbs, $ae)
+    public function __construct($tbs, $ae, $em)
     {
-        $this->template_dir = __DIR__ . '/../Resources/templates/';
         $this->tbs = $tbs;
+        //$this->tbs->SetOption(['chr_open'=>'{{', 'chr_close'=>'}}']);
         $this->ae = $ae;
+        $this->em = $em;
     }
 
     /**
@@ -32,9 +34,15 @@ class Docx
      * @param array $data Array of merge fields
      * @param string $file Filename with extension
      */
-    public function show($template, $data, $file)
+    public function show($template_id, $data, $file)
     {
-        $this->tbs->LoadTemplate($this->template_dir . $template, OPENTBS_ALREADY_UTF8); // OPENTBS_DEFAULT, OPENTBS_ALREADY_UTF8, OPENTBS_ALREADY_XML
+        $template = $this->em->getRepository('JCSGYKAdminBundle:Template')->find($template_id);
+
+        if (empty($template)) {
+            return false;
+        }
+
+        $this->tbs->LoadTemplate($template->getAbsolutePath(), OPENTBS_ALREADY_UTF8); // OPENTBS_DEFAULT, OPENTBS_ALREADY_UTF8, OPENTBS_ALREADY_XML
 
         // get the field map
         $fields = $this->getMap($data);

@@ -1,0 +1,45 @@
+Template:
+    type: entity
+    table: template
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        companyId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: company_id
+        name:
+            type: string
+            length: 64
+            fixed: false
+            nullable: true
+        original_name:
+            type: string
+            length: 64
+            fixed: false
+            nullable: true
+        mime_type:
+            type: string
+            length: 32
+            fixed: false
+            nullable: true
+        path:
+            type: string
+            length: 64
+            fixed: false
+            nullable: true
+        isActive:
+            type: boolean
+            nullable: true
+            column: is_active
+        modifiedAt:
+            type: datetime
+            nullable: true
+            column: modified_at
+    lifecycleCallbacks: {  }

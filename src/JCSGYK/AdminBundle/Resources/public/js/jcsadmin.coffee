@@ -13,6 +13,20 @@ JcsAdmin =
         if $("#parameter-groups").length
             @setupParams()
 
+        # tempaltes
+        if $("#template-edit").length
+            @setupTemplates()
+
+
+
+    ###
+        setup the template editor
+    ###
+    setupTemplates: ->
+        # cancel button
+        $("#template-edit .cancel").click ->
+            document.location = $(this).attr('href')
+
     ###
         setup the parameter editor
     ###

@@ -338,8 +338,6 @@ class ClientController extends Controller
                 array('problems' => $problems, 'events' => $events)
             );
 
-            $template = 'esemeny_lista.docx';
-
             // admin twig extension for formatting
             $ae = $this->container->get('jcs.twig.adminextension');
 
@@ -355,7 +353,11 @@ class ClientController extends Controller
             // remove accented and special characters from the filename
             $file = $ae->formatFilename($file) . '.docx';
 
-            $this->container->get('jcs.docx')->show($template, $data, $file);
+            $send = $this->container->get('jcs.docx')->show(2, $data, $file);
+
+            if (!$send) {
+                throw new HttpException(400, "Bad request");
+            }
 
             exit;
         }

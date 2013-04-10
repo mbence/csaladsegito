@@ -9,9 +9,11 @@
 
 {% if events is defined and events[problem.id] is defined and events[problem.id]|length %}{% for event in events[problem.id] %}
 [{{ event.eventDate|fdate('sd') }}] {{ event.description|nl2br }}
+{% if not loop.last %}
 
  ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
+{% endif %}
 {% endfor %}
 {% else %}
 {{ 'Nincsen megjeleníthető esemény'|trans }}

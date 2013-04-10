@@ -77,18 +77,21 @@ inquiry_stat:
 admin_home:
     pattern:  /admin
     defaults: { _controller: JCSGYKAdminBundle:Admin:index }
-# Admin Users #
 admin_users:
     pattern:  /admin/users/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:users, id: null }
-# Admin Params #
 admin_params:
     pattern:  /admin/params/{group}
     defaults: { _controller: JCSGYKAdminBundle:Admin:params, group: 1 }
-# Admin Systemupdate #
 admin_update:
     pattern:  /admin/update
     defaults: { _controller: JCSGYKAdminBundle:Admin:update }
+admin_templates:
+    pattern:  /admin/templates/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:templates, id: null }
+admin_templates_download:
+    pattern:  /admin/templates/download/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:templatesDownload, id: null }
 
 login_redirector:
     pattern:   /loginredirector
