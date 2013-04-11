@@ -27,6 +27,9 @@ client_problems:
 client_history:
     pattern:  /clients/history/{id}/{problem_id}
     defaults: { _controller: JCSGYKAdminBundle:Client:history, problem_id: null }
+client_templates:
+    pattern:  /clients/templates/{id}/{template_id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:templates, id: null, template_id: null }
 
 
 # Problem #

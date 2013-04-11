@@ -347,13 +347,7 @@ class ClientController extends Controller
                 'history' => $content,
             ];
 
-            // file name is the client name, with the optional problem title
-            $file = $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle());
-            $file .= ' esettortenet' . (is_null($problem_id) ? '' : ' (' . $problem->getTitle() . ')');
-            // remove accented and special characters from the filename
-            $file = $ae->formatFilename($file) . '.docx';
-
-            $send = $this->container->get('jcs.docx')->show(2, $data, $file);
+            $send = $this->container->get('jcs.docx')->show(2, $data);
 
             if (!$send) {
                 throw new HttpException(400, "Bad request");
@@ -367,4 +361,95 @@ class ClientController extends Controller
         }
     }
 
+    public function templatesAction($id = null, $template_id = null)
+    {
+        $request = $this->getRequest();
+
+        if (!empty($id)) {
+            // get the client
+            $client = $this->getClient($id);
+            if (empty($client)) {
+                throw new HttpException(400, "Bad request");
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            $company_id = $this->container->get('jcs.ds')->getCompanyId();
+
+            if (is_null($template_id)) {
+                // get all active templates of this company
+                $templates = $em->getRepository('JCSGYKAdminBundle:Template')->findBy(['companyId' => $company_id, 'isActive' => true], ['name' => 'ASC']);;
+
+                return $this->render('JCSGYKAdminBundle:Dialog:client_templates.html.twig', [
+                    'client' => $client,
+                    'templates' => $templates
+                ]);
+            }
+            else {
+                // generate a specific document
+
+                if (1 == $template_id) {
+                    // ACST kérelem
+                    $data = $this->getDebtData($client);
+                }
+                elseif (2 == $template_id) {
+                    // Esettörténet
+                    $data = $this->getHistoryData($client);
+                }
+                else {
+                    $data = ['client' => $client];
+                }
+
+                $send = $this->container->get('jcs.docx')->show($template_id, $data);
+
+                if (!$send) {
+                    throw new HttpException(400, "Bad request");
+                }
+
+                exit;
+            }
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
+
+    private function getHistoryData(Client $client)
+    {
+        // get all problems
+        $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($client->getId(), 'ASC');
+
+        // get events
+        // we cant use the Doctrine realtion to get the events, because we only need undeleted events and in ascending order
+        $problem_repo = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem');
+        $events = [];
+        foreach ($problems as $problem) {
+            $events[$problem->getId()] = $problem_repo->getEventList($problem->getId(), 'ASC');
+        }
+
+        // render the sub-template for the event list
+        $content = $this->renderView(
+            'JCSGYKAdminBundle:Elements:history.html.twig',
+            array('problems' => $problems, 'events' => $events)
+        );
+
+        // return the field map for the template
+        return ['client' => $client, 'history' => $content];
+    }
+
+
+    /**
+     * finds all the active problems, and get the debts
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $client
+     * @return array
+     */
+    private function getDebtData(Client $client)
+    {
+        // find all active problems
+        $problems = $em->getRepository('JCSGYKAdminBundle:Problem')->findBy(['client' => $client, 'isActive' => true, 'isDeleted' => false], ['name' => 'ASC']);
+
+        
+
+        return ['client' => $client];
+    }
 }

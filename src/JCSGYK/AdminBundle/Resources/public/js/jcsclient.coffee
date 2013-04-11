@@ -159,7 +159,7 @@ JcsClient =
             false
 
         # archive
-        $(".archive_client").on "click", (event) ->
+        $(".archive_client").add(".client_templates").on "click", (event) ->
             event.stopPropagation()
 
             if !$(this).hasClass('animbutton')

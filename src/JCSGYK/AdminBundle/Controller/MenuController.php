@@ -46,6 +46,16 @@ class MenuController extends Controller
                 'role'  => 'ROLE_USER',
                 'requirement' => true
             ],
+            // client_templates
+            [
+                'url'   => $this->generateUrl('client_templates', ['id' => $client->getId()]),
+                'label' => 'nyomtatványok',
+                'title' => 'Nyomtatványok készítése',
+                'class' => 'client_templates',
+                'more'  => true,
+                'role'  => 'ROLE_USER',
+                'requirement' => true
+            ],
             // archive_client
             [
                 'url'   => $this->generateUrl('client_archive', ['id' => $client->getId()]),

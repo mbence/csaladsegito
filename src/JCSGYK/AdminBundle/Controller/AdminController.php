@@ -248,7 +248,7 @@ class AdminController extends Controller
                     $template->setModifiedAt(new \DateTime());
 
                     if (is_null($template->getId())) {
-                        //$em->persist($template);
+                        $em->persist($template);
                     }
 
                     $em->flush();
@@ -263,9 +263,9 @@ class AdminController extends Controller
                 $form_view = $form->createView();
             }
             // get all templates
-            $templates = $em->getRepository('JCSGYKAdminBundle:Template')->findBy([], ['name' => 'ASC']);;
+            $templates = $em->getRepository('JCSGYKAdminBundle:Template')->findBy(['companyId' => $company_id], ['name' => 'ASC']);;
 
-            return $this->render('JCSGYKAdminBundle:Admin:templates.html.twig', ['templates' => $templates, 'act' => $template, 'form' => $form_view]);
+            return $this->render('JCSGYKAdminBundle:Admin:templates.html.twig', ['templates' => $templates, 'id' => $id, 'act' => $template, 'form' => $form_view]);
         }
         else {
             throw new HttpException(400, "Bad request");

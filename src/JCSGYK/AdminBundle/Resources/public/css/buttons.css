@@ -114,6 +114,7 @@ button.button, button.greybutton {
 .animbutton span, .animbutton.redtext span {
     background-image: none !important;
     color: transparent;
+    text-shadow: none;
 }
 
 /* button icons */

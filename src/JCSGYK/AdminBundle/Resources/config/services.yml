@@ -9,7 +9,7 @@ services:
 
     jcs.docx:
         class:        JCSGYK\AdminBundle\Services\Docx
-        arguments:    ["@opentbs", "@jcs.twig.adminextension", "@doctrine.orm.entity_manager"]
+        arguments:    ["@service_container"]
 
     jcs.twig.adminextension:
         class:        JCSGYK\AdminBundle\Twig\AdminExtension

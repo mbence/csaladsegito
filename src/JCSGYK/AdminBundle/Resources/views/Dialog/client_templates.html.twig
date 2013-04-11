@@ -1,0 +1,26 @@
+{# Document Templates #}
+
+<h1 class="client center">{{ 'Nyomtatványok készítése'|trans }}</h1>
+
+<table class="client" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Név'|trans }}:</th>
+        <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
+    </tr>
+    <tr>
+        <th>{{ 'Ügyfélszám'|trans }}:</th>
+        <td>{{ client.id|cid }}</td>
+    </tr>
+</table>
+
+<div class="client-template-list">
+    {% for tpl in templates %}
+        <a href="{{ path('client_templates', {'id': client.id, 'template_id': tpl.id}) }}" class="tpl-list">
+            {{ tpl.name }}
+        </a>
+    {% endfor %}
+</div>
+
+<div class="toppad10 center">
+    <button title="{{ 'Bezárás'|trans }}" class="close greybutton" type="reset"><span>{{ 'bezárás'|trans }}</span></button>
+</div>

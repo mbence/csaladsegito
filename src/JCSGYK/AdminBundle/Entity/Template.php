@@ -297,7 +297,12 @@ class Template
         if (null !== $this->getFile()) {
             // do whatever you want to generate a unique name
             $filename = sha1(uniqid(mt_rand(), true));
-            $this->path = $filename . '.' . $this->getFile()->guessExtension();
+            // get the original extension
+            $orig_name = $this->getFile()->getClientOriginalName();
+            $last_dot = strrpos($orig_name, '.');
+            $ext = $last_dot === false ? $this->getFile()->guessExtension() : substr($orig_name, $last_dot + 1);
+
+            $this->path = $filename . '.' . $ext;
             $this->setOriginalName($this->getFile()->getClientOriginalName());
             $this->setMimeType($this->getFile()->getClientMimeType());
         }
