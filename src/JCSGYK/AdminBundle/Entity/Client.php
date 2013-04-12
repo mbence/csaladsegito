@@ -389,9 +389,9 @@ class Client
     private $isArchived;
 
     /**
-     * @ORM\OneToMany(targetEntity="Utilityprovider", mappedBy="client")
+     * @ORM\OneToMany(targetEntity="UtilityproviderClientnumber", mappedBy="client")
      */
-    private $utilityproviders;
+    private $utilityprovidernumbers;
 
     /**
      * @ORM\OneToMany(targetEntity="Problem", mappedBy="client")
@@ -407,7 +407,7 @@ class Client
 
     public function __construct()
     {
-        $this->utilityproviders = new ArrayCollection();
+        $this->utilityprovidernumbers = new ArrayCollection();
         $this->problems = new ArrayCollection();
         $this->archives = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
@@ -1619,48 +1619,48 @@ class Client
     }
 
     /**
-     * Add utilityproviders
+     * Add utilityprovidernumber
      *
-     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
+     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityprovidernumber
      * @return Client
      */
-    public function addUtilityprovider(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
+    public function addUtilityprovidernumber(\JCSGYK\AdminBundle\Entity\UtilityproviderClientnumber $utilityprovidernumber)
     {
-        $this->utilityproviders[] = $utilityproviders;
+        $this->utilityprovidernumbers[] = $utilityprovidernumber;
 
         return $this;
     }
 
     /**
-     * Remove utilityproviders
+     * Remove utilityprovidernumber
      *
-     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders
+     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityprovidernumber
      */
-    public function removeUtilityprovider(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityproviders)
+    public function removeUtilityprovidernumber(\JCSGYK\AdminBundle\Entity\UtilityproviderClientnumber $utilityprovidernumber)
     {
-        $this->utilityproviders->removeElement($utilityproviders);
+        $this->utilityprovidernumbers->removeElement($utilityprovidernumber);
     }
 
     /**
-     * Set utilityproviders
+     * Set utilityprovidernumbers
      *
      * @return Client
      */
-    public function setUtilityproviders(ArrayCollection $utilityproviders)
+    public function setUtilityprovidernumbers(ArrayCollection $utilityprovidernumbers)
     {
-        $this->utilityproviders = $utilityproviders;
+        $this->utilityprovidernumbers = $utilityprovidernumbers;
 
         return $this;
     }
 
     /**
-     * Get utilityproviders
+     * Get utilityprovidernumbers
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUtilityproviders()
+    public function getUtilityprovidernumbers()
     {
-        return $this->utilityproviders;
+        return $this->utilityprovidernumbers;
     }
 
     /**

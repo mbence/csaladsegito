@@ -132,10 +132,10 @@ class Docx
 
         // utility provider ids
         $providers = $this->container->get('jcs.ds')->getGroup(2);
-        $client_provider_ids = $client->getUtilityproviders();
+        $client_provider_ids = $client->getUtilityprovidernumbers();
         $prids = [];
         foreach ($client_provider_ids as $pid) {
-            $prids[$pid->getType()] = $pid->getValue();
+            $prids[$pid->getUtilityproviderId()] = $pid->getValue();
         }
 
         foreach ($providers as $pr_id => $pr_name) {

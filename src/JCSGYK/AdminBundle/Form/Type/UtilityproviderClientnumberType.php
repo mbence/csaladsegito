@@ -4,10 +4,11 @@ namespace JCSGYK\AdminBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Doctrine\ORM\EntityRepository;
 
 use JCSGYK\AdminBundle\Services\DataStore;
 
-class UtilityproviderType extends AbstractType
+class UtilityproviderClientnumberType extends AbstractType
 {
     protected $ds;
 
@@ -23,9 +24,17 @@ class UtilityproviderType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('type', 'choice', [
+        $builder->add('utilityprovider', 'entity', [
             'label' => '',
-            'choices' => $this->ds->getGroup(2),
+            'class' => 'JCSGYKAdminBundle:Utilityprovider',
+            'property' => 'name',
+            'query_builder' => function(EntityRepository $er) {
+                return $er->createQueryBuilder('u')
+                    ->where('u.isActive=1')
+                    ->andwhere('u.companyId=:company')
+                    ->setParameter('company', $this->ds->getCompanyId())
+                    ->orderBy('u.name', 'ASC');
+            },
         ]);
         $builder->add('value', 'text', ['label' => '']);
     }
@@ -33,12 +42,12 @@ class UtilityproviderType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'JCSGYK\AdminBundle\Entity\Utilityprovider',
+            'data_class' => 'JCSGYK\AdminBundle\Entity\UtilityproviderClientnumber',
         ));
     }
 
     public function getName()
     {
-        return 'utilityprovier';
+        return 'utilityprovierclientnumber';
     }
 }

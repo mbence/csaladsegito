@@ -8,12 +8,14 @@ use Doctrine\ORM\EntityRepository;
  * UtilityproviderRepository
  *
  */
-class UtilityproviderRepository extends EntityRepository
+class UtilityproviderClientnumberRepository extends EntityRepository
 {
-    public function getActive()
+    public function findProviders($id)
     {
         $query = $this->getEntityManager()
-            ->createQuery('SELECT p FROM JCSGYKAdminBundle:Utilityprovider p WHERE p.isActive=1 ORDER BY p.name ASC');
+            ->createQuery('
+                SELECT p FROM JCSGYKAdminBundle:UtilityproviderClientnumber p WHERE p.client_id = :id'
+            )->setParameter('id', $id);
 
         try {
             return $query->getResult();

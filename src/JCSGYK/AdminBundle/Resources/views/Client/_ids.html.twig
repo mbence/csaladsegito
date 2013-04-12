@@ -21,9 +21,9 @@
     {# utility providers #}
     <div class="halfbox"><div class="leftpad">
         <table class="client" cellspacing="0" border="0">
-        {% for provider in client.getutilityproviders %}
+        {% for provider in client.getutilityprovidernumbers %}
             <tr>
-                <th>{{ param(provider.type) }}</th>
+                <th>{{ provider.utilityprovider.name }}</th>
                 <td>{{ provider.value }}</td>
             </tr>
         {% endfor %}

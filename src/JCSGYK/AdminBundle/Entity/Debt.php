@@ -30,11 +30,12 @@ class Debt
     private $problem;
 
     /**
-     * @var integer
+     * @var \Utilityprovider
      *
-     * @ORM\Column(name="type", type="smallint", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Utilityprovider")
+     * @ORM\JoinColumn(name="utilityprovider_id", referencedColumnName="id")
      */
-    private $type;
+    private $utilityprovider;
 
     /**
      * @var float
@@ -58,29 +59,6 @@ class Debt
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set type
-     *
-     * @param integer $type
-     * @return Debt
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return integer
-     */
-    public function getType()
-    {
-        return $this->type;
     }
 
     /**
@@ -173,5 +151,28 @@ class Debt
     public function getProblem()
     {
         return $this->problem;
+    }
+
+    /**
+     * Set utilityprovider
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Utilityprovider $utilityprovider
+     * @return Debt
+     */
+    public function setUtilityprovider(\JCSGYK\AdminBundle\Entity\Utilityprovider $utilityprovider = null)
+    {
+        $this->utilityprovider = $utilityprovider;
+
+        return $this;
+    }
+
+    /**
+     * Get utilityprovider
+     *
+     * @return \JCSGYK\AdminBundle\Entity\Utilityprovider
+     */
+    public function getUtilityprovider()
+    {
+        return $this->utilityprovider;
     }
 }

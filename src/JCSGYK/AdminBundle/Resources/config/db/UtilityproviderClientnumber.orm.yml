@@ -1,6 +1,6 @@
-Debt:
+UtilityproviderClientnumber:
     type: entity
-    table: debt
+    table: utilityprovider_clientnumber
     fields:
         id:
             id: true
@@ -9,26 +9,19 @@ Debt:
             nullable: false
             generator:
                 strategy: IDENTITY
-        problemId:
+        clientId:
             type: integer
             unsigned: false
-            nullable: true
-            column: problem_id
+            nullable: false
+            column: client_id
         utilityproviderId:
             type: integer
             unsigned: false
             nullable: true
             column: utilityprovider_id
-        registeredDebt:
-            type: decimal
+        value:
+            type: string
+            length: 60
+            fixed: false
             nullable: true
-            column: registered_debt
-        managedDebt:
-            type: decimal
-            nullable: true
-            column: managed_debt
-        isActive:
-            type: boolean
-            nullable: true
-            column: is_active
     lifecycleCallbacks: {  }

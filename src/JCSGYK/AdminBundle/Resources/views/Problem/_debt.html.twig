@@ -12,7 +12,7 @@
             {% set sumMan = 0 %}
             {% for debt in problem.getDebts %}
                 <tr>
-                    <td>{{ param(debt.type) }}</td>
+                    <td>{{ debt.utilityprovider.name }}</td>
                     <td>{{ debt.registeredDebt|fcurr }}</td>
                     <td>{{ debt.managedDebt|fcurr }}</td>
                 </tr>

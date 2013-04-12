@@ -29,12 +29,12 @@
 
     {# utility providers #}
     <div class="halfbox"><div class="leftpad">
-        <table class="client-edit utilityproviders" cellspacing="0" border="0" data-prototype="<tr><td nowrap>{{ form_widget(form.utilityproviders.vars.prototype.type)|e }}&nbsp;</td><td>{{ form_widget(form.utilityproviders.vars.prototype.value)|e }}</td><td><a href='#' class='delete_provider' title='Szolgáltató törlése'>&nbsp;⌫</a></td></tr>">
-        {% for provider in form.utilityproviders %}
+        <table class="client-edit utilityproviders" cellspacing="0" border="0" data-prototype="<tr><td nowrap>{{ form_widget(form.utilityprovidernumbers.vars.prototype.utilityprovider)|e }}&nbsp;</td><td>{{ form_widget(form.utilityprovidernumbers.vars.prototype.value)|e }}</td><td><a href='#' class='delete_provider' title='Szolgáltató törlése'>&nbsp;⌫</a></td></tr>">
+        {% for provider in form.utilityprovidernumbers %}
             <tr>
-                <td nowrap>{{ form_errors(provider.type) }}{{ form_widget(provider.type) }}&nbsp;</td>
+                <td nowrap>{{ form_errors(provider.utilityprovider) }}{{ form_widget(provider.utilityprovider) }}&nbsp;</td>
                 <td>
-                    {{ form_errors(provider.value) }}
+                    {{ form_errors(provider.utilityprovider) }}
                     {{ form_widget(provider.value) }}
                 </td>
                 <td>

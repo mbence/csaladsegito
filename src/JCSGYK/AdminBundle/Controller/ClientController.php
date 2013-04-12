@@ -70,11 +70,11 @@ class ClientController extends Controller
                     }
                     // handle/save the utilityproviders
 
-                    foreach ($client->getUtilityproviders() as $up) {
+                    foreach ($client->getUtilityprovidernumbers() as $up) {
                         $val = $up->getValue();
                         if (empty($val)) {
                             // remove the empty providers
-                            $client->removeUtilityprovider($up);
+                            $client->removeUtilityprovidernumber($up);
                             $em->remove($up);
                         }
                         else {
@@ -448,7 +448,7 @@ class ClientController extends Controller
         // find all active problems
         $problems = $em->getRepository('JCSGYKAdminBundle:Problem')->findBy(['client' => $client, 'isActive' => true, 'isDeleted' => false], ['name' => 'ASC']);
 
-        
+
 
         return ['client' => $client];
     }

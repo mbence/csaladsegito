@@ -5,10 +5,10 @@ namespace JCSGYK\AdminBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * UtilityproviderId
+ * Utilityprovider
  *
  * @ORM\Table(name="utilityprovider")
- * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\UtilityproviderRepository")
+ * @ORM\Entity
  */
 class Utilityprovider
 {
@@ -22,31 +22,39 @@ class Utilityprovider
     private $id;
 
     /**
-     * @var \Client
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="Client", inversedBy="utilityproviders")
-     * @ORM\JoinColumn(name="client_id", referencedColumnName="id")
+     * @ORM\Column(name="company_id", type="integer", nullable=true)
      */
-    private $client;
+    private $companyId;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="value", type="string", length=60, nullable=true)
+     * @ORM\Column(name="name", type="string", length=32, nullable=true)
      */
-    private $value;
+    private $name;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="type", type="integer", nullable=true)
+     * @ORM\Column(name="key", type="string", length=32, nullable=true)
      */
-    private $type;
+    private $key;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_active", type="boolean", nullable=true)
+     */
+    private $isActive;
+
+
 
     /**
      * Get id
      *
-     * @return integer
+     * @return integer 
      */
     public function getId()
     {
@@ -54,71 +62,94 @@ class Utilityprovider
     }
 
     /**
-     * Set value
+     * Set companyId
      *
-     * @param string $value
-     * @return UtilityproviderId
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get value
-     *
-     * @return string
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
-
-    /**
-     * Set client
-     *
-     * @param \JCSGYK\AdminBundle\Entity\Client $client
-     * @return UtilityproviderId
-     */
-    public function setClient(\JCSGYK\AdminBundle\Entity\Client $client = null)
-    {
-        $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * Get client
-     *
-     * @return \JCSGYK\AdminBundle\Entity\Client
-     */
-    public function getClient()
-    {
-        return $this->client;
-    }
-
-    /**
-     * Set type
-     *
-     * @param integer $type
+     * @param integer $companyId
      * @return Utilityprovider
      */
-    public function setType($type)
+    public function setCompanyId($companyId)
     {
-        $this->type = $type;
-
+        $this->companyId = $companyId;
+    
         return $this;
     }
 
     /**
-     * Get type
+     * Get companyId
      *
-     * @return integer
+     * @return integer 
      */
-    public function getType()
+    public function getCompanyId()
     {
-        return $this->type;
+        return $this->companyId;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return Utilityprovider
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set key
+     *
+     * @param string $key
+     * @return Utilityprovider
+     */
+    public function setKey($key)
+    {
+        $this->key = $key;
+    
+        return $this;
+    }
+
+    /**
+     * Get key
+     *
+     * @return string 
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
+
+    /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     * @return Utilityprovider
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+    
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean 
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
     }
 }

@@ -139,18 +139,22 @@ HBlocks =
             # then recalcualte the scroller div size
             @setBlockSizes()
         else
-            blockW = @blockW()
-            # scroll the right side of the previous block to the right of the screen (if possible)
-            x = blockW * (n-1) - $("#content").width()
-            # only animate if we can scroll at all
-            anim_speed = if $(".contentwrapper").prop("scrollLeft") == 0 then 0 else 300
-            $(".contentwrapper").animate({scrollLeft: x}, anim_speed, 'linear', =>
-                # animation done, activate the previous block
-                if $(block).prev().is(":visible")
-                    $(block).prev().click()
-                # and hide the actial one by calling this function without animations
+            @scrollTo n-1, =>
                 @closeBlock(n, false)
-            )
+
+#
+#            blockW = @blockW()
+#            # scroll the right side of the previous block to the right of the screen (if possible)
+#            x = blockW * (n-1) - $("#content").width()
+#            # only animate if we can scroll at all
+#            anim_speed = if $(".contentwrapper").prop("scrollLeft") == 0 then 0 else 300
+#            $(".contentwrapper").animate({scrollLeft: x}, anim_speed, 'linear', =>
+#                # animation done, activate the previous block
+#                if $(block).prev().is(":visible")
+#                    $(block).prev().click()
+#                # and hide the actial one by calling this function without animations
+#                @closeBlock(n, false)
+#            )
 
     ###
         Calculate the width of the blocks
@@ -169,10 +173,11 @@ HBlocks =
     ###
     setBlockSizes: ->
         blockW = @blockW()
+        rSpacerW = Math.round(($(window).innerWidth() - 40 - blockW) / 2)
 
         # count visible blocks
-        blockNum = $(".contentscroller > div:visible").length
-        scrollerW = blockW * blockNum
+        blockNum = $(".contentscroller > div:visible").length - 1
+        scrollerW = (blockW * blockNum) + rSpacerW
         $(".contentscroller").width(scrollerW)
 
         # if there is a horisontal scrollbar, reduce the bottom padding
@@ -183,6 +188,8 @@ HBlocks =
 
         # set block widths
         $(".contentscroller > div:visible").width(blockW)
+
+        $("#rightspacerblock").width(rSpacerW);
 
         true
 
@@ -206,11 +213,14 @@ HBlocks =
         3 - problems
         4 - events
     ###
-    scrollTo: (block) ->
+    scrollTo: (block, complete = {}) ->
         blockW = @blockW()
         # try to center the selected block
         x = Math.round((block - 1) * blockW - (($("#content").width() - blockW) / 2))
-        $(".contentwrapper").animate({scrollLeft: x}, 500)
+        $(".contentwrapper").animate({scrollLeft: x}, 500, ->
+            if $.isFunction(complete)
+                complete()
+        )
 
         # if not already set, or we are not on the first block ...
         if not $(".contentscroller > div:nth-child(" + block + ")").hasClass("current")

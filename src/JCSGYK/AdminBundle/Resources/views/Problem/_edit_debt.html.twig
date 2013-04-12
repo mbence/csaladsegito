@@ -1,7 +1,7 @@
 {# Debt #}
 <div class="client-sub">{{ 'hátralékok'|trans }}</div>
 <div>
-    <table id="debt-list" class="client-edit debts" cellspacing="0" border="0" data-prototype="<tr><td nowrap>{{ form_widget(form.debts.vars.prototype.type)|e }}&nbsp;</td><td class='td-right-pad'>{{ form_widget(form.debts.vars.prototype.registered_debt)|e }}</td><td class='td-right-pad'>{{ form_widget(form.debts.vars.prototype.managed_debt)|e }}</td><td><a href='#' class='delete_debt' title='Hátralék törlése'>&nbsp;⌫ </a></td></tr>">
+    <table id="debt-list" class="client-edit debts" cellspacing="0" border="0" data-prototype="<tr><td nowrap>{{ form_widget(form.debts.vars.prototype.utilityprovider)|e }}&nbsp;</td><td class='td-right-pad'>{{ form_widget(form.debts.vars.prototype.registered_debt)|e }}</td><td class='td-right-pad'>{{ form_widget(form.debts.vars.prototype.managed_debt)|e }}</td><td><a href='#' class='delete_debt' title='Hátralék törlése'>&nbsp;⌫ </a></td></tr>">
     <tr>
         <td> </td>
         <td>{{ 'Nyilvántartott hátralék'|trans }}</td>
@@ -11,7 +11,7 @@
     </tr>
     {% for debt in form.debts %}
         <tr>
-            <td nowrap>{{ form_errors(debt.type) }}{{ form_widget(debt.type) }}&nbsp;</td>
+            <td nowrap>{{ form_errors(debt.utilityprovider) }}{{ form_widget(debt.utilityprovider) }}&nbsp;</td>
             <td class="td-right-pad">
                 {{ form_errors(debt.registered_debt) }}
                 {{ form_widget(debt.registered_debt) }}

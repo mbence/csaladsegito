@@ -9,17 +9,23 @@ Utilityprovider:
             nullable: false
             generator:
                 strategy: IDENTITY
-        clientId:
+        companyId:
             type: integer
             unsigned: false
-            nullable: false
-            column: client_id
-        type:
-            type: smallint
             nullable: true
-        value:
+            column: company_id
+        name:
             type: string
-            length: 60
+            length: 32
             fixed: false
             nullable: true
+        key:
+            type: string
+            length: 32
+            fixed: false
+            nullable: true
+        isActive:
+            type: boolean
+            nullable: true
+            column: is_active
     lifecycleCallbacks: {  }
