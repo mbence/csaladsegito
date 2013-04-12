@@ -18,28 +18,6 @@ class AssistanceController extends Controller
     {
         $request = $this->getRequest();
 
-//        var_dump($this->container->get('templating.helper.assets')->getVersion());
-//        var_dump($this->container->getParameter('app.version'));
-//
-//         $params = $this->container->get('jcs.ds');
-//         var_dump($params->get(10));
-//         var_dump($params->getGroup(1));
-
-
-//        echo 'session: ' . ini_get('session.save_path');
-//        $val = 'ffffaaa';
-//        $r = preg_match('/(yyy|xxx|aaa|bbb)/', $val);
-//        var_dump($r);
-
-//        $q = "Laka Ild'sel";
-//        $db = $this->get('doctrine.dbal.default_connection');
-//        $qr = $db->quote('+' . implode('* +', explode(' ', $q)) . '*');
-//
-//        if ($this->get('security.context')->isGranted('ROLE_ASSISTANCE')) {
-//            $this->get('logger')->info('ROLE_ASSISTANCE');
-//        }
-        //$this->get('session')->getFlashBag()->set('notice', 'Érdeklődés elmentve');
-
         return $this->render('JCSGYKAdminBundle:Assistance:index.html.twig', []);
     }
 
@@ -49,7 +27,7 @@ class AssistanceController extends Controller
     public function inquiryStatAction()
     {
         $request = $this->getRequest();
-        
+
         $colors = ['#E07628', '#A0D8F1', '#E9AF32', '#BF381A', '#0A224E'];
         $jq_colors = [];
         foreach ($colors as $c) {
@@ -198,14 +176,5 @@ class AssistanceController extends Controller
         }
 
         return $this->redirect($this->generateUrl('home'));
-    }
-
-    /**
-    * @Secure(roles="ROLE_ASSISTANCE")
-    */
-
-    public function newClientAction()
-    {
-        return new Response('new Client');
     }
 }

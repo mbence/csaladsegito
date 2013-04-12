@@ -1,7 +1,7 @@
 parameters:
     param_groups:
         1:  "Érdeklődés típusok"
-        2:  "Szolgáltatók"
+#        2:  "Szolgáltatók"
         3:  "Végzettség"
         4:  "Gazdasági aktivitás"
         5:  "Családi összetétel"

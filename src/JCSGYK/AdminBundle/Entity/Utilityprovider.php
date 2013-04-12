@@ -38,9 +38,9 @@ class Utilityprovider
     /**
      * @var string
      *
-     * @ORM\Column(name="key", type="string", length=32, nullable=true)
+     * @ORM\Column(name="template_key", type="string", length=32, nullable=true)
      */
-    private $key;
+    private $templateKey;
 
     /**
      * @var boolean
@@ -54,7 +54,7 @@ class Utilityprovider
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -70,14 +70,14 @@ class Utilityprovider
     public function setCompanyId($companyId)
     {
         $this->companyId = $companyId;
-    
+
         return $this;
     }
 
     /**
      * Get companyId
      *
-     * @return integer 
+     * @return integer
      */
     public function getCompanyId()
     {
@@ -93,14 +93,14 @@ class Utilityprovider
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -108,26 +108,26 @@ class Utilityprovider
     }
 
     /**
-     * Set key
+     * Set templateKey
      *
-     * @param string $key
+     * @param string $templateKey
      * @return Utilityprovider
      */
-    public function setKey($key)
+    public function setTemplateKey($templateKey)
     {
-        $this->key = $key;
-    
+        $this->templateKey = $templateKey;
+
         return $this;
     }
 
     /**
-     * Get key
+     * Get templateKey
      *
-     * @return string 
+     * @return string
      */
-    public function getKey()
+    public function getTemplateKey()
     {
-        return $this->key;
+        return $this->templateKey;
     }
 
     /**
@@ -139,14 +139,14 @@ class Utilityprovider
     public function setIsActive($isActive)
     {
         $this->isActive = $isActive;
-    
+
         return $this;
     }
 
     /**
      * Get isActive
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsActive()
     {

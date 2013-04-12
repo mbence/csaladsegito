@@ -512,10 +512,10 @@ table.problem-list td {
 }
 
 /* parameters */
-#parameter-groups, #template-list {
+#parameter-groups, #template-list, #settings-menu {
     width: 260px;
 }
-#parameter-groups ul li, #template-list a.tpl-list {
+#parameter-groups ul li, #template-list a.tpl-list, #settings-menu a.menuitem {
     text-align: right;
     border-bottom: 1px solid #CCCCCC;
     color: #3344AA;
@@ -524,10 +524,10 @@ table.problem-list td {
     padding: 5px 10px;
     display: block;
 }
-#parameter-groups ul li:hover, #template-list a.tpl-list:hover  {
+#parameter-groups ul li:hover, #template-list a.tpl-list:hover, #settings-menu a.menuitem:hover   {
     background-color: #f5f5f5;
 }
-#parameter-groups ul li.current, #template-list a.tpl-list.current {
+#parameter-groups ul li.current, #template-list a.tpl-list.current, #settings-menu a.menuitem.current {
     background-color: #e6e6e6 !important;
 }
 #parameter-lists {
@@ -718,4 +718,15 @@ table.problem-list td {
     color: red;
     font-size: 15px;
     text-align: center;
+}
+
+/* Settings */
+#settings-menu {
+    float: left;
+}
+g .menuitems a {
+    font: 15px "Optima Regular", "Optima Regular IE";
+}
+#settings-content {
+    margin: 0 0 0 270px;
 }

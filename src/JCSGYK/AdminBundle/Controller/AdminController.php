@@ -13,6 +13,8 @@ use JCSGYK\AdminBundle\Entity\Parameter;
 use JCSGYK\AdminBundle\Form\Type\UserType;
 use JCSGYK\AdminBundle\Entity\Template;
 use JCSGYK\AdminBundle\Form\Type\TemplateType;
+use JCSGYK\AdminBundle\Entity\Utilityprovider;
+use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
 
 class AdminController extends Controller
 {
@@ -263,7 +265,7 @@ class AdminController extends Controller
                 $form_view = $form->createView();
             }
             // get all templates
-            $templates = $em->getRepository('JCSGYKAdminBundle:Template')->findBy(['companyId' => $company_id], ['name' => 'ASC']);;
+            $templates = $em->getRepository('JCSGYKAdminBundle:Template')->findBy(['companyId' => $company_id], ['name' => 'ASC']);
 
             return $this->render('JCSGYKAdminBundle:Admin:templates.html.twig', ['templates' => $templates, 'id' => $id, 'act' => $template, 'form' => $form_view]);
         }
@@ -298,6 +300,70 @@ class AdminController extends Controller
             $response->setContent(file_get_contents($docpath));
 
             return $response;
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
+
+    /**
+     * Utilityproviders
+     *
+     * @param int $id
+     */
+    public function providersAction($id = null)
+    {
+        $provider = null;
+        $form_view = null;
+
+        $request = $this->getRequest();
+
+        $em = $this->getDoctrine()->getManager();
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+
+        if ('new' == $id) {
+            // new template
+            $provider = new Utilityprovider;
+            $provider->setCompanyId($company_id);
+            $provider->setIsActive(true);
+        }
+        elseif (!is_null($id)) {
+            $provider = $em->getRepository('JCSGYKAdminBundle:Utilityprovider')
+                ->findOneBy(['id' => $id, 'companyId' => $company_id]);
+        }
+
+        if (is_null($id) || !empty($provider)) {
+
+            if (!empty($provider)) {
+                $form = $this->createForm(new UtilityproviderType(), $provider);
+            }
+
+            // save the template
+            if ($request->isMethod('POST')) {
+
+                $form->bind($request);
+
+                if ($form->isValid()) {
+
+                    if (is_null($provider->getId())) {
+                        $em->persist($provider);
+                    }
+
+                    $em->flush();
+
+                    $this->get('session')->setFlash('notice', 'Szolgáltató elmentve');
+
+                    return $this->redirect($this->generateUrl('admin_providers', ['id' => $provider->getId()]));
+                }
+            }
+
+            if (!empty($form)) {
+                $form_view = $form->createView();
+            }
+            // get all templates
+            $providers = $em->getRepository('JCSGYKAdminBundle:Utilityprovider')->findBy(['companyId' => $company_id], ['name' => 'ASC']);
+
+            return $this->render('JCSGYKAdminBundle:Admin:providers.html.twig', ['providers' => $providers, 'id' => $id, 'act' => $provider, 'form' => $form_view]);
         }
         else {
             throw new HttpException(400, "Bad request");

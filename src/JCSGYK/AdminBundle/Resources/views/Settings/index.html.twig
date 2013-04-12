@@ -1,0 +1,21 @@
+{% extends 'JCSGYKAdminBundle::layout.html.twig' %}
+
+{% block title %}Családsegítő Admin{% endblock %}
+
+{% block content %}
+    <br>
+    <div id="settings-menu">
+        <h1 class="client">{{ 'Beállítások'|trans }}</h1>
+        {% render(controller('JCSGYKAdminBundle:Menu:settings')) %}
+        
+        {% if is_granted(['ROLE_ADMIN']) %}
+            <br>
+            <h1 class="client">{{ 'Admin beállítások'|trans }}</h1>
+            {% render(controller('JCSGYKAdminBundle:Menu:adminSettings')) %}
+        {% endif %}
+    </div>
+    <div id="settings-content">
+        {% block settings_content %}{% endblock %}
+    </div>
+
+{% endblock %}

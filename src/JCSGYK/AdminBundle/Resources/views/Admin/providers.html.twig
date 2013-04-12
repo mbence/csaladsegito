@@ -4,15 +4,15 @@
 
 <div class="template-top">
     <div class="floatright right">
-        <a href="{{ path('admin_templates', {'id': 'new'}) }}" class="button" id="new_template"><span>{{ 'új nyomtatvány'|trans }}</span></a>
+        <a href="{{ path('admin_providers', {'id': 'new'}) }}" class="button" id="new_template"><span>{{ 'új szolgáltató'|trans }}</span></a>
     </div>
-    <h1 class="client">{{ 'Nyomtatványok'|trans }}</h1>
+    <h1 class="client">{{ 'Szolgáltatók'|trans }}</h1>
 </div>
 <div class="adminblock" id="template-list">
     <div class="rightpad fullheight nocollapse">
-        {% for tpl in templates %}
-            <a href="{{ path('admin_templates', {'id': tpl.id}) }}" class="tpl-list{% if act and act.id == tpl.id %} current{% endif %}">
-                {{ tpl.name }} &nbsp;&nbsp;&nbsp; {{ tpl.isActive|check }}
+        {% for pro in providers %}
+            <a href="{{ path('admin_providers', {'id': pro.id}) }}" class="tpl-list{% if act and act.id == pro.id %} current{% endif %}">
+                {{ pro.name }} &nbsp;&nbsp;&nbsp; {{ pro.isActive|check }}
             </a>
         {% endfor %}
     </div>
@@ -22,7 +22,7 @@
         {% if form %}
             {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
 
-            <form action="{{ path('admin_templates', {'id': id}) }}" id="template_edit" novalidate method="post" {{ form_enctype(form) }}>
+            <form action="{{ path('admin_providers', {'id': id}) }}" id="provider_edit" novalidate method="post" {{ form_enctype(form) }}>
                 {{ form_errors(form) }}
 
                 <table class="client-edit" cellspacing="0" border="0">
@@ -31,12 +31,8 @@
                         <td>{{ form_errors(form.name) }}{{ form_widget(form.name) }}</td>
                     </tr>
                     <tr>
-                        <th>{{ 'Fájl'|trans }}:</th>
-                        <td><div class="bottompad4"><a href="{{ path('admin_templates_download', { 'id': act.id }) }}">{{ act.originalName }}</a></div></td>
-                    </tr>
-                    <tr>
-                        <th>{{ form_label(form.file) }}:</th>
-                        <td>{{ form_errors(form.file) }}{{ form_widget(form.file) }}</td>
+                        <th>{{ form_label(form.template_key) }}:</th>
+                        <td>{{ form_errors(form.template_key) }}{{ form_widget(form.template_key) }}</td>
                     </tr>
                     <tr>
                         <th>{{ form_label(form.is_active) }}:</th>
@@ -45,18 +41,18 @@
                 </table>
                 <br><br>
                 <div class="formbuttons">
-                    <button type="reset" href="{{ path('admin_templates') }}" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
-                    <button type="submit" class="etmplatesave button" name="templatesave" value="save"><span>{{ 'mentés'|trans }}</span></button>
+                    <button type="reset" href="{{ path('admin_providers') }}" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
+                    <button type="submit" class="providersave button" name="providersave" value="save"><span>{{ 'mentés'|trans }}</span></button>
                 </div>
                 {{ form_widget(form._token) }}
             </form>
         {% else %}
             <div class="info">
                 <p>
-                    {{ 'A nyomtatványok szerkesztéséhez kattintson a bal oldai listában a megfelelő sorra!'|trans }}
+                    {{ 'A szolgáltatók szerkesztéséhez kattintson a bal oldai listában a megfelelő sorra!'|trans }}
                 </p>
                 <p>
-                    {{ "Új nyomtatványt a narancsárga 'új nyomtatvány' gombra katttintve hozhat létre."|trans }}
+                    {{ "Új szolgáltatót a narancsárga 'új szolgáltató' gombra katttintve hozhat létre."|trans }}
                 </p>
             </div>
         {% endif %}

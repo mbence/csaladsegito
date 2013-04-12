@@ -1,10 +1,10 @@
-{% extends 'JCSGYKAdminBundle::layout.html.twig' %}
+{% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
 
-{% block content %}
+{% block settings_content %}
 
     <div class="acreate">
         <form method="post" action="{{ path('admin_update') }}">
-            <h1>{{ 'Rendszerfrissítés'|trans }}</h1>
+            <h1 class="client">{{ 'Rendszerfrissítés'|trans }}</h1>
             <br>
             <button type="submit" class="button" name="update" value="1" onclick="return confirm('{{ 'Biztos benne?'|trans }}');">{{ 'Frissítés'|trans }}</button>
         </form>

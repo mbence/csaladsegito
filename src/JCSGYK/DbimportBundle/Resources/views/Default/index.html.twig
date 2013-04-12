@@ -1,79 +1,81 @@
-{% extends 'JCSGYKAdminBundle::layout.html.twig' %}
+{% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
 
-{% block content %}
+{% block settings_content %}
 
 {% stylesheets output='css/dbimport.css' combine=true '@JCSGYKDbimportBundle/Resources/public/css/dbimport.css' %}
     <link rel="stylesheet" href="{{ asset_url }}" />
 {% endstylesheets %}
-<h1>DB Import </h1>
+<h1 class="client">DB Import </h1>
 <br>
 <br>
-<form action="" method="POST" name="start">
-    <dl class="import_controls">
+<div class="adminblock">
+    <form action="" method="POST" name="start">
+        <dl class="import_controls">
 
-        <dt>1) Users</dt>
-        <dd>
-            <button type="submit" name="import" value="user10" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 10 &nbsp;</button>
-            &nbsp;&nbsp;
-            <button type="submit" name="import" value="user" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
-            {% if results.user is defined %}
-                Succesfully imported {{ results.user }}
-            {% endif %}
-        </dd>
+            <dt>1) Users</dt>
+            <dd>
+                <button type="submit" class="greybutton" name="import" value="user10" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 10 &nbsp;</button>
+                &nbsp;&nbsp;
+                <button type="submit" class="button" name="import" value="user" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+                {% if results.user is defined %}
+                    Succesfully imported {{ results.user }}
+                {% endif %}
+            </dd>
 
-        <dt>2) Clients</dt>
-        <dd>
-            <button type="submit" name="import" value="client100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
-            &nbsp;&nbsp;
-            <button type="submit" name="import" value="client" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
-            {% if results.client is defined %}
-                Succesfully imported {{ results.client }}
-            {% endif %}
-        </dd>
+            <dt>2) Clients</dt>
+            <dd>
+                <button type="submit" class="greybutton" name="import" value="client100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
+                &nbsp;&nbsp;
+                <button type="submit" class="button" name="import" value="client" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+                {% if results.client is defined %}
+                    Succesfully imported {{ results.client }}
+                {% endif %}
+            </dd>
 
-        <dt>3) Archives</dt>
-        <dd>
-            <button type="submit" name="import" value="archive100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
-            &nbsp;&nbsp;
-            <button type="submit" name="import" value="archive" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
-            {% if results.archive is defined %}
-                Succesfully imported {{ results.archive }}
-            {% endif %}
-        </dd>
+            <dt>3) Archives</dt>
+            <dd>
+                <button type="submit" class="greybutton" name="import" value="archive100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
+                &nbsp;&nbsp;
+                <button type="submit" class="button" name="import" value="archive" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+                {% if results.archive is defined %}
+                    Succesfully imported {{ results.archive }}
+                {% endif %}
+            </dd>
 
-        <dt>4) Problems</dt>
-        <dd>
-            <button type="submit" name="import" value="problem100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
-            &nbsp;&nbsp;
-            <button type="submit" name="import" value="problem" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
-            {% if results.problem is defined %}
-                Succesfully imported {{ results.problem }}
-            {% endif %}
-        </dd>
+            <dt>4) Problems</dt>
+            <dd>
+                <button type="submit" class="greybutton" name="import" value="problem100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
+                &nbsp;&nbsp;
+                <button type="submit" class="button" name="import" value="problem" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+                {% if results.problem is defined %}
+                    Succesfully imported {{ results.problem }}
+                {% endif %}
+            </dd>
 
-        <dt>5) Events</dt>
-        <dd>
-            <button type="submit" name="import" value="event100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
-            &nbsp;&nbsp;
-            <button type="submit" name="import" value="event" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
-            {% if results.events is defined %}
-                Succesfully imported {{ results.events }}
-            {% endif %}
-        </dd>
+            <dt>5) Events</dt>
+            <dd>
+                <button type="submit" class="greybutton" name="import" value="event100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
+                &nbsp;&nbsp;
+                <button type="submit" class="button" name="import" value="event" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+                {% if results.events is defined %}
+                    Succesfully imported {{ results.events }}
+                {% endif %}
+            </dd>
 
-        <dt>6) Case admins</dt>
-        <dd>
-            <button type="submit" name="import" value="caseadmin100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
-            &nbsp;&nbsp;
-            <button type="submit" name="import" value="caseadmin" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
-            {% if results.caseadmin is defined %}
-                Succesfully imported {{ results.caseadmin }}
-            {% endif %}
-        </dd>
+            <dt>6) Case admins</dt>
+            <dd>
+                <button type="submit" class="greybutton" name="import" value="caseadmin100" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import 100</button>
+                &nbsp;&nbsp;
+                <button type="submit" class="button" name="import" value="caseadmin" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+                {% if results.caseadmin is defined %}
+                    Succesfully imported {{ results.caseadmin }}
+                {% endif %}
+            </dd>
 
-    </dl>
-    <div class="clear"></div>
-    <br>
-<!--    <button type="submit" name="import" value="all" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import All Tables</button> -->
-</form>
+        </dl>
+        <div class="clear"></div>
+        <br>
+    <!--    <button type="submit" name="import" value="all" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import All Tables</button> -->
+    </form>
+</div>
 {% endblock %}

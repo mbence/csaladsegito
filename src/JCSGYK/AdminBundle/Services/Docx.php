@@ -131,16 +131,9 @@ class Docx
         }
 
         // utility provider ids
-        $providers = $this->container->get('jcs.ds')->getGroup(2);
         $client_provider_ids = $client->getUtilityprovidernumbers();
-        $prids = [];
         foreach ($client_provider_ids as $pid) {
-            $prids[$pid->getUtilityproviderId()] = $pid->getValue();
-        }
-
-        foreach ($providers as $pr_id => $pr_name) {
-            $provider_normalised_name = strtolower($ae->formatFilename($pr_name) . 'id');
-            $re['uf'][$provider_normalised_name] = !empty($prids[$pr_id]) ? $prids[$pr_id] : '';
+            $re['uf'][$pid->getUtilityprovider()->getTemplatekey() . 'id'] = $pid->getValue();
         }
 
         // user fields

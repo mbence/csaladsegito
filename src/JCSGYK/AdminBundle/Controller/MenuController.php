@@ -12,25 +12,49 @@ use JCSGYK\AdminBundle\Entity\Event;
 
 class MenuController extends Controller
 {
-    protected $menu = [
-        ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
-        ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
-        ['route' => 'admin_params', 'label' => 'Paraméterek', 'role' => 'ROLE_ADMIN'],
-        ['route' => 'admin_templates', 'label' => 'Nyomtatványok', 'role' => 'ROLE_ADMIN'],
-        ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
-    ];
-
     public function mainAction()
     {
+        $items = [
+            ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
+            ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'],
+        ];
+
+        $menu = $this->checkMenu($items);
+
+        return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', ['menu' => $menu]);
+    }
+
+    public function settingsAction()
+    {
+        $items = [
+            ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'],
+        ];
+
+        $menu = $this->checkMenu($items);
+
+        return $this->render('JCSGYKAdminBundle:Settings:menu.html.twig', ['menu' => $menu]);
+
+    }
+
+    public function adminSettingsAction()
+    {
+        $items = [
+            ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_params', 'label' => 'Paraméterek', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_providers', 'label' => 'Szolgáltatók', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_templates', 'label' => 'Nyomtatványok', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
+        ];
+
         // add the db import menu only for the dev enver
         if ('dev' == $this->container->getParameter('kernel.environment')) {
-            $this->menu[] = ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPER_ADMIN'];
+            $items[] = ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPER_ADMIN'];
         }
 
-        $router = $this->get("router");
-        $user_menu = $this->checkMenu();
+        $menu = $this->checkMenu($items);
 
-        return $this->render('JCSGYKAdminBundle:Elements:menu.html.twig', ['menu' => $user_menu]);
+        return $this->render('JCSGYKAdminBundle:Settings:menu.html.twig', ['menu' => $menu]);
+
     }
 
     public function clientAction(Client $client)
@@ -203,7 +227,7 @@ class MenuController extends Controller
      * Adds extra classes for admin role menu items
      * @return array Menu
      */
-    protected function checkMenu()
+    protected function checkMenu($items)
     {
         $request = Request::createFromGlobals();
 
@@ -212,7 +236,7 @@ class MenuController extends Controller
         $sec = $this->get('security.context');
 
         $user_menu = [];
-        foreach ($this->menu as $m) {
+        foreach ($items as $m) {
             $class_list = [];
             if (!empty($route['_route']) && $m['route'] == $route['_route']) {
                 $class_list[] = 'current';

@@ -76,6 +76,11 @@ inquiry_stat:
     pattern: /inquiry/stat
     defaults: { _controller: JCSGYKAdminBundle:Assistance:inquiryStat }
 
+# Settings #
+settings:
+    pattern:  /settings
+    defaults: { _controller: JCSGYKAdminBundle:Settings:index }
+
 # Admin #
 admin_home:
     pattern:  /admin
@@ -86,6 +91,9 @@ admin_users:
 admin_params:
     pattern:  /admin/params/{group}
     defaults: { _controller: JCSGYKAdminBundle:Admin:params, group: 1 }
+admin_providers:
+    pattern:  /admin/providers/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:providers, id: null }
 admin_update:
     pattern:  /admin/update
     defaults: { _controller: JCSGYKAdminBundle:Admin:update }

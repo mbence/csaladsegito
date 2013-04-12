@@ -19,7 +19,7 @@ Utilityprovider:
             length: 32
             fixed: false
             nullable: true
-        key:
+        template_key:
             type: string
             length: 32
             fixed: false

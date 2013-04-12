@@ -1,14 +1,12 @@
-{% extends 'JCSGYKAdminBundle::layout.html.twig' %}
+{% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
 
-{% block title %}Családsegítő Admin{% endblock %}
-
-{% block content %}
+{% block settings_content %}
 <div class="adminblock" id="userlist">
     <div class="rightpad fullheight nocollapse">
         <div class="button-row toppad10">
             <a href="{{ path('admin_users', {'id': 'new'}) }}" class="button" id="new_user"><span>{{ 'új felhasználó'|trans }}</span></a>
         </div>
-        <h1>{{ 'Felhasználók'|trans }}</h1>
+        <h1 class="client">{{ 'Felhasználók'|trans }}</h1>
 
         <table class="search-results tablesorter" cellspacing=0 border=0>
             <thead><tr>

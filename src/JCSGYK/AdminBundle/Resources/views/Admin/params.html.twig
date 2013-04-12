@@ -1,11 +1,9 @@
-{% extends 'JCSGYKAdminBundle::layout.html.twig' %}
+{% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
 
-{% block title %}Családsegítő Admin{% endblock %}
-
-{% block content %}
+{% block settings_content %}
 <div class="adminblock" id="parameter-groups">
     <div class="rightpad fullheight nocollapse">
-        <h1>{{ 'Paraméterek'|trans }}</h1>
+        <h1 class="client">{{ 'Paraméterek'|trans }}</h1>
         <ul>
         {% for id, group in groups %}
             <li data-groupid="{{ id }}" {% if act == id %}class="current"{% endif %}>{{ group|trans }}</li>
