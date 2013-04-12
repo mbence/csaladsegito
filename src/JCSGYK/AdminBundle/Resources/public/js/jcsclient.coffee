@@ -74,20 +74,18 @@ JcsClient =
         false
 
     initArchive: ->
-
-        $(".modal .modal-content .close").off("click").on "click", ->
-            $(".modal").overlay().close()
+        JcsModal.setCloseButton()
 
         # form submit
         $("#archive_form").submit ->
             $(".save_archive").addClass('animbutton')
             $.post($(this).attr("action"), $(this).serialize(), (data) ->
-                $(".modal .modal-content").html(data).show()
+                JcsModal.setContent(data)
 
                 # display the result message
-                if $(".modal .modal-content").find(".result").data("result-notice")
-                    AjaxBag.showNotice($(".modal .modal-content").find(".result").data("result-notice"))
-                    $(".modal").overlay().close()
+                if JcsModal.find(".result").data("result-notice")
+                    AjaxBag.showNotice(JcsModal.find(".result").data("result-notice"))
+                    JcsModal.close()
                     # refresh the client block
                     client_url = $("#clientblock .clientcontent").data("url")
                     $.get(client_url, (data) ->
@@ -114,7 +112,7 @@ JcsClient =
         # textarea auto height
         $("#archive_description").elastic()
 
-        $(".modal").overlay().load()
+        JcsModal.load()
         $("#archive_type").focus()
 
     setDelProvider: ->
@@ -167,7 +165,7 @@ JcsClient =
 
                 $.get($(this).attr("href"), (data) =>
                     $(this).removeClass('animbutton')
-                    $(".modal .modal-content").html(data).show()
+                    JcsModal.setContent(data)
                     JcsClient.initArchive()
                     # hide the submenu
                     $(this).parent().hide()
@@ -180,22 +178,7 @@ JcsClient =
             false
 
         # modal dialog
-        $(".modal").overlay
-            # some mask tweaks suitable for modal dialogs
-            mask:
-                color: '#ebecfe'
-                loadSpeed: 0
-                closeSpeed: 0
-                opacity: 0.9
-            closeOnClick: true
-            left: "center"
-            target: ".modal"
-            load: false
-            speed: 0
-            closeSpeed: 0
-
-        # only while development
-        #$(".archive_client").click()
+        JcsModal.init()
 
     initProblems: ->
         $("#showAllProblem").click (event) ->

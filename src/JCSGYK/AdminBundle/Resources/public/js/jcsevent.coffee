@@ -71,7 +71,7 @@ JcsEvent =
 
                 $.get($(this).attr("href"), (data) =>
                     $(this).removeClass('animbutton')
-                    $(".modal .modal-content").html(data).show()
+                    JcsModal.setContent(data)
                     JcsEvent.initDeleteEvent()
                     # hide the submenu
                     $(this).parent().hide()
@@ -83,35 +83,23 @@ JcsEvent =
                 )
             false
 
-        # modal dialog
-        $(".modal").overlay
-            # some mask tweaks suitable for modal dialogs
-            mask:
-                color: '#ebecfe'
-                loadSpeed: 0
-                closeSpeed: 0
-                opacity: 0.9
-            closeOnClick: true
-            left: "center"
-            target: ".modal"
-            load: false
-            speed: 0
-            closeSpeed: 0
+         # modal dialog
+        JcsModal.init()
+
 
     initDeleteEvent: ->
-        $(".modal .modal-content .close").off("click").on "click", ->
-            $(".modal").overlay().close()
+        JcsModal.setCloseButton()
 
         # form submit
         $("#event_delete_form").submit ->
             $(".delete_event").addClass('animbutton')
             $.post($(this).attr("action"), $(this).serialize(), (data) ->
-                $(".modal .modal-content").html(data).show()
+                JcsModal.setContent(data)
 
                 # display the result message
-                if $(".modal .modal-content").find(".result").data("result-notice")
-                    AjaxBag.showNotice($(".modal .modal-content").find(".result").data("result-notice"))
-                    $(".modal").overlay().close()
+                if JcsModal.find(".result").data("result-notice")
+                    AjaxBag.showNotice(JcsModal.find(".result").data("result-notice"))
+                    JcsModal.close()
                     JcsProblem.reloadEvents($("#eventblock #event-id").data("eventid"))
                     HBlocks.closeBlock(4)
                 else
@@ -127,4 +115,4 @@ JcsEvent =
 
             false
 
-        $(".modal").overlay().load()
+        JcsModal.load()

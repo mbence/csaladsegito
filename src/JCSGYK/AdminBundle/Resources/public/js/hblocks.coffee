@@ -31,7 +31,7 @@ HBlocks =
     ###
     setKeys: (event) ->
         # we don't need kayboard navigation if there is an editor or modal popup open
-        if $(".client-edit").length > 0 or $(".modal").is(":visible")
+        if $(".client-edit").length > 0 or JcsModal.visible()
             return true
 
         # close current block on ESC
