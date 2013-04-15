@@ -136,6 +136,27 @@ class Docx
             $re['uf'][$pid->getUtilityprovider()->getTemplatekey() . 'id'] = $pid->getValue();
         }
 
+        // debts
+        if (isset($data['debts'])) {
+            $sum_managed = 0;
+            $sum_registered = 0;
+            // sum up the debts
+            foreach($data['debts'] as $provider) {
+                $re['ha'][$provider['key'] . 'nyilv'] = $ae->formatCurrency($provider['registered']);
+                $re['ha'][$provider['key'] . 'kezelt'] = $ae->formatCurrency($provider['managed']);
+                $sum_managed += $provider['managed'];
+                $sum_registered += $provider['registered'];
+            }
+            // fill in the procents
+            foreach($data['debts'] as $provider) {
+                $re['ha'][$provider['key'] . 'kezeltszaz'] = !empty($provider['registered']) ?
+                    round($provider['managed'] / $sum_managed * 100) . '%':
+                    '';
+            }
+            $re['ha']['osszesnyilv'] = $ae->formatCurrency($sum_registered);
+            $re['ha']['osszeskezelt'] = $ae->formatCurrency($sum_managed);
+        }
+
         // user fields
         $user = $this->container->get('security.context')->getToken()->getUser();
 

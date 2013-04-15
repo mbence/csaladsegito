@@ -445,11 +445,62 @@ class ClientController extends Controller
      */
     private function getDebtData(Client $client)
     {
+        $em = $this->getDoctrine()->getManager();
         // find all active problems
-        $problems = $em->getRepository('JCSGYKAdminBundle:Problem')->findBy(['client' => $client, 'isActive' => true, 'isDeleted' => false], ['name' => 'ASC']);
+        $problems = $em->getRepository('JCSGYKAdminBundle:Problem')->findBy(['client' => $client, 'isActive' => true, 'isDeleted' => false]);
+        // get the problem ids
+        $problem_ids = [];
+        foreach ($problems as $problem) {
+            $problem_ids[] = $problem->getId();
+        }
 
+        // get the debt records
+        $debts = $em
+            ->createQuery("SELECT d FROM JCSGYKAdminBundle:Debt d WHERE d.problem IN (:problems)")
+            ->setParameter('problems', $problem_ids)
+            ->getResult();
 
+        // get all provider
+        $debt_list = $this->getDebtMap();
 
-        return ['client' => $client];
+        // arrange the debts by utility provider
+        foreach ($debts as $debt) {
+            $up_id = $debt->getUtilityprovider()->getId();
+            // check to see if the provider already exists
+            if (!isset($debt_list[$up_id])) {
+                // theoretically we should never go in to this branch, beacuse the getDebtMap()
+                $debt_list[$up_id] = [
+                    'key' => $debt->getUtilityprovider()->getTemplateKey(),
+                    'managed' => 0,
+                    'registered' => 0
+                ];
+            }
+
+            $debt_list[$up_id]['managed'] += $debt->getManagedDebt();
+            $debt_list[$up_id]['registered'] += $debt->getRegisteredDebt();
+        }
+
+        return [
+            'client' => $client,
+            'debts' => $debt_list
+        ];
+    }
+
+    private function getDebtMap()
+    {
+        $em = $this->getDoctrine()->getManager();
+        // get all utility provider keys
+        $ups = $em->getRepository("JCSGYKAdminBundle:Utilityprovider")->findAll();
+        $debt_list = [];
+
+        foreach ($ups as $up) {
+            $debt_list[$up->getId()] = [
+                'key' => $up->getTemplateKey(),
+                'managed' => 0,
+                'registered' => 0
+            ];
+        }
+
+        return $debt_list;
     }
 }
