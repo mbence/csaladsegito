@@ -447,12 +447,12 @@ class ImportController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $utility_id_fields = [
-            'dhJVK' => 7,
-            'dhElmu' => 4,
-            'dhFoGaz' => 3,
-            'dhFotav' => 5,
+            'dhJVK' => 4,
+            'dhElmu' => 1,
+            'dhFoGaz' => 2,
+            'dhFotav' => 3,
             'dhDijbeszedo' => 6,
-            'dhKozos' => 49,
+            'dhKozos' => 5,
         ];
 
         foreach ($utility_id_fields as $field => $type) {
@@ -464,7 +464,7 @@ class ImportController extends Controller
                 $debt->setProblemId($problem['Problem_ID']);
                 $debt->setRegisteredDebt(trim($problem[$reg_field]));
                 $debt->setManagedDebt(trim($problem[$man_field]));
-                $debt->setType($type);
+                $debt->setUtilityproviderId($type);
 
                 $em->persist($debt);
             }

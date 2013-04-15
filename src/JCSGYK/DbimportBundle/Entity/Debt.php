@@ -31,9 +31,9 @@ class Debt
     /**
      * @var integer
      *
-     * @ORM\Column(name="type", type="smallint", nullable=true)
+     * @ORM\Column(name="utilityprovider_id", type="smallint", nullable=true)
      */
-    private $type;
+    private $utilityproviderId;
 
     /**
      * @var float
@@ -83,26 +83,26 @@ class Debt
     }
 
     /**
-     * Set type
+     * Set utilityproviderId
      *
-     * @param integer $type
+     * @param integer $utilityproviderId
      * @return Debt
      */
-    public function setType($type)
+    public function setUtilityproviderId($utilityproviderId)
     {
-        $this->type = $type;
+        $this->utilityproviderId = $utilityproviderId;
 
         return $this;
     }
 
     /**
-     * Get type
+     * Get utilityproviderId
      *
      * @return integer
      */
-    public function getType()
+    public function getUtilityproviderId()
     {
-        return $this->type;
+        return $this->utilityproviderId;
     }
 
     /**
