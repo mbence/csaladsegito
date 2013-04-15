@@ -217,7 +217,17 @@ HBlocks =
         blockW = @blockW()
         # try to center the selected block
         x = Math.round((block - 1) * blockW - (($("#content").width() - blockW) / 2))
-        $(".contentwrapper").animate({scrollLeft: x}, 500, ->
+        if x < 0
+          x = 0
+
+        # calculate the animation time based on the scroll distance
+        dist =  Math.abs($(".contentwrapper").scrollLeft() - x);
+        anim_duration = 500 * (dist / blockW);
+        # minimal duration for smooth animations
+        if anim_duration < 250
+          anim_duration = 250
+        #console.log(blockW, x, dist, anim_duration)
+        $(".contentwrapper").animate({scrollLeft: x}, anim_duration, ->
             if $.isFunction(complete)
                 complete()
         )
