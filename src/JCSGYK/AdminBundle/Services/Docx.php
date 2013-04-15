@@ -65,6 +65,7 @@ class Docx
     {
         $re = [];
         $ae = $this->container->get('jcs.twig.adminextension');
+        $em = $this->container->get('doctrine')->getManager();
 
         // Client
         if (!empty($data['client']) && $data['client'] instanceof Client) {
@@ -126,11 +127,18 @@ class Docx
                 'megbizott' => $ae->formatName($client->getGuardianFirstname(), $client->getGuardianLastname()),
                 'megbizottcsaladineve' => $client->getGuardianLastname(),
                 'megbizottutoneve' => $client->getGuardianFirstname(),
-                'esetgazda' => $ae->formatName($client->getCaseAdmin()->getFirstName(), $client->getCaseAdmin()->getLastName()),
             ];
+            $ca = $client->getCaseAdmin();
+            if (!empty($ca)) {
+                $re['uf']['esetgazda'] = $ae->formatName($client->getCaseAdmin()->getFirstName(), $client->getCaseAdmin()->getLastName());
+            }
         }
 
         // utility provider ids
+        $ups = $em->getRepository("JCSGYKAdminBundle:Utilityprovider")->findAll();
+        foreach ($ups as $up) {
+            $re['uf'][$up->getTemplateKey() . 'id'] = '';
+        }
         $client_provider_ids = $client->getUtilityprovidernumbers();
         foreach ($client_provider_ids as $pid) {
             $re['uf'][$pid->getUtilityprovider()->getTemplatekey() . 'id'] = $pid->getValue();

@@ -11,6 +11,7 @@ use JCSGYK\DbimportBundle\Entity\TmpIdmap;
 use JCSGYK\DbimportBundle\Entity\Debt;
 use JCSGYK\DbimportBundle\Entity\Event;
 use JCSGYK\DbimportBundle\Entity\Archive;
+use JCSGYK\DbimportBundle\Entity\UtilityproviderClientnumber;
 
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
@@ -171,7 +172,7 @@ class ImportController extends Controller
 
     protected function importEvent($limit = 100)
     {
-        // disable the profiler, for it fails with the huge query numbers
+        // disable the profiler, because it fails with the huge query numbers
         if ($this->container->has('profiler'))
         {
             $this->container->get('profiler')->disable();
@@ -245,7 +246,7 @@ class ImportController extends Controller
                         $this->getDate($imp['EventDate'])->format('Y. m. d.')
                     ];
                     //$val = trim(str_replace($event_dates, '', $this->conv($imp[$from])));
-                    $val = trim(preg_replace('/(' . $event_dates[0] . '|' . $event_dates[1] . ')/', '', $this->conv($imp[$from]), 1));
+                    $val = trim(preg_replace('/(' . $event_dates[0] . '|' . $event_dates[1] . ')/u', '', $this->conv($imp[$from]), 1));
 
                     // check for remaining dates that can differ a few days to the records date
                     if (preg_match('/(\d{4})\.(\d{2})\.(\d{2})\.\s*-/', substr($val, 0, 13), $m)) {
@@ -601,7 +602,7 @@ class ImportController extends Controller
         $phone_fields = ['Mobile', 'Phone', 'Fax'];
 
         $this->truncate('client');
-        $this->truncate('utilityprovider');
+        $this->truncate('utilityprovider_clientnumber');
 
         $db = $this->get('doctrine.dbal.csaszir_connection');
         $sql = "SELECT p.*, a1.*, a2.ZipCode as ZipCode1 ,a2.City as City1, a2.Street as Street1, a2.StreetNum as StreetNum1, a2.FlatNum as FlatNum1 FROM Persons p, Addresses a1, Addresses a2 WHERE p.Address_ID=a1.Address_ID AND p.Location_ID=a2.Address_ID AND p.Type=1";
@@ -646,7 +647,7 @@ class ImportController extends Controller
                 }
                 // Street Number
                 elseif ('StreetNumber' == $to || 'LocationStreetNumber' == $to) {
-                    $val = trim(strtr($imp[$from], ['/' => '', '.' => '']));
+                    $val = trim(strtr($this->conv($imp[$from]), ['/' => '', '.' => '']));
                 }
                 // Location Street type
                 elseif ('LocationStreet' == $to) {
@@ -753,10 +754,10 @@ class ImportController extends Controller
 
             $val = ltrim($imp[$field], 0);
             if (!empty($val)) {
-                $upid = new Utilityprovider();
+                $upid = new UtilityproviderClientnumber();
                 $upid->setValue($val);
                 $upid->setClient($client);
-                $upid->setType($db_id);
+                $upid->setUtilityproviderId($db_id);
 
                 $em->persist($upid);
             }
@@ -771,7 +772,6 @@ class ImportController extends Controller
      */
     protected function streetFix($in)
     {
-        $street = '';
         $street_type = '';
 
         // list of all street type names

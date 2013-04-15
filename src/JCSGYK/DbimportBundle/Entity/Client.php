@@ -386,7 +386,7 @@ class Client
     private $isArchived;
 
     /**
-     * @ORM\OneToMany(targetEntity="Utilityprovider", mappedBy="client")
+     * @ORM\OneToMany(targetEntity="UtilityproviderClientnumber", mappedBy="client")
      */
     private $utilityproviders;
 
