@@ -8,11 +8,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Doctrine\ORM\EntityRepository;
+
 
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Form\Type\ClientType;
 use JCSGYK\AdminBundle\Entity\Archive;
 use JCSGYK\AdminBundle\Form\Type\ArchiveType;
+use JCSGYK\AdminBundle\Form\Type\MakeTemplateType;
 
 class ClientController extends Controller
 {
@@ -361,7 +364,7 @@ class ClientController extends Controller
         }
     }
 
-    public function templatesAction($id = null, $template_id = null)
+    public function templatesAction($id = null)
     {
         $request = $this->getRequest();
 
@@ -372,41 +375,63 @@ class ClientController extends Controller
                 throw new HttpException(400, "Bad request");
             }
 
-            $em = $this->getDoctrine()->getManager();
+            //$form = $this->createForm(new MakeTemplateType($this->container->get('jcs.ds')));
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
+            $em = $this->getDoctrine()->getManager();
 
-            if (is_null($template_id)) {
-                // get all active templates of this company
-                $templates = $em->getRepository('JCSGYKAdminBundle:Template')->findBy(['companyId' => $company_id, 'isActive' => true], ['name' => 'ASC']);;
+            $form = $this->createFormBuilder(['auto_event' => true])
+                ->add('template', 'choice', [
+                    'label' => '',
+                    'choices' => $em->getRepository('JCSGYKAdminBundle:Template')->getTemplateList($company_id),
+                    'expanded' => true,
+                    'multiple' => false,
+                ])
+                ->add('auto_event', 'checkbox', [
+                    'label' => 'Automatikus esemény létrehozása',
+                ])
+                ->getForm();
 
-                return $this->render('JCSGYKAdminBundle:Dialog:client_templates.html.twig', [
-                    'client' => $client,
-                    'templates' => $templates
-                ]);
+            // save
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    $form_data = $form->getData();
+                    // create the auto event
+                    if (!empty($form_data['auto_event'])) {
+
+                        // TODO $e = new Event();
+
+
+                    }
+                    
+                    // generate the selected document
+                    if (1 == $form_data['template']) {
+                        // ACST kérelem
+                        $data = $this->getDebtData($client);
+                    }
+                    elseif (2 == $form_data['template']) {
+                        // Esettörténet
+                        $data = $this->getHistoryData($client);
+                    }
+                    else {
+                        $data = ['client' => $client];
+                    }
+
+                    $send = $this->container->get('jcs.docx')->show($form_data['template'], $data);
+
+                    if (!$send) {
+                        throw new HttpException(400, "Bad request");
+                    }
+
+                    exit;
+                }
             }
-            else {
-                // generate a specific document
 
-                if (1 == $template_id) {
-                    // ACST kérelem
-                    $data = $this->getDebtData($client);
-                }
-                elseif (2 == $template_id) {
-                    // Esettörténet
-                    $data = $this->getHistoryData($client);
-                }
-                else {
-                    $data = ['client' => $client];
-                }
-
-                $send = $this->container->get('jcs.docx')->show($template_id, $data);
-
-                if (!$send) {
-                    throw new HttpException(400, "Bad request");
-                }
-
-                exit;
-            }
+            return $this->render('JCSGYKAdminBundle:Dialog:client_templates.html.twig', [
+                'client' => $client,
+                'form' => $form->createView(),
+            ]);
         }
         else {
             throw new HttpException(400, "Bad request");

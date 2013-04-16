@@ -86,7 +86,6 @@ class ClientType extends AbstractType
         $builder->add('education_code', 'choice', [
             'label' => 'Végzettség',
             'choices'   => $this->ds->getGroup(3),
-            'required' => false
         ]);
         $builder->add('ec_activity', 'choice', [
             'label' => 'Gazd. aktiv.',

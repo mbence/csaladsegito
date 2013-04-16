@@ -2,7 +2,10 @@
 
 <h1 class="client center">{{ 'Nyomtatványok készítése'|trans }}</h1>
 
-<table class="client" cellspacing="0" border="0">
+<form id="templateform" class="templateform" action="{{ path('client_templates', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
+    {{ form_errors(form) }}
+
+    <table class="client" cellspacing="0" border="0">
     <tr>
         <th>{{ 'Név'|trans }}:</th>
         <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
@@ -12,15 +15,28 @@
         <td>{{ client.id|cid }}</td>
     </tr>
 </table>
-
-<div class="client-template-list">
-    {% for tpl in templates %}
-        <a href="{{ path('client_templates', {'id': client.id, 'template_id': tpl.id}) }}" class="tpl-list">
-            {{ tpl.name }}
-        </a>
-    {% endfor %}
+<div class="client-template-cont">
+    <div class="client-template-list">
+    {{ form_widget(form.template) }}
+{#        {% for tpl in templates %}
+            <a href="{{ path('client_templates', {'id': client.id, 'template_id': tpl.id}) }}" class="tpl-list">
+                {{ tpl.name }}
+            </a>
+        {% endfor %}#}
+    </div>
 </div>
+<table class="client" cellspacing="0" border="0">
+    <tr>
+        <th>{{ form_errors(form.auto_event) }}{{ form_widget(form.auto_event) }}</th>
+        <td>{{ form_label(form.auto_event) }}</td>
+    </tr>
+    </td></tr>
+</table>
 
 <div class="toppad10 center">
     <button title="{{ 'Bezárás'|trans }}" class="close greybutton" type="reset"><span>{{ 'bezárás'|trans }}</span></button>
+    <button type="submit" class="button" name="maketemplate" value="save"><span>{{ 'nyomtatvány letöltése'|trans }}</span></button>
 </div>
+
+{{ form_widget(form._token) }}
+</form>

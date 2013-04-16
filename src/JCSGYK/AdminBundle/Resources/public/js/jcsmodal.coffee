@@ -11,6 +11,7 @@ JcsModal =
                 closeSpeed: 0
                 opacity: 0.9
             closeOnClick: true
+            width: "600"
             left: "center"
             target: ".modal"
             load: false

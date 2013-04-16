@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * Template
  *
  * @ORM\Table(name="template")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\TemplateRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class Template
