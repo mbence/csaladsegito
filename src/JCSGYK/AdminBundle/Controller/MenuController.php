@@ -70,16 +70,6 @@ class MenuController extends Controller
                 'role'  => 'ROLE_USER',
                 'requirement' => true
             ],
-            // client_templates
-            [
-                'url'   => $this->generateUrl('client_templates', ['id' => $client->getId()]),
-                'label' => 'nyomtatványok',
-                'title' => 'Nyomtatványok készítése',
-                'class' => 'client_templates',
-                'more'  => true,
-                'role'  => 'ROLE_USER',
-                'requirement' => true
-            ],
             // archive_client
             [
                 'url'   => $this->generateUrl('client_archive', ['id' => $client->getId()]),
@@ -118,15 +108,15 @@ class MenuController extends Controller
     public function problemAction(Problem $problem)
     {
         $items = [
-            // problem_history
+            // templates
             [
-                'url'   => $this->generateUrl('client_history', ['id' => $problem->getClient()->getId(), 'problem_id' => $problem->getId()]),
-                'label' => 'esettörténet',
-                'title' => 'Esettörténet',
-                'class' => '',
+                'url'   => $this->generateUrl('templates', ['id' => $problem->getId()]),
+                'label' => 'nyomtatványok',
+                'title' => 'Nyomtatványok készítése',
+                'class' => 'templates',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
-                'requirement' => true
+                'requirement' => $problem->getIsActive()
             ],
             // close problem
             [
@@ -145,7 +135,7 @@ class MenuController extends Controller
                 'title' => 'Probléma újranyitása',
                 'class' => 'close_problem',
                 'more'  => true,
-                'role'  => 'ROLE_USER',
+                'role'  => 'ROLE_ADMIN',
                 'requirement' => !$problem->getClient()->getIsArchived() && !$problem->getIsActive()
             ],
             // delete problem
@@ -155,7 +145,7 @@ class MenuController extends Controller
                 'title' => 'Probléma törlése',
                 'class' => 'delete_problem redtext',
                 'more'  => true,
-                'role'  => 'ROLE_USER',
+                'role'  => 'ROLE_ADMIN',
                 'requirement' => $problem->getIsActive()
             ],
             // edit problem

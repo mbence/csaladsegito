@@ -36,3 +36,9 @@ JcsModal =
     setCloseButton: ->
         $(".modal .modal-content .close").off("click").on "click", =>
             @close()
+
+    onClose: (func) ->
+        if $.isFunction(func)
+            $(".modal").off('onClose').on('onClose', ->
+                func()
+            )

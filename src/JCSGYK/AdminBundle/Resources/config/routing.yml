@@ -25,11 +25,13 @@ client_problems:
     pattern:  /clients/problems/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:problems }
 client_history:
-    pattern:  /clients/history/{id}/{problem_id}
-    defaults: { _controller: JCSGYKAdminBundle:Client:history, problem_id: null }
-client_templates:
-    pattern:  /clients/templates/{id}/{template_id}
-    defaults: { _controller: JCSGYKAdminBundle:Client:templates, id: null, template_id: null }
+    pattern:  /clients/history/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Template:history }
+
+# Templates #
+templates:
+    pattern:  /templates/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Template:make }
 
 
 # Problem #

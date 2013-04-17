@@ -332,6 +332,9 @@ td.caseowner  {
 .center {
     text-align: center;
 }
+.hidden {
+    display: none;
+}
 .client-sub {
     font-size: 12px;
     color: #666;
@@ -593,6 +596,10 @@ table.problem-list td {
 .client-template-list label:hover {
     background-color: #eee;
 }
+.client-template-list input:checked+label {
+    background-color: #ccc;
+}
+
 /* Inquiry */
 .inquiry-stats {
     float: right;

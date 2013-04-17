@@ -2,27 +2,23 @@
 
 <h1 class="client center">{{ 'Nyomtatványok készítése'|trans }}</h1>
 
-<form id="templateform" class="templateform" action="{{ path('client_templates', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
+<form id="templateform" class="templateform" action="{{ path('templates', {'id': problem.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
     {{ form_errors(form) }}
 
     <table class="client" cellspacing="0" border="0">
     <tr>
         <th>{{ 'Név'|trans }}:</th>
-        <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
+        <td>{{ fname(problem.client.firstname, problem.client.lastname, problem.client.title) }}</td>
     </tr>
     <tr>
         <th>{{ 'Ügyfélszám'|trans }}:</th>
-        <td>{{ client.id|cid }}</td>
+        <td>{{ problem.client.id|cid }}</td>
     </tr>
 </table>
+<div class="errors center hidden" id="template-error">{{ 'Kérem válassza ki az elkészítendő nyomtatványt!'|trans }}</div>
 <div class="client-template-cont">
     <div class="client-template-list">
     {{ form_widget(form.template) }}
-{#        {% for tpl in templates %}
-            <a href="{{ path('client_templates', {'id': client.id, 'template_id': tpl.id}) }}" class="tpl-list">
-                {{ tpl.name }}
-            </a>
-        {% endfor %}#}
     </div>
 </div>
 <table class="client" cellspacing="0" border="0">
@@ -40,3 +36,5 @@
 
 {{ form_widget(form._token) }}
 </form>
+
+<iframe id="template-dl-frame" class="hidden"></iframe>

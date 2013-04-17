@@ -124,7 +124,7 @@ JcsProblem =
             false
 
         # close problem
-        $(".close_problem").on "click", (event) ->
+        $(".close_problem").add(".templates").on "click", (event) ->
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
 
@@ -132,6 +132,11 @@ JcsProblem =
                     $(this).removeClass('animbutton')
                     JcsModal.setContent(data)
                     JcsProblem.initCloseProblem()
+                    JcsProblem.initTemplates()
+                    JcsModal.onClose ->
+                        # TODO: under FF cancelled downloads cause some strange errors
+                        # refresh the event list on close
+                        JcsProblem.reloadEvents($("#eventblock #event-id").data("eventid"))
                     # hide the submenu
                     $(this).parent().hide()
 
@@ -234,7 +239,7 @@ JcsProblem =
 
         JcsModal.load()
 
-    reloadEvents: (eventid) ->
+    reloadEvents: (eventid = null) ->
         # get the url
         url = $("#problemblock .event_container").data("url")
         if url
@@ -242,14 +247,29 @@ JcsProblem =
                 $("#problemblock .event_container").html(data)
                 JcsProblem.setupEvents()
 
-                # restore the cursor and current classes
-                $("#problemblock .event_container tr").removeClass("current cursor")
-                $("#problemblock .event_container tr").each ->
-                    if $(this).data("eventid") == eventid
-                        $(this).addClass("cursor current")
+                if eventid
+                    # restore the cursor and current classes
+                    $("#problemblock .event_container tr").removeClass("current cursor")
+                    $("#problemblock .event_container tr").each ->
+                        if $(this).data("eventid") == eventid
+                            $(this).addClass("cursor current")
 
             ).error( (data) =>
                 # there was some error :(
                 AjaxBag.showError(data.statusText)
             )
         false
+
+    initTemplates: ->
+        $("#templateform").submit ->
+            # check for selected template doc
+            if !$("[name='form[template]']:checked").length
+                # no template selected
+                AjaxBag.showError($("#template-error").text())
+
+                return false
+            src = $(this).attr("action") + "?" + $(this).serialize()
+            console.log src
+            $("#template-dl-frame").attr("src", src)
+
+            false
