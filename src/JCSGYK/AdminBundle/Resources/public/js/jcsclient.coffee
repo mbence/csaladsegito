@@ -73,6 +73,39 @@ JcsClient =
             )
         false
 
+    initVisit: ->
+        JcsModal.setCloseButton()
+        # form submit
+        $("#visit_form").submit ->
+            # check for selected user
+            if !$("[name='form[userlist]']:checked").length
+                # no user selected
+                AjaxBag.showError($("#visit-error").text())
+
+                return false
+
+            $(".save-visit").addClass('animbutton')
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                JcsModal.setContent(data)
+
+                # display the result message
+                if JcsModal.find(".result").data("result-notice")
+                    AjaxBag.showNotice(JcsModal.find(".result").data("result-notice"))
+                    JcsModal.close()
+                    # refresh the client block
+                else
+                    JcsClient.initVisit()
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $(".save-visit").removeClass('animbutton')
+            )
+
+            false
+
+        JcsModal.load()
+
     initArchive: ->
         JcsModal.setCloseButton()
 
@@ -150,14 +183,14 @@ JcsClient =
                 )
             false
 
-        $(".new_client").on 'click', (event) ->
+        $(".new_client").on "click", (event) ->
             $("#clientblock .clientcontent").hide()
             HBlocks.closeBlock(4)
             HBlocks.closeBlock(3)
             false
 
         # archive
-        $(".archive_client").on "click", (event) ->
+        $(".archive_client").add(".client_visit").on "click", (event) ->
             event.stopPropagation()
 
             if !$(this).hasClass('animbutton')
@@ -166,9 +199,14 @@ JcsClient =
                 $.get($(this).attr("href"), (data) =>
                     $(this).removeClass('animbutton')
                     JcsModal.setContent(data)
-                    JcsClient.initArchive()
+
+                    if $(this).hasClass('client_visit')
+                        JcsClient.initVisit()
+                    if $(this).hasClass('archive_client')
+                        JcsClient.initArchive()
                     # hide the submenu
-                    $(this).parent().hide()
+                    if $(this).parent().hasClass('sub-vertical')
+                        $(this).parent().hide()
 
                 ).error( (data) =>
                     # there was some error :(

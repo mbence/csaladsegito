@@ -88,7 +88,6 @@ class User extends BaseUser
 //        $metadata->addPropertyConstraint('username', new Assert\);
         $metadata->addPropertyConstraint('email', new Assert\Email);
         $metadata->addPropertyConstraint('roles', new Assert\NotBlank);
-        $metadata->addPropertyConstraint('plainPassword', new Assert\NotBlank);
     }
 
     /**

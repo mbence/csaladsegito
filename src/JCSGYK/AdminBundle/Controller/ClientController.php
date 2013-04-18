@@ -16,7 +16,6 @@ use JCSGYK\AdminBundle\Form\Type\ArchiveType;
 
 class ClientController extends Controller
 {
-
     /**
      * Starting point for the client menu
      *
@@ -27,10 +26,103 @@ class ClientController extends Controller
         return $this->render('JCSGYKAdminBundle:Client:index.html.twig');
     }
 
-
-    public function visitAction()
+    /**
+     * Register a client visit
+     *
+     * @Secure(roles="ROLE_ASSISTANCE")
+     */
+    public function visitAction($id = null)
     {
-        return $this->render('JCSGYKAdminBundle:Client:index.html.twig');
+        // find the users. We need the case admin first, then the assignees of the problems, and then everyone else
+        // only active users will be displayed
+        $request = $this->getRequest();
+
+        if (!empty($id)) {
+
+            $em = $this->getDoctrine()->getManager();
+            $company_id = $this->container->get('jcs.ds')->getCompanyId();
+            $ae = $this->container->get('jcs.twig.adminextension');
+
+            $userlist = [];
+
+            $user_counts = [
+                'case_admin' => 0,
+                'assignees' => 0,
+                'all' => 0
+            ];
+            $listed_user_ids = [];
+
+            // get the client
+            $client = $this->getClient($id);
+            // case admin
+            $ca = $client->getCaseAdmin();
+            if (!empty($ca) && $ca->isEnabled()) {
+                $userlist[$ca->getId()] = $ae->formatName($ca->getFirstname(), $ca->getLastname());
+                $user_counts['case_admin']++;
+                $listed_user_ids[] = $ca->getId();
+            }
+            // assignees
+            $problems = $client->getProblems();
+            foreach ($problems as $problem) {
+                $assignee = $problem->getAssignee();
+                // we only need a user if not already on the list, and are active
+                if (!empty($assignee) &&
+                    $assignee->isEnabled() &&
+                    !in_array($assignee->getId(), $listed_user_ids))
+                {
+                    $userlist[$assignee->getId()] = $ae->formatName($assignee->getFirstname(), $assignee->getLastname());
+                    $user_counts['assignees']++;
+                    $listed_user_ids[] = $assignee->getId();
+                }
+            }
+            // finally we list all active users
+            $users = $em->getRepository('JCSGYKAdminBundle:User')
+                ->findBy(['enabled' => 1, 'companyId' => $company_id], ['lastname' => 'ASC', 'firstname' => 'ASC']);
+
+            foreach ($users as $user) {
+                // superadmins should not appear on the list
+                if (!in_array($user->getId(), $listed_user_ids) && !$user->hasRole('ROLE_SUPER_ADMIN')) {
+                    $userlist[$user->getId()] = $ae->formatName($user->getFirstname(), $user->getLastname());
+                    $user_counts['all']++;
+                    $listed_user_ids[] = $user->getId();
+                }
+            }
+
+            // make the form
+            $form = $this->createFormBuilder()
+                ->add('userlist', 'choice', [
+                    'label' => '',
+                    'choices' => $userlist,
+                    'expanded' => true,
+                    'multiple' => false,
+                ])
+                ->getForm();
+
+            // save the visit
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    $user= $this->get('security.context')->getToken()->getUser();
+
+                    // TODO: create the client visit task
+
+
+
+
+                    $this->get('session')->setFlash('notice', 'Megkeresés elmentve');
+
+                    return $this->render('JCSGYKAdminBundle:Dialog:visit.html.twig', [
+                        'success' => true,
+                    ]);
+                }
+            }
+
+            return $this->render('JCSGYKAdminBundle:Dialog:visit.html.twig', ['client' => $client, 'form' => $form->createView(), 'user_counts' => $user_counts]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
     }
 
     /**

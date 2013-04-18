@@ -1,0 +1,50 @@
+{# Client visit #}
+
+{# if all went well, we just need to close the popup #}
+{% if success is defined and success %}
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% else %}
+    <h1 class="client center">{{ 'Megkeresés rögzítése'|trans }}</h1>
+
+    <form id="visit_form" class="templateform" action="{{ path('client_visit', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
+        {{ form_errors(form) }}
+
+        <table class="client" cellspacing="0" border="0">
+        <tr>
+            <th>{{ 'Név'|trans }}:</th>
+            <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Ügyfélszám'|trans }}:</th>
+            <td>{{ client.id|cid }}</td>
+        </tr>
+    </table>
+    <div class="errors center hidden" id="visit-error">{{ 'Kérem válasszon ügyintézőt!'|trans }}</div>
+    <div class="client-template-cont">
+        <div class="client-template-list">
+            {% if user_counts['case_admin'] %}
+                <div class="visit_header">{{ 'Esetgazda'|trans }}</div>
+            {% endif %}
+            {% for child in form.userlist %}
+                {% if loop.index == user_counts['case_admin'] + 1 and user_counts['assignees'] %}
+                    <div class="visit_header">{{ 'Felelősök'|trans }}</div>
+                {% elseif loop.index == user_counts['case_admin'] + user_counts['assignees'] + 1 and user_counts['all'] %}
+                    <div class="visit_header">{{ 'Ügyintézők'|trans }}</div>
+                {% endif %}
+                <div>
+                {{ form_widget(child) }}
+                {{ form_label(child) }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="toppad10 center">
+        <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
+        <button type="submit" class="button save-visit" name="save-visit" value="save"><span>{{ 'megkeresés rögzítése'|trans }}</span></button>
+    </div>
+
+    {{ form_widget(form._token) }}
+    </form>
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% endif %}
