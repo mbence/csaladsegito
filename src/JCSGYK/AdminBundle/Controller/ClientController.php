@@ -16,13 +16,27 @@ use JCSGYK\AdminBundle\Form\Type\ArchiveType;
 
 class ClientController extends Controller
 {
+
+    /**
+     * Starting point for the client menu
+     *
+     * @Secure(roles="ROLE_USER")
+     */
     public function indexAction()
+    {
+        return $this->render('JCSGYKAdminBundle:Client:index.html.twig');
+    }
+
+
+    public function visitAction()
     {
         return $this->render('JCSGYKAdminBundle:Client:index.html.twig');
     }
 
     /**
      * Edits the client data
+     *
+     * @Secure(roles="ROLE_USER")
      */
     public function editAction($id = null)
     {
@@ -44,7 +58,9 @@ class ClientController extends Controller
         }
 
         if (!empty($client)) {
-            if ($client->getIsArchived()) {
+            $sec = $this->get('security.context');
+            // see if this user is allowed to edit - if not we simply redirect her to the view page
+            if (!empty($id) && !$client->canEdit($sec)) {
                 return $this->redirect($this->generateUrl('client_view', ['id' => $id]));
             }
 
@@ -102,6 +118,11 @@ class ClientController extends Controller
         }
     }
 
+    /**
+     * Archive clients
+     *
+     * @Secure(roles="ROLE_ADMIN")
+     */
     public function archiveAction($id)
     {
         $request = $this->getRequest();
@@ -176,6 +197,11 @@ class ClientController extends Controller
     }
 
 
+    /**
+     * View client details
+     *
+     * @Secure(roles="ROLE_USER")
+     */
     public function viewAction($id)
     {
         if (!empty($id)) {
@@ -190,6 +216,12 @@ class ClientController extends Controller
         }
     }
 
+    /**
+     * Get only the problem list of the client.
+     * Used with the refreshProblems action
+     *
+     * @Secure(roles="ROLE_USER")
+     */
     public function problemsAction($id)
     {
         if (!empty($id)) {
@@ -203,16 +235,25 @@ class ClientController extends Controller
         }
     }
 
+    /**
+     * Get the client data
+     * @param int $id client id
+     * @return Client
+     */
     protected function getClient($id)
     {
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
-
-        // get client data
 
         return $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')
             ->findOneBy(['id' => $id, 'companyId' => $company_id]);
     }
 
+    /**
+     * Client search
+     * @param string $q search string
+     *
+     * @Secure(roles="ROLE_USER")
+     */
     public function searchAction($q)
     {
         $company_id = $this->container->get('jcs.ds')->getCompanyId();

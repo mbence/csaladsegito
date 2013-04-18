@@ -59,8 +59,12 @@ class MenuController extends Controller
 
     public function clientAction(Client $client)
     {
+        $sec = $this->get('security.context');
+        // true if only assistance roles are present
+        $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILYHELP') && !$sec->isGranted('ROLE_CHILD_WELFARE');
+
         $items = [
-            // client_histroy
+            // client_histroy - Template:history
             [
                 'url'   => $this->generateUrl('client_history', ['id' => $client->getId()]),
                 'label' => 'esettörténet',
@@ -70,7 +74,7 @@ class MenuController extends Controller
                 'role'  => 'ROLE_USER',
                 'requirement' => true
             ],
-            // archive_client
+            // archive_client - Client:archive
             [
                 'url'   => $this->generateUrl('client_archive', ['id' => $client->getId()]),
                 'label' => 'archiválás',
@@ -80,7 +84,7 @@ class MenuController extends Controller
                 'role'  => 'ROLE_ADMIN',
                 'requirement' => $client->getIsArchived() == 0
             ],
-            // reopen_client
+            // reopen_client - Client:archive
             [
                 'url'   => $this->generateUrl('client_archive', ['id' => $client->getId()]),
                 'label' => 'újranyitás',
@@ -90,14 +94,26 @@ class MenuController extends Controller
                 'role'  => 'ROLE_ADMIN',
                 'requirement' => $client->getIsArchived() == 1
             ],
-            // edit_client
+            // edit_client - Client:edit
+            // this is the main action for familiy help, but its only secondary for assistance
             [
                 'url'   => $this->generateUrl('client_edit', ['id' => $client->getId()]),
                 'label' => 'szerkesztés',
                 'title' => 'Ügyfél szerkesztése',
-                'class' => 'button edit_client',
-                'more'  => false,
+                'class' => 'edit_client ' . ($assistance ? 'greybutton' : 'button'),
+                'more'  => $assistance ? true: false,
                 'role'  => 'ROLE_USER',
+                'requirement' => $client->canEdit($sec)
+            ],
+            // client_visit - Client:visit
+            // this is the main action for assistance
+            [
+                'url'   => $this->generateUrl('client_visit', ['id' => $client->getId()]),
+                'label' => 'megkeresés',
+                'title' => 'Ügyfél megkeresés',
+                'class' => 'button client_visit',
+                'more'  => false,
+                'role'  => 'ROLE_ASSISTANCE',
                 'requirement' => $client->getIsArchived() == 0
             ]
         ];

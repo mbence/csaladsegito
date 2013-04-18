@@ -5,6 +5,7 @@ namespace JCSGYK\AdminBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\SecurityContext;
 
 /**
  * Client
@@ -1796,5 +1797,27 @@ class Client
     public function getIsArchived()
     {
         return $this->isArchived;
+    }
+
+    /**
+     * Decide if the give user can edit this record
+     *
+     * A user can edit a certain record if
+     * - the client is not archived
+     * - she has ROLE_ADMIN
+     * - she is the creator of the record
+     * - she is the case admin of this client
+     *
+     * @param SecurityContext $sec
+     */
+    public function canEdit(SecurityContext $sec)
+    {
+        $user_id = $sec->getToken()->getUser()->getId();
+
+        return $this->isArchived == 0 && (
+            $sec->isGranted('ROLE_ADMIN') ||
+            $this->creator->getID() == $user_id ||
+            (!empty($this->caseAdmin) && $this->caseAdmin->getId() == $user_id)
+        );
     }
 }
