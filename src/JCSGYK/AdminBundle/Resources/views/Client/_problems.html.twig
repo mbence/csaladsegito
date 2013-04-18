@@ -1,7 +1,9 @@
 {# Problems #}
 <div class="client-sub {% if notoggle is not defined %}togglable{% endif %}">{{ 'problémák'|trans }}</div>
 <div>
-    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_problem']} %}
+    {% if can_edit is defined and can_edit %}
+        {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_problem']} %}
+    {% endif %}
 
     {% if problems is defined and problems|length %}
         <div class="smallopt right toppad ">

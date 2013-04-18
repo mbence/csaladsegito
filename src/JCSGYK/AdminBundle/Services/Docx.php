@@ -179,7 +179,7 @@ class Docx
             'ev' => date('Y'),
         ];
         // case history
-        if (!empty($data['history'])) {
+        if (isset($data['history'])) {
             $re['sp']['esettortenet'] = $data['history'];
         }
 

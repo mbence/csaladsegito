@@ -115,6 +115,7 @@ class ClientType extends AbstractType
                 return $er->createQueryBuilder('u')
                     ->orderBy('u.lastname', 'ASC', 'u.firstname', 'ASC');
             },
+            'required' => false,
         ]);
 
         // missing fields: country, location_country, doc_file, job_type

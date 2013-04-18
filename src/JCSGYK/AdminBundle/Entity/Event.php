@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\SecurityContext;
 
 /**
  * Event
@@ -496,5 +497,27 @@ class Event
     public function getIsDeleted()
     {
         return $this->isDeleted;
+    }
+
+    /**
+     * Decide if the given user can edit this record
+     *
+     * A user can edit a certain record if
+     * - the events problem is active
+     * - she has ROLE_ADMIN
+     * - she is the creator of the record
+     * - she is the assignee of this events problem
+     *
+     * @param SecurityContext $sec
+     */
+    public function canEdit(SecurityContext $sec)
+    {
+        $user_id = $sec->getToken()->getUser()->getId();
+
+        return $this->problem->getIsActive() == 1 && (
+            $sec->isGranted('ROLE_ADMIN') ||
+            $this->creator->getID() == $user_id ||
+            ($this->problem->getAssignee() && $this->problem->getAssignee()->getId() == $user_id)
+        );
     }
 }

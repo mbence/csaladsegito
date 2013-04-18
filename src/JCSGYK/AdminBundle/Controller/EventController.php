@@ -6,12 +6,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 use JCSGYK\AdminBundle\Entity\Event;
 use JCSGYK\AdminBundle\Form\Type\EventType;
 
 class EventController extends Controller
 {
+    /**
+     * Display event deatails
+     *
+     * @Secure(roles="ROLE_USER")
+     */
     public function viewAction($id)
     {
         if (!empty($id)) {
@@ -33,6 +39,8 @@ class EventController extends Controller
 
     /**
      * Edits the event
+     *
+     * @Secure(roles="ROLE_USER")
      */
     public function editAction($id = null, $problem_id = null)
     {
@@ -59,8 +67,17 @@ class EventController extends Controller
         }
 
         if (!empty($event)) {
-            if (!empty($problem) && !$problem->getIsActive()) {
-                return $this->redirect($this->generateUrl('event_view', ['id' => $id]));
+            // check user rights
+            if (empty($id)) {
+                // create a new event
+                $sec = $this->get('security.context');
+                if (!$problem->canEdit($sec)) {
+                    throw new AccessDeniedException();
+                }
+            }
+            else {
+                // edit existing event
+                $this->canEdit($event);
             }
 
             $form = $this->createForm(new EventType($this->container->get('jcs.ds')), $event);
@@ -100,16 +117,24 @@ class EventController extends Controller
         }
     }
 
+    /**
+     * Delete an event
+     *
+     * @Secure(roles="ROLE_USER")
+     */
     public function deleteAction($id)
     {
         $request = $this->getRequest();
-        
+
         if (!empty($id)) {
             // get the event
             $event = $this->getEvent($id);
             if (empty($event)) {
                 throw new HttpException(400, "Bad request");
             }
+
+            // check user rights
+            $this->canEdit($event);
 
             $form = $this->createFormBuilder()->getForm();
 
@@ -143,5 +168,21 @@ class EventController extends Controller
         else {
             throw new HttpException(400, "Bad request");
         }
+    }
+
+    /**
+     * Check if this user is allowed to edit - if not we throw an exception
+     * @param \JCSGYK\AdminBundle\Entity\Event $event
+     * @return true on success
+     */
+    private function canEdit(Event $event)
+    {
+        $sec = $this->get('security.context');
+        if (!$event->canEdit($sec)) {
+
+            throw new AccessDeniedException();
+        }
+
+        return true;
     }
 }

@@ -47,6 +47,8 @@ class ClientController extends Controller
         $client = null;
         $em = $this->getDoctrine()->getManager();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $sec = $this->get('security.context');
+        $user= $sec->getToken()->getUser();
 
         if (!empty($id)) {
             // get the client data
@@ -55,6 +57,11 @@ class ClientController extends Controller
         else {
             // new client
             $client = new Client();
+
+            // family help and child welfare users get the case admin set automatically
+            if ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE')) {
+                $client->setCaseAdmin($user);
+            }
         }
 
         if (!empty($client)) {
@@ -71,8 +78,6 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-
-                    $user= $this->get('security.context')->getToken()->getUser();
                     // set modifier user
                     $client->setModifier($user);
 
@@ -209,7 +214,9 @@ class ClientController extends Controller
             $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
         }
         if (!empty($client)) {
-            return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'problems' => $problems]);
+            $sec = $this->get('security.context');
+
+            return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'problems' => $problems, 'can_edit' => $client->canEdit($sec)]);
         }
         else {
             throw new HttpException(400, "Bad request");

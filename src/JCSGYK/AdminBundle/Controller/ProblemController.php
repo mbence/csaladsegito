@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 use JCSGYK\AdminBundle\Entity\Problem;
 use JCSGYK\AdminBundle\Form\Type\ProblemType;
@@ -13,6 +14,11 @@ use JCSGYK\AdminBundle\Form\Type\CloseProblemType;
 
 class ProblemController extends Controller
 {
+    /**
+     * Show the problem details
+     *
+     * @Secure(roles="ROLE_USER")
+     */
     public function viewAction($id)
     {
         if (!empty($id)) {
@@ -21,7 +27,14 @@ class ProblemController extends Controller
             $events = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->getEventList($id);
         }
         if (!empty($problem)) {
-            return $this->render('JCSGYKAdminBundle:Problem:view.html.twig', ['client' => $problem->getClient(), 'problem' => $problem, 'events' => $events]);
+            $sec = $this->get('security.context');
+
+            return $this->render('JCSGYKAdminBundle:Problem:view.html.twig', [
+                'client' => $problem->getClient(),
+                'problem' => $problem,
+                'events' => $events,
+                'can_edit' => $problem->canEdit($sec)
+            ]);
         }
         else {
             throw new HttpException(400, "Bad request");
@@ -36,6 +49,8 @@ class ProblemController extends Controller
 
     /**
      * Edits the problem
+     *
+     * @Secure(roles="ROLE_USER")
      */
     public function editAction($id = null, $client_id = null)
     {
@@ -51,6 +66,8 @@ class ProblemController extends Controller
         }
 
         $em = $this->getDoctrine()->getManager();
+        $sec = $this->get('security.context');
+        $user= $sec->getToken()->getUser();
 
         if (!empty($id)) {
             // get the problem
@@ -60,11 +77,25 @@ class ProblemController extends Controller
             // new problem
             $problem = new Problem();
             $problem->setIsActive(true);
+
+            // family help and child welfare users get the assignee set automatically
+            if ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE')) {
+                $problem->setAssignee($user);
+            }
         }
 
         if (!empty($problem)) {
-            if (!$problem->getIsActive()) {
-                return $this->redirect($this->generateUrl('problem_view', ['id' => $id]));
+            // check user rights
+            if (empty($id)) {
+                // create a new problem
+                $sec = $this->get('security.context');
+                if (!$client->canEdit($sec)) {
+                    throw new AccessDeniedException();
+                }
+            }
+            else {
+                // edit existing problem
+                $this->canEdit($problem);
             }
 
             $form = $this->createForm(new ProblemType($this->container->get('jcs.ds')), $problem);
@@ -74,8 +105,6 @@ class ProblemController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-
-                    $user= $this->get('security.context')->getToken()->getUser();
                     // set modifier user
                     $problem->setModifier($user);
 
@@ -121,6 +150,11 @@ class ProblemController extends Controller
         }
     }
 
+    /**
+     * Closes the problem
+     *
+     * @Secure(roles="ROLE_USER")
+     */
     public function closeAction($id)
     {
         $request = $this->getRequest();
@@ -131,6 +165,9 @@ class ProblemController extends Controller
             if (empty($problem)) {
                 throw new HttpException(400, "Bad request");
             }
+
+            // check user rights
+            $this->canEdit($problem);
 
             $form = $this->createForm(new CloseProblemType($this->container->get('jcs.ds'), $problem->getIsActive()), $problem);
 
@@ -179,6 +216,11 @@ class ProblemController extends Controller
         }
     }
 
+    /**
+     * Get the list of events for a problem
+     *
+     * @Secure(roles="ROLE_USER")
+     */
     public function getEventsAction($id)
     {
         if (!empty($id)) {
@@ -186,23 +228,37 @@ class ProblemController extends Controller
             $events = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->getEventList($id);
         }
         if (!empty($problem)) {
-            return $this->render('JCSGYKAdminBundle:Problem:_events.html.twig', ['problem' => $problem, 'events' => $events]);
+            $sec = $this->get('security.context');
+
+            return $this->render('JCSGYKAdminBundle:Problem:_events.html.twig', [
+                'problem' => $problem,
+                'events' => $events,
+                'can_edit' => $problem->canEdit($sec)
+            ]);
         }
         else {
             throw new HttpException(400, "Bad request");
         }
     }
 
+    /**
+     * Delete a problem
+     *
+     * @Secure(roles="ROLE_ADMIN")
+     */
     public function deleteAction($id)
     {
         $request = $this->getRequest();
-        
+
         if (!empty($id)) {
-            // get the event
+            // get the problem
             $problem = $this->getProblem($id);
             if (empty($problem)) {
                 throw new HttpException(400, "Bad request");
             }
+
+            // check user rights
+            $this->canEdit($problem);
 
             $form = $this->createFormBuilder()->getForm();
 
@@ -239,5 +295,21 @@ class ProblemController extends Controller
         else {
             throw new HttpException(400, "Bad request");
         }
+    }
+
+    /**
+     * Check if this user is allowed to edit - if not we throw an exception
+     * @param \JCSGYK\AdminBundle\Entity\Problem $problem
+     * @return true on success
+     */
+    private function canEdit(Problem $problem)
+    {
+        $sec = $this->get('security.context');
+        if (!$problem->canEdit($sec)) {
+
+            throw new AccessDeniedException();
+        }
+
+        return true;
     }
 }

@@ -1,10 +1,12 @@
 {# Events #}
 <div class="client-sub {% if notoggle is not defined %}togglable{% endif %}">{{ 'események'|trans }}</div>
 <div>
-    <div class="toppad ">
-        {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_event']} %}
-        <div class="clear"></div>
-    </div>
+    {% if can_edit is defined and can_edit %}
+        <div class="toppad ">
+            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_event']} %}
+            <div class="clear"></div>
+        </div>
+    {% endif %}
     {% if events is defined and events|length %}
     <table id="event-list" class="client problem-list event-list" cellspacing="0" border="0">
         <thead>

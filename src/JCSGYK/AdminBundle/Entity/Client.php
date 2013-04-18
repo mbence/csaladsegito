@@ -318,6 +318,7 @@ class Client
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="clientCaseAdmin", fetch="EAGER")
      * @ORM\JoinColumn(name="case_admin", referencedColumnName="id")
+     * @Assert\NotBlank()
      */
     private $caseAdmin;
 

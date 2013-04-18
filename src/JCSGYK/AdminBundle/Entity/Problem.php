@@ -5,6 +5,7 @@ namespace JCSGYK\AdminBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\SecurityContext;
 
 /**
  * Problem
@@ -51,6 +52,7 @@ class Problem
      * @var integer
      *
      * @ORM\Column(name="type", type="integer", nullable=true)
+     * @Assert\NotBlank()
      */
     private $type;
 
@@ -635,5 +637,27 @@ class Problem
     public function getIsDeleted()
     {
         return $this->isDeleted;
+    }
+
+    /**
+     * Decide if the given user can edit this record
+     *
+     * A user can edit a certain record if
+     * - the problem is active
+     * - she has ROLE_ADMIN
+     * - she is the creator of the record
+     * - she is the assignee of this problem
+     *
+     * @param SecurityContext $sec
+     */
+    public function canEdit(SecurityContext $sec)
+    {
+        $user_id = $sec->getToken()->getUser()->getId();
+
+        return $this->isActive == 1 && (
+            $sec->isGranted('ROLE_ADMIN') ||
+            $this->creator->getID() == $user_id ||
+            (!empty($this->assignee) && $this->assignee->getId() == $user_id)
+        );
     }
 }

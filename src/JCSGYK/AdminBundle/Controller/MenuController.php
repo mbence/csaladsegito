@@ -61,7 +61,7 @@ class MenuController extends Controller
     {
         $sec = $this->get('security.context');
         // true if only assistance roles are present
-        $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILYHELP') && !$sec->isGranted('ROLE_CHILD_WELFARE');
+        $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE');
 
         $items = [
             // client_histroy - Template:history
@@ -72,7 +72,7 @@ class MenuController extends Controller
                 'class' => '',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
-                'requirement' => true
+                'requirement' => $client->canEdit($sec)
             ],
             // archive_client - Client:archive
             [
@@ -123,6 +123,7 @@ class MenuController extends Controller
 
     public function problemAction(Problem $problem)
     {
+        $sec = $this->get('security.context');
         $items = [
             // templates
             [
@@ -132,7 +133,7 @@ class MenuController extends Controller
                 'class' => 'templates',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
-                'requirement' => $problem->getIsActive()
+                'requirement' => $problem->canEdit($sec)
             ],
             // close problem
             [
@@ -142,7 +143,7 @@ class MenuController extends Controller
                 'class' => 'close_problem',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
-                'requirement' => !$problem->getClient()->getIsArchived() && $problem->getIsActive()
+                'requirement' => !$problem->getClient()->getIsArchived() && $problem->canEdit($sec)
             ],
             // reopen problem
             [
@@ -162,7 +163,7 @@ class MenuController extends Controller
                 'class' => 'delete_problem redtext',
                 'more'  => true,
                 'role'  => 'ROLE_ADMIN',
-                'requirement' => $problem->getIsActive()
+                'requirement' => $problem->canEdit($sec)
             ],
             // edit problem
             [
@@ -172,7 +173,7 @@ class MenuController extends Controller
                 'class' => 'button edit_problem',
                 'more'  => false,
                 'role'  => 'ROLE_USER',
-                'requirement' => $problem->getIsActive()
+                'requirement' => $problem->canEdit($sec)
             ],
         ];
 
@@ -181,6 +182,7 @@ class MenuController extends Controller
 
     public function eventAction(Event $event)
     {
+        $sec = $this->get('security.context');
         $items = [
             // delete event
             [
@@ -190,7 +192,7 @@ class MenuController extends Controller
                 'class' => 'delete_event redtext',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
-                'requirement' => $event->getProblem()->getIsActive()
+                'requirement' => $event->canEdit($sec)
             ],
             // edit event
             [
@@ -200,7 +202,7 @@ class MenuController extends Controller
                 'class' => 'button edit_event',
                 'more'  => false,
                 'role'  => 'ROLE_USER',
-                'requirement' => $event->getProblem()->getIsActive()
+                'requirement' => $event->canEdit($sec)
             ],
         ];
 

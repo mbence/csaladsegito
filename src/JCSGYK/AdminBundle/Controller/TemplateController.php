@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\Problem;
@@ -80,6 +81,9 @@ class TemplateController extends Controller
             if (empty($problem)) {
                 throw new HttpException(400, "Bad request");
             }
+
+            // check user rights
+            $this->canEdit($problem);
 
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
             $em = $this->getDoctrine()->getManager();
@@ -166,19 +170,25 @@ class TemplateController extends Controller
             $problems = [$problem];
         }
 
-        // get events
-        // we cant use the Doctrine relation to get the events, because we only need undeleted events and in ascending order
-        $problem_repo = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem');
-        $events = [];
-        foreach ($problems as $problem) {
-            $events[$problem->getId()] = $problem_repo->getEventList($problem->getId(), 'ASC');
-        }
+        if (!empty($problems)) {
+            // get events
+            // we cant use the Doctrine relation to get the events, because we only need undeleted events and in ascending order
+            $problem_repo = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem');
+            $events = [];
+            foreach ($problems as $problem) {
+                $events[$problem->getId()] = $problem_repo->getEventList($problem->getId(), 'ASC');
+            }
 
-        // render the sub-template for the event list
-        $content = $this->renderView(
-            'JCSGYKAdminBundle:Elements:history.html.twig',
-            array('problems' => $problems, 'events' => $events)
-        );
+            // render the sub-template for the event list
+            $content = $this->renderView(
+                'JCSGYKAdminBundle:Elements:history.html.twig',
+                array('problems' => $problems, 'events' => $events)
+            );
+        }
+        else {
+            // if the client has no problems, we send an empty content
+            $content = '';
+        }
 
         // return the field map for the template
         return [
@@ -246,5 +256,21 @@ class TemplateController extends Controller
         }
 
         return $debt_list;
+    }
+
+    /**
+     * Check if this user is allowed to edit - if not we throw an exception
+     * @param \JCSGYK\AdminBundle\Entity\Problem $problem
+     * @return true on success
+     */
+    private function canEdit(Problem $problem)
+    {
+        $sec = $this->get('security.context');
+        if (!$problem->canEdit($sec)) {
+
+            throw new AccessDeniedException();
+        }
+
+        return true;
     }
 }
