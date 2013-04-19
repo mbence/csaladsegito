@@ -13,6 +13,7 @@ use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Form\Type\ClientType;
 use JCSGYK\AdminBundle\Entity\Archive;
 use JCSGYK\AdminBundle\Form\Type\ArchiveType;
+use JCSGYK\AdminBundle\Entity\Task;
 
 class ClientController extends Controller
 {
@@ -42,6 +43,8 @@ class ClientController extends Controller
             $em = $this->getDoctrine()->getManager();
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
             $ae = $this->container->get('jcs.twig.adminextension');
+            $sec = $this->get('security.context');
+            $user= $sec->getToken()->getUser();
 
             $userlist = [];
 
@@ -61,7 +64,7 @@ class ClientController extends Controller
                 $user_counts['case_admin']++;
                 $listed_user_ids[] = $ca->getId();
             }
-            // assignees
+            // problem assignees
             $problems = $client->getProblems();
             foreach ($problems as $problem) {
                 $assignee = $problem->getAssignee();
@@ -103,12 +106,21 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
+                    $data = $form->getData();
                     $user= $this->get('security.context')->getToken()->getUser();
 
-                    // TODO: create the client visit task
+                    $assignee = $em->getRepository("JCSGYKAdminBundle:User")->find($data['userlist']);
 
+                    $task = new Task();
+                    $task->setAssignee($assignee);
+                    $task->setCreator($user);
+                    $task->setCreatedAt(new \Datetime);
+                    $task->setClient($client);
+                    $task->setType(1); // visits
+                    $task->setStatus(1);
 
-
+                    $em->persist($task);
+                    $em->flush();
 
                     $this->get('session')->setFlash('notice', 'Megkeresés elmentve');
 

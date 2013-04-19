@@ -126,6 +126,10 @@ class AdminExtension extends \Twig_Extension
             elseif ('sdt' ==  $type) {
                 return $d->format('Y.m.d. H:i:s');
             }
+            // short date time with optional date (only if date is not today)
+            elseif ('osdt' ==  $type) {
+                return $d->format('ymd') == date('ymd') ? $d->format('H:i:s') : $d->format('Y.m.d. H:i:s');
+            }
             // long date (with month name)
             else {
                 return $d->format('Y. ') .  $this->translator->trans($this->dbparams->getMonth($d->format('n'))) . $d->format(' j.');

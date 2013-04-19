@@ -1,0 +1,30 @@
+{# Visit tasks #}
+<div class="client-sub">{{ 'megkeresések (%db% db)'|trans({'%db%': tasks|length}) }}</div>
+<div>
+    {% if tasks is defined and tasks|length %}
+        <table id="tasks-visits" class="task-list" cellspacing="0" border="0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ügyfél szám</th>
+                    <th>Név</th>
+                    <th>Dátum</th>
+                    <th>Státus</th>
+                </tr>
+            </thead>
+            <tbody class="walkable">
+            {% for task in tasks %}
+            <tr data-taskid="{{ task.id }}" data-url="{{ task.url }}" tabindex="{{ loop.index + 100 }}" {% if loop.first %}class="cursor"{% endif %}>
+                <td>{{ tasks|length - loop.index + 1 }}</td>
+                <td>{{ task.client.id|cid }}</td>
+                <td><strong>{{ fname(task.client.firstname, task.client.lastname, task.client.title) }}</strong></td>
+                <td>{{ task.createdAt|fdate('osdt') }}</td>
+                <td>{{ task.status }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="noinfo">{{ 'Nincsen megjeleníthető megkeresés'|trans }}</div>
+    {% endif %}
+</div>

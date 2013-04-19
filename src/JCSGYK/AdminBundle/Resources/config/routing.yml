@@ -4,8 +4,10 @@ home:
 
 # Clients #
 clients:
-    pattern:  /clients
-    defaults: { _controller: JCSGYKAdminBundle:Client:index }
+    pattern:  /clients/{client_id}/{problem_id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:index, client_id: null, problem_id: null }
+    requirements:
+        client_id: \d+
 client_search:
     pattern:  /clients/search/{q}
     defaults: { _controller: JCSGYKAdminBundle:Client:search, q: '' }

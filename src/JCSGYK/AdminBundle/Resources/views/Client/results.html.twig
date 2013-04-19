@@ -11,7 +11,7 @@
         <tr data-userid="{{ p.id }}" tabindex="{{ loop.index + 99 }}" {% if loop.first %}class="cursor"{% endif %}>
             <td>
                 <a name="r{{ p.id }}"></a>
-                {{ p.id }}
+                {{ p.id|cid }}
             </td>
             <td>
                 {% if p.title %}{{ p.title }}{% endif %}

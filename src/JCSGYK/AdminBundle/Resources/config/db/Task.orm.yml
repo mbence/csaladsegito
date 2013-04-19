@@ -1,0 +1,42 @@
+Task:
+    type: entity
+    table: task
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        assignedTo:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: assigned_to
+        type:
+            type: smallint
+            nullable: true
+        status:
+            type: boolean
+            nullable: true
+        clientId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: client_id
+        problemId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: problem_id
+        createdAt:
+            type: datetime
+            nullable: true
+            column: created_at
+        createdBy:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: created_by
+    lifecycleCallbacks: {  }

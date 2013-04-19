@@ -62,6 +62,11 @@ class User extends BaseUser
      */
     private $archivecreated;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Task", mappedBy="assignee")
+     */
+    private $tasks;
+
     public function __construct($salt = null)
     {
         parent::__construct();
@@ -74,6 +79,7 @@ class User extends BaseUser
         $this->clientcreated = new ArrayCollection();
         $this->clientmodified = new ArrayCollection();
         $this->archivecreated = new ArrayCollection();
+        $this->tasks = new ArrayCollection();
     }
     public function __toString()
     {
@@ -85,7 +91,6 @@ class User extends BaseUser
         $metadata->addPropertyConstraint('firstname', new Assert\NotBlank);
         $metadata->addPropertyConstraint('lastname', new Assert\NotBlank);
         $metadata->addPropertyConstraint('username', new Assert\NotBlank);
-//        $metadata->addPropertyConstraint('username', new Assert\);
         $metadata->addPropertyConstraint('email', new Assert\Email);
         $metadata->addPropertyConstraint('roles', new Assert\NotBlank);
     }
@@ -300,5 +305,38 @@ class User extends BaseUser
     public function getArchivecreated()
     {
         return $this->archivecreated;
+    }
+
+    /**
+     * Add tasks
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Task $tasks
+     * @return User
+     */
+    public function addTask(\JCSGYK\AdminBundle\Entity\Task $tasks)
+    {
+        $this->tasks[] = $tasks;
+
+        return $this;
+    }
+
+    /**
+     * Remove tasks
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Task $tasks
+     */
+    public function removeTask(\JCSGYK\AdminBundle\Entity\Task $tasks)
+    {
+        $this->tasks->removeElement($tasks);
+    }
+
+    /**
+     * Get tasks
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTasks()
+    {
+        return $this->tasks;
     }
 }

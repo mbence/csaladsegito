@@ -756,3 +756,30 @@ g .menuitems a {
     margin: 10px 0 4px 0;
     text-align: center;
 }
+
+/* Tasks */
+.tasks {
+    width: 500px;
+    float: left;
+}
+table.task-list {
+    color: #039;
+    font-size: 13px;
+    width: 100%;
+}
+table.task-list th {
+    color: #5661a2;
+    font-weight: normal;
+    padding: 5px 6px 5px;
+    border-bottom: 1px solid #DDD;
+    text-align: left;
+    white-space: nowrap;
+}
+table.task-list td {
+    padding: 5px 6px 5px;
+    border-bottom: 1px solid #DDD;
+    cursor: pointer;
+}
+table.task-list tr:hover td {
+    background-color: #f5f5f5;
+}

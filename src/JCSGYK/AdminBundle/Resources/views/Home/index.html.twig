@@ -6,7 +6,14 @@
     {% if debug is defined %}
         {{ debug }}<br>
     {% endif %}
-    Welcome!
+    <div class="tasks">
+        <br>
+        <h1 class="client">{{ 'Teendők'|trans }}</h1>
+        
+        <div class="tasks-visits">
+            {% render(controller('JCSGYKAdminBundle:Task:visits')) %}
+        </div>
+    </div>
 
     {% if is_granted(['ROLE_ASSISTANCE']) %}
     <div class="inquiry-stats" data-action="{{ path('inquiry_stat') }}">
