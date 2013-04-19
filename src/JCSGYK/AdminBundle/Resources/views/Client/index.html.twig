@@ -29,7 +29,11 @@
                 <div class="loading">
                     Betöltés...
                 </div>
-                <div class="clientcontent"></div>
+                <div class="clientcontent">
+                    {%- if client_id is defined  and client_id %}
+                        {% render(controller('JCSGYKAdminBundle:Client:view', {'id': client_id})) %}
+                    {% endif -%}
+                </div>
             </div></div>
 
             <div id="problemblock" tabindex="300"><div class="leftpad rightpad fullheight">
@@ -37,7 +41,11 @@
                 <div class="loading">
                     Betöltés...
                 </div>
-                <div class="problemcontent"></div>
+                <div class="problemcontent">
+                    {%- if problem_id is defined  and problem_id %}
+                        {% render(controller('JCSGYKAdminBundle:Problem:view', {'id': problem_id})) %}
+                    {% endif -%}
+                </div>
             </div></div>
 
             <div id="eventblock" tabindex="400"><div class="leftpad rightpad fullheight">

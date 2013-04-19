@@ -1,4 +1,4 @@
-JcsAdmin =
+JcsSettings =
     init: ->
         # users
         if $("#userlist").length

@@ -22,9 +22,9 @@ class ClientController extends Controller
      *
      * @Secure(roles="ROLE_USER")
      */
-    public function indexAction()
+    public function indexAction($client_id = null, $problem_id = null)
     {
-        return $this->render('JCSGYKAdminBundle:Client:index.html.twig');
+        return $this->render('JCSGYKAdminBundle:Client:index.html.twig', ['client_id' => $client_id, 'problem_id' => $problem_id]);
     }
 
     /**
@@ -114,10 +114,8 @@ class ClientController extends Controller
                     $task = new Task();
                     $task->setAssignee($assignee);
                     $task->setCreator($user);
-                    $task->setCreatedAt(new \Datetime);
                     $task->setClient($client);
-                    $task->setType(1); // visits
-                    $task->setStatus(1);
+                    $task->setType(Task::TYPE_VISIT);
 
                     $em->persist($task);
                     $em->flush();

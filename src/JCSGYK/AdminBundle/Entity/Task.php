@@ -22,7 +22,7 @@ class Task
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="tasks")
      * @ORM\JoinColumn(name="assigned_to", referencedColumnName="id")
      */
     private $assignee;
@@ -35,9 +35,9 @@ class Task
     private $type;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="status", type="boolean", nullable=true)
+     * @ORM\Column(name="status", type="integer", nullable=true)
      */
     private $status;
 
@@ -73,6 +73,20 @@ class Task
 
 
     private $url;
+
+    /** Types */
+    const TYPE_VISIT = 1;
+    
+    /** Status constants */
+    const STATUS_PENDING = 1;
+    const STATUS_STARTED = 2;
+    const STATUS_DONE = 3;
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTime);
+        $this->setStatus(self::STATUS_PENDING);
+    }
 
     /**
      * Get id

@@ -5,14 +5,32 @@ $ ->
 
     JcsMenu.init()
     AjaxBag.init()
-    # TODO: only start the appropriate init!
-    JcsSearch.init()
-    HBlocks.init()
-    JcsAdmin.init()
-    JcsChart.init()
 
+    if $(".task-list").length
+        JcsTask.init()
 
-    JcsSearch.qSubmit()
+    # client frames
+    if $(".contentscroller").length
+        HBlocks.init()
+
+    # search field
+    if $(".quicksearch").length
+        JcsSearch.init()
+        #JcsSearch.qSubmit()
+
+    # client block
+    if $("#clientblock .clientcontent").text() != ""
+        JcsClient.init()
+
+    # problem block
+    if $("#problemblock .problemcontent").text() != ""
+        JcsProblem.init()
+
+    if $(".settings").length
+        JcsSettings.init()
+
+    if $(".chart").length
+        JcsChart.init()
 
     JcsWebDebug.init()
 

@@ -38,6 +38,10 @@ templates:
     pattern:  /templates/{id}
     defaults: { _controller: JCSGYKAdminBundle:Template:make }
 
+# Tasks #
+start_task:
+    pattern:  /task/start/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Task:start }
 
 # Problem #
 problem_view:

@@ -4,10 +4,10 @@
 
 {% block content %}
     <br>
-    <div id="settings-menu">
+    <div id="settings-menu" class="settings">
         <h1 class="client">{{ 'Beállítások'|trans }}</h1>
         {% render(controller('JCSGYKAdminBundle:Menu:settings')) %}
-        
+
         {% if is_granted(['ROLE_ADMIN']) %}
             <br>
             <h1 class="client">{{ 'Admin beállítások'|trans }}</h1>

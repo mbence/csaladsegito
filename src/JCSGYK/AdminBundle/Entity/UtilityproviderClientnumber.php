@@ -24,7 +24,7 @@ class UtilityproviderClientnumber
     /**
      * @var \Client
      *
-     * @ORM\ManyToOne(targetEntity="Client", inversedBy="utilityproviders")
+     * @ORM\ManyToOne(targetEntity="Client", inversedBy="utilityprovidernumbers")
      * @ORM\JoinColumn(name="client_id", referencedColumnName="id")
      */
     private $client;

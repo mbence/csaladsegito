@@ -10,6 +10,12 @@ JcsClient =
         $("#clientblock").show()
         HBlocks.setBlockSizes()
 
+        # if client block is already filled, we show and focus on it
+        if $("#clientblock .clientcontent").text() != ""
+            $("#clientblock .clientcontent").show()
+            if $("#problemblock .problemcontent").text() == ""
+                HBlocks.scrollTo(2)
+
         @initButtonRow()
         @initForm()
         @setDelProvider()

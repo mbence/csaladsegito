@@ -14,3 +14,7 @@ parameters:
         12: "Ügyfél újranyitás"
         13: "Probléma lezárások"
 
+    task_status:
+        1: elintézetlen
+        2: folyamatban
+        3: kész

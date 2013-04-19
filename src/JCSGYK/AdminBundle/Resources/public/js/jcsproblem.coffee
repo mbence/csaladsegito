@@ -7,6 +7,14 @@ JcsProblem =
         # init toggles
         JcsToggle.init("problemblock")
         HBlocks.setCloseButtons()
+        $("#problemblock").show()
+        HBlocks.setBlockSizes()
+
+        # if problem block is already filled, we show and focus on it
+        if $("#problemblock .problemcontent").text() != ""
+            $("#problemblock .problemcontent").show()
+            HBlocks.scrollTo(3)
+
         @setupEvents()
         @initForm()
         @setDelDebt()

@@ -62,7 +62,6 @@ JcsSearch =
                 $("#clientblock .loading").hide()
                 $("#clientblock .clientcontent").html(data).show()
                 $("#clientblock .clientcontent").data("url", client_url)
-                HBlocks.scrollTo(2)
                 JcsClient.init()
             ).error( (data) ->
                 # there was some error :(
@@ -75,5 +74,5 @@ JcsSearch =
         )
 
         # check for results number and click tr if only 1
-        if $("#search-results tr").size() == 2
-            $("#search-results tr").eq(1).click()
+        if $("#search-results tbody tr").size() == 1
+            $("#search-results tbody tr").eq(0).click()

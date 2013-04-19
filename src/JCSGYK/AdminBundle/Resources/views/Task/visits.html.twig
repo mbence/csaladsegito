@@ -14,12 +14,12 @@
             </thead>
             <tbody class="walkable">
             {% for task in tasks %}
-            <tr data-taskid="{{ task.id }}" data-url="{{ task.url }}" tabindex="{{ loop.index + 100 }}" {% if loop.first %}class="cursor"{% endif %}>
+            <tr data-taskid="{{ task.id }}" data-url="{{ path('start_task', {'id': task.id}) }}" tabindex="{{ loop.index + 100 }}" {% if loop.first %}class="cursor"{% endif %}>
                 <td>{{ tasks|length - loop.index + 1 }}</td>
                 <td>{{ task.client.id|cid }}</td>
                 <td><strong>{{ fname(task.client.firstname, task.client.lastname, task.client.title) }}</strong></td>
                 <td>{{ task.createdAt|fdate('osdt') }}</td>
-                <td>{{ task.status }}</td>
+                <td>{% if task_status[task.status] is defined %}{{ task_status[task.status]|trans }}{% else %}{{ task.status }}{% endif %}</td>
             </tr>
             {% endfor %}
             </tbody>
