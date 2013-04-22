@@ -51,13 +51,6 @@ class Problem
     /**
      * @var integer
      *
-     * @ORM\Column(name="level", type="integer", nullable=false)
-     */
-    private $level;
-
-    /**
-     * @var integer
-     *
      * @ORM\Column(name="is_active", type="integer", nullable=true)
      */
     private $isActive;
@@ -117,6 +110,20 @@ class Problem
      * @ORM\Column(name="close_code", type="integer", nullable=true)
      */
     private $closeCode;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="confirmed_by", type="integer", nullable=false)
+     */
+    private $confirmedBy;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="confirmed_at", type="datetime", nullable=true)
+     */
+    private $confirmedAt;
 
     /**
      * @var integer
@@ -245,29 +252,6 @@ class Problem
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * Set level
-     *
-     * @param integer $level
-     * @return Problem
-     */
-    public function setLevel($level)
-    {
-        $this->level = $level;
-
-        return $this;
-    }
-
-    /**
-     * Get level
-     *
-     * @return integer
-     */
-    public function getLevel()
-    {
-        return $this->level;
     }
 
     /**
@@ -452,6 +436,52 @@ class Problem
     public function getCloseCode()
     {
         return $this->closeCode;
+    }
+
+    /**
+     * Set confirmedBy
+     *
+     * @param integer $confirmedBy
+     * @return Problem
+     */
+    public function setConfirmedBy($confirmedBy)
+    {
+        $this->confirmedBy = $confirmedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get confirmedBy
+     *
+     * @return integer
+     */
+    public function getConfirmedBy()
+    {
+        return $this->confirmedBy;
+    }
+
+    /**
+     * Set confirmedAt
+     *
+     * @param \DateTime $confirmedAt
+     * @return Problem
+     */
+    public function setConfirmedAt($confirmedAt)
+    {
+        $this->confirmedAt = $confirmedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get confirmedAt
+     *
+     * @return \DateTime
+     */
+    public function getConfirmedAt()
+    {
+        return $this->confirmedAt;
     }
 
     /**

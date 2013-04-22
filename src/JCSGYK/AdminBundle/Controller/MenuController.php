@@ -133,7 +133,7 @@ class MenuController extends Controller
                 'class' => 'templates',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
-                'requirement' => $problem->canEdit($sec)
+                'requirement' => $problem->canEdit($sec) && $problem->getIsActive()
             ],
             // close problem
             [
@@ -143,7 +143,17 @@ class MenuController extends Controller
                 'class' => 'close_problem',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
-                'requirement' => !$problem->getClient()->getIsArchived() && $problem->canEdit($sec)
+                'requirement' => !$problem->getClient()->getIsArchived() && $problem->canEdit($sec) && $problem->getIsActive()
+            ],
+            // confirm problem close
+            [
+                'url'   => $this->generateUrl('problem_confirm', ['id' => $problem->getId()]),
+                'label' => 'jóváhagyás',
+                'title' => 'Probléma lezárásának jóváhagyása',
+                'class' => 'confirm_problem',
+                'more'  => true,
+                'role'  => 'ROLE_ADMIN',
+                'requirement' => !$problem->getClient()->getIsArchived() && $problem->canEdit($sec) && !$problem->getIsActive()
             ],
             // reopen problem
             [
@@ -163,7 +173,7 @@ class MenuController extends Controller
                 'class' => 'delete_problem redtext',
                 'more'  => true,
                 'role'  => 'ROLE_ADMIN',
-                'requirement' => $problem->canEdit($sec)
+                'requirement' => $problem->canEdit($sec) && $problem->getIsActive()
             ],
             // edit problem
             [
@@ -173,7 +183,7 @@ class MenuController extends Controller
                 'class' => 'button edit_problem',
                 'more'  => false,
                 'role'  => 'ROLE_USER',
-                'requirement' => $problem->canEdit($sec)
+                'requirement' => $problem->canEdit($sec) && $problem->getIsActive()
             ],
         ];
 

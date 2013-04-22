@@ -59,13 +59,6 @@ class Problem
     /**
      * @var integer
      *
-     * @ORM\Column(name="level", type="integer", nullable=false)
-     */
-    private $level;
-
-    /**
-     * @var integer
-     *
      * @ORM\Column(name="is_active", type="integer", nullable=true)
      */
     private $isActive;
@@ -121,6 +114,19 @@ class Problem
      * @ORM\Column(name="close_code", type="integer", nullable=true)
      */
     private $closeCode;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="confirmed_by", referencedColumnName="id")
+     */
+    private $confirmer;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="confirmed_at", type="datetime", nullable=true)
+     */
+    private $confirmedAt;
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
@@ -654,10 +660,54 @@ class Problem
     {
         $user_id = $sec->getToken()->getUser()->getId();
 
-        return $this->isActive == 1 && (
-            $sec->isGranted('ROLE_ADMIN') ||
+        return $sec->isGranted('ROLE_ADMIN') ||
             $this->creator->getID() == $user_id ||
-            (!empty($this->assignee) && $this->assignee->getId() == $user_id)
-        );
+            (!empty($this->assignee) && $this->assignee->getId() == $user_id);
+    }
+
+    /**
+     * Set confirmedAt
+     *
+     * @param \DateTime $confirmedAt
+     * @return Problem
+     */
+    public function setConfirmedAt($confirmedAt)
+    {
+        $this->confirmedAt = $confirmedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get confirmedAt
+     *
+     * @return \DateTime
+     */
+    public function getConfirmedAt()
+    {
+        return $this->confirmedAt;
+    }
+
+    /**
+     * Set confirmer
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $confirmer
+     * @return Problem
+     */
+    public function setConfirmer(\JCSGYK\AdminBundle\Entity\User $confirmer = null)
+    {
+        $this->confirmer = $confirmer;
+
+        return $this;
+    }
+
+    /**
+     * Get confirmer
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User
+     */
+    public function getConfirmer()
+    {
+        return $this->confirmer;
     }
 }

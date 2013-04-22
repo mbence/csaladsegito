@@ -15,6 +15,6 @@ parameters:
         13: "Probléma lezárások"
 
     task_status:
-        1: elintézetlen
+        1: új
         2: folyamatban
         3: kész

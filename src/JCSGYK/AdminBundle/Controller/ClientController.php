@@ -336,8 +336,9 @@ class ClientController extends Controller
         if (!empty($id)) {
             $client = $this->getClient($id);
             $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
+            $sec = $this->get('security.context');
 
-            return $this->render('JCSGYKAdminBundle:Client:_problems.html.twig', ['client' => $client, 'problems' => $problems]);
+            return $this->render('JCSGYKAdminBundle:Client:_problems.html.twig', ['client' => $client, 'problems' => $problems, 'can_edit' => $client->canEdit($sec)]);
         }
         else {
             throw new HttpException(400, "Bad request");

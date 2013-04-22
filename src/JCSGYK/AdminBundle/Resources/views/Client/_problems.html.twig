@@ -12,10 +12,10 @@
         </div>
         <table id="problem-list" class="client problem-list" cellspacing="0" border="0">
             <tr>
-                <th>Cím</th>
-                <th>Jelleg</th>
-                <th>Felelős</th>
-                <th>Állapot</th>
+                <th>{{ 'Cím'|trans }}</th>
+                <th>{{ 'Jelleg'|trans }}</th>
+                <th>{{ 'Felelős'|trans }}</th>
+                <th>{{ 'Állapot'|trans }}</th>
             </tr>
             <tbody class="walkable">
             {% for problem in problems %}
@@ -23,7 +23,7 @@
                 <td>{{ problem.title }}</td>
                 <td>{{ param(problem.type) }}</td>
                 <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
-                <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
+                <td>{{ pstatus(problem) }}</td>
             </tr>
             {% endfor %}
             </tbody>

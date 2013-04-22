@@ -759,25 +759,28 @@ g .menuitems a {
 
 /* Tasks */
 .tasks {
-    width: 500px;
+    width: 600px;
     float: left;
 }
-table.task-list {
+table.task-list, table.task-list-readonly  {
     color: #039;
     font-size: 13px;
     width: 100%;
 }
-table.task-list th {
-    color: #5661a2;
+table.task-list th, table.task-list-readonly th {
+    color: #555;
+    border-bottom: 1px solid #6678B1;
+    font-size: 13px;
     font-weight: normal;
     padding: 5px 6px 5px;
-    border-bottom: 1px solid #DDD;
     text-align: left;
     white-space: nowrap;
 }
-table.task-list td {
+table.task-list td, table.task-list-readonly td {
     padding: 5px 6px 5px;
     border-bottom: 1px solid #DDD;
+}
+table.task-list td {
     cursor: pointer;
 }
 table.task-list tr:hover td {

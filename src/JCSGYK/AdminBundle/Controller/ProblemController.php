@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use JCSGYK\AdminBundle\Entity\Problem;
 use JCSGYK\AdminBundle\Form\Type\ProblemType;
 use JCSGYK\AdminBundle\Form\Type\CloseProblemType;
+use JCSGYK\AdminBundle\Entity\Task;
 
 class ProblemController extends Controller
 {
@@ -85,7 +86,7 @@ class ProblemController extends Controller
         }
 
         if (!empty($problem)) {
-            // check user rights
+            // check user rights (thows Access Denied in failure!)
             if (empty($id)) {
                 // create a new problem
                 $sec = $this->get('security.context');
@@ -166,7 +167,7 @@ class ProblemController extends Controller
                 throw new HttpException(400, "Bad request");
             }
 
-            // check user rights
+            // check user rights (thows Access Denied in failure!)
             $this->canEdit($problem);
 
             $form = $this->createForm(new CloseProblemType($this->container->get('jcs.ds'), $problem->getIsActive()), $problem);
@@ -184,10 +185,23 @@ class ProblemController extends Controller
                         // close problem
                         $problem->setCloser($user);
                         $problem->setClosedAt(new \DateTime());
+
+                        // create an anon task for every ROLE_ADMIN (no assignee)
+                        $task = new Task();
+                        $task->setCreator($user);
+                        $task->setClient($problem->getClient());
+                        $task->setProblem($problem);
+                        $task->setType(Task::TYPE_CLOSE);
+
+                        $em->persist($task);
+                        $em->flush();
                     }
                     else {
                         // reopen the problem
                         $problem->setOpener($user);
+
+                        // close all related tasks
+                        $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Task')->closeAll($problem, Task::TYPE_CLOSE);
                     }
                     // set modifier user
                     $problem->setModifier($user);
@@ -257,7 +271,7 @@ class ProblemController extends Controller
                 throw new HttpException(400, "Bad request");
             }
 
-            // check user rights
+            // check user rights (thows Access Denied in failure!)
             $this->canEdit($problem);
 
             $form = $this->createFormBuilder()->getForm();
@@ -311,5 +325,56 @@ class ProblemController extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * Set the confirmer and confirmed at fields
+     *
+     * @param int $id Problem id
+     *
+     * @Secure(roles="ROLE_ADMIN")
+     */
+    public function confirmAction($id)
+    {
+        $request = $this->getRequest();
+
+        // get the problem
+        $problem = $this->getProblem($id);
+        if (empty($problem)) {
+            throw new HttpException(400, "Bad request");
+        }
+
+        // check user rights (thows Access Denied in failure!)
+        $this->canEdit($problem);
+
+        $form = $this->createFormBuilder()->getForm();
+
+        // save
+        if ($request->isMethod('POST')) {
+            $form->bind($request);
+
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $user= $this->get('security.context')->getToken()->getUser();
+
+                // set modifier user
+                $problem->setConfirmer($user);
+                $problem->setConfirmedAt(new \DateTime);
+
+                // close the related tasks too
+                $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Task')->closeAll($problem, Task::TYPE_CLOSE);
+
+                $em->flush();
+
+                $this->get('session')->setFlash('notice', 'Probléma lezárás jóváhagyva');
+
+                return $this->redirect($this->generateUrl('home'));
+            }
+        }
+
+        return $this->render('JCSGYKAdminBundle:Dialog:problem_confirm.html.twig', [
+            'problem' => $problem,
+            'form' => $form->createView(),
+        ]);
     }
 }

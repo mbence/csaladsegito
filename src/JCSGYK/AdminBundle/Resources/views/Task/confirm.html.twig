@@ -1,0 +1,42 @@
+{# Problems waiting confirmation #}
+<div class="client-sub">{{ 'jóváhagyásra váró lezárt problémák (%db% db)'|trans({'%db%': tasks|length}) }}</div>
+<div>
+    {% if tasks is defined and tasks|length %}
+        <table id="confirm-list" class="task-list{% if readonly %}-readonly{% endif %}" cellspacing="0" border="0">
+            <tr>
+                <th>{{ '#'|trans }}</th>
+                <th>{{ 'ÜSZ'|trans }}</th>
+                <th>{{ 'Név'|trans }}</th>
+                <th>{{ 'Cím'|trans }}</th>
+                <th>{{ 'Jelleg'|trans }}</th>
+                <th>{{ 'Dátum'|trans }}</th>
+                <th>{{ 'Státus'|trans }}</th>
+                <th>{{ 'Felelős'|trans }}</th>
+            </tr>
+            <tbody class="walkable">
+            {% for task in tasks %}
+            <tr {% if not readonly %}data-taskid="{{ task.id }}" data-url="{{ path('start_task', {'id': task.id}) }}" tabindex="{{ loop.index + 200 }}"{% endif %}>
+                <td>{{ tasks|length - loop.index + 1 }}</td>
+                <td>{{ task.client.id|cid }}</td>
+                <td><strong>{{ fname(task.client.firstname, task.client.lastname, task.client.title) }}</strong></td>
+
+                <td>{{ task.problem.title }}</td>
+                <td>{{ param(task.problem.type) }}</td>
+
+                <td>{{ task.createdAt|fdate('osdt') }}</td>
+                <td>{% if task_status[task.status] is defined %}{{ task_status[task.status]|trans }}{% else %}{{ task.status }}{% endif %}</td>
+                <td>
+                    {% if task.assignee %}
+                        {{ fname(task.assignee.firstname, task.assignee.lastname) }}
+                    {% else %}
+                       -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="noinfo">{{ 'Nincsen megjeleníthető probléma'|trans }}</div>
+    {% endif %}
+</div>

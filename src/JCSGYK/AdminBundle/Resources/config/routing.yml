@@ -56,6 +56,9 @@ problem_new:
 problem_close:
     pattern:  /problem/close/{id}
     defaults: { _controller: JCSGYKAdminBundle:Problem:close, id: null }
+problem_confirm:
+    pattern:  /problem/confirm/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Problem:confirm }
 problem_events:
     pattern:  /problem/{id}/events
     defaults: { _controller: JCSGYKAdminBundle:Problem:getEvents }

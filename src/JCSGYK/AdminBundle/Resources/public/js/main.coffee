@@ -16,7 +16,8 @@ $ ->
     # search field
     if $(".quicksearch").length
         JcsSearch.init()
-        #JcsSearch.qSubmit()
+        if $("#clientblock .clientcontent").text() == ""
+            JcsSearch.qSubmit()
 
     # client block
     if $("#clientblock .clientcontent").text() != ""

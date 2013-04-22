@@ -3,6 +3,8 @@
 namespace JCSGYK\AdminBundle\Twig;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 
+use JCSGYK\AdminBundle\Entity\Problem;
+
 class AdminExtension extends \Twig_Extension
 {
     private $translator;
@@ -33,7 +35,18 @@ class AdminExtension extends \Twig_Extension
             'param' => new \Twig_Function_Method($this, 'getParam'),
             'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
             'faddr' => new \Twig_Function_Method($this, 'formatAddress'),
+            'pstatus' => new \Twig_Function_Method($this, 'problemStatus'),
         );
+    }
+
+    public function problemStatus(Problem $problem)
+    {
+        $re = $problem->getIsActive() ? 'nyitott' : 'lezárt';
+        if ($problem->getIsActive() == 0 && is_null($problem->getConfirmer())) {
+            $re = 'jóváhagyásra vár';
+        }
+
+        return $this->translator->trans($re);
     }
 
     public function formatId($val)

@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Task
  *
  * @ORM\Table(name="task")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\TaskRepository")
  */
 class Task
 {
@@ -74,9 +74,11 @@ class Task
 
     private $url;
 
-    /** Types */
+    /** Client visit type */
     const TYPE_VISIT = 1;
-    
+    /** Problem close type */
+    const TYPE_CLOSE = 2;
+
     /** Status constants */
     const STATUS_PENDING = 1;
     const STATUS_STARTED = 2;

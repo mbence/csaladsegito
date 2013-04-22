@@ -370,7 +370,6 @@ class ImportController extends Controller
             'Title' => 'Title',
             'Description' => 'Desciption',
             'Type' => 'UserProb',
-            'Level' => 'ProblemLevel',
             'IsActive' => 'Status',
             'CreatedAt' => 'CreatedOn',
             'CreatedBy' => 'CreatedBy_ID',
@@ -379,13 +378,15 @@ class ImportController extends Controller
             'AssignedTo' => 'AssignedTo_ID',
             'ClosedBy' => 'ClosedBy_ID',
             'ClosedAt' => 'ClosedOn',
+            'ConfirmedBy' => 'ClosedBy_ID',
+            'ConfirmedAt' => 'ClosedOn',
             'CloseCode' => 'CloseCode',
             'OpenedBy' => 'OpenedBy_ID',
             'Attachment' => 'DocFile',
         ];
 
-        $date_fields = ['CreatedAt', 'ModifiedAt', 'ClosedAt'];
-        $user_fields = ['CreatedBy', 'ModifiedBy', 'OpenedBy', 'AssignedTo', 'ClosedBy'];
+        $date_fields = ['CreatedAt', 'ModifiedAt', 'ClosedAt', 'ConfirmedAt'];
+        $user_fields = ['CreatedBy', 'ModifiedBy', 'OpenedBy', 'AssignedTo', 'ClosedBy', 'ConfirmedBy'];
 
         $this->truncate('problem');
         $this->truncate('debt');

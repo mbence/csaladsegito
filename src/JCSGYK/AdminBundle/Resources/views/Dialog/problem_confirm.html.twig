@@ -1,0 +1,52 @@
+{# Confirm closed Problem #}
+
+{# if all went well, we just need to close the popup #}
+{% if success is defined and success %}
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% else %}
+    {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+    <form action="{{ path('problem_confirm', {'id': problem.id}) }}" id="problem_confirm_form" method="post" {{ form_enctype(form) }}>
+        <h1 class="client">
+            {{ 'Probléma lezárásának jóváhagyása'|trans }}
+        </h1>
+
+        {{ form_errors(form) }}
+        <table class="client caseowner" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Felelős'|trans }}:</th>
+                <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
+            </tr>
+        </table>
+        <div class="client-sub first-sub">{{ 'probléma'|trans }}</div>
+        <div>
+            <table class="client" cellspacing="0" border="0">
+                <tr>
+                    <th>{{ 'Probléma'|trans }}:</th>
+                    <td>{{ problem.title }}</td>
+                    <th>{{ 'Állapot'|trans }}:</th>
+                    <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'Jelleg'|trans }}:</th>
+                    <td colspan="3">{{ param(problem.type) }}</td>
+                </tr>
+            </table>
+        </div>
+
+        {% include "JCSGYKAdminBundle:Problem:_close.html.twig" with {item: problem} %}
+
+        <div class="problem-open-alert">
+            <p>
+                {{ 'Biztosan jóváhagyja a probléma lezárását?'| trans }}
+            </p>
+        </div>
+
+        <div class="toppad10">
+            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'confirm_problem', title:'Lezárás jóváhagyása', label:'jóváhagyás'}] } %}
+
+            <div class="clear"></div>
+        </div>
+        {{ form_widget(form._token) }}
+    </form>
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% endif %}

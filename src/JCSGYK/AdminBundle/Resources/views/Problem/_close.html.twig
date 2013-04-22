@@ -12,6 +12,13 @@
                 <th>{{ 'Lezárás oka'|trans }}:</th>
                 <td colspan="2">{{ param(problem.closeCode) }}</td>
             </tr>
+            {% if problem.confirmer %}
+            <tr>
+                <th>{{ 'Jóváhagyta'|trans }}:</th>
+                <td>{% if problem.confirmer.firstname is defined %}{{ fname(problem.confirmer.firstname, problem.confirmer.lastname) }}{% endif %}</td>
+                <td>({{ problem.confirmedAt|fdate('dt') }})</td>
+            </tr>
+            {% endif %}
         </table>
     {% endif %}
 </div>

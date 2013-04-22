@@ -132,7 +132,7 @@ JcsProblem =
             false
 
         # close problem
-        $(".close_problem").add(".templates").on "click", (event) ->
+        $(".close_problem").add(".templates").add(".confirm_problem").on "click", (event) ->
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
 

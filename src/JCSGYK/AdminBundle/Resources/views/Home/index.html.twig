@@ -3,17 +3,20 @@
 {% block title %}Családsegítő Admin{% endblock %}
 
 {% block content %}
-    {% if debug is defined %}
-        {{ debug }}<br>
-    {% endif %}
+    {% if is_granted(['ROLE_FAMILY_HELP']) or is_granted(['ROLE_CHILD_WELFARE']) or is_granted(['ROLE_ADMIN']) %}
     <div class="tasks">
         <br>
         <h1 class="client">{{ 'Teendők'|trans }}</h1>
-        
+
         <div class="tasks-visits">
             {% render(controller('JCSGYKAdminBundle:Task:visits')) %}
         </div>
+
+        <div class="tasks-confirms">
+            {% render(controller('JCSGYKAdminBundle:Task:confirm')) %}
+        </div>
     </div>
+    {% endif %}
 
     {% if is_granted(['ROLE_ASSISTANCE']) %}
     <div class="inquiry-stats" data-action="{{ path('inquiry_stat') }}">

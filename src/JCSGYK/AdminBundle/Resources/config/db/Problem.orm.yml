@@ -25,10 +25,6 @@ Problem:
         type:
             type: smallint
             nullable: true
-        level:
-            type: integer
-            unsigned: false
-            nullable: true
         isActive:
             type: boolean
             nullable: true
@@ -70,6 +66,15 @@ Problem:
             unsigned: false
             nullable: true
             column: close_code
+        confirmedBy:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: confirmed_by
+        confirmedAt:
+            type: datetime
+            nullable: true
+            column: confirmed_at
         openedBy:
             type: integer
             unsigned: false
@@ -80,4 +85,8 @@ Problem:
             length: 255
             fixed: false
             nullable: true
+        isDeleted:
+            type: boolean
+            nullable: true
+            column: is_deleted
     lifecycleCallbacks: {  }
