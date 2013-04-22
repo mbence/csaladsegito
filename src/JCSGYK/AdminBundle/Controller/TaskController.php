@@ -26,7 +26,7 @@ class TaskController extends Controller
         $task_status = $this->container->getParameter('task_status');
 
         $tasks = $em->getRepository("JCSGYKAdminBundle:Task")->getList(Task::TYPE_VISIT, $sec);
-
+        
         return $this->render('JCSGYKAdminBundle:Task:visits.html.twig', ['tasks' => $tasks, 'task_status' => $task_status]);
     }
 
