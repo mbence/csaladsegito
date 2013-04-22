@@ -507,6 +507,17 @@ class ImportController extends Controller
         $user->setFirstname('Bence');
         $user->setLastname('Mészáros');
         $userManager->updateUser($user);
+        // add the testers
+        $user = new User('mbxrw64tn4gc88oo8koogwk80wogk84');
+        $user->setUsername('jancsor');
+        $user->setPassword('UlRgqRKTRfNE8twyzle8kclhvqc0hbbSj5nAldhdqHXCczfr8Jn3wMMWfGYcpqqA+OlZz+83lO+bC6wuMz6N4w==');
+        $user->setEmail('jancso@gmail.com');
+        $user->setRoles(['ROLE_ADMIN']);
+        $user->setEnabled(true);
+        $user->setCompanyId($this->companyID);
+        $user->setFirstname('Richárd');
+        $user->setLastname('Jancsó');
+        $userManager->updateUser($user);
 
         foreach ($csaszir_users as $csaszir_user) {
             $user = $userManager->createUser();

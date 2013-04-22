@@ -145,15 +145,15 @@ class MenuController extends Controller
                 'role'  => 'ROLE_USER',
                 'requirement' => !$problem->getClient()->getIsArchived() && $problem->canEdit($sec) && $problem->getIsActive()
             ],
-            // confirm problem close
+            // confirm problem
             [
                 'url'   => $this->generateUrl('problem_confirm', ['id' => $problem->getId()]),
                 'label' => 'jóváhagyás',
                 'title' => 'Probléma lezárásának jóváhagyása',
-                'class' => 'confirm_problem',
-                'more'  => true,
+                'class' => 'button confirm_problem',
+                'more'  => false,
                 'role'  => 'ROLE_ADMIN',
-                'requirement' => !$problem->getClient()->getIsArchived() && $problem->canEdit($sec) && !$problem->getIsActive()
+                'requirement' => !$problem->getClient()->getIsArchived() && $problem->canEdit($sec) && !$problem->getIsActive() && !$problem->getConfirmer()
             ],
             // reopen problem
             [
