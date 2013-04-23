@@ -3,6 +3,8 @@ JcsSearch =
     init: ->
         orig_results_text = $("#search-results").html()
 
+        setActive = $("#clientblock .clientcontent").text() == ""
+
         # search field
         nf = new NiceField($("#quicksearch #q"), {
             clearHook: =>
@@ -14,6 +16,8 @@ JcsSearch =
                 , 300)
 
                 true
+            focus: setActive
+            select: setActive
         })
 
         # quick search
@@ -42,6 +46,9 @@ JcsSearch =
 
         # new client button
         JcsClient.initButtonRow()
+
+        if $("#clientblock .clientcontent").text() == "" and $("#quicksearch #q").val() != ''
+            JcsSearch.qSubmit()
 
     qSubmit: ->
         $("#quicksearch").submit();
