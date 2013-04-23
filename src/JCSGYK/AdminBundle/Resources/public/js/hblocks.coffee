@@ -46,20 +46,6 @@ HBlocks =
                 event.preventDefault()
                 $("#quicksearch .nf-clear").click()
                 $("#quicksearch .searchfield").focus()
-
-        # left
-        if 37 == event.which
-            # we step to the previous block if possible
-            if $(".contentscroller > .current").prev().is(":visible")
-                $(".contentscroller > .current").prev().click()
-        # right
-        if 39 == event.which
-            # if the cursor is on the actually selected and opened element, we just step right
-            if $(".contentscroller > .current .walkable tr.cursor").hasClass("current") and $(".contentscroller > .current").next().is(":visible")
-                $(".contentscroller > .current").next().click()
-            # otherwise we click the current element
-            else if $(".contentscroller > .current .walkable tr.cursor").length
-                $(".contentscroller > .current .walkable tr.cursor").click()
         # up
         if 38 == event.which
             # only do anything if there is a list we can walk over, and there is a cursor too
@@ -90,6 +76,24 @@ HBlocks =
                     event.stopPropagation()
                     event.preventDefault()
                     $(".contentscroller > .current .walkable tr.cursor").removeClass("cursor").next().addClass("cursor").focus()
+
+        # only navigate away if not in an input field
+        if $(document.activeElement).is('input, select, textarea')
+            return true
+
+        # left
+        if 37 == event.which
+            # we step to the previous block if possible
+            if $(".contentscroller > .current").prev().is(":visible")
+                $(".contentscroller > .current").prev().click()
+        # right
+        if 39 == event.which
+            # if the cursor is on the actually selected and opened element, we just step right
+            if $(".contentscroller > .current .walkable tr.cursor").hasClass("current") and $(".contentscroller > .current").next().is(":visible")
+                $(".contentscroller > .current").next().click()
+            # otherwise we click the current element
+            else if $(".contentscroller > .current .walkable tr.cursor").length
+                $(".contentscroller > .current .walkable tr.cursor").click()
         # enter
         if 13 == event.which
             # enter will select a row, it is the same action as if we clicked it
@@ -214,6 +218,10 @@ HBlocks =
         4 - events
     ###
     scrollTo: (block, complete = {}) ->
+        # prevent scrolling if we are in the search field
+        if block != 1 and $(document.activeElement).attr('id') == 'q'
+            return true
+            
         blockW = @blockW()
         # try to center the selected block
         x = Math.round((block - 1) * blockW - (($("#content").width() - blockW) / 2))

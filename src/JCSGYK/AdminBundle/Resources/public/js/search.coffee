@@ -20,13 +20,13 @@ JcsSearch =
         $("#quicksearch").submit( ->
             nf.start()
             HBlocks.scrollTo(1)
-            if $("#quicksearch #q").attr('value') == ''
+            if $("#quicksearch #q").val() == ''
                 $("#search-results").html(orig_results_text)
             search_url = $(this).attr("action")
-            if $("#q").attr('value') then search_url += '/' + $("#q").attr('value')
+            if $("#q").val() then search_url += '/' + $("#q").val()
             $.get(search_url, (data) ->
                 nf.stop()
-                if $("#quicksearch #q").attr('value') != ''
+                if $("#quicksearch #q").val() != ''
                     # display search results
                     $("#search-results").html(data)
                     # bind click events on the results
