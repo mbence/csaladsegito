@@ -15,7 +15,7 @@
             </tr>
             <tbody class="walkable">
             {% for task in tasks %}
-            <tr {% if not readonly %}data-taskid="{{ task.id }}" data-url="{{ path('start_task', {'id': task.id}) }}" tabindex="{{ loop.index + 200 }}"{% endif %}>
+            <tr {% if not readonly %}data-taskid="{{ task.id }}" data-url="{{ path('task_start', {'id': task.id}) }}" tabindex="{{ loop.index + 200 }}"{% endif %}>
                 <td>{{ tasks|length - loop.index + 1 }}</td>
                 <td>{{ task.client.id|cid }}</td>
                 <td><strong>{{ fname(task.client.firstname, task.client.lastname, task.client.title) }}</strong></td>

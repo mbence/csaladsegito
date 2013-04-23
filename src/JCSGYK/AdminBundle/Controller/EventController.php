@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use JCSGYK\AdminBundle\Entity\Event;
 use JCSGYK\AdminBundle\Form\Type\EventType;
 use JCSGYK\AdminBundle\Entity\Task;
+use JCSGYK\AdminBundle\Entity\Stat;
 
 class EventController extends Controller
 {
@@ -108,6 +109,9 @@ class EventController extends Controller
                                 $tasks[$tk]->setStatus(Task::STATUS_DONE);
                             }
                         }
+
+                        // save the stats
+                        $this->get('jcs.stat')->save(Stat::TYPE_FAMILY_HELP, 2);
                     }
 
                     $em->flush();

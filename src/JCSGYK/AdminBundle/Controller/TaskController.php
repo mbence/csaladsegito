@@ -13,11 +13,13 @@ use JCSGYK\AdminBundle\Entity\Task;
 class TaskController extends Controller
 {
     /**
-     * Display a list of TYPE_VISIT tasks
+     * Displays tasks of the given type
+     *
+     * @param int $type Task type
      *
      * @Secure(roles="ROLE_USER")
      */
-    public function visitsAction()
+    public function listAction($type)
     {
         $em = $this->getDoctrine()->getManager();
         $sec = $this->get('security.context');
@@ -25,32 +27,23 @@ class TaskController extends Controller
         // list of task status
         $task_status = $this->container->getParameter('task_status');
 
-        $tasks = $em->getRepository("JCSGYKAdminBundle:Task")->getList(Task::TYPE_VISIT, $sec);
-        
-        return $this->render('JCSGYKAdminBundle:Task:visits.html.twig', ['tasks' => $tasks, 'task_status' => $task_status]);
-    }
+        $tasks = $em->getRepository("JCSGYKAdminBundle:Task")->getList($type, $sec);
 
-    /**
-     * Display a list of problems waiting for confirmation (TYPE_CLOSE)
-     * ROLE_ADMIN users see all problems and they also get a link to confirm
-     * ROLE_USER level users see only their own closed prolblems, that are waiting for confirmation
-     *
-     * @Secure(roles="ROLE_USER")
-     */
-    public function confirmAction()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $sec = $this->get('security.context');
-        $user= $sec->getToken()->getUser();
-        // list of task status
-        $task_status = $this->container->getParameter('task_status');
+        if ($type == Task::TYPE_VISIT) {
+            // Display a list of TYPE_VISIT tasks
 
-        $tasks = $em->getRepository("JCSGYKAdminBundle:Task")->getList(Task::TYPE_CLOSE, $sec);
+            return $this->render('JCSGYKAdminBundle:Task:visits.html.twig', ['tasks' => $tasks, 'task_status' => $task_status]);
+        }
+        elseif ($type == Task::TYPE_CLOSE) {
+            // Display a list of problems waiting for confirmation (TYPE_CLOSE)
+            // ROLE_ADMIN users see all problems and they also get a link to confirm
+            // ROLE_USER level users see only their own closed prolblems, that are waiting for confirmation
 
-        // only ROLE_ADMIN users should have any action at this list
-        $readonly = !$sec->isGranted('ROLE_ADMIN');
+            // only ROLE_ADMIN users should have any action at this list
+            $readonly = !$sec->isGranted('ROLE_ADMIN');
 
-        return $this->render('JCSGYKAdminBundle:Task:confirm.html.twig', ['tasks' => $tasks, 'task_status' => $task_status, 'readonly' => $readonly]);
+            return $this->render('JCSGYKAdminBundle:Task:confirm.html.twig', ['tasks' => $tasks, 'task_status' => $task_status, 'readonly' => $readonly]);
+        }
     }
 
 

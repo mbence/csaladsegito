@@ -11,6 +11,10 @@ services:
         class:        JCSGYK\AdminBundle\Services\Docx
         arguments:    ["@service_container"]
 
+    jcs.stat:
+        class:        JCSGYK\AdminBundle\Services\StatService
+        arguments:    ["@service_container"]
+
     jcs.twig.adminextension:
         class:        JCSGYK\AdminBundle\Twig\AdminExtension
         arguments:    ["@translator", "@jcs.ds"]

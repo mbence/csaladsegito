@@ -53,11 +53,11 @@ JcsMenu =
                 $.post($(this).attr('href'), (data) ->
                     $(that).removeClass('animbutton')
                     AjaxBag.showNotice(data)
-                    if $(".inquiry-stats").length and $(".inquiry-stats").data("action")
-                        $.get($(".inquiry-stats").data("action"), (data) ->
-                            $(".inquiry-stats").html(data)
-                            JcsChart.init()
-                        )
+                    JcsChart.refresh(".inquiry-stats")
+                ).error( (data) =>
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $(this).removeClass('animbutton')
                 )
 
             false

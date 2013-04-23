@@ -1,0 +1,32 @@
+Stat:
+    type: entity
+    table: stat
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        userId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: user_id
+        type:
+            type: smallint
+            nullable: false
+        event:
+            type: integer
+            unsigned: false
+            nullable: false
+        counter:
+            type: integer
+            unsigned: false
+            nullable: true
+        createdAt:
+            type: date
+            nullable: false
+            column: created_at
+    lifecycleCallbacks: {  }

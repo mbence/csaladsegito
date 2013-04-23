@@ -8,19 +8,32 @@
         <br>
         <h1 class="client">{{ 'Teendők'|trans }}</h1>
 
-        <div class="tasks-visits">
-            {% render(controller('JCSGYKAdminBundle:Task:visits')) %}
+        <div class="tasks-visits" data-url="{{ path("task_list", {'type': 1}) }}">
+            {% render(controller('JCSGYKAdminBundle:Task:list', {'type': 1})) %}
         </div>
 
-        <div class="tasks-confirms">
-            {% render(controller('JCSGYKAdminBundle:Task:confirm')) %}
+        <div class="tasks-confirms" data-url="{{ path("task_list", {'type': 2}) }}">
+            {% render(controller('JCSGYKAdminBundle:Task:list', {'type': 2})) %}
         </div>
     </div>
     {% endif %}
+
 
     {% if is_granted(['ROLE_ASSISTANCE']) %}
-    <div class="inquiry-stats" data-action="{{ path('inquiry_stat') }}">
-        {% render(controller('JCSGYKAdminBundle:Assistance:inquiryStat')) %}
+    <div class="stats">
+        <h1 class="center">{{ 'Érdeklődés statisztika'|trans }}</h1>
+        <div class="inquiry-stats" data-url="{{ path('home_stat', {'type': 1}) }}">
+            {% render(controller('JCSGYKAdminBundle:Home:stat', {'type': 1})) %}
+        </div>
     </div>
     {% endif %}
+    {% if is_granted(['ROLE_FAMILY_HELP']) %}
+    <div class="stats">
+        <h1 class="center">{{ 'Családsegítő statisztika'|trans }}</h1>
+        <div class="familyhelp-stats" data-url="{{ path('home_stat', {'type': 2}) }}">
+            {% render(controller('JCSGYKAdminBundle:Home:stat', {'type': 2})) %}
+        </div>
+    </div>
+    {% endif %}
+
 {% endblock %}

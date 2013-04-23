@@ -14,6 +14,7 @@ use JCSGYK\AdminBundle\Form\Type\ClientType;
 use JCSGYK\AdminBundle\Entity\Archive;
 use JCSGYK\AdminBundle\Form\Type\ArchiveType;
 use JCSGYK\AdminBundle\Entity\Task;
+use JCSGYK\AdminBundle\Entity\Stat;
 
 class ClientController extends Controller
 {
@@ -111,14 +112,7 @@ class ClientController extends Controller
 
                     $assignee = $em->getRepository("JCSGYKAdminBundle:User")->find($data['userlist']);
 
-                    $task = new Task();
-                    $task->setAssignee($assignee);
-                    $task->setCreator($user);
-                    $task->setClient($client);
-                    $task->setType(Task::TYPE_VISIT);
-
-                    $em->persist($task);
-                    $em->flush();
+                    $this->saveVisitTask($client, $assignee, $user);
 
                     $this->get('session')->setFlash('notice', 'Megkeresés elmentve');
 
@@ -133,6 +127,23 @@ class ClientController extends Controller
         else {
             throw new HttpException(400, "Bad request");
         }
+    }
+
+    private function saveVisitTask($client, $assignee, $user)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $task = new Task();
+        $task->setAssignee($assignee);
+        $task->setCreator($user);
+        $task->setClient($client);
+        $task->setType(Task::TYPE_VISIT);
+
+        $em->persist($task);
+        $em->flush();
+
+        // save the stats
+        $this->get('jcs.stat')->save(Stat::TYPE_FAMILY_HELP, 1, $assignee->getId());
     }
 
     /**
@@ -210,12 +221,18 @@ class ClientController extends Controller
 
                     $em->flush();
 
+                    if (empty($id)) {
+                        // create a new visit task for the new client
+                        $this->saveVisitTask($client, $client->getCaseAdmin(), $user);
+                    }
+
                     $this->get('session')->setFlash('notice', 'Ügyfél elmentve');
 
                     //return $this->redirect($this->generateUrl('client_edit', ['id' => $client->getId()]));
                     return $this->redirect($this->generateUrl('client_view', ['id' => $client->getId()]));
                 }
             }
+
             $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
 
             return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client, 'problems' => $problems ,'form' => $form->createView()]);

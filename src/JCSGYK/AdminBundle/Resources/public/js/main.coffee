@@ -30,8 +30,20 @@ $ ->
     if $(".settings").length
         JcsSettings.init()
 
-    if $(".chart").length
+    # charts
+    if $(".daychart").length
         JcsChart.init()
+
+    # tasks autorefresh
+    if $(".tasks > div").length
+        window.setInterval ->
+            $(".tasks > div").each ->
+                if $(this).data("url")
+                    $.get($(this).data("url"), (data) =>
+                        $(this).html(data)
+                        JcsTask.init($(this))
+                    )
+        , 10000
 
     JcsWebDebug.init()
 

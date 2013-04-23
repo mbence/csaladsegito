@@ -1,10 +1,11 @@
 JcsChart =
-    init: ->
-        if day_charts?
-            for day in day_charts
-                @drawDay(day)
-        if month_charts?
-            @drawMonth(month_charts)
+    init: (days, month) ->
+        $(".daychart").each ->
+            if $(this).data("data")
+                JcsChart.drawDay($(this).data("data"))
+        $(".monthchart").each ->
+            if $(this).data("data")
+                JcsChart.drawMonth($(this).data("data"))
 
     drawDay: (opt) ->
         $.jqplot(opt.selector,  opt.data, {
@@ -44,3 +45,10 @@ JcsChart =
                     padMin: 0
             series: JSON.parse(opt.colors)
         })
+
+    refresh: (sel)->
+        if $(sel).length and $(sel).data("url")
+            $.get($(sel).data("url"), (data) ->
+                $(sel).html(data)
+                JcsChart.init()
+            )

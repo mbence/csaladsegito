@@ -2,7 +2,7 @@
     <span>{{ 'érdeklődés<br>regisztráció'|trans|raw }}</span>
     <ul>
         {% for id, name in inquiry_types() %}
-            <li><a class="button" href="{{ path('register_inquiry', {'type': id}) }}"><span>{{ name }}</span></a></li>
+            <li><a class="button" href="{{ path('register_inquiry', {'event': id}) }}"><span>{{ name }}</span></a></li>
         {% endfor %}
     </ul>
 </div>

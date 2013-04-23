@@ -1,0 +1,20 @@
+<br>
+
+<table class="stat-legend"><tbody>
+    {% for inq in events %}
+    <tr class="jqplot-table-legend">
+        <td class="jqplot-table-legend jqplot-table-legend-swatch" style="text-align: center; padding-top: 0px;">
+            <div class="jqplot-table-legend-swatch-outline">
+                <div class="jqplot-table-legend-swatch" style="background-color: {{ colors[events|length - loop.index] }}; border-color: {{ colors[events|length - loop.index] }};"></div>
+            </div>
+        </td>
+        <td class="jqplot-table-legend jqplot-table-legend-label" style="padding-top: 0px;">{{ inq }}</td>
+    </tr>
+    {% endfor %}
+</tbody></table>
+<div class="clear"></div>
+
+{% for chartdiv in detailed %}
+    <div id="{{ chartdiv.selector }}" data-data="{{ chartdiv|json_encode }}" class="toppad10 daychart" style="height:140px;width:320px; "></div>
+{% endfor %}
+<div id="{{ month.selector }}" data-data="{{ month|json_encode }}" style="height:200px;width:320px; "class="toppad10 monthchart"></div>

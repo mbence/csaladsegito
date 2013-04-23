@@ -603,7 +603,11 @@ table.problem-list td {
     background-color: #ccc;
 }
 
-/* Inquiry */
+/* Stats */
+.stats {
+    float: right;
+}
+
 .inquiry-stats {
     float: right;
     width: 320px

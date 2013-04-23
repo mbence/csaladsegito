@@ -15,6 +15,12 @@ parameters:
         13: "Probléma lezárások"
 
     task_status:
-        1: új
-        2: folyamatban
-        3: kész
+        1: "új"
+        2: "folyamatban"
+        3: "kész"
+
+    stat_events:
+        # Stat::TYPE_FAMILY_HELP
+        2:
+            1: "Új megkeresés"
+            2: "Feldolgozott esemény"
