@@ -162,12 +162,10 @@ class StatService
                     array_unshift($stat_detailed, $stat_detailed[0]);
                     $day_count--;
                     $stat_detailed[0]['title'] = $this->container->get('translator')->trans($daynames[date('Ymd')]);
-                    $stat_detailed[1]['selector'] = 'daychart_1';
+                    $stat_detailed[1]['selector'] = 'daychart_' . $type . '_1';
                     foreach ($stat_detailed[0]['data'] as $k => $v) {
                         $stat_detailed[0]['data'][$k] = [0];
                     }
-
-                    //echo '<pre>', print_r($stat_detailed), '</pre>';
                 }
             }
             // add monthly stats, but only for this month, and only if the inquiry type is known
