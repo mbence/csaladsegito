@@ -1,9 +1,9 @@
 JcsChart =
-    init: (days, month) ->
-        $(".daychart").each ->
+    init: (sel = document)->
+        $(".daychart", sel).each ->
             if $(this).data("data")
                 JcsChart.drawDay($(this).data("data"))
-        $(".monthchart").each ->
+        $(".monthchart", sel).each ->
             if $(this).data("data")
                 JcsChart.drawMonth($(this).data("data"))
 
@@ -50,5 +50,5 @@ JcsChart =
         if $(sel).length and $(sel).data("url")
             $.get($(sel).data("url"), (data) ->
                 $(sel).html(data)
-                JcsChart.init()
+                JcsChart.init(sel)
             )
