@@ -2,7 +2,7 @@
 <title>{% block title %}Családsegítő Admin{% endblock %}</title>
 <link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
 
-{% stylesheets output='css/main.css' 
+{% stylesheets output='css/main.css' combine=false
     '@JCSGYKAdminBundle/Resources/public/css/reset.css'
     '@JCSGYKAdminBundle/Resources/public/css/jquery-ui-1.10.0.custom.min.css'
     '@JCSGYKAdminBundle/Resources/public/css/jquery.jqplot.css'

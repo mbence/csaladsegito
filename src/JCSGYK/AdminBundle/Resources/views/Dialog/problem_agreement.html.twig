@@ -1,13 +1,13 @@
-{# Confirm closed Problem #}
+{# Delete Problem #}
 
 {# if all went well, we just need to close the popup #}
 {% if success is defined and success %}
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
     {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
-    <form action="{{ path('problem_confirm', {'id': problem.id}) }}" id="problem_confirm_form" method="post" {{ form_enctype(form) }}>
+    <form action="{{ path('problem_agreement', {'id': problem.id}) }}" id="problem_agreement_form" method="post" {{ form_enctype(form) }}>
         <h1 class="client">
-            {{ 'Probléma lezárásának jóváhagyása'|trans }}
+            {% if operation %}{{ 'Megállapodás rögzítése'|trans }}{% else %}{{ 'Megállapodás törlése'|trans }}{% endif %}
         </h1>
 
         {{ form_errors(form) }}
@@ -33,16 +33,23 @@
             </table>
         </div>
 
-        {% include "JCSGYKAdminBundle:Problem:_close.html.twig" with {item: problem} %}
+        <table class="client-edit" cellspacing="0" border="0">
+            <tr>{#  radio gomb érvényes visszavonásig, vagy dátumig #}
+                <th>{{ form_label(form.agreement_expires_at) }}:</th>
+                <td colspan="3">
+                    {% if operation %}
+                        {{ form_errors(form.agreement_expires_at) }}{{ form_widget(form.agreement_expires_at) }}
+                    {% else %}
+                        <div class="bottompad4">{% if problem.agreementExpiresAt %}{{ problem.agreementExpiresAt|fdate('sd') }}{% else %}{{ 'Lezárásig'|trans }}{% endif %}</div>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
 
-        <div class="problem-open-alert">
-            <p>
-                {{ 'Biztosan jóváhagyja a probléma lezárását?'| trans }}
-            </p>
-        </div>
+        {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: problem} %}
 
         <div class="toppad10">
-            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'confirm_problem', title:'Lezárás jóváhagyása', label:'jóváhagyás'}] } %}
+            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'delete_problem redtext', title:'Probléma törlése', label:'törlés'}] } %}
 
             <div class="clear"></div>
         </div>

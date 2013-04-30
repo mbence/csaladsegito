@@ -89,4 +89,12 @@ Problem:
             type: boolean
             nullable: true
             column: is_deleted
+        hasAgreement:
+            type: boolean
+            nullable: true
+            column: has_agreement
+        agreementExpiresAt:
+            type: date
+            nullable: true
+            column: agreement_expires_at
     lifecycleCallbacks: {  }

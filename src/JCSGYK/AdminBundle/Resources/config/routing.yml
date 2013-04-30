@@ -71,6 +71,9 @@ problem_events:
 problem_delete:
     pattern:  /problem/delete/{id}
     defaults: { _controller: JCSGYKAdminBundle:Problem:delete, id: null }
+problem_agreement:
+    pattern:  /problem/agreement/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Problem:agreement, id: null }
 
 # Event #
 event_view:

@@ -35,14 +35,25 @@ class Docx
         }
 
         $tbs = $this->container->get('opentbs');
+        //$tbs->SetOption('noerr', true);
+
         $tbs->LoadTemplate($template->getAbsolutePath(), OPENTBS_ALREADY_UTF8); // OPENTBS_DEFAULT, OPENTBS_ALREADY_UTF8, OPENTBS_ALREADY_XML
 
         // get the field map
         $fields = $this->getMap($data);
+//        var_dump($fields['blocks']['problem'][0]);
+//        var_dump($fields['blocks']['problem'][0]['events']);
 
         // do the field merge
         foreach ($fields as $base => $merge) {
-            $tbs->MergeField($base, $merge);
+            if ('blocks' == $base) {
+                foreach ($merge as $block => $source) {
+                    $tbs->MergeBlock($block, $source);
+                }
+            }
+            else {
+                $tbs->MergeField($base, $merge);
+            }
         }
 
         $ae = $this->container->get('jcs.twig.adminextension');
@@ -67,6 +78,34 @@ class Docx
         $ae = $this->container->get('jcs.twig.adminextension');
         $em = $this->container->get('doctrine')->getManager();
 
+        if (!empty($data['blocks']['problem'])) {
+            $re['blocks']['problem'] = [];
+
+            foreach ($data['blocks']['problem'] as $pr) {
+                $events = [];
+                if (count($pr['events'])) {
+                    foreach ($pr['events'] as $ev) {
+                        $events[] = [
+                            'datum' => sprintf('[%s]', $ae->formatDate($ev->getEventDate(), 'sd')),
+                            'description' => $ev->getDescription()
+                        ];
+                    }
+                }
+                else {
+                    $events[] = [
+                        'datum' => '',
+                        'description' => 'Nincsen megjeleníthető esemény'
+                    ];
+                }
+
+                $re['blocks']['problem'][] = [
+                    'title' => $pr['problem']->getTitle(),
+                    'assigned_to' => $ae->formatName($pr['problem']->getAssignee()->getFirstname(), $pr['problem']->getAssignee()->getLastname()),
+                    'status' =>  $ae->problemStatus($pr['problem']),
+                    'events' => $events
+                ];
+            }
+        }
         // Client
         if (!empty($data['client']) && $data['client'] instanceof Client) {
             $client = $data['client'];

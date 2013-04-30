@@ -36,7 +36,7 @@
                     <th>{{ 'Probléma'|trans }}:</th>
                     <td>{{ problem.title }}</td>
                     <th>{{ 'Állapot'|trans }}:</th>
-                    <td>{% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}</td>
+                    <td>{{ pstatus(problem) }}</td>
                 </tr>
                 <tr>
                     <th>{{ 'Jelleg'|trans }}:</th>

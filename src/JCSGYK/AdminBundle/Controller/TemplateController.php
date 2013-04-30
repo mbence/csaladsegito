@@ -162,6 +162,8 @@ class TemplateController extends Controller
 
     private function getHistoryData(Client $client, Problem $problem = null)
     {
+        $blocks = [];
+
         if (is_null($problem)) {
             // get all problems
             $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($client->getId(), 'ASC');
@@ -171,29 +173,25 @@ class TemplateController extends Controller
         }
 
         if (!empty($problems)) {
+
+            $blocks['problem'] = [];
+
             // get events
             // we cant use the Doctrine relation to get the events, because we only need undeleted events and in ascending order
             $problem_repo = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem');
             $events = [];
             foreach ($problems as $problem) {
-                $events[$problem->getId()] = $problem_repo->getEventList($problem->getId(), 'ASC');
+                $blocks['problem'][] = [
+                    'problem' => $problem,
+                    'events' => $problem_repo->getEventList($problem->getId(), 'ASC')
+                ];
             }
-
-            // render the sub-template for the event list
-            $content = $this->renderView(
-                'JCSGYKAdminBundle:Elements:history.html.twig',
-                array('problems' => $problems, 'events' => $events)
-            );
-        }
-        else {
-            // if the client has no problems, we send an empty content
-            $content = '';
         }
 
         // return the field map for the template
         return [
             'client' => $client,
-            'history' => $content
+            'blocks' => $blocks
         ];
     }
 

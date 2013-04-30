@@ -175,6 +175,16 @@ class MenuController extends Controller
                 'role'  => 'ROLE_ADMIN',
                 'requirement' => $problem->canEdit($sec) && $problem->getIsActive()
             ],
+            // agreement
+            [
+                'url'   => $this->generateUrl('problem_agreement', ['id' => $problem->getId()]),
+                'label' => 'megállapodás',
+                'title' => 'Megállapodás',
+                'class' => 'problem_agreement',
+                'more'  => true,
+                'role'  => 'ROLE_USER',
+                'requirement' => $problem->canEdit($sec) && $problem->getIsActive()
+            ],
             // edit problem
             [
                 'url'   => $this->generateUrl('problem_edit', ['client_id' => $problem->getClient()->getId(), 'id' => $problem->getId()]),

@@ -159,6 +159,20 @@ class Problem
      */
     private $isDeleted;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="has_agreement", type="integer", nullable=true)
+     */
+    private $hasAgreement;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="agreement_expires_at", type="datetime", nullable=true)
+     */
+    private $agreementExpiresAt;
+    
 
     public function __construct()
     {
@@ -709,5 +723,51 @@ class Problem
     public function getConfirmer()
     {
         return $this->confirmer;
+    }
+
+    /**
+     * Set hasAgreement
+     *
+     * @param integer $hasAgreement
+     * @return Problem
+     */
+    public function setHasAgreement($hasAgreement)
+    {
+        $this->hasAgreement = $hasAgreement;
+    
+        return $this;
+    }
+
+    /**
+     * Get hasAgreement
+     *
+     * @return integer 
+     */
+    public function getHasAgreement()
+    {
+        return $this->hasAgreement;
+    }
+
+    /**
+     * Set agreementExpiresAt
+     *
+     * @param \DateTime $agreementExpiresAt
+     * @return Problem
+     */
+    public function setAgreementExpiresAt($agreementExpiresAt)
+    {
+        $this->agreementExpiresAt = $agreementExpiresAt;
+    
+        return $this;
+    }
+
+    /**
+     * Get agreementExpiresAt
+     *
+     * @return \DateTime 
+     */
+    public function getAgreementExpiresAt()
+    {
+        return $this->agreementExpiresAt;
     }
 }

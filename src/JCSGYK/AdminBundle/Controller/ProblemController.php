@@ -7,8 +7,10 @@ use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Validator\Constraints as Assert;
 
 use JCSGYK\AdminBundle\Entity\Problem;
+use JCSGYK\AdminBundle\Entity\Event;
 use JCSGYK\AdminBundle\Form\Type\ProblemType;
 use JCSGYK\AdminBundle\Form\Type\CloseProblemType;
 use JCSGYK\AdminBundle\Entity\Task;
@@ -42,6 +44,11 @@ class ProblemController extends Controller
         }
     }
 
+    /**
+     * Read the given problem id
+     * @param int $id
+     * @return Problem
+     */
     protected function getProblem($id)
     {
         return $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')
@@ -374,6 +381,84 @@ class ProblemController extends Controller
 
         return $this->render('JCSGYKAdminBundle:Dialog:problem_confirm.html.twig', [
             'problem' => $problem,
+            'form' => $form->createView(),
+        ]);
+    }
+
+/**
+     * Start / stop the agreement for the actual problem
+     *
+     * @param int $id Problem id
+     *
+     * @Secure(roles="ROLE_USER")
+     */
+    public function agreementAction($id)
+    {
+        $request = $this->getRequest();
+
+        // get the problem
+        $problem = $this->getProblem($id);
+        if (empty($problem)) {
+            throw new HttpException(400, "Bad request");
+        }
+
+        // check user rights (thows Access Denied in failure!)
+        $this->canEdit($problem);
+
+        $has_agreement = (int) ($problem->getHasAgreement() && $problem->getAgreementExpiresAt() >= new \DateTime());
+
+        $form = $this->createFormBuilder(['operation' => $has_agreement])
+            ->add('operation', 'integer')
+            ->add('agreement_expires_at', 'date', [
+                'label' => 'Megállapodás érvényes'
+            ])
+            ->getForm();
+
+        // save
+        if ($request->isMethod('POST')) {
+            $form->bind($request);
+
+            $operation = $form->get('operation')->getData();
+            if ($operation != $has_agreement) {
+                $msg = $has_agreement ? "A megállapodás már rögzítésre került" : "A megállapodás már törlésre került";
+                $this->get('session')->setFlash('error', $msg);
+            }
+            elseif ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $user= $this->get('security.context')->getToken()->getUser();
+
+                // set modifier user
+                $problem->setModifier($user);
+                $problem->setHasAgreement(1 - $data['operation']);
+
+                $event_message = $has_agreement ? "Megállapodás vége" : "Megállapodás kezdete";
+                $event_type = $has_agreement ? 96 : 95;
+
+                // create the auto events
+                $event = new Event();
+                $event->setEventDate(new \DateTime());
+                $event->setProblem($problem);
+                $event->setDescription($event_message);
+                $event->setCreator($user);
+                $event->setType($event_type);
+
+                $em->persist($event);
+
+                $em->flush();
+
+                $msg = $has_agreement ? "A megállapodás törölve" : "A megállapodás rögzítve";
+
+                $this->get('session')->setFlash('notice', $msg);
+
+                return $this->render('JCSGYKAdminBundle:Dialog:problem_agreement.html.twig', [
+                    'success' => true,
+                ]);
+            }
+        }
+
+        return $this->render('JCSGYKAdminBundle:Dialog:problem_agreement.html.twig', [
+            'problem' => $problem,
+            'operation' => (1 - $has_agreement),
             'form' => $form->createView(),
         ]);
     }

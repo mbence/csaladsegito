@@ -18,9 +18,7 @@
             <td>{{ form_errors(form.title) }}{{ form_widget(form.title) }}</td>
             <th>{{ 'Állapot'|trans }}:</th>
             <td valign="middle">
-                <div class="bottompad4">
-                {% if problem.isActive %}{{ 'nyitott'|trans }}{% else %}{{ 'lezárt'|trans }}{% endif %}
-                </div>
+                <div class="bottompad4">{{ pstatus(problem) }}</div>
             </td>
 
         </tr>
