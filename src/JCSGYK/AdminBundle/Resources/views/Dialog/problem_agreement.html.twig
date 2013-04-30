@@ -33,26 +33,37 @@
             </table>
         </div>
 
+        {% if operation %}
         <table class="client-edit" cellspacing="0" border="0">
             <tr>{#  radio gomb érvényes visszavonásig, vagy dátumig #}
                 <th>{{ form_label(form.agreement_expires_at) }}:</th>
                 <td colspan="3">
-                    {% if operation %}
-                        {{ form_errors(form.agreement_expires_at) }}{{ form_widget(form.agreement_expires_at) }}
-                    {% else %}
-                        <div class="bottompad4">{% if problem.agreementExpiresAt %}{{ problem.agreementExpiresAt|fdate('sd') }}{% else %}{{ 'Lezárásig'|trans }}{% endif %}</div>
-                    {% endif %}
+                    {{ form_widget(form.agreement_exp_type) }}
+                    <div class="agreement-date">
+                        {% if operation %}
+                            {{ form_errors(form.agreement_expires_at) }}{{ form_widget(form.agreement_expires_at) }}
+                        {% else %}
+                            <div class="bottompad4">{% if problem.agreementExpiresAt %}{{ problem.agreementExpiresAt|fdate('sd') }}{% else %}{{ 'Lezárásig'|trans }}{% endif %}</div>
+                        {% endif %}
+                    </div>
                 </td>
             </tr>
         </table>
+        {% endif %}
 
         {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: problem} %}
 
         <div class="toppad10">
-            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'delete_problem redtext', title:'Probléma törlése', label:'törlés'}] } %}
+            {% if operation %}
+                {% set op_label = 'rögzítése' %}
+            {% else %}
+                {% set op_label = 'törlés' %}
+            {% endif %}
+            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_agreement', title:'Megállapodás mentése', label: op_label}] } %}
 
             <div class="clear"></div>
         </div>
+        {{ form_widget(form.operation) }}
         {{ form_widget(form._token) }}
     </form>
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}

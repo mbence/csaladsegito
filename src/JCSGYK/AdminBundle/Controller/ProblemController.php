@@ -31,12 +31,14 @@ class ProblemController extends Controller
         }
         if (!empty($problem)) {
             $sec = $this->get('security.context');
+            $has_agreement = (int) ($problem->getHasAgreement() && (is_null($problem->getAgreementExpiresAt()) || $problem->getAgreementExpiresAt() >= new \DateTime));
 
             return $this->render('JCSGYKAdminBundle:Problem:view.html.twig', [
                 'client' => $problem->getClient(),
                 'problem' => $problem,
                 'events' => $events,
-                'can_edit' => $problem->canEdit($sec)
+                'can_edit' => $problem->canEdit($sec),
+                'has_agreement' => $has_agreement
             ]);
         }
         else {
@@ -405,12 +407,25 @@ class ProblemController extends Controller
         // check user rights (thows Access Denied in failure!)
         $this->canEdit($problem);
 
-        $has_agreement = (int) ($problem->getHasAgreement() && $problem->getAgreementExpiresAt() >= new \DateTime());
+        $has_agreement = (int) ($problem->getHasAgreement() && (is_null($problem->getAgreementExpiresAt()) || $problem->getAgreementExpiresAt() >= new \DateTime));
+        $exp = $problem->getAgreementExpiresAt() ? $problem->getAgreementExpiresAt() : new \DateTime;
 
-        $form = $this->createFormBuilder(['operation' => $has_agreement])
-            ->add('operation', 'integer')
+        $defaults = [
+            'operation' => $has_agreement,
+            'agreement_exp_type' => !is_null($problem->getAgreementExpiresAt()),
+            'agreement_expires_at' => $exp
+        ];
+
+        $form = $this->createFormBuilder($defaults)
+            ->add('operation', 'hidden')
+            ->add('agreement_exp_type', 'choice', [
+                'expanded' => true,
+                'multiple' => false,
+                'choices' => ['Visszavonásig', 'Dátum: ']
+            ])
             ->add('agreement_expires_at', 'date', [
-                'label' => 'Megállapodás érvényes'
+                'label' => 'Megállapodás érvényes',
+                'format' => 'yMMdd',
             ])
             ->getForm();
 
@@ -426,10 +441,17 @@ class ProblemController extends Controller
             elseif ($form->isValid()) {
                 $em = $this->getDoctrine()->getManager();
                 $user= $this->get('security.context')->getToken()->getUser();
+                $data = $form->getData();
 
                 // set modifier user
                 $problem->setModifier($user);
                 $problem->setHasAgreement(1 - $data['operation']);
+                if ($data['agreement_exp_type']) {
+                    $problem->setAgreementExpiresAt($data['agreement_expires_at']);
+                }
+                else {
+                    $problem->setAgreementExpiresAt(null);
+                }
 
                 $event_message = $has_agreement ? "Megállapodás vége" : "Megállapodás kezdete";
                 $event_type = $has_agreement ? 96 : 95;

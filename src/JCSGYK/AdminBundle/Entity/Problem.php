@@ -167,12 +167,12 @@ class Problem
     private $hasAgreement;
 
     /**
-     * @var \DateTime
+     * @var \Date
      *
-     * @ORM\Column(name="agreement_expires_at", type="datetime", nullable=true)
+     * @ORM\Column(name="agreement_expires_at", type="date", nullable=true)
      */
     private $agreementExpiresAt;
-    
+
 
     public function __construct()
     {
@@ -734,14 +734,14 @@ class Problem
     public function setHasAgreement($hasAgreement)
     {
         $this->hasAgreement = $hasAgreement;
-    
+
         return $this;
     }
 
     /**
      * Get hasAgreement
      *
-     * @return integer 
+     * @return integer
      */
     public function getHasAgreement()
     {
@@ -757,14 +757,14 @@ class Problem
     public function setAgreementExpiresAt($agreementExpiresAt)
     {
         $this->agreementExpiresAt = $agreementExpiresAt;
-    
+
         return $this;
     }
 
     /**
      * Get agreementExpiresAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getAgreementExpiresAt()
     {

@@ -790,3 +790,15 @@ table.task-list td {
 table.task-list tr:hover td {
     background-color: #f5f5f5;
 }
+
+/* Agreement */
+.agreement-date > div {
+    float: left;
+}
+#form_agreement_exp_type input, #form_agreement_exp_type label {
+    display: inline;
+    float: left;
+}
+#form_agreement_exp_type input {
+    clear: left;
+}

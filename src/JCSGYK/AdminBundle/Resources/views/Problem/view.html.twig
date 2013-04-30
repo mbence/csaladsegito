@@ -25,7 +25,9 @@
         </tr>
         <tr>
             <th>{{ 'Jelleg'|trans }}:</th>
-            <td colspan="3">{{ param(problem.type) }}</td>
+            <td>{{ param(problem.type) }}</td>
+            <th>{{ 'Megállapodás'|trans }}:</th>
+            <td>{% if has_agreement %}{{ 'van'|trans }}{% else %}{{ 'nincs'|trans }}{% endif %}</td>
         </tr>
         {% if problem.attachment %}
             <tr>

@@ -131,20 +131,42 @@ JcsProblem =
             HBlocks.closeBlock(4)
             false
 
-        # close problem
-        $(".close_problem").add(".templates").add(".confirm_problem").add(".problem_agreement").on "click", (event) ->
+        # templates and confirm
+        $(".templates").add(".confirm_problem").on "click", (event) ->
             if !$(this).hasClass('animbutton')
                 $(this).addClass('animbutton')
 
                 $.get($(this).attr("href"), (data) =>
                     $(this).removeClass('animbutton')
                     JcsModal.setContent(data)
-                    JcsProblem.initCloseProblem()
-                    JcsProblem.initTemplates()
+                    if $(this).hasClass('templates')
+                        JcsProblem.initTemplates()
                     JcsModal.onClose ->
                         # TODO: under FF cancelled downloads cause some strange errors
                         # refresh the event list on close
                         JcsProblem.reloadEvents($("#eventblock #event-id").data("eventid"))
+                    # hide the submenu
+                    $(this).parent().hide()
+
+                ).error( (data) =>
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $(this).removeClass('animbutton')
+                )
+            false
+
+        # close problem, agreement
+        $(".close_problem").add(".problem_agreement").on "click", (event) ->
+            if !$(this).hasClass('animbutton')
+                $(this).addClass('animbutton')
+
+                $.get($(this).attr("href"), (data) =>
+                    $(this).removeClass('animbutton')
+                    JcsModal.setContent(data)
+                    if $(this).hasClass('close_problem')
+                        JcsProblem.initCloseProblem()
+                    if $(this).hasClass('problem_agreement')
+                        JcsProblem.initProblemAgreement()
                     # hide the submenu
                     $(this).parent().hide()
 
@@ -241,6 +263,41 @@ JcsProblem =
                 # there was some error :(
                 AjaxBag.showError(data.statusText)
                 $(".delete_problem").removeClass('animbutton')
+            )
+
+            false
+
+        JcsModal.load()
+
+    initProblemAgreement: ->
+        JcsModal.setCloseButton()
+
+        # form submit
+        $("#problem_agreement_form").submit ->
+            $(".save_problem").addClass('animbutton')
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                JcsModal.setContent(data)
+
+                # display the result message
+                if JcsModal.find(".result").data("result-notice")
+                    AjaxBag.showNotice(JcsModal.find(".result").data("result-notice"))
+                    JcsModal.close()
+                    # reload the problem block
+                    problem_id = $("#problemblock #problem-id").data("problemid")
+                    if problem_id
+                        $.get($("#getproblemform").attr("action") + '/' + problem_id, (data) ->
+                            $("#problemblock .problemcontent").html(data).show()
+                            JcsProblem.init()
+                        )
+                else
+                    JcsProblem.initProblemAgreement()
+
+                $(".save_problem").removeClass('animbutton')
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $(".save_problem").removeClass('animbutton')
             )
 
             false
