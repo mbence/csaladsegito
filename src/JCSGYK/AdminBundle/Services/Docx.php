@@ -100,7 +100,9 @@ class Docx
 
                 $re['blocks']['problem'][] = [
                     'title' => $pr['problem']->getTitle(),
-                    'assigned_to' => $ae->formatName($pr['problem']->getAssignee()->getFirstname(), $pr['problem']->getAssignee()->getLastname()),
+                    'assigned_to' => ($pr['problem']->getAssignee() ?
+                        $ae->formatName($pr['problem']->getAssignee()->getFirstname(), $pr['problem']->getAssignee()->getLastname())
+                        : ''),
                     'status' =>  $ae->problemStatus($pr['problem']),
                     'events' => $events
                 ];
