@@ -271,7 +271,6 @@ JcsClient =
                 $.get(problem_url, (data) ->
                     $("#problemblock .loading").hide()
                     $("#problemblock .problemcontent").html(data).show()
-                    $("#problemblock .problemcontent").data("url", problem_url)
                     HBlocks.scrollTo(3)
                     JcsProblem.init()
                 ).error( (data) ->

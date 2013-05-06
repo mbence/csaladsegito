@@ -15,6 +15,11 @@ JcsProblem =
             $("#problemblock .problemcontent").show()
             HBlocks.scrollTo(3)
 
+        # set problem url
+        problem_id = $("#problemblock .problemcontent #problem-id").data("problemid")
+        problem_url = $("#getproblemform").attr("action") + "/" + problem_id
+        $("#problemblock .problemcontent").data("url", problem_url)
+
         @setupEvents()
         @initForm()
         @setDelDebt()
@@ -326,6 +331,7 @@ JcsProblem =
         false
 
     initTemplates: ->
+        JcsModal.setCloseButton()
         $("#templateform").submit ->
             # check for selected template doc
             if !$("[name='form[template]']:checked").length
@@ -338,3 +344,4 @@ JcsProblem =
             $("#template-dl-frame").attr("src", src)
 
             false
+        JcsModal.load()
