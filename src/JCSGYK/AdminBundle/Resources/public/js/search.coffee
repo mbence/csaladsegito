@@ -68,7 +68,6 @@ JcsSearch =
             $.get(client_url, (data) ->
                 $("#clientblock .loading").hide()
                 $("#clientblock .clientcontent").html(data).show()
-                $("#clientblock .clientcontent").data("url", client_url)
                 JcsClient.init()
             ).error( (data) ->
                 # there was some error :(

@@ -32,24 +32,25 @@
                 </tr>
             </table>
         </div>
+        <br>
 
-        {% if operation %}
         <table class="client-edit" cellspacing="0" border="0">
             <tr>{#  radio gomb érvényes visszavonásig, vagy dátumig #}
                 <th>{{ form_label(form.agreement_expires_at) }}:</th>
-                <td colspan="3">
+                <td>
+                {% if operation %}
                     {{ form_widget(form.agreement_exp_type) }}
                     <div class="agreement-date">
-                        {% if operation %}
-                            {{ form_errors(form.agreement_expires_at) }}{{ form_widget(form.agreement_expires_at) }}
-                        {% else %}
-                            <div class="bottompad4">{% if problem.agreementExpiresAt %}{{ problem.agreementExpiresAt|fdate('sd') }}{% else %}{{ 'Lezárásig'|trans }}{% endif %}</div>
-                        {% endif %}
+                        {{ form_errors(form.agreement_expires_at) }}{{ form_widget(form.agreement_expires_at) }}
                     </div>
+                {% else %}
+                    <div class="bottompad4">
+                        {{ problem.agreementExpiresAt|adate }}
+                    </div>
+                {% endif %}
                 </td>
             </tr>
         </table>
-        {% endif %}
 
         {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: problem} %}
 

@@ -160,13 +160,6 @@ class Problem
     private $isDeleted;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="has_agreement", type="integer", nullable=true)
-     */
-    private $hasAgreement;
-
-    /**
      * @var \Date
      *
      * @ORM\Column(name="agreement_expires_at", type="date", nullable=true)
@@ -723,29 +716,6 @@ class Problem
     public function getConfirmer()
     {
         return $this->confirmer;
-    }
-
-    /**
-     * Set hasAgreement
-     *
-     * @param integer $hasAgreement
-     * @return Problem
-     */
-    public function setHasAgreement($hasAgreement)
-    {
-        $this->hasAgreement = $hasAgreement;
-
-        return $this;
-    }
-
-    /**
-     * Get hasAgreement
-     *
-     * @return integer
-     */
-    public function getHasAgreement()
-    {
-        return $this->hasAgreement;
     }
 
     /**

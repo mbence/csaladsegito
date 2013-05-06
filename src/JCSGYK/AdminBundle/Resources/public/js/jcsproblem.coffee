@@ -17,7 +17,11 @@ JcsProblem =
 
         # set problem url
         problem_id = $("#problemblock .problemcontent #problem-id").data("problemid")
-        problem_url = $("#getproblemform").attr("action") + "/" + problem_id
+        if problem_id?
+            problem_url = $("#getproblemform").attr("action") + "/" + problem_id
+        else
+            problem_url = false
+
         $("#problemblock .problemcontent").data("url", problem_url)
 
         @setupEvents()
@@ -287,7 +291,8 @@ JcsProblem =
                 if JcsModal.find(".result").data("result-notice")
                     AjaxBag.showNotice(JcsModal.find(".result").data("result-notice"))
                     JcsModal.close()
-                    # reload the problem block
+                    JcsClient.reloadClient($("#problemblock #problem-id").data("problemid"))
+                    # reload the whole problem block
                     problem_id = $("#problemblock #problem-id").data("problemid")
                     if problem_id
                         $.get($("#getproblemform").attr("action") + '/' + problem_id, (data) ->

@@ -16,6 +16,7 @@
                 <th>{{ 'Jelleg'|trans }}</th>
                 <th>{{ 'Felelős'|trans }}</th>
                 <th>{{ 'Állapot'|trans }}</th>
+                <th></th>
             </tr>
             <tbody class="walkable">
             {% for problem in problems %}
@@ -24,6 +25,7 @@
                 <td>{{ param(problem.type) }}</td>
                 <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
                 <td>{{ pstatus(problem) }}</td>
+                <td class="problem-has-agreement">{% if problem.getAgreementExpiresAt() %}M{% endif %}</td>
             </tr>
             {% endfor %}
             </tbody>

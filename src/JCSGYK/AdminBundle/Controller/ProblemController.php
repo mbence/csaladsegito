@@ -31,7 +31,8 @@ class ProblemController extends Controller
         }
         if (!empty($problem)) {
             $sec = $this->get('security.context');
-            $has_agreement = (int) ($problem->getHasAgreement() && (is_null($problem->getAgreementExpiresAt()) || $problem->getAgreementExpiresAt() >= new \DateTime));
+
+            $has_agreement = $problem->getAgreementExpiresAt() >= new \DateTime('today');
 
             return $this->render('JCSGYKAdminBundle:Problem:view.html.twig', [
                 'client' => $problem->getClient(),
@@ -218,6 +219,8 @@ class ProblemController extends Controller
                     // set the problem status
                     $problem->setIsActive(1 - $operation);
 
+                    // update client record
+                    $problem->getClient()->updateAgreementDate();
                     $em->flush();
 
                     $this->get('session')->setFlash('notice', ($operation ? 'Probléma lezárva' : 'Probléma újranyitva'));
@@ -297,6 +300,8 @@ class ProblemController extends Controller
                     $problem->setModifier($user);
                     $problem->setIsDeleted(true);
 
+                    // update client record
+                    $problem->getClient()->updateAgreementDate();
                     $em->flush();
 
                     $this->get('session')->setFlash('notice', 'Probléma törölve');
@@ -407,7 +412,7 @@ class ProblemController extends Controller
         // check user rights (thows Access Denied in failure!)
         $this->canEdit($problem);
 
-        $has_agreement = (int) ($problem->getHasAgreement() && (is_null($problem->getAgreementExpiresAt()) || $problem->getAgreementExpiresAt() >= new \DateTime));
+        $has_agreement = $problem->getAgreementExpiresAt() >= new \DateTime('today');
         $exp = $problem->getAgreementExpiresAt() ? $problem->getAgreementExpiresAt() : new \DateTime;
 
         $defaults = [
@@ -445,12 +450,18 @@ class ProblemController extends Controller
 
                 // set modifier user
                 $problem->setModifier($user);
-                $problem->setHasAgreement(1 - $data['operation']);
-                if ($data['agreement_exp_type']) {
+
+                if ($has_agreement) {
+                    // agreement closed
+                    $problem->setAgreementExpiresAt(null);
+                }
+                elseif ($data['agreement_exp_type']) {
+                    // defined length agreement
                     $problem->setAgreementExpiresAt($data['agreement_expires_at']);
                 }
                 else {
-                    $problem->setAgreementExpiresAt(null);
+                    // undefined lenght agreement
+                    $problem->setAgreementExpiresAt(new \DateTime('9999-12-31'));
                 }
 
                 $event_message = $has_agreement ? "Megállapodás vége" : "Megállapodás kezdete";
@@ -466,6 +477,8 @@ class ProblemController extends Controller
 
                 $em->persist($event);
 
+                // update client record
+                $problem->getClient()->updateAgreementDate();
                 $em->flush();
 
                 $msg = $has_agreement ? "A megállapodás törölve" : "A megállapodás rögzítve";

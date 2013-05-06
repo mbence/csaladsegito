@@ -16,6 +16,15 @@ JcsClient =
             if $("#problemblock .problemcontent").text() == ""
                 HBlocks.scrollTo(2)
 
+        # set client url
+        client_id = $("#clientblock .clientcontent #client-id").data("clientid")
+        if client_id?
+            client_url = $("#getclientform").attr("action") + "/" + client_id
+        else
+            client_url = false
+        $("#clientblock .clientcontent").data("url", client_url)
+
+
         @initButtonRow()
         @initForm()
         @setDelProvider()
@@ -57,6 +66,23 @@ JcsClient =
 
         # textarea auto height
         $("#client_note").elastic()
+
+    reloadClient: (problemid) ->
+        url = $("#clientblock .clientcontent").data("url")
+        if url
+            $.get(url, (data) ->
+                $("#clientblock .clientcontent").html(data).show()
+                JcsClient.init()
+                # restore the cursor and current classes
+                $("#clientblock .problem_container tr").removeClass("current cursor")
+                $("#clientblock .problem_container tr").each ->
+                    if $(this).data("problemid") == problemid
+                        $(this).addClass("cursor current")
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+            )
+        false
 
     reloadProblems: (problemid) ->
         # save the cursor and current rows

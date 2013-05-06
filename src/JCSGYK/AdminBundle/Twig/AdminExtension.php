@@ -25,6 +25,7 @@ class AdminExtension extends \Twig_Extension
             'gender' => new \Twig_Filter_Method($this, 'gender'),
             'fcurr' => new \Twig_Filter_Method($this, 'formatCurrency'),
             'cid' => new \Twig_Filter_Method($this, 'formatId'),
+            'adate' => new \Twig_Filter_Method($this, 'formatAgreeDate'),
         ];
     }
 
@@ -47,6 +48,21 @@ class AdminExtension extends \Twig_Extension
         }
 
         return $this->translator->trans($re);
+    }
+
+    public function formatAgreeDate($d)
+    {
+        if (is_null($d)) {
+            return '-';
+        }
+        if ($d instanceof \DateTime) {
+            if ($d->format('Y') == '9999') {
+                return 'visszavonásig';
+            }
+            else {
+                return $d->format('Y.m.d.');
+            }
+        }
     }
 
     public function formatId($val)

@@ -407,6 +407,13 @@ class Client
      */
     private $archives;
 
+   /**
+     * @var \Date
+     *
+     * @ORM\Column(name="agreement_expires_at", type="date", nullable=true)
+     */
+    private $agreementExpiresAt;
+
     public function __construct()
     {
         $this->utilityprovidernumbers = new ArrayCollection();
@@ -414,6 +421,19 @@ class Client
         $this->archives = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setModifiedAt(new \DateTime());
+    }
+
+    public function updateAgreementDate()
+    {
+        $new_date = null;
+        $problems = $this->getProblems();
+        foreach ($problems as $problem) {
+            if ($problem->getIsActive() && !$problem->getIsDeleted() && $problem->getAgreementExpiresAt() > $new_date) {
+                $new_date = $problem->getAgreementExpiresAt();
+            }
+        }
+
+        $this->setAgreementExpiresAt($new_date);
     }
 
     /**
@@ -1820,5 +1840,28 @@ class Client
             $this->creator->getID() == $user_id ||
             (!empty($this->caseAdmin) && $this->caseAdmin->getId() == $user_id)
         );
+    }
+
+    /**
+     * Set agreementExpiresAt
+     *
+     * @param \DateTime $agreementExpiresAt
+     * @return Problem
+     */
+    public function setAgreementExpiresAt($agreementExpiresAt)
+    {
+        $this->agreementExpiresAt = $agreementExpiresAt;
+
+        return $this;
+    }
+
+    /**
+     * Get agreementExpiresAt
+     *
+     * @return \DateTime
+     */
+    public function getAgreementExpiresAt()
+    {
+        return $this->agreementExpiresAt;
     }
 }

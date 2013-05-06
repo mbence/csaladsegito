@@ -9,6 +9,8 @@
                 {{ fname(client.getCaseAdmin.firstname, client.getCaseAdmin.lastname) }}
             {% endif %}
         </td>
+        <th>{{ 'Megállapodás'|trans }}:</th>
+        <td>{{ client.agreementExpiresAt|adate }}</td>
     </tr>
 </table>
 <div class="client-sub first-sub togglable">{{ 'személyes adatok'|trans }}</div>

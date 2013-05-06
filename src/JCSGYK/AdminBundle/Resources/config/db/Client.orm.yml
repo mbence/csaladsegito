@@ -276,4 +276,8 @@ Client:
             type: boolean
             nullable: true
             column: is_archived
+        agreementExpiresAt:
+            type: date
+            nullable: true
+            column: agreement_expires_at
     lifecycleCallbacks: {  }

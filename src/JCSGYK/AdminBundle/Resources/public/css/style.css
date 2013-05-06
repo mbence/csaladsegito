@@ -405,6 +405,9 @@ table.problem-list td {
 .button.new_problem {
     margin-left: 10px;
 }
+.problem-has-agreement {
+    width: 10px;
+}
 
 /* Debts */
 .problem-list tr.debt-sum {
