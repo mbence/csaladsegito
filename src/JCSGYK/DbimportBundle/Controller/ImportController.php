@@ -628,6 +628,7 @@ class ImportController extends Controller
         foreach ($clients as $imp) {
             $p = new Client();
             $p->setCompanyId($this->companyID);
+            $p->setType(Client::FH);
 
             foreach ($field_map as $to => $from) {
                 $val = null;
