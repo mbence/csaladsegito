@@ -43,6 +43,13 @@ class Company
     private $host;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="types", type="string", length=16, nullable=true)
+     */
+    private $types;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="is_active", type="boolean", nullable=true)
@@ -53,7 +60,7 @@ class Company
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -69,14 +76,14 @@ class Company
     public function setShortName($shortName)
     {
         $this->shortName = $shortName;
-    
+
         return $this;
     }
 
     /**
      * Get shortName
      *
-     * @return string 
+     * @return string
      */
     public function getShortName()
     {
@@ -92,14 +99,14 @@ class Company
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -115,14 +122,14 @@ class Company
     public function setHost($host)
     {
         $this->host = $host;
-    
+
         return $this;
     }
 
     /**
      * Get host
      *
-     * @return string 
+     * @return string
      */
     public function getHost()
     {
@@ -138,17 +145,40 @@ class Company
     public function setIsActive($isActive)
     {
         $this->isActive = $isActive;
-    
+
         return $this;
     }
 
     /**
      * Get isActive
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * Set types
+     *
+     * @param string $types
+     * @return Company
+     */
+    public function setTypes($types)
+    {
+        $this->types = $types;
+    
+        return $this;
+    }
+
+    /**
+     * Get types
+     *
+     * @return string 
+     */
+    public function getTypes()
+    {
+        return $this->types;
     }
 }

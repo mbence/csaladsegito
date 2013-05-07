@@ -15,6 +15,8 @@ use JCSGYK\AdminBundle\Entity\Template;
 use JCSGYK\AdminBundle\Form\Type\TemplateType;
 use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
+use JCSGYK\AdminBundle\Entity\Company;
+use JCSGYK\AdminBundle\Form\Type\CompanyType;
 
 class AdminController extends Controller
 {
@@ -50,13 +52,14 @@ class AdminController extends Controller
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
         // only superadmins can see and edit superadmins
-        $sql = 'SELECT u FROM JCSGYKAdminBundle:User u';
+        $sql = 'SELECT u FROM JCSGYKAdminBundle:User u WHERE u.companyId=:company ';
         if (!$this->get('security.context')->isGranted('ROLE_SUPER_ADMIN')) {
-            $sql .= " WHERE u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'";
+            $sql .= " AND u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'";
         }
         $sql .= ' ORDER BY u.lastname, u.firstname';
 
         $users = $em->createQuery($sql)
+            ->SetParameter('company', $company_id)
             ->getResult();
 
         if ('new' == $id) {
@@ -163,6 +166,65 @@ class AdminController extends Controller
         $groups = $this->container->getParameter('param_groups');
 
         return $this->render('JCSGYKAdminBundle:Admin:params.html.twig', ['params' => $params, 'groups' => $groups, 'act' => $group]);
+    }
+
+    /**
+     * Edit the company parameters
+     *
+     * @Secure(roles="ROLE_SUPER_ADMIN")
+     */
+    public function companiesAction($id = null)
+    {
+        $request = $this->getRequest();
+        $company = null;
+        $form_view = null;
+
+        $em = $this->getDoctrine()->getManager();
+
+        if ('new' == $id) {
+            // new company
+            $company = new Company;
+        }
+        elseif (!is_null($id)) {
+            $company = $em->getRepository('JCSGYKAdminBundle:Company')->find($id);
+        }
+
+        if (is_null($id) || !empty($company)) {
+
+            if (!empty($company)) {
+                $form = $this->createForm(new CompanyType(), $company);
+            }
+
+            // save the current company
+            if ($request->isMethod('POST')) {
+
+                $form->bind($request);
+
+                if ($form->isValid()) {
+
+                    if (is_null($company->getId())) {
+                        $em->persist($company);
+                    }
+
+                    $em->flush();
+
+                    $this->get('session')->setFlash('notice', 'Cég elmentve');
+
+                    return $this->redirect($this->generateUrl('admin_companies', ['id' => $company->getId()]));
+                }
+            }
+
+            if (!empty($form)) {
+                $form_view = $form->createView();
+            }
+            // get all companies
+            $companies = $em->getRepository('JCSGYKAdminBundle:Company')->findBy([], ['name' => 'ASC']);
+
+            return $this->render('JCSGYKAdminBundle:Admin:companies.html.twig', ['companies' => $companies, 'id' => $id, 'act' => $company, 'form' => $form_view]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
     }
 
     /**

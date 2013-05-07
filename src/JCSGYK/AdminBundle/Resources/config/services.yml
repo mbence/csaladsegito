@@ -2,6 +2,12 @@ services:
 #    jcs.page_header:
 #        class:        JCSGYK\AdminBundle\Services\PageHeader
 #        arguments:    []
+    security.access.companyt_voter:
+        class:      JCSGYK\AdminBundle\Services\CompanyVoter
+        arguments:  ["@service_container"]
+        public:     false
+        tags:
+            - { name: security.voter }
 
     jcs.ds:
         class:        JCSGYK\AdminBundle\Services\DataStore

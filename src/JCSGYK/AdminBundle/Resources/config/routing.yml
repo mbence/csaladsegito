@@ -123,6 +123,9 @@ admin_templates:
 admin_templates_download:
     pattern:  /admin/templates/download/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:templatesDownload, id: null }
+admin_companies:
+    pattern:  /admin/companies/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:companies, id: null }
 
 login_redirector:
     pattern:   /loginredirector

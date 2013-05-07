@@ -1,0 +1,70 @@
+{% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
+
+{% block settings_content %}
+
+<div class="template-top">
+    <div class="floatright right">
+        <a href="{{ path('admin_companies', {'id': 'new'}) }}" class="button" id="new_company"><span>{{ 'új cég'|trans }}</span></a>
+    </div>
+    <h1 class="client">{{ 'Cégek'|trans }}</h1>
+</div>
+<div class="adminblock" id="template-list">
+    <div class="rightpad fullheight nocollapse">
+        {% for co in companies %}
+            <a href="{{ path('admin_companies', {'id': co.id}) }}" class="tpl-list{% if act and act.id == co.id %} current{% endif %}">
+                {{ co.shortname }} &nbsp;&nbsp;&nbsp; {{ co.isActive|check }}
+            </a>
+        {% endfor %}
+    </div>
+</div>
+<div class="adminblock" id="template-edit">
+    <div class="leftpad20 fullheight nocollapse">
+        {% if form %}
+            {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+
+            <form action="{{ path('admin_companies', {'id': id}) }}" id="template_edit" novalidate method="post" {{ form_enctype(form) }}>
+                {{ form_errors(form) }}
+
+                <table class="client-edit" cellspacing="0" border="0">
+                    <tr>
+                        <th>{{ form_label(form.name) }}:</th>
+                        <td>{{ form_errors(form.name) }}{{ form_widget(form.name) }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ form_label(form.shortname) }}:</th>
+                        <td>{{ form_errors(form.shortname) }}{{ form_widget(form.shortname) }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ form_label(form.host) }}:</th>
+                        <td>{{ form_errors(form.host) }}{{ form_widget(form.host) }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ form_label(form.types) }}:</th>
+                        <td>{{ form_errors(form.types) }}{{ form_widget(form.types) }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ form_label(form.is_active) }}:</th>
+                        <td>{{ form_errors(form.is_active) }}{{ form_widget(form.is_active) }}</td>
+                    </tr>
+                </table>
+                <br><br>
+                <div class="formbuttons">
+                    <button type="reset" href="{{ path('admin_companies') }}" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
+                    <button type="submit" class="button" name="companysave" value="save"><span>{{ 'mentés'|trans }}</span></button>
+                </div>
+                {{ form_widget(form._token) }}
+            </form>
+        {% else %}
+            <div class="info">
+                <p>
+                    {{ 'A∂ cégek  szerkesztéséhez kattintson a bal oldai listában a megfelelő sorra!'|trans }}
+                </p>
+                <p>
+                    {{ "Új céget a narancsárga 'új cég' gombra katttintve hozhat létre."|trans }}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<div class="clear"></div>
+{% endblock %}

@@ -25,6 +25,11 @@ Company:
             length: 255
             fixed: false
             nullable: true
+        types:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
         isActive:
             type: boolean
             nullable: true

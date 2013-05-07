@@ -39,6 +39,7 @@ class MenuController extends Controller
     public function adminSettingsAction()
     {
         $items = [
+            ['route' => 'admin_companies', 'label' => 'Cégek', 'role' => 'ROLE_SUPER_ADMIN'],
             ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_params', 'label' => 'Paraméterek', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_providers', 'label' => 'Szolgáltatók', 'role' => 'ROLE_ADMIN'],

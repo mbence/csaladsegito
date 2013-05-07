@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Security\Core\SecurityContext;
 
 use JCSGYK\AdminBundle\Services\DataStore;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
@@ -12,15 +13,17 @@ use JCSGYK\AdminBundle\Entity\UserRepository;
 class ClientType extends AbstractType
 {
     protected $ds;
+    protected $security;
 
     /**
      * Save the Datastore for parameter retrieval
      *
      * @param \JCSGYK\AdminBundle\Services\DataStore $ds
      */
-    public function __construct(DataStore $ds)
+    public function __construct(DataStore $ds, SecurityContext $security_context)
     {
         $this->ds = $ds;
+        $this->security = $security_context;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -31,6 +34,20 @@ class ClientType extends AbstractType
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $client_types = [
+            1 => 'Családsegítő',
+            2 => 'Gyermekjólét'
+        ];
+        // the new client's type is depending of the users roles
+        if (!$this->security->isGranted('ROLE_SUPER_ADMIN') && !$this->security->isGranted('ROLE_ASSISTANCE')) {
+            if (!$this->security->isGranted('ROLE_FAMILY_HELP')) {
+                unset($client_types[1]);
+            }
+            if (!$this->security->isGranted('ROLE_CHILD_WELFARE')) {
+                unset($client_types[2]);
+            }
+        }
+
         $builder->add('title', 'text', ['label' => 'Titulus', 'required' => false]);
         $builder->add('firstname', 'text', ['label' => 'Keresztnév']);
         $builder->add('lastname', 'text', ['label' => 'Vezetéknév']);

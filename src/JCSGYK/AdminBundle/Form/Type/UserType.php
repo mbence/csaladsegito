@@ -7,6 +7,8 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Security\Core\SecurityContext;
 class UserType extends AbstractType
 {
+    protected $security;
+
     public function __construct(SecurityContext $security_context)
     {
         $this->security = $security_context;

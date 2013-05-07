@@ -184,7 +184,7 @@ class ClientController extends Controller
                 return $this->redirect($this->generateUrl('client_view', ['id' => $id]));
             }
 
-            $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
+            $form = $this->createForm(new ClientType($this->container->get('jcs.ds'), $sec), $client);
 
             // save the user
             if ($request->isMethod('POST')) {
