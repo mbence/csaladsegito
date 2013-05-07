@@ -50,6 +50,37 @@ class DataStore
     }
 
     /**
+     * Get the available client types base on the company settings and user roles
+     *
+     * @return array
+     */
+    public function getClientTypes()
+    {
+        $client_types = [
+            1 => 'Családsegítő',
+            2 => 'Gyermekjólét'
+        ];
+        // check the company for enabled types, and remove the unneded ones
+        $co = $this->getCompany();
+        if (!empty($co['types'])) {
+            $client_types = array_intersect_key($client_types, array_flip(explode(',', $co['types'])));
+        }
+        $sec = $this->container->get('security.context');
+
+        // the new client's type is depending of the users roles
+        if (!$sec->isGranted('ROLE_SUPER_ADMIN') && !$sec->isGranted('ROLE_ASSISTANCE')) {
+            if (!$sec->isGranted('ROLE_FAMILY_HELP')) {
+                unset($client_types[1]);
+            }
+            if (!$sec->isGranted('ROLE_CHILD_WELFARE')) {
+                unset($client_types[2]);
+            }
+        }
+
+        return $client_types;
+    }
+
+    /**
      * Returns all parameters in a doctrine object collection
      *
      * @return array $parameters

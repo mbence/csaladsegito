@@ -1,14 +1,19 @@
 {# Edit Personal Data #}
 
-    <table class="client caseowner" cellspacing="0" border="0">
+    <table class="client-edit" cellspacing="0" border="0">
         <tr>
-            <th>{{ form_label(form.case_admin) }}:</th>
-            <td>{{ form_errors(form.case_admin) }}{{ form_widget(form.case_admin) }}</td>
+            {% if form.type is defined %}
+            <th class="noborder">{{ form_label(form.type) }}:</th>
+            <td class="noborder">{{ form_errors(form.type) }}{{ form_widget(form.type) }}</td>
+            {% endif %}
+            <th class="noborder">{{ form_label(form.case_admin) }}:</th>
+            <td class="noborder" {% if form.type is not defined %}colspan="3"{% endif %}>{{ form_errors(form.case_admin) }}{{ form_widget(form.case_admin) }}</td>
         </tr>
-    </table>
-    <div class="client-sub first-sub">{{ 'személyes adatok'|trans }}</div>
-    <div>
-        <table class="client-edit" cellspacing="0" border="0">
+        <tr>
+            <td colspan="4" class="noborder">
+                <div class="client-sub first-sub">{{ 'személyes adatok'|trans }}</div>
+            </td>
+        </tr>
         <tr>
             <th class="high">{{ 'Név'|trans }}:</th>
             <td colspan="3">
@@ -35,7 +40,7 @@
         </tr>
         <tr>
             <th>{{ 'Ügyfélszám'|trans }}:</th>
-            <td><div class="bottompad4">{% if client is defined %}{{ client.id|cid }}{% endif %}</td></td>
+            <td><div class="bottompad4">{% if client is defined %}{{ client.id|cid }}{% endif %}</div></td>
             <th>{{ form_label(form.gender) }}:</th>
             <td>{{ form_errors(form.gender) }}{{ form_widget(form.gender) }}</td>
         </tr>
@@ -125,7 +130,7 @@
                 </table>
             </td>
         </tr>
-<tr>
+        <tr>
             <td colspan="4">
                 <label>{{ 'Tartózkodási hely'|trans }}</label>
                 <table class="client-edit-inner" cellspacing="0" border="0">
@@ -191,4 +196,3 @@
             </td>
         </tr>
         </table>
-    </div>

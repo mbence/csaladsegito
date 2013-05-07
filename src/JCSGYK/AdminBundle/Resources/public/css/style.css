@@ -700,6 +700,9 @@ table.problem-list td {
     background-color: #fafafa;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
+.client-edit .noborder {
+    border: none;
+}
 .edit-note textarea {
     margin-top: 2px;
     padding: 3px;

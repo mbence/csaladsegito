@@ -5,12 +5,21 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Security\Core\SecurityContext;
+use JCSGYK\AdminBundle\Services\DataStore;
+
 class UserType extends AbstractType
 {
+    protected $ds;
     protected $security;
 
-    public function __construct(SecurityContext $security_context)
+    /**
+     * Save the Datastore for parameter retrieval
+     *
+     * @param \JCSGYK\AdminBundle\Services\DataStore $ds
+     */
+    public function __construct(DataStore $ds, SecurityContext $security_context)
     {
+        $this->ds = $ds;
         $this->security = $security_context;
     }
 
@@ -22,12 +31,24 @@ class UserType extends AbstractType
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        // check the company for enabled client-types
+        $co = $this->ds->getCompany();
+
         $choices = [
             'ROLE_ASSISTANCE' => 'Asszisztens',
             'ROLE_FAMILY_HELP' => 'Családsegítő',
             'ROLE_CHILD_WELFARE' => 'Gyermekvédelem',
             'ROLE_ADMIN' => 'Admin',
         ];
+        if (!empty($co['types'])) {
+            $types = array_flip(explode(',', $co['types']));
+            if (!isset($types[1])) {
+                unset($choices['ROLE_FAMILY_HELP']);
+            }
+            if (!isset($types[2])) {
+                unset($choices['ROLE_CHILD_WELFARE']);
+            }
+        }
         if ($this->security->isGranted('ROLE_SUPER_ADMIN')) {
             $choices['ROLE_SUPER_ADMIN'] = 'Superadmin';
         }

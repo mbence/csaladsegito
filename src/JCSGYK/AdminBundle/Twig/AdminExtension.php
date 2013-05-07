@@ -23,6 +23,7 @@ class AdminExtension extends \Twig_Extension
             'check' => new \Twig_Filter_Method($this, 'check', ['is_safe' => ['html']]),
             'fphone' => new \Twig_Filter_Method($this, 'formatPhone'),
             'gender' => new \Twig_Filter_Method($this, 'gender'),
+            'ctype' => new \Twig_Filter_Method($this, 'clientType'),
             'fcurr' => new \Twig_Filter_Method($this, 'formatCurrency'),
             'cid' => new \Twig_Filter_Method($this, 'formatId'),
             'adate' => new \Twig_Filter_Method($this, 'formatAgreeDate', ['is_safe' => ['html']]),
@@ -171,12 +172,23 @@ class AdminExtension extends \Twig_Extension
     /**
      * Get gender name
      *
-     * @param type $gender_id
-     * @return type
+     * @param int $gender_id
+     * @return string
      */
     public function gender($gender_id)
     {
         return $this->translator->trans($gender_id == 1 ? 'férfi' : 'nő');
+    }
+
+    /**
+     * Return client type names
+     *
+     * @param int $type
+     * @return string
+     */
+    public function clientType($type)
+    {
+        return $this->translator->trans($type == 1 ? 'családsegítő' : 'gyermekjólét');
     }
 
     /**

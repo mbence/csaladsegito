@@ -19,8 +19,8 @@
         <tr>
             <th>{{ 'Ügyfélszám'|trans }}:</th>
             <td>{{ client.id|cid }}</td>
-            <th>{{ 'Nem'|trans }}:</th>
-            <td>{{ client.gender|gender|trans }}</td>
+            <th>{{ 'Típus'|trans }}:</th>
+            <td>{{ client.type|ctype }}</td>
         </tr>
         <tr>
             <th>{{ 'Szül. név'|trans }}:</th>
@@ -28,7 +28,9 @@
         </tr>
         <tr>
             <th>{{ 'Szül. hely, idő'|trans }}:</th>
-            <td colspan="3">{% if client.birthPlace %}{{ client.birthPlace }}, {% endif %}{{ client.birthDate|fdate }}</td>
+            <td>{% if client.birthPlace %}{{ client.birthPlace }}, {% endif %}{{ client.birthDate|fdate }}</td>
+            <th>{{ 'Nem'|trans }}:</th>
+            <td>{{ client.gender|gender }}</td>
         </tr>
         <tr>
             <th>{{ 'Anyja neve'|trans }}:</th>

@@ -73,7 +73,7 @@ class AdminController extends Controller
         }
         if (!empty($user)) {
             $sec = $this->get('security.context');
-            $form = $this->createForm(new UserType($sec), $user);
+            $form = $this->createForm(new UserType($this->container->get('jcs.ds'), $sec), $user);
             // only superadmins can see and edit superadmins
             if (!$sec->isGranted('ROLE_SUPER_ADMIN') && in_array('ROLE_SUPER_ADMIN', $user->getRoles())) {
                 throw new HttpException(401, "Unauthorized access");

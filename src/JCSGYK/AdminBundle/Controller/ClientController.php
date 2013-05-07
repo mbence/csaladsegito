@@ -184,7 +184,7 @@ class ClientController extends Controller
                 return $this->redirect($this->generateUrl('client_view', ['id' => $id]));
             }
 
-            $form = $this->createForm(new ClientType($this->container->get('jcs.ds'), $sec), $client);
+            $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
 
             // save the user
             if ($request->isMethod('POST')) {
@@ -200,6 +200,13 @@ class ClientController extends Controller
                         $client->setCreator($user);
                         $client->setCompanyId($company_id);
                         $client->setIsArchived(false);
+
+                        // set the client type if there is only 1 (otherwise the form will set this)
+                        $client_types = $this->container->get('jcs.ds')->getClientTypes();
+                        if (count($client_types) == 1) {
+                            $client->setType(key($client_types));
+                        }
+
                         $em->persist($client);
                     }
                     // handle/save the utilityproviders
