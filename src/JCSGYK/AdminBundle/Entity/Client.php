@@ -16,6 +16,11 @@ use Symfony\Component\Security\Core\SecurityContext;
  */
 class Client
 {
+    /** Family help client type */
+    const FH = 1;
+    /** Child welfare client type */
+    const CW = 2;
+
     /**
      * @var integer
      *
@@ -31,6 +36,27 @@ class Client
      * @ORM\Column(name="company_id", type="integer", nullable=true)
      */
     private $companyId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="type", type="integer", nullable=true)
+     */
+    private $type;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="case_year", type="integer", nullable=true)
+     */
+    private $caseYear;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="case_number", type="integer", nullable=true)
+     */
+    private $caseNumber;
 
     /**
      * @var string
@@ -1863,5 +1889,74 @@ class Client
     public function getAgreementExpiresAt()
     {
         return $this->agreementExpiresAt;
+    }
+
+    /**
+     * Set type
+     *
+     * @param integer $type
+     * @return Client
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return integer
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set caseYear
+     *
+     * @param integer $caseYear
+     * @return Client
+     */
+    public function setCaseYear($caseYear)
+    {
+        $this->caseYear = $caseYear;
+
+        return $this;
+    }
+
+    /**
+     * Get caseYear
+     *
+     * @return integer
+     */
+    public function getCaseYear()
+    {
+        return $this->caseYear;
+    }
+
+    /**
+     * Set caseNumber
+     *
+     * @param integer $caseNumber
+     * @return Client
+     */
+    public function setCaseNumber($caseNumber)
+    {
+        $this->caseNumber = $caseNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get caseNumber
+     *
+     * @return integer
+     */
+    public function getCaseNumber()
+    {
+        return $this->caseNumber;
     }
 }

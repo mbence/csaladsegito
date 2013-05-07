@@ -17,7 +17,7 @@ UtilityproviderClientnumber:
         utilityproviderId:
             type: integer
             unsigned: false
-            nullable: true
+            nullable: false
             column: utilityprovider_id
         value:
             type: string
