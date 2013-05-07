@@ -805,3 +805,9 @@ table.task-list tr:hover td {
 #form_agreement_exp_type input {
     clear: left;
 }
+.agreement-date {
+    color: #336600;
+}
+.agreement-date.expired {
+    color: #993300;
+}

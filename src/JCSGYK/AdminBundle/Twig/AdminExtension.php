@@ -25,7 +25,7 @@ class AdminExtension extends \Twig_Extension
             'gender' => new \Twig_Filter_Method($this, 'gender'),
             'fcurr' => new \Twig_Filter_Method($this, 'formatCurrency'),
             'cid' => new \Twig_Filter_Method($this, 'formatId'),
-            'adate' => new \Twig_Filter_Method($this, 'formatAgreeDate'),
+            'adate' => new \Twig_Filter_Method($this, 'formatAgreeDate', ['is_safe' => ['html']]),
         ];
     }
 
@@ -60,7 +60,9 @@ class AdminExtension extends \Twig_Extension
                 return 'visszavonásig';
             }
             else {
-                return $d->format('Y.m.d.');
+                $class = $d < new \DateTime('today') ? ' expired' : '';
+
+                return sprintf('<span class="agreement-date%s">%s</span>', $class, $d->format('Y.m.d.'));
             }
         }
     }
