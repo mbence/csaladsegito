@@ -186,6 +186,9 @@ class ClientController extends Controller
             }
 
             $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
+            $client_types = $this->container->get('jcs.ds')->getClientTypes();
+            $orig_year = $client->getCaseYear();
+            $orig_casenum = $client->getCaseNumber();
 
             // save the user
             if ($request->isMethod('POST')) {
@@ -194,24 +197,22 @@ class ClientController extends Controller
                 if ($form->isValid()) {
                     // set modifier user
                     $client->setModifier($user);
+                    $case_num = $client->getCaseNumber();
 
                     // save the new user data
                     if (is_null($client->getId())) {
-                        // check for the sequence policy
-                        if ($co['sequence_policy'] == Company::YEARLY) {
-                            // check for year change
+                        if (empty($case_num)) {
+                            // if not defined, get the next case number from the ClientSequence Service
+                            // also checks for year changes and resets the sequence for a new year if needed
+                            $nextVal = $this->get('jcs.seq')->nextVal($co);
+                            if (false === $nextVal) {
+                                // this is really bad
+                                throw new HttpException(500);
+                            }
 
+                            $client->setCaseYear($nextVal['year']);
+                            $client->setCaseNumber($nextVal['id']);
                         }
-
-                        // get the next case number from the ClientSequence Service
-                        $nextVal = $this->get('jcs.seq')->nextVal($co);
-                        if (false == $nextVal) {
-                            // this is really bad
-                            throw new HttpException(500);
-                        }
-
-                        $client->setCaseYear($nextVal['year']);
-                        $client->setCaseNumber($nextVal['id']);
 
                         // set the creator
                         $client->setCreator($user);
@@ -219,12 +220,16 @@ class ClientController extends Controller
                         $client->setIsArchived(false);
 
                         // set the client type if there is only 1 (otherwise the form will set this)
-                        $client_types = $this->container->get('jcs.ds')->getClientTypes();
                         if (count($client_types) == 1) {
                             $client->setType(key($client_types));
                         }
 
                         $em->persist($client);
+                    }
+                    // restore the case number and year
+                    elseif (empty($case_num)) {
+                        $client->setCaseYear($orig_year);
+                        $client->setCaseNumber($orig_casenum);
                     }
                     // handle/save the utilityproviders
 
@@ -358,8 +363,14 @@ class ClientController extends Controller
         }
         if (!empty($client)) {
             $sec = $this->get('security.context');
+            $client_types = $this->container->get('jcs.ds')->getClientTypes();
 
-            return $this->render('JCSGYKAdminBundle:Client:view.html.twig', ['client' => $client, 'problems' => $problems, 'can_edit' => $client->canEdit($sec)]);
+            return $this->render('JCSGYKAdminBundle:Client:view.html.twig', [
+                'client' => $client,
+                'problems' => $problems,
+                'can_edit' => $client->canEdit($sec),
+                'display_type' => count($client_types) > 1  // only display the client type if there are more then one types of this company
+            ]);
         }
         else {
             throw new HttpException(400, "Bad request");

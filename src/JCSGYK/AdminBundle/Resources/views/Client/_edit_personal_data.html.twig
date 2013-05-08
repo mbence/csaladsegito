@@ -40,7 +40,23 @@
         </tr>
         <tr>
             <th>{{ client.type|caselabel }}:</th>
-            <td><div class="bottompad4">{% if client is defined %}{{ client|casenum }}{% endif %}</div></td>
+            <td>
+                {% if (client.type==2 and is_granted(['ROLE_ADMIN'])) or not client.id  %}
+                    <table class="client-edit-inner" cellspacing="0" border="0" style="width:auto;">
+                    <tr>
+                        <td class="short">
+                            {{ form_widget(form.case_year) }}
+                        </td>
+                        <td><div class="bottompad4">/</div></td>
+                        <td class="short">
+                            {{ form_widget(form.case_number) }}
+                        </td>
+                    </tr>
+                    </table>
+                {% else %}
+                    <div class="bottompad4">{% if client is defined %}{{ client|casenum }}{% endif %}</div>
+                {% endif %}
+            </td>
             <th>{{ form_label(form.gender) }}:</th>
             <td>{{ form_errors(form.gender) }}{{ form_widget(form.gender) }}</td>
         </tr>

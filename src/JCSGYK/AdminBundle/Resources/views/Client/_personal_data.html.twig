@@ -19,8 +19,13 @@
         <tr>
             <th>{{ client.type|caselabel }}:</th>
             <td>{{ client|casenum }}</td>
-            <th>{{ 'Típus'|trans }}:</th>
-            <td>{{ client.type|ctype }}</td>
+            {% if display_type %}
+                <th>{{ 'Típus'|trans }}:</th>
+                <td>{{ client.type|ctype }}</td>
+            {% else %}
+                <th> </th>
+                <td> </td>
+            {% endif %}
         </tr>
         <tr>
             <th>{{ 'Szül. név'|trans }}:</th>

@@ -561,6 +561,7 @@ class ImportController extends Controller
 
         $field_map = [
             'Id' => 'Person_ID',
+            'CaseNumber' => 'Person_ID',
             'Title' => 'Title',
             'Firstname' => 'Name2',
             'Lastname' => 'Name1',
