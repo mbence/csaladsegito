@@ -25,15 +25,16 @@ class ClientSequenceService
     /**
      * Resets or creates the sequence for a given company
      * @param int $company_id
+     * @param int $start optional starting sequence
      */
-    public function reset($company)
+    public function reset($company, $start = 0)
     {
         $this->em->createQuery("DELETE FROM JCSGYKAdminBundle:ClientSequence s WHERE s.companyId=:company")
             ->setParameter('company', $company['id'])
             ->getResult();
 
         $seq = new ClientSequence;
-        $seq->setId(0);
+        $seq->setId($start);
         $seq->setCompanyId($company['id']);
         if ($company['sequencePolicy'] == Company::BY_YEAR) {
             $seq->setYear(date('Y'));

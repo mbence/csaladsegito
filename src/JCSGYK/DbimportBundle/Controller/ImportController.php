@@ -724,6 +724,9 @@ class ImportController extends Controller
         }
         $em->flush();
 
+        // setup sequence with the last id
+        $this->get('jcs.seq')->reset(['id' => $this->companyID, 'sequencePolicy' => 0], $p->getId());
+
         return $n;
     }
 
