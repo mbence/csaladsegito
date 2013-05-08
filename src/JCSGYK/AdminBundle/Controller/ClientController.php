@@ -476,7 +476,6 @@ class ClientController extends Controller
 
                 $sql .= " MATCH (firstname, lastname, street) AGAINST ({$qr} IN BOOLEAN MODE)";
 
-                $company_id = 1;
                 $xsql = ['company_id=' . $company_id];
 
                 // if we search for street number

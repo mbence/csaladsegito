@@ -41,8 +41,6 @@ class Docx
 
         // get the field map
         $fields = $this->getMap($data);
-//        var_dump($fields['blocks']['problem'][0]);
-//        var_dump($fields['blocks']['problem'][0]['events']);
 
         // do the field merge
         foreach ($fields as $base => $merge) {
@@ -78,7 +76,7 @@ class Docx
         $ae = $this->container->get('jcs.twig.adminextension');
         $em = $this->container->get('doctrine')->getManager();
 
-        if (!empty($data['blocks']['problem'])) {
+        if (isset($data['blocks']['problem'])) {
             $re['blocks']['problem'] = [];
 
             foreach ($data['blocks']['problem'] as $pr) {
@@ -108,6 +106,7 @@ class Docx
                 ];
             }
         }
+
         // Client
         if (!empty($data['client']) && $data['client'] instanceof Client) {
             $client = $data['client'];

@@ -162,7 +162,9 @@ class TemplateController extends Controller
 
     private function getHistoryData(Client $client, Problem $problem = null)
     {
-        $blocks = [];
+        $blocks = [
+            'problem' => []
+        ];
 
         if (is_null($problem)) {
             // get all problems
@@ -174,16 +176,14 @@ class TemplateController extends Controller
 
         if (!empty($problems)) {
 
-            $blocks['problem'] = [];
-
             // get events
             // we cant use the Doctrine relation to get the events, because we only need undeleted events and in ascending order
             $problem_repo = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem');
             $events = [];
-            foreach ($problems as $problem) {
+            foreach ($problems as $pro) {
                 $blocks['problem'][] = [
-                    'problem' => $problem,
-                    'events' => $problem_repo->getEventList($problem->getId(), 'ASC')
+                    'problem' => $pro,
+                    'events' => $problem_repo->getEventList($pro->getId(), 'ASC')
                 ];
             }
         }
