@@ -17,8 +17,8 @@
 <div>
     <table class="client" cellspacing="0" border="0">
         <tr>
-            <th>{{ 'Ügyfélszám'|trans }}:</th>
-            <td>{{ client.id|cid }}</td>
+            <th>{{ client.type|caselabel }}:</th>
+            <td>{{ client|casenum }}</td>
             <th>{{ 'Típus'|trans }}:</th>
             <td>{{ client.type|ctype }}</td>
         </tr>

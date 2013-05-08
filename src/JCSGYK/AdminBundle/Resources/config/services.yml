@@ -26,9 +26,6 @@ services:
         arguments:    ["@translator", "@jcs.ds"]
         tags:
             - { name: twig.extension }
-
-#    jcs.listener.request:
-#        class: JCSGYK\AdminBundle\Services\RequestListener
-#        arguments: ["@doctrine"]
-#        tags:
-#            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+    jcs.seq:
+        class: JCSGYK\AdminBundle\Services\ClientSequenceService
+        arguments:    ['@doctrine']

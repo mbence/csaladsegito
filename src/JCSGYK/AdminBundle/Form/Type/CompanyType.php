@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use JCSGYK\AdminBundle\Entity\Company;
 
 class CompanyType extends AbstractType
 {
@@ -13,6 +14,13 @@ class CompanyType extends AbstractType
         $builder->add('name', 'text', ['label' => 'Név']);
         $builder->add('host', 'text', ['label' => 'Hosztok']);
         $builder->add('types', 'text', ['label' => 'Típusok']);
+        $builder->add('sequence_policy', 'choice', [
+            'label' => 'Ügyiratszámozás',
+            'choices' => [
+                Company::CONTINUOUS => 'Folyamatos',
+                Company::BY_YEAR => 'Évente'
+            ]
+        ]);
         $builder->add('is_active', 'checkbox', ['label' => 'Aktív']);
     }
 

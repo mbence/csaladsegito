@@ -12,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Company
 {
+    const CONTINUOUS = 0;
+    const BY_YEAR = 1;
+
     /**
      * @var integer
      *
@@ -48,6 +51,13 @@ class Company
      * @ORM\Column(name="types", type="string", length=16, nullable=true)
      */
     private $types;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="sequence_policy", type="integer", nullable=true)
+     */
+    private $sequencePolicy;
 
     /**
      * @var boolean
@@ -168,17 +178,40 @@ class Company
     public function setTypes($types)
     {
         $this->types = $types;
-    
+
         return $this;
     }
 
     /**
      * Get types
      *
-     * @return string 
+     * @return string
      */
     public function getTypes()
     {
         return $this->types;
+    }
+
+    /**
+     * Set sequencePolicy
+     *
+     * @param integer $sequencePolicy
+     * @return Company
+     */
+    public function setSequencePolicy($sequencePolicy)
+    {
+        $this->sequencePolicy = $sequencePolicy;
+    
+        return $this;
+    }
+
+    /**
+     * Get sequencePolicy
+     *
+     * @return integer 
+     */
+    public function getSequencePolicy()
+    {
+        return $this->sequencePolicy;
     }
 }

@@ -39,8 +39,8 @@
             </td>
         </tr>
         <tr>
-            <th>{{ 'Ügyfélszám'|trans }}:</th>
-            <td><div class="bottompad4">{% if client is defined %}{{ client.id|cid }}{% endif %}</div></td>
+            <th>{{ client.type|caselabel }}:</th>
+            <td><div class="bottompad4">{% if client is defined %}{{ client|casenum }}{% endif %}</div></td>
             <th>{{ form_label(form.gender) }}:</th>
             <td>{{ form_errors(form.gender) }}{{ form_widget(form.gender) }}</td>
         </tr>

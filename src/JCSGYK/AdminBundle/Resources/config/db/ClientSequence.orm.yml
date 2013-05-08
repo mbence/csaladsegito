@@ -1,0 +1,20 @@
+ClientSequence:
+    type: entity
+    table: client_sequence
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+        companyId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: company_id
+        year:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: year
+    lifecycleCallbacks: {  }

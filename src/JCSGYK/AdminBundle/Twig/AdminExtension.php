@@ -3,6 +3,7 @@
 namespace JCSGYK\AdminBundle\Twig;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 
+use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\Problem;
 
 class AdminExtension extends \Twig_Extension
@@ -26,6 +27,8 @@ class AdminExtension extends \Twig_Extension
             'ctype' => new \Twig_Filter_Method($this, 'clientType'),
             'fcurr' => new \Twig_Filter_Method($this, 'formatCurrency'),
             'cid' => new \Twig_Filter_Method($this, 'formatId'),
+            'casenum' => new \Twig_Filter_Method($this, 'formatCaseNumber'),
+            'caselabel' => new \Twig_Filter_Method($this, 'formatCaseLabel'),
             'adate' => new \Twig_Filter_Method($this, 'formatAgreeDate', ['is_safe' => ['html']]),
         ];
     }
@@ -71,6 +74,34 @@ class AdminExtension extends \Twig_Extension
     public function formatId($val)
     {
         return 'Ü-' . str_pad($val, 5, '0', STR_PAD_LEFT);
+    }
+
+    public function formatCaseLabel($type)
+    {
+        return $this->translator->trans($type == Client::FH ? 'Ügyfélszám' : 'Ügyiratszám');
+    }
+
+    public function formatCaseNumber($client)
+    {
+        if ($client instanceof Client) {
+            $type = $client->getType();
+            $case_number = $client->getCaseNumber();
+            $case_year = $client->getCaseYear();
+        }
+        else {
+            $type = $client['type'];
+            $case_number = $client['case_number'];
+            $case_year = $client['case_year'];
+        }
+
+        if ($type == Client::FH) {
+            // family help
+            return 'Ü-' . str_pad($case_number, 5, '0', STR_PAD_LEFT);
+        }
+        else {
+            return sprintf('%s/%s', $case_year, $case_number);
+        }
+
     }
 
     public function formatFilename($in)

@@ -159,6 +159,7 @@ class ClientController extends Controller
 
         $client = null;
         $em = $this->getDoctrine()->getManager();
+        $co = $this->container->get('jcs.ds')->getCompany();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
         $sec = $this->get('security.context');
         $user= $sec->getToken()->getUser();
@@ -196,6 +197,22 @@ class ClientController extends Controller
 
                     // save the new user data
                     if (is_null($client->getId())) {
+                        // check for the sequence policy
+                        if ($co['sequence_policy'] == Company::YEARLY) {
+                            // check for year change
+
+                        }
+
+                        // get the next case number from the ClientSequence Service
+                        $nextVal = $this->get('jcs.seq')->nextVal($co);
+                        if (false == $nextVal) {
+                            // this is really bad
+                            throw new HttpException(500);
+                        }
+
+                        $client->setCaseYear($nextVal['year']);
+                        $client->setCaseNumber($nextVal['id']);
+
                         // set the creator
                         $client->setCreator($user);
                         $client->setCompanyId($company_id);
@@ -403,7 +420,7 @@ class ClientController extends Controller
         if (!empty($q)) {
 
             $db = $this->get('doctrine.dbal.default_connection');
-            $sql = "SELECT id, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM client WHERE";
+            $sql = "SELECT id, type, case_year, case_number, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM client WHERE";
             // search for ID
             if (is_numeric($q)) {
                 $sql .= " (id={$db->quote($q)} AND company_id={$db->quote($company_id)}) OR (social_security_number LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)})";
