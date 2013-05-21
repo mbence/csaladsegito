@@ -440,11 +440,19 @@ class Client
      */
     private $agreementExpiresAt;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Address", mappedBy="client")
+     * @ORM\OrderBy({"createdAt" = "ASC"})
+     */
+    private $addresses;
+
     public function __construct()
     {
         $this->utilityprovidernumbers = new ArrayCollection();
         $this->problems = new ArrayCollection();
         $this->archives = new ArrayCollection();
+        $this->addresses = new ArrayCollection();
+
         $this->setCreatedAt(new \DateTime());
         $this->setModifiedAt(new \DateTime());
     }
@@ -1958,5 +1966,38 @@ class Client
     public function getCaseNumber()
     {
         return $this->caseNumber;
+    }
+
+    /**
+     * Add address
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Address $address
+     * @return Client
+     */
+    public function addAddress(\JCSGYK\AdminBundle\Entity\Address $address)
+    {
+        $this->addresses[] = $address;
+
+        return $this;
+    }
+
+    /**
+     * Remove address
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Address $address
+     */
+    public function removeAddress(\JCSGYK\AdminBundle\Entity\Address $address)
+    {
+        $this->addresses->removeElement($address);
+    }
+
+    /**
+     * Get addresses
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAddresses()
+    {
+        return $this->addresses;
     }
 }

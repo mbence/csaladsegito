@@ -621,6 +621,10 @@ table.problem-list td {
 .stat-legend td {
     padding: 1px 2px;
 }
+.monthchart .jqplot-xaxis-tick {
+    font-size: 10px;
+    letter-spacing: -2px;
+}
 
 /* Client edit form */
 .client-edit, .client-edit-inner {
@@ -684,7 +688,7 @@ table.problem-list td {
     outline: medium none;
 }
 .client-edit .short {
-    width: 40px;
+    width: 50px;
 }
 .client-edit table.client-edit {
     /*margin: -2px -6px;*/
@@ -700,8 +704,8 @@ table.problem-list td {
     background-color: #fafafa;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
-.client-edit .noborder {
-    border: none;
+.noborder {
+    border: none !important;
 }
 .edit-note textarea {
     margin-top: 2px;

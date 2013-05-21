@@ -41,14 +41,6 @@
             <th>{{ 'Anyja neve'|trans }}:</th>
             <td colspan="3">{{ fname(client.motherFirstname, client.motherLastname, client.motherTitle) }}</td>
         </tr>
-        <tr>
-            <th>{{ 'Lakóhely'|trans }}:</th>
-            <td colspan="3">{{ faddr(client.zipCode, client.city, client.street, client.streetType, client.streetNumber, client.flatNumber) }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'Tartózkodási hely'|trans }}:</th>
-            <td colspan="3">{{ faddr(client.locationZipCode, client.locationCity, client.locationStreet, client.locationStreetType, client.locationStreetNumber, client.locationFlatNumber) }}</td>
-        </tr>
     {# Kapcsolat #}
         {% if client.mobile or client.phone %}
         <tr>
@@ -81,5 +73,33 @@
             <td colspan="3">{{ fname(client.guardianFirstname, client.guardianLastname) }}</td>
         </tr>
         {% endif %}
+
+        <tr>
+            <th>{{ 'Lakóhely'|trans }}:</th>
+            <td colspan="3">{{ faddr(client.country, client.zipCode, client.city, client.street, client.streetType, client.streetNumber, client.flatNumber) }}</td>
+        </tr>
+        {% set locationAddress = faddr(client.locationCountry, client.locationZipCode, client.locationCity, client.locationStreet, client.locationStreetType, client.locationStreetNumber, client.locationFlatNumber) %}
+        {% if locationAddress|trim %}
+        <tr>
+            <th>{{ 'Tartózkodási hely'|trans }}:</th>
+            <td colspan="3">{{ locationAddress }}</td>
+        </tr>
+        {% endif %}
+        {% if client.addresses|length %}
+        <tr>
+            <th>{{ 'Gondozási helyek'|trans }}:</th>
+            <td colspan="3">
+                <table cellspacing="0" border="0">
+                {% for address in client.addresses %}
+                    <tr>
+                        <td class="noborder">{{ address.createdAt|fdate('sd') }}</td>
+                        <td class="noborder">{{ faddr(address.country, address.zipCode, address.city, address.street, address.streetType, address.streetNumber, address.flatNumber) }}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </td>
+        </tr>
+        {% endif %}
+
     </table>
 </div>

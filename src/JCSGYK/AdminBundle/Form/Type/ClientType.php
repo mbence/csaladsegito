@@ -7,6 +7,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use JCSGYK\AdminBundle\Services\DataStore;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
+use JCSGYK\AdminBundle\Form\Type\AddressType;
 use JCSGYK\AdminBundle\Entity\UserRepository;
 
 class ClientType extends AbstractType
@@ -71,6 +72,7 @@ class ClientType extends AbstractType
         $builder->add('fax', 'text', ['label' => 'Fax', 'required' => false]);
         $builder->add('email', 'text', ['label' => 'E-Mail', 'required' => false]);
 
+        $builder->add('country', 'text', ['label' => 'Ország', 'required' => false]);
         $builder->add('zip_code', 'text', ['label' => 'Irsz.', 'required' => false]);
         $builder->add('city', 'text', ['label' => 'Város', 'required' => false]);
         $builder->add('street', 'text', ['label' => 'Utca', 'required' => false]);
@@ -78,6 +80,7 @@ class ClientType extends AbstractType
         $builder->add('street_number', 'text', ['label' => 'Házsz.', 'required' => false]);
         $builder->add('flat_number', 'text', ['label' => 'Ajtó', 'required' => false]);
 
+        $builder->add('location_country', 'text', ['label' => 'Ország', 'required' => false]);
         $builder->add('location_zip_code', 'text', ['label' => 'Irsz.', 'required' => false]);
         $builder->add('location_city', 'text', ['label' => 'Város', 'required' => false]);
         $builder->add('location_street', 'text', ['label' => 'Utca', 'required' => false]);
@@ -114,6 +117,13 @@ class ClientType extends AbstractType
         $builder->add('utilityprovidernumbers', 'collection', [
             'label' => '',
             'type' => new UtilityproviderClientnumberType($this->ds),
+            'allow_add'    => true,
+            'by_reference' => false,
+        ]);
+
+        $builder->add('addresses', 'collection', [
+            'label' => 'Gondozási hely',
+            'type' => new AddressType(),
             'allow_add'    => true,
             'by_reference' => false,
         ]);

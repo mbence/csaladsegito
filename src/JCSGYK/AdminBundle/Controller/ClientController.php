@@ -231,8 +231,8 @@ class ClientController extends Controller
                         $client->setCaseYear($orig_year);
                         $client->setCaseNumber($orig_casenum);
                     }
-                    // handle/save the utilityproviders
 
+                    // handle/save the utilityproviders
                     foreach ($client->getUtilityprovidernumbers() as $up) {
                         $val = $up->getValue();
                         if (empty($val)) {
@@ -245,6 +245,28 @@ class ClientController extends Controller
                             $up->setClient($client);
                             // save the rest
                             $em->persist($up);
+                        }
+                    }
+
+                    // handle/save the addresses
+                    foreach ($client->getAddresses() as $adr) {
+                        $val = $adr->getCity() . $adr->getStreet();
+                        if (empty($val)) {
+                            // remove the empty providers
+                            $client->removeAddress($adr);
+                            $em->remove($adr);
+                        }
+                        else {
+                            $aid = $adr->getId();
+                            if (empty($aid)) {
+                                // set the client id
+                                $adr->setClient($client);
+                                $adr->setCreator($user);
+                                $em->persist($adr);
+                            }
+                            else {
+                                $adr->setModifier($user);
+                            }
                         }
                     }
 

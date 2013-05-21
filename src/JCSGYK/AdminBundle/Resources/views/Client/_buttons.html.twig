@@ -12,6 +12,11 @@
             </button>
         {% endif %}
 
+{# Address #}
+        {# new address #}
+        {% if button == 'new_address' and client.id and not client.isArchived %}
+            <a href="#" class="greybutton new_address" title="{{ 'Új gondozási hely létrehozása'|trans }}"><span>{{ 'új gondozási hely'|trans }}</span></a>
+        {% endif %}
 
 {# Events #}
         {# new event #}

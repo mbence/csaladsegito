@@ -6,6 +6,8 @@
 
 {% include "JCSGYKAdminBundle:Client:_edit_personal_data.html.twig" %}
 
+{% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" %}
+
 <div class="problem_container" {% if client.id %}data-url="{{ path('client_problems', {id: client.id}) }}"{% endif %}>
     {% include "JCSGYKAdminBundle:Client:_problems.html.twig" with {notoggle: true} %}
 </div>

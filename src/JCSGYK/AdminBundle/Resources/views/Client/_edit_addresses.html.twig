@@ -1,0 +1,175 @@
+{# Edit Adresses #}
+
+<div class="client-sub">{{ 'címek'|trans }}</div>
+<table class="client-edit" cellspacing="0" border="0">
+    <tr>
+        <td colspan="4">
+            <label>{{ 'Lakóhely'|trans }}</label>
+            <table class="client-edit-inner" cellspacing="0" border="0">
+                <tr>
+                    <td>
+                        {{ form_label(form.country, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.country) }} {{ form_widget(form.country) }}
+                    </td>
+                    <td class="short">
+                        {{ form_label(form.zip_code, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.zip_code) }} {{ form_widget(form.zip_code) }}
+                    </td>
+                    <td>
+                        {{ form_label(form.city, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.city) }} {{ form_widget(form.city) }}
+                    </td>
+                </tr>
+            </table>
+            <table class="client-edit-inner" cellspacing="0" border="0">
+                <tr>
+                    <td>
+                        {{ form_label(form.street, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.street) }} {{ form_widget(form.street) }}
+                    </td>
+                    <td class="short">
+                        {{ form_label(form.street_type, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.street_type) }} {{ form_widget(form.street_type) }}
+                    </td>
+                    <td class="short">
+                        {{ form_label(form.street_number, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.street_number) }} {{ form_widget(form.street_number) }}
+                    </td>
+                    <td class="short">
+                        {{ form_label(form.flat_number, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.flat_number) }} {{ form_widget(form.flat_number) }}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <label>{{ 'Tartózkodási hely'|trans }}</label>
+            <table class="client-edit-inner" cellspacing="0" border="0">
+                <tr>
+                    <td>
+                        {{ form_label(form.location_country, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.location_country) }} {{ form_widget(form.location_country) }}
+                    </td>
+                    <td class="short">
+                        {{ form_label(form.location_zip_code, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.location_zip_code) }} {{ form_widget(form.location_zip_code) }}
+                    </td>
+                    <td>
+                        {{ form_label(form.location_city, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.location_city) }} {{ form_widget(form.location_city) }}
+                    </td>
+                </tr>
+            </table>
+            <table class="client-edit-inner" cellspacing="0" border="0">
+                <tr>
+                    <td>
+                        {{ form_label(form.location_street, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.location_street) }} {{ form_widget(form.location_street) }}
+                    </td>
+                    <td class="short">
+                        {{ form_label(form.location_street_type, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.location_street_type) }} {{ form_widget(form.location_street_type) }}
+                    </td>
+                    <td class="short">
+                        {{ form_label(form.location_street_number, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.location_street_number) }} {{ form_widget(form.location_street_number) }}
+                    </td>
+                    <td class="short">
+                        {{ form_label(form.location_flat_number, null, {'label_attr': {'class': 'above'}}) }}<br>
+                        {{ form_errors(form.location_flat_number) }} {{ form_widget(form.location_flat_number) }}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {% if client.addresses|length %}
+    <tr>
+        <td colspan="4">
+
+<label>{{ 'Gondozási helyek'|trans }}</label>
+<div class="client-addresses" data-prototype="<table class='client-edit-inner' cellspacing='0' border='0'>
+    <tr>
+        <td>
+            {{ form_label(form.country, null, {'label_attr': {'class': 'above'}})|e }}<br>
+            {{ form_errors(form.country)|e }} {{ form_widget(form.addresses.vars.prototype.country)|e }}
+        </td>
+        <td class='short'>
+            {{ form_label(form.zip_code, null, {'label_attr': {'class': 'above'}})|e }}<br>
+            {{ form_errors(form.zip_code) }} {{ form_widget(form.addresses.vars.prototype.zip_code)|e }}
+        </td>
+        <td>
+            {{ form_label(form.city, null, {'label_attr': {'class': 'above'}})|e }}<br>
+            {{ form_errors(form.city)|e }} {{ form_widget(form.addresses.vars.prototype.city)|e }}
+        </td>
+    </tr>
+</table>
+<table class='client-edit-inner' cellspacing='0' border='0'>
+    <tr>
+        <td>
+            {{ form_label(form.street, null, {'label_attr': {'class': 'above'}})|e }}<br>
+            {{ form_errors(form.street)|e }} {{ form_widget(form.addresses.vars.prototype.street)|e }}
+        </td>
+        <td class='short'>
+            {{ form_label(form.street_type, null, {'label_attr': {'class': 'above'}})|e }}<br>
+            {{ form_errors(form.street_type)|e }} {{ form_widget(form.addresses.vars.prototype.street_type)|e }}
+        </td>
+        <td class='short'>
+            {{ form_label(form.street_number, null, {'label_attr': {'class': 'above'}})|e }}<br>
+            {{ form_errors(form.street_number)|e }} {{ form_widget(form.addresses.vars.prototype.street_number)|e }}
+        </td>
+        <td class='short'>
+            {{ form_label(form.flat_number, null, {'label_attr': {'class': 'above'}})|e }}<br>
+            {{ form_errors(form.flat_number)|e }} {{ form_widget(form.addresses.vars.prototype.flat_number)|e }}
+        </td>
+    </tr>
+</table>">
+    {% for address in form.addresses %}
+    <table class="client-edit-inner" cellspacing="0" border="0">
+        <tr>
+            <td>
+                {{ form_label(address.country, null, {'label_attr': {'class': 'above'}}) }}<br>
+                {{ form_errors(address.country) }} {{ form_widget(address.country) }}
+            </td>
+            <td class="short">
+                {{ form_label(address.zip_code, null, {'label_attr': {'class': 'above'}}) }}<br>
+                {{ form_errors(address.zip_code) }} {{ form_widget(address.zip_code) }}
+            </td>
+            <td>
+                {{ form_label(address.city, null, {'label_attr': {'class': 'above'}}) }}<br>
+                {{ form_errors(address.city) }} {{ form_widget(address.city) }}
+            </td>
+        </tr>
+    </table>
+    <table class="client-edit-inner" cellspacing="0" border="0">
+        <tr>
+            <td>
+                {{ form_label(address.street, null, {'label_attr': {'class': 'above'}}) }}<br>
+                {{ form_errors(address.street) }} {{ form_widget(address.street) }}
+            </td>
+            <td class="short">
+                {{ form_label(address.street_type, null, {'label_attr': {'class': 'above'}}) }}<br>
+                {{ form_errors(address.street_type) }} {{ form_widget(address.street_type) }}
+            </td>
+            <td class="short">
+                {{ form_label(address.street_number, null, {'label_attr': {'class': 'above'}}) }}<br>
+                {{ form_errors(address.street_number) }} {{ form_widget(address.street_number) }}
+            </td>
+            <td class="short">
+                {{ form_label(address.flat_number, null, {'label_attr': {'class': 'above'}}) }}<br>
+                {{ form_errors(address.flat_number) }} {{ form_widget(address.flat_number) }}
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+</div>
+    {% if client.type==2 %}
+    <div class="toppad">
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_address']} %}
+    </div>
+    {% endif %}
+        </td>
+    </tr>
+{% endif %}
+</table>

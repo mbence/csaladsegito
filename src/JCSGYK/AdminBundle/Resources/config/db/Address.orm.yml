@@ -1,0 +1,74 @@
+Client:
+    type: entity
+    table: address
+    fields:
+        id:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        clientId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: client_id
+        country:
+            type: string
+            length: 60
+            fixed: false
+            nullable: true
+        zipCode:
+            type: string
+            length: 10
+            fixed: false
+            nullable: true
+            column: zip_code
+        city:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+        street:
+            type: string
+            length: 255
+            fixed: false
+            nullable: true
+        streetType:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: street_type
+        streetNumber:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: street_number
+        flatNumber:
+            type: string
+            length: 16
+            fixed: false
+            nullable: true
+            column: flat_number
+        createdAt:
+            type: datetime
+            nullable: true
+            column: created_at
+        createdBy:
+            type: integer
+            unsigned: true
+            nullable: true
+            column: created_by
+        modifiedAt:
+            type: datetime
+            nullable: true
+            column: modified_at
+        modifiedBy:
+            type: integer
+            unsigned: true
+            nullable: true
+            column: modified_by
+    lifecycleCallbacks: {  }

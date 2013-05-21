@@ -152,9 +152,21 @@ class AdminExtension extends \Twig_Extension
      * @param string $flatNumber
      * @return string The formatted address
      */
-    public function formatAddress($zipCode, $city, $street, $streetType, $streetNumber, $flatNumber = '')
+    public function formatAddress($country, $zipCode, $city, $street, $streetType, $streetNumber, $flatNumber = '')
     {
-        $re = sprintf('%s %s, %s %s %s', $zipCode, $city, $street, $streetType, $streetNumber);
+        if (empty($country) || $country == 'Magyarország') {
+            $country = '';
+        }
+        else {
+            $country .= ', ';
+        }
+        if (!empty($streetNumber) && '.' != substr($streetNumber, -1)) {
+            $streetNumber .= '.';
+        }
+        if (!empty($city)) {
+            $city .= ',';
+        }
+        $re = sprintf('%s%s %s %s %s %s', $country, $zipCode, $city, $street, $streetType, $streetNumber);
         if (!empty($flatNumber)) {
             $re .= sprintf(' (%s)', $flatNumber);
         }

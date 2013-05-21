@@ -35,12 +35,20 @@ JcsClient =
         # count the current utilityproviders we have (e.g. 2), use that as the new
         # index when inserting a new item (e.g. 2)
         $(".utilityproviders").data('index', $(".utilityproviders").find('tr').length);
+
         $(".add_utilityprovider").on 'click', (e) =>
             # prevent the link from creating a "#" on the URL
             e.preventDefault()
 
             # add a new tag form (see next code block)
             @addProviderForm($(".utilityproviders"))
+
+            false
+
+        $(".client-addresses").data('index', $(".client-addresses").find('table').length / 2);
+        $(".new_address").on 'click', (e) =>
+            e.preventDefault()
+            @addProviderForm($(".client-addresses"))
 
             false
 

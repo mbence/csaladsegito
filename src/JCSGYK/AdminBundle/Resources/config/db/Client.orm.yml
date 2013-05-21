@@ -15,7 +15,7 @@ Client:
             nullable: true
             column: company_id
         type:
-            type: boolean
+            type: integer
             nullable: true
         caseYear:
             type: smallint
