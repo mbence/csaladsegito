@@ -13,6 +13,8 @@ parameters:
         11: "Ügyfél archiválások"
         12: "Ügyfél újranyitás"
         13: "Probléma lezárások"
+        14: "Állampolgárság"
+        15: "Állampolgársági jogállás"
 
     task_status:
         1: "új"

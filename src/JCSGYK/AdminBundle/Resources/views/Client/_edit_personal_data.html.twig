@@ -92,6 +92,7 @@
                 </table>
             </td>
         </tr>
+        {% if client.type != 2 %}
         <tr>
             <th>{{ 'Anyja neve'|trans }}:</th>
             <td colspan="3">
@@ -111,6 +112,14 @@
                         </td>
                     </tr>
                 </table>
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <th>{{ form_label(form.citizenship) }}:</th>
+            <td colspan="3">
+                {{ form_errors(form.citizenship) }} {{ form_widget(form.citizenship) }}
+                {{ form_errors(form.citizenship_status) }} {{ form_widget(form.citizenship_status) }}
             </td>
         </tr>
 {# Kapcsolat #}

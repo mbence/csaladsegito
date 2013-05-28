@@ -15,8 +15,8 @@
             <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
         </tr>
         <tr>
-            <th>{{ 'Ügyfélszám'|trans }}:</th>
-            <td>{{ client.id|cid }}</td>
+            <th>{{ client.type|caselabel }}:</th>
+            <td>{{ client|casenum }}</td>
         </tr>
     </table>
     <div class="errors center hidden" id="visit-error">{{ 'Kérem válasszon ügyintézőt!'|trans }}</div>

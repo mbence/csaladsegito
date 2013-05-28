@@ -16,7 +16,7 @@
             {% for task in tasks %}
             <tr data-taskid="{{ task.id }}" data-url="{{ path('task_start', {'id': task.id}) }}" tabindex="{{ loop.index + 100 }}">
                 <td>{{ tasks|length - loop.index + 1 }}</td>
-                <td>{{ task.client.id|cid }}</td>
+                <td>{{ task.client|casenum }}</td>
                 <td><strong>{{ fname(task.client.firstname, task.client.lastname, task.client.title) }}</strong></td>
                 <td>{{ task.createdAt|fdate('osdt') }}</td>
                 <td>{% if task_status[task.status] is defined %}{{ task_status[task.status]|trans }}{% else %}{{ task.status }}{% endif %}</td>

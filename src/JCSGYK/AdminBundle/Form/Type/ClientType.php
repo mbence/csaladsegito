@@ -63,6 +63,14 @@ class ClientType extends AbstractType
         $builder->add('mother_title', 'text', ['label' => 'Titulus', 'required' => false]);
         $builder->add('mother_firstname', 'text', ['label' => 'Keresztnév', 'required' => false]);
         $builder->add('mother_lastname', 'text', ['label' => 'Vezetéknév', 'required' => false]);
+        $builder->add('citizenship', 'choice', [
+            'label' => 'Állampolgárság',
+            'choices'   => $this->ds->getGroup(14),
+        ]);
+        $builder->add('citizenship_status', 'choice', [
+            'label' => 'Állampolgársági jogállás',
+            'choices'   => $this->ds->getGroup(15),
+        ]);
         $builder->add('social_security_number', 'text', ['label' => 'TAJ', 'required' => false]);
         $builder->add('identity_number', 'text', ['label' => 'Szem.a.j', 'required' => false]);
         $builder->add('id_card_number', 'text', ['label' => 'Szig.sz.', 'required' => false]);

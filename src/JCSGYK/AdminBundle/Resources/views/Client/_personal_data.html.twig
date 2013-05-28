@@ -37,9 +37,15 @@
             <th>{{ 'Nem'|trans }}:</th>
             <td>{{ client.gender|gender }}</td>
         </tr>
+        {% if client.type != 2 %}
         <tr>
             <th>{{ 'Anyja neve'|trans }}:</th>
             <td colspan="3">{{ fname(client.motherFirstname, client.motherLastname, client.motherTitle) }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <th>{{ 'Állampolgárság'|trans }}:</th>
+            <td colspan="3">{{ param(client.citizenship) }} ({{ param(client.citizenshipStatus) }})</td>
         </tr>
     {# Kapcsolat #}
         {% if client.mobile or client.phone %}
