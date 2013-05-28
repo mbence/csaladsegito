@@ -47,6 +47,10 @@
                         <td>{{ form_errors(form.sequence_policy) }}{{ form_widget(form.sequence_policy) }}</td>
                     </tr>
                     <tr>
+                        <th>{{ form_label(form.case_number_template) }}:</th>
+                        <td>{{ form_errors(form.case_number_template) }}{{ form_widget(form.case_number_template) }}</td>
+                    </tr>
+                    <tr>
                         <th>{{ form_label(form.is_active) }}:</th>
                         <td>{{ form_errors(form.is_active) }}{{ form_widget(form.is_active) }}</td>
                     </tr>
@@ -58,10 +62,18 @@
                 </div>
                 {{ form_widget(form._token) }}
             </form>
+            <div class="info">
+                <p>
+                    {{ 'Típusok: <br>1 = Családsegítő<br>2 = Gyermekjólét<br>Több típus esetén vesszővel elválasztva adjuk meg!'|trans|raw }}
+                </p>
+                <p>
+                    {{ 'Üsz formátum:<br>{year} = év<br>{num} = ügy szám<br>{num,x} = ügy szám, x helyiértékkel<br>Pl: "{year}/{num,5}" = 2013/00123'|trans|raw }}
+                </p>
+            </div>
         {% else %}
             <div class="info">
                 <p>
-                    {{ 'A∂ cégek  szerkesztéséhez kattintson a bal oldai listában a megfelelő sorra!'|trans }}
+                    {{ 'A cégek  szerkesztéséhez kattintson a bal oldai listában a megfelelő sorra!'|trans }}
                 </p>
                 <p>
                     {{ "Új céget a narancsárga 'új cég' gombra katttintve hozhat létre."|trans }}

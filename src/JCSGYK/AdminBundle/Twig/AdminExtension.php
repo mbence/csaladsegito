@@ -41,6 +41,7 @@ class AdminExtension extends \Twig_Extension
             'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
             'faddr' => new \Twig_Function_Method($this, 'formatAddress'),
             'pstatus' => new \Twig_Function_Method($this, 'problemStatus'),
+            'parent_types' => new \Twig_Function_Method($this, 'getParentTypes'),
         );
     }
 
@@ -83,6 +84,12 @@ class AdminExtension extends \Twig_Extension
 
     public function formatCaseNumber($client)
     {
+        $co = $this->dbparams->getCompany();
+        $tpl = $co['caseNumberTemplate'];
+        if (empty($tpl)) {
+            $tpl = '{num}';
+        }
+
         if ($client instanceof Client) {
             $type = $client->getType();
             $case_number = $client->getCaseNumber();
@@ -94,14 +101,16 @@ class AdminExtension extends \Twig_Extension
             $case_year = $client['case_year'];
         }
 
-        if ($type == Client::FH) {
-            // family help
-            return 'Ü-' . str_pad($case_number, 5, '0', STR_PAD_LEFT);
-        }
-        else {
-            return sprintf('%s/%s', $case_year, $case_number);
+        // replace the year and number
+        $re = str_replace(['{year}', '{num}'], [$case_year, $case_number], $tpl);
+        // find the number pad
+        preg_match('/\{num,(\d)\}/', $tpl, $matches);
+        if (!empty($matches[1])) {
+            $padded_case_number = str_pad($case_number, $matches[1], '0', STR_PAD_LEFT);
+            $re = str_replace($matches[0], $padded_case_number, $re);
         }
 
+        return $re;
     }
 
     public function formatFilename($in)
@@ -119,6 +128,21 @@ class AdminExtension extends \Twig_Extension
     public function getInquiryTypes()
     {
         return $this->dbparams->getGroup(1);
+    }
+
+    public function getParentTypes($type = null)
+    {
+        $ptypes = [
+            1 => 'Anya',
+            2 => 'Apa',
+            3 => 'Gyám'
+        ];
+
+        if (is_null($type)) {
+            return $ptypes;
+        }
+
+        return !empty($ptypes[$type]) ? $ptypes[$type] : '';
     }
     /**
      * Returns a parameter by it's id

@@ -21,6 +21,7 @@ class CompanyType extends AbstractType
                 Company::BY_YEAR => 'Évente'
             ]
         ]);
+        $builder->add('case_number_template', 'text', ['label' => 'Üsz formátum']);
         $builder->add('is_active', 'checkbox', ['label' => 'Aktív']);
     }
 

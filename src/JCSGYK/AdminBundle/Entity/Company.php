@@ -60,6 +60,13 @@ class Company
     private $sequencePolicy;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="case_number_template", type="string", length=64, nullable=true)
+     */
+    private $caseNumberTemplate;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="is_active", type="boolean", nullable=true)
@@ -201,17 +208,40 @@ class Company
     public function setSequencePolicy($sequencePolicy)
     {
         $this->sequencePolicy = $sequencePolicy;
-    
+
         return $this;
     }
 
     /**
      * Get sequencePolicy
      *
-     * @return integer 
+     * @return integer
      */
     public function getSequencePolicy()
     {
         return $this->sequencePolicy;
+    }
+
+    /**
+     * Set caseNumberTemplate
+     *
+     * @param string $caseNumberTemplate
+     * @return Company
+     */
+    public function setCaseNumberTemplate($caseNumberTemplate)
+    {
+        $this->caseNumberTemplate = $caseNumberTemplate;
+    
+        return $this;
+    }
+
+    /**
+     * Get caseNumberTemplate
+     *
+     * @return string 
+     */
+    public function getCaseNumberTemplate()
+    {
+        return $this->caseNumberTemplate;
     }
 }

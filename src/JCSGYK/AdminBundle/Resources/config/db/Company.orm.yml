@@ -30,6 +30,16 @@ Company:
             length: 16
             fixed: false
             nullable: true
+        sequencePolicy:
+            type: integer
+            nullable: true
+            column: sequence_policy
+        caseNumberTemplate:
+            type: string
+            length: 64
+            fixed: false
+            nullable: true
+            column: case_number_template
         isActive:
             type: boolean
             nullable: true
