@@ -23,4 +23,33 @@ class ClientRepository extends EntityRepository
             ->setParameter('client', $client_id)
             ->getResult();
     }
+
+    /**
+     * Find the parents of a client
+     */
+    public function getParentList($client_id)
+    {
+        return $this->getEntityManager()
+            ->createQuery("SELECT c FROM JCSGYKAdminBundle:ClientParent c WHERE c.childId=:client ORDER BY c.type")
+            ->setParameter('client', $client_id)
+            ->getResult();
+    }
+
+
+    /**
+     * Get the parents
+     * returns an array by types
+     * @param type $client_id
+     */
+    public function getParents($client_id)
+    {
+        $parents = $this->getParentList($client_id);
+
+        $re = [];
+        foreach ($parents as $parent) {
+            $re[$parent->getType()] = $parent->getParent();
+        }
+
+        return $re;
+    }
 }

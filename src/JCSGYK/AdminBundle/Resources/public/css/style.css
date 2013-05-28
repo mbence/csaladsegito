@@ -221,12 +221,15 @@ footer#colophon .credits a:hover {
 table.search-results {
     width: 100%;
 }
-table.search-results th {
+table.search-results th, table.client .parent {
     font-size: 15px;
     font-weight: normal;
     color: #039;
     border-bottom: 2px solid #6678B1;
     padding: 6px;
+}
+table.client .parent {
+    border-bottom-width: 1px;
 }
 table.search-results td {
     padding: 5px 6px;
@@ -279,6 +282,9 @@ table.client td {
     /*font-weight: bold;*/
     padding: 5px 6px 5px;
     border-bottom: 1px solid #DDD;
+}
+table.client td:last-child {
+    min-width: 90px;
 }
 table.client tr:hover td, table.client tr:hover th  {
     background-color: #f5f5f5;

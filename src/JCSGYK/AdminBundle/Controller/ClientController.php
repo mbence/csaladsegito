@@ -185,6 +185,9 @@ class ClientController extends Controller
                 return $this->redirect($this->generateUrl('client_view', ['id' => $id]));
             }
 
+            // get the parents
+            $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getParents($id);
+
             $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
             $client_types = $this->container->get('jcs.ds')->getClientTypes();
             $orig_year = $client->getCaseYear();
@@ -286,7 +289,12 @@ class ClientController extends Controller
 
             $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
 
-            return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', ['client' => $client, 'problems' => $problems ,'form' => $form->createView()]);
+            return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', [
+                'client' => $client,
+                'problems' => $problems,
+                'form' => $form->createView(),
+                'parents' => $parents,
+            ]);
         }
         else {
             throw new HttpException(400, "Bad request");
@@ -387,11 +395,15 @@ class ClientController extends Controller
             $sec = $this->get('security.context');
             $client_types = $this->container->get('jcs.ds')->getClientTypes();
 
+            // get the parents
+            $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getParents($id);
+
             return $this->render('JCSGYKAdminBundle:Client:view.html.twig', [
                 'client' => $client,
                 'problems' => $problems,
                 'can_edit' => $client->canEdit($sec),
-                'display_type' => count($client_types) > 1  // only display the client type if there are more then one types of this company
+                'display_type' => count($client_types) > 1,  // only display the client type if there are more then one types of this company
+                'parents' => $parents,
             ]);
         }
         else {

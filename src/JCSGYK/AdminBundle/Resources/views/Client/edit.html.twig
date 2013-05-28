@@ -8,6 +8,10 @@
 
 {% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" %}
 
+{% if is_granted(['ROLE_FAMILY_HELP','ROLE_CHILD_WELFARE']) and client.type == 2 %}
+    {% include "JCSGYKAdminBundle:Client:_parents.html.twig" with {'edit': true} %}
+{% endif %}
+
 <div class="problem_container" {% if client.id %}data-url="{{ path('client_problems', {id: client.id}) }}"{% endif %}>
     {% include "JCSGYKAdminBundle:Client:_problems.html.twig" with {notoggle: true} %}
 </div>

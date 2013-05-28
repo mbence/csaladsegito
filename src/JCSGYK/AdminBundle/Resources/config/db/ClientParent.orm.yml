@@ -1,0 +1,19 @@
+Client:
+    type: entity
+    table: client_parent
+    fields:
+        parentId:
+            id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            column: parent_id
+        childId:
+            type: integer
+            unsigned: false
+            nullable: false
+            column: child_id
+        type:
+            type: integer
+            nullable: true
+    lifecycleCallbacks: {  }
