@@ -9,12 +9,12 @@ use JCSGYK\AdminBundle\Entity\Problem;
 class AdminExtension extends \Twig_Extension
 {
     private $translator;
-    private $dbparams;
+    private $ds;
 
-    public function __construct(Translator $translator, $dbparams)
+    public function __construct(Translator $translator, $ds)
     {
         $this->translator = $translator;
-        $this->dbparams = $dbparams;
+        $this->ds = $ds;
     }
 
     public function getFilters()
@@ -84,7 +84,7 @@ class AdminExtension extends \Twig_Extension
 
     public function formatCaseNumber($client)
     {
-        $co = $this->dbparams->getCompany();
+        $co = $this->ds->getCompany();
         $tpl = $co['caseNumberTemplate'];
         if (empty($tpl)) {
             $tpl = '{num}';
@@ -127,16 +127,12 @@ class AdminExtension extends \Twig_Extension
 
     public function getInquiryTypes()
     {
-        return $this->dbparams->getGroup(1);
+        return $this->ds->getGroup(1);
     }
 
     public function getParentTypes($type = null)
     {
-        $ptypes = [
-            1 => 'Anya',
-            2 => 'Apa',
-            3 => 'Gyám'
-        ];
+        $ptypes = $this->ds->getParentTypes();
 
         if (is_null($type)) {
             return $ptypes;
@@ -151,7 +147,7 @@ class AdminExtension extends \Twig_Extension
      */
     public function getParam($id)
     {
-        $param = $this->dbparams->get($id);
+        $param = $this->ds->get($id);
 
         return $param ? $param : 'Nincs megadva';
     }
@@ -231,7 +227,7 @@ class AdminExtension extends \Twig_Extension
             }
             // long date (with month name)
             else {
-                return $d->format('Y. ') .  $this->translator->trans($this->dbparams->getMonth($d->format('n'))) . $d->format(' j.');
+                return $d->format('Y. ') .  $this->translator->trans($this->ds->getMonth($d->format('n'))) . $d->format(' j.');
             }
         }
     }
