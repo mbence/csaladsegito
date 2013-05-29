@@ -31,7 +31,7 @@ class Relation
     /**
      * @var \Client
      *
-     * @ORM\ManyToOne(targetEntity="Client")
+     * @ORM\ManyToOne(targetEntity="Client", fetch="EAGER")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;
@@ -54,7 +54,7 @@ class Relation
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -70,14 +70,14 @@ class Relation
     public function setChildId($childId)
     {
         $this->childId = $childId;
-    
+
         return $this;
     }
 
     /**
      * Get childId
      *
-     * @return integer 
+     * @return integer
      */
     public function getChildId()
     {
@@ -93,14 +93,14 @@ class Relation
     public function setType($type)
     {
         $this->type = $type;
-    
+
         return $this;
     }
 
     /**
      * Get type
      *
-     * @return integer 
+     * @return integer
      */
     public function getType()
     {
@@ -116,14 +116,14 @@ class Relation
     public function setParent(\JCSGYK\AdminBundle\Entity\Client $parent = null)
     {
         $this->parent = $parent;
-    
+
         return $this;
     }
 
     /**
      * Get parent
      *
-     * @return \JCSGYK\AdminBundle\Entity\Client 
+     * @return \JCSGYK\AdminBundle\Entity\Client
      */
     public function getParent()
     {

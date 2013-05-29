@@ -113,6 +113,19 @@ JcsClient =
             )
         false
 
+    reloadParents: ->
+        # get the url
+        url = $("#clientblock #parent_container").data("url")
+        if url
+            $.get(url, (data) =>
+                $("#clientblock #parent_container").html(data)
+                JcsClient.initButtonRow()
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+            )
+        false
+
     initVisit: ->
         JcsModal.setCloseButton()
         # form submit
@@ -188,6 +201,38 @@ JcsClient =
         JcsModal.load()
         $("#archive_type").focus()
 
+    initParent: ->
+        JcsModal.setCloseButton()
+
+        # form submit
+        $("#parent_form").submit ->
+            $(".save_parent").addClass('animbutton')
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                JcsModal.setContent(data)
+
+                # display the result message
+                if JcsModal.find(".result").data("result-notice")
+                    AjaxBag.showNotice(JcsModal.find(".result").data("result-notice"))
+                    JcsModal.close()
+                    # refresh the parent block
+                    JcsClient.reloadParents()
+                else
+                    JcsClient.initParent()
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $(".save_parent").removeClass('animbutton')
+            )
+
+            false
+
+        # textarea auto height
+        $("#archive_description").elastic()
+
+        JcsModal.load()
+        $("#archive_type").focus()
+
     setDelProvider: ->
         # provider delete
         $(".delete_provider").off("click").on "click", (event) ->
@@ -230,7 +275,7 @@ JcsClient =
             false
 
         # archive
-        $(".archive_client").add(".client_visit").on "click", (event) ->
+        $(".archive_client").add(".client_visit").add(".edit_parent").off('click').on "click", (event) ->
             event.stopPropagation()
 
             if !$(this).hasClass('animbutton')
@@ -244,6 +289,8 @@ JcsClient =
                         JcsClient.initVisit()
                     if $(this).hasClass('archive_client')
                         JcsClient.initArchive()
+                    if $(this).hasClass('edit_parent')
+                        JcsClient.initParent()
                     # hide the submenu
                     if $(this).parent().hasClass('sub-vertical')
                         $(this).parent().hide()

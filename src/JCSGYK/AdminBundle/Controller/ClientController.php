@@ -15,6 +15,8 @@ use JCSGYK\AdminBundle\Entity\Archive;
 use JCSGYK\AdminBundle\Form\Type\ArchiveType;
 use JCSGYK\AdminBundle\Entity\Task;
 use JCSGYK\AdminBundle\Entity\Stat;
+use JCSGYK\AdminBundle\Entity\Relation;
+use JCSGYK\AdminBundle\Form\Type\ParentType;
 
 class ClientController extends Controller
 {
@@ -146,6 +148,67 @@ class ClientController extends Controller
         $this->get('jcs.stat')->save(Stat::TYPE_FAMILY_HELP, 1, $assignee->getId());
     }
 
+    public function parentEditAction($id, $type)
+    {
+        $request = $this->getRequest();
+        $user= $this->get('security.context')->getToken()->getUser();
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+
+        $parent = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id, $type);
+
+        if (empty($parent[0])) {
+            $parent = new Relation();
+            $parent->setType($type);
+            $parent->setChildId($id);
+            $new_client = new Client($this->container->get('jcs.ds'));
+            $new_client->setCompanyId($companyId);
+            $new_client->setType(Client::PARENT);
+            $new_client->setCaseAdmin($user);
+            $new_client->setCreator($user);
+            $new_client->setIsArchived(false);
+
+            $parent->setParent($new_client);
+        }
+        else {
+            $parent = $parent[0];
+        }
+
+        if (empty($parent)) {
+            throw new HttpException(400, "Bad request");
+        }
+
+        $form = $this->createForm(new ParentType($this->container->get('jcs.ds')), $parent->getParent());
+
+        // save
+        if ($request->isMethod('POST')) {
+            $form->bind($request);
+
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+
+                // set modifier user
+                $parent->getParent()->setModifier($user);
+
+                if (is_null($parent->getId())) {
+                    $em->persist($parent->getParent());
+                    $em->persist($parent);
+                }
+
+                $em->flush();
+
+                $this->get('session')->setFlash('notice', 'Szülő elmentve');
+
+                return $this->render('JCSGYKAdminBundle:Dialog:parent.html.twig', [
+                    'success' => true
+                ]);
+            }
+        }
+        return $this->render('JCSGYKAdminBundle:Dialog:parent.html.twig', [
+            'form' => $form->createView(),
+            'parent' => $parent,
+        ]);
+    }
+
     /**
      * Edits the client data
      *
@@ -185,14 +248,16 @@ class ClientController extends Controller
                 return $this->redirect($this->generateUrl('client_view', ['id' => $id]));
             }
 
-            // get the parents
-            $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
-            // make the parent forms
-//            $parent_types = $this->container->get('jcs.ds')->getparentTypes();
-//            var_dump($parent_types);
-//            foreach ($parent_types as $pt => $pv) {
-//
-//            }
+            // get the parents for CHILD WELFARE
+            $parents = [];
+            $relation_types = [];
+            if ($client->getId() && $client->getType() == Client::CW) {
+                $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
+                $relation_types = $this->container->get('jcs.ds')->getRelationTypes();
+                foreach ($parents as $parent) {
+                    unset($relation_types[$parent->getType()]);
+                }
+            }
 
             $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
             $client_types = $this->container->get('jcs.ds')->getClientTypes();
@@ -300,6 +365,7 @@ class ClientController extends Controller
                 'problems' => $problems,
                 'form' => $form->createView(),
                 'parents' => $parents,
+                'new_relations' => $relation_types,
             ]);
         }
         else {
@@ -401,8 +467,18 @@ class ClientController extends Controller
             $sec = $this->get('security.context');
             $client_types = $this->container->get('jcs.ds')->getClientTypes();
 
-            // get the parents
-            $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
+            // get the parents only for CHILD WELFARE
+            $parents = [];
+            $relation_types = [];
+            if ($client->getType() == Client::CW) {
+                $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
+                $relation_types = $this->container->get('jcs.ds')->getRelationTypes();
+                foreach ($parents as $parent) {
+                    if (isset($relation_types[$parent->getType()])) {
+                        unset($relation_types[$parent->getType()]);
+                    }
+                }
+            }
 
             return $this->render('JCSGYKAdminBundle:Client:view.html.twig', [
                 'client' => $client,
@@ -410,6 +486,7 @@ class ClientController extends Controller
                 'can_edit' => $client->canEdit($sec),
                 'display_type' => count($client_types) > 1,  // only display the client type if there are more then one types of this company
                 'parents' => $parents,
+                'new_relations' => $relation_types,
             ]);
         }
         else {
@@ -431,6 +508,31 @@ class ClientController extends Controller
             $sec = $this->get('security.context');
 
             return $this->render('JCSGYKAdminBundle:Client:_problems.html.twig', ['client' => $client, 'problems' => $problems, 'can_edit' => $client->canEdit($sec)]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
+
+    /**
+     * Get only the parent list of the client.
+     * Used with the refreshParents JS action
+     *
+     * @Secure(roles="ROLE_USER")
+     */
+    public function parentsAction($id)
+    {
+        if (!empty($id)) {
+            $client = $this->getClient($id);
+            $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
+            $relation_types = $this->container->get('jcs.ds')->getRelationTypes();
+            foreach ($parents as $parent) {
+                if (isset($relation_types[$parent->getType()])) {
+                    unset($relation_types[$parent->getType()]);
+                }
+            }
+
+            return $this->render('JCSGYKAdminBundle:Client:_parents.html.twig', ['client' => $client, 'parents' => $parents, 'new_relations' => $relation_types, 'edit' => true]);
         }
         else {
             throw new HttpException(400, "Bad request");

@@ -1,61 +1,72 @@
 {# Parents #}
 <div class="client-sub togglable">{{ 'Szülők adatai'|trans }}</div>
 <div>
-    {% for relation_type, client in parents %}
+    {% for relation in parents %}
+        {% set parent=relation.parent() %}
     <table class="client" cellspacing="0" border="0">
         <tr>
-            <th class="parent">{{ rel_types(relation_type) }}:</th>
-            <td class="parent" colspan="3">{{ fname(client.firstname, client.lastname, client.title) }}</td>
+            <th class="parent">{{ rel_types(relation.type) }}:</th>
+            <td class="parent" colspan="2">
+                {{ fname(parent.firstname, parent.lastname, parent.title) }}
+            </td>
+            <td class="parent">
+                {% if edit is defined and edit %}
+                <div class="button-row" style="margin: -4px -6px -6px;">
+                    <a href="{{ path('parent_edit', {'id': client.id, 'type': parent.type})}}" class="greybutton edit_parent"><span>{{ 'szerkeszt'|trans }}</span></a>
+                </div>
+                <div class="clear"></div>
+                {% endif %}
+            </td>
         </tr>
         <tr>
             <th>{{ 'Szül. név'|trans }}:</th>
-            <td colspan="3">{{ fname(client.birthFirstname, client.birthLastname, client.birthTitle) }}</td>
+            <td colspan="3">{{ fname(parent.birthFirstname, parent.birthLastname, parent.birthTitle) }}</td>
         </tr>
         <tr>
             <th>{{ 'Szül. hely, idő'|trans }}:</th>
-            <td>{% if client.birthPlace %}{{ client.birthPlace }}, {% endif %}{{ client.birthDate|fdate }}</td>
+            <td>{% if parent.birthPlace %}{{ parent.birthPlace }}, {% endif %}{{ parent.birthDate|fdate }}</td>
             <th>{{ 'Nem'|trans }}:</th>
-            <td>{{ client.gender|gender }}</td>
+            <td>{{ parent.gender|gender }}</td>
         </tr>
         <tr>
             <th>{{ 'Anyja neve'|trans }}:</th>
-            <td colspan="3">{{ fname(client.motherFirstname, client.motherLastname, client.motherTitle) }}</td>
+            <td colspan="3">{{ fname(parent.motherFirstname, parent.motherLastname, parent.motherTitle) }}</td>
         </tr>
         <tr>
             <th>{{ 'Állampolgárság'|trans }}:</th>
-            <td colspan="3">{{ param(client.citizenship) }} ({{ param(client.citizenshipStatus) }})</td>
+            <td colspan="3">{{ param(parent.citizenship) }} ({{ param(parent.citizenshipStatus) }})</td>
         </tr>
 
     {# Kapcsolat #}
-        {% if client.mobile or client.phone %}
+        {% if parent.mobile or parent.phone %}
         <tr>
-            {% if client.mobile %}
+            {% if parent.mobile %}
             <th>{{ 'Mobil'|trans }}:</th>
-            <td {% if not client.phone %}colspan="3"{% endif %}>{{ client.mobile|fphone }}</td>
+            <td {% if not parent.phone %}colspan="3"{% endif %}>{{ parent.mobile|fphone }}</td>
             {% endif %}
-            {% if client.phone %}
+            {% if parent.phone %}
             <th>{{ 'Telefon'|trans }}:</th>
-            <td>{{ client.phone|fphone }}</td>
+            <td>{{ parent.phone|fphone }}</td>
             {% endif %}
         </tr>
         {% endif %}
-        {% if client.email or client.fax %}
+        {% if parent.email or parent.fax %}
         <tr>
-            {% if client.email %}
+            {% if parent.email %}
             <th>{{ 'Email'|trans }}:</th>
-            <td {% if not client.fax %}colspan="3"{% endif %}><a href="mailto:{{ fname(client.firstname, client.lastname, client.title) }} &lt;{{ client.email }}&gt;">{{ client.email }}</a></td>
+            <td {% if not parent.fax %}colspan="3"{% endif %}><a href="mailto:{{ fname(parent.firstname, parent.lastname, parent.title) }} &lt;{{ parent.email }}&gt;">{{ parent.email }}</a></td>
             {% endif %}
-            {% if client.fax %}
+            {% if parent.fax %}
             <th>{{ 'Fax'|trans }}:</th>
-            <td>{{ client.fax|fphone }}</td>
+            <td>{{ parent.fax|fphone }}</td>
             {% endif %}
         </tr>
         {% endif %}
         <tr>
             <th>{{ 'Lakóhely'|trans }}:</th>
-            <td colspan="3">{{ faddr(client.country, client.zipCode, client.city, client.street, client.streetType, client.streetNumber, client.flatNumber) }}</td>
+            <td colspan="3">{{ faddr(parent.country, parent.zipCode, parent.city, parent.street, parent.streetType, parent.streetNumber, parent.flatNumber) }}</td>
         </tr>
-        {% set locationAddress = faddr(client.locationCountry, client.locationZipCode, client.locationCity, client.locationStreet, client.locationStreetType, client.locationStreetNumber, client.locationFlatNumber) %}
+        {% set locationAddress = faddr(parent.locationCountry, parent.locationZipCode, parent.locationCity, parent.locationStreet, parent.locationStreetType, parent.locationStreetNumber, parent.locationFlatNumber) %}
         {% if locationAddress|trim %}
         <tr>
             <th>{{ 'Tartózkodási hely'|trans }}:</th>
@@ -64,4 +75,12 @@
         {% endif %}
     </table><br>
     {% endfor %}
+    {% if edit is defined and edit %}
+    <div class="button-row">
+    {% for rel_type, rel_label in new_relations %}
+        <a href="{{ path('parent_edit', {'id': client.id, 'type': rel_type}) }}" class="greybutton edit_parent"><span>{{ '{type} hozzáadása'|trans({'{type}': rel_label}) }}</span></a>
+    {% endfor %}
+    </div>
+    <div class="clear"></div>
+    {% endif %}
 </div>

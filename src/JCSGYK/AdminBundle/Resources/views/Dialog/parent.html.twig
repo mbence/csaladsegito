@@ -1,0 +1,21 @@
+{# Parent #}
+
+{# if all went well, we just need to close the popup #}
+{% if success is defined and success %}
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% else %}
+    {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+
+    <form action="{{ path('parent_edit', {'id': parent.childId, 'type': parent.type}) }}" id="parent_form" method="post" {{ form_enctype(form) }}>
+        <h1 class="client">{{ rel_types(parent.type) }} szerkesztése</h1>
+        {{ form_errors(form) }}
+
+        {% include "JCSGYKAdminBundle:Client:_edit_parent.html.twig" %}
+
+        <div class="toppad10">
+            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_parent', title:'Szülő mentése', label:'mentés'}] } %}
+            <div class="clear"></div>
+        </div>
+        {{ form_widget(form._token) }}
+    </form>
+{% endif %}

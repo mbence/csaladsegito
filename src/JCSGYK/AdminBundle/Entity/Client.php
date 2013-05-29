@@ -20,6 +20,8 @@ class Client
     const FH = 1;
     /** Child welfare client type */
     const CW = 2;
+    /** Parent type */
+    const PARENT = 3;
 
     /**
      * @var integer

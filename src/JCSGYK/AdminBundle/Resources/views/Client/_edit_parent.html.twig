@@ -1,0 +1,105 @@
+{# Edit Personal Data #}
+
+    <table class="client-edit" cellspacing="0" border="0">
+        <tr>
+            <th class="high">{{ 'Név'|trans }}:</th>
+            <td colspan="3">
+                <table class="client-edit-inner" cellspacing="0" border="0">
+                    <tr>
+                        <td class="short">
+                            {{ form_label(form.title, null, {'label_attr': {'class': 'above'}}) }}<br>
+                            {{ form_errors(form.title) }}
+                            {{ form_widget(form.title) }}
+                        </td>
+                        <td>
+                            {{ form_label(form.lastname, null, {'label_attr': {'class': 'above'}}) }}<br>
+                            {{ form_errors(form.lastname) }}
+                            {{ form_widget(form.lastname) }}
+                        </td>
+                        <td>
+                            {{ form_label(form.firstname, null, {'label_attr': {'class': 'above'}}) }}<br>
+                            {{ form_errors(form.firstname) }}
+                            {{ form_widget(form.firstname) }}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.gender) }}:</th>
+            <td colspan="3">{{ form_errors(form.gender) }}{{ form_widget(form.gender) }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Szül. név'|trans }}:</th>
+            <td colspan="3">
+                <table class="client-edit-inner" cellspacing="0" border="0">
+                    <tr>
+                        <td class="short">
+                            {{ form_label(form.birth_title, null, {'label_attr': {'class': 'above'}}) }}<br>
+                            {{ form_errors(form.birth_title) }} {{ form_widget(form.birth_title) }}
+                        </td>
+                        <td>
+                            {{ form_label(form.birth_lastname, null, {'label_attr': {'class': 'above'}}) }}<br>
+                            {{ form_errors(form.birth_lastname) }} {{ form_widget(form.birth_lastname) }}
+                        </td>
+                        <td>
+                            {{ form_label(form.birth_firstname, null, {'label_attr': {'class': 'above'}}) }}<br>
+                            {{ form_errors(form.birth_firstname) }} {{ form_widget(form.birth_firstname) }}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th>{{ 'Szül. hely, idő'|trans }}:</th>
+            <td colspan="3">
+                <table class="client-edit-inner" cellspacing="0" border="0">
+                    <tr>
+                        <td>{{ form_errors(form.birth_place) }} {{ form_widget(form.birth_place) }} </td>
+                        <td>{{ form_errors(form.birth_date) }} {{ form_widget(form.birth_date) }} </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th>{{ 'Anyja neve'|trans }}:</th>
+            <td colspan="3">
+                <table class="client-edit-inner" cellspacing="0" border="0">
+                    <tr>
+                        <td class="short">
+                            {{ form_label(form.mother_title, null, {'label_attr': {'class': 'above'}}) }}<br>
+                            {{ form_errors(form.mother_title) }} {{ form_widget(form.mother_title) }}
+                        </td>
+                        <td>
+                            {{ form_label(form.mother_lastname, null, {'label_attr': {'class': 'above'}}) }}<br>
+                            {{ form_errors(form.mother_lastname) }} {{ form_widget(form.mother_lastname) }}
+                        </td>
+                        <td>
+                            {{ form_label(form.mother_firstname, null, {'label_attr': {'class': 'above'}}) }}<br>
+                            {{ form_errors(form.mother_firstname) }} {{ form_widget(form.mother_firstname) }}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.citizenship) }}:</th>
+            <td colspan="3">
+                {{ form_errors(form.citizenship) }} {{ form_widget(form.citizenship) }}
+                {{ form_errors(form.citizenship_status) }} {{ form_widget(form.citizenship_status) }}
+            </td>
+        </tr>
+{# Kapcsolat #}
+        <tr>
+            <th>{{ form_label(form.mobile) }}:</th>
+            <td>{{ form_errors(form.mobile) }} {{ form_widget(form.mobile) }}</td>
+            <th>{{ form_label(form.phone) }}:</th>
+            <td>{{ form_errors(form.phone) }} {{ form_widget(form.phone) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.email) }}:</th>
+            <td>{{ form_errors(form.email) }} {{ form_widget(form.email) }}</td>
+            <th>{{ form_label(form.fax) }}:</th>
+            <td>{{ form_errors(form.fax) }} {{ form_widget(form.fax) }}</td>
+        </tr>
+        </table>

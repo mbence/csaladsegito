@@ -35,6 +35,14 @@ client_visit:
 client_history:
     pattern:  /clients/history/{id}
     defaults: { _controller: JCSGYKAdminBundle:Template:history }
+client_parents:
+    pattern:  /clients/parents/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:parents }
+
+# Parents #
+parent_edit:
+    pattern:  /parents/edit/{id}/{type}
+    defaults: { _controller: JCSGYKAdminBundle:Client:parentEdit }
 
 # Templates #
 templates:

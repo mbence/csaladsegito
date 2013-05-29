@@ -32,6 +32,8 @@ class ParentType extends AbstractType
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $builder->add('id', 'hidden');
+        $builder->add('type', 'hidden', ['mapped' => false]);
         $builder->add('title', 'text', ['label' => 'Titulus', 'required' => false]);
         $builder->add('firstname', 'text', ['label' => 'Keresztnév']);
         $builder->add('lastname', 'text', ['label' => 'Vezetéknév']);
