@@ -221,7 +221,7 @@ HBlocks =
         # prevent scrolling if we are in the search field
         if block != 1 and $(document.activeElement).attr('id') == 'q'
             return true
-            
+
         blockW = @blockW()
         # try to center the selected block
         x = Math.round((block - 1) * blockW - (($("#content").width() - blockW) / 2))
@@ -247,7 +247,8 @@ HBlocks =
             $(".contentscroller > div:nth-child(" + block + ")").addClass("current")
 
             # only change the focus, if it's not on an imput field
-            if not $(document.activeElement).is('input, select, textarea')
+            # or not on an edit form
+            if not $(document.activeElement).is('input, select, textarea') and $(".contentscroller > .current").find("input").length == 0
               # if there is a list, focus on it's current element
               if $(".contentscroller > .current .walkable .current").length
                   $(".contentscroller > .current .walkable .current").focus()
