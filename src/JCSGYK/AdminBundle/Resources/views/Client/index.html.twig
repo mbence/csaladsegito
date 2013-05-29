@@ -31,7 +31,7 @@
                 </div>
                 <div class="clientcontent">
                     {%- if client_id is defined  and client_id %}
-                        {% render(controller('JCSGYKAdminBundle:Client:view', {'id': client_id})) %}
+                        {% render(controller('JCSGYKAdminBundle:Client:edit', {'id': client_id})) %}
                     {% endif -%}
                 </div>
             </div></div>

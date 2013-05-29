@@ -187,6 +187,8 @@ class ClientController extends Controller
 
             // get the parents
             $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getParents($id);
+            // make the parent forms
+            //foreach ()
 
             $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
             $client_types = $this->container->get('jcs.ds')->getClientTypes();

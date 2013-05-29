@@ -64,12 +64,4 @@
         {% endif %}
     </table><br>
     {% endfor %}
-    <div class="button-row">
-    {% for parent_type, type_label in parent_types() %}
-        {% if not parents[parent_type] is defined %}
-            <a href="#" class="greybutton"><span>{{ '{type} hozzáadása'|trans({'{type}': type_label}) }}</span></a>
-        {% endif %}
-    {% endfor %}
-    </div>
-    <div class="clear"></div>
 </div>

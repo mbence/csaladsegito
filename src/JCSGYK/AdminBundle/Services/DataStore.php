@@ -2,6 +2,7 @@
 
 namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use JCSGYK\AdminBundle\Entity\ClientParent;
 
 /**
  * Service for Data Store
@@ -163,5 +164,18 @@ class DataStore
         $months = ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];
 
         return empty($month) || !isset($months[$month - 1]) ? $months : $months[$month - 1];
+    }
+
+    /**
+     * Return the parent types
+     * @return array
+     */
+    public function getParentTypes()
+    {
+        return [
+            ClientParent::MOTHER => 'Anya',
+            ClientParent::FATHER => 'Apa',
+            ClientParent::GUARDIAN => 'Gyám'
+        ];
     }
 }
