@@ -146,8 +146,6 @@ class ClientType extends AbstractType
             },
             'required' => false,
         ]);
-
-        // missing fields: country, location_country, doc_file, job_type
     }
 
     public function getName()

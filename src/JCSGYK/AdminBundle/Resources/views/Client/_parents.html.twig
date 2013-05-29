@@ -1,10 +1,10 @@
 {# Parents #}
 <div class="client-sub togglable">{{ 'Szülők adatai'|trans }}</div>
 <div>
-    {% for parent_type, client in parents %}
+    {% for relation_type, client in parents %}
     <table class="client" cellspacing="0" border="0">
         <tr>
-            <th class="parent">{{ parent_types(parent_type) }}:</th>
+            <th class="parent">{{ rel_types(relation_type) }}:</th>
             <td class="parent" colspan="3">{{ fname(client.firstname, client.lastname, client.title) }}</td>
         </tr>
         <tr>

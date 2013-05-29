@@ -186,9 +186,13 @@ class ClientController extends Controller
             }
 
             // get the parents
-            $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getParents($id);
+            $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
             // make the parent forms
-            //foreach ()
+//            $parent_types = $this->container->get('jcs.ds')->getparentTypes();
+//            var_dump($parent_types);
+//            foreach ($parent_types as $pt => $pv) {
+//
+//            }
 
             $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
             $client_types = $this->container->get('jcs.ds')->getClientTypes();
@@ -398,7 +402,7 @@ class ClientController extends Controller
             $client_types = $this->container->get('jcs.ds')->getClientTypes();
 
             // get the parents
-            $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getParents($id);
+            $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
 
             return $this->render('JCSGYKAdminBundle:Client:view.html.twig', [
                 'client' => $client,

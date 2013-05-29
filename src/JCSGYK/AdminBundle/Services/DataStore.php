@@ -2,7 +2,7 @@
 
 namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use JCSGYK\AdminBundle\Entity\ClientParent;
+use JCSGYK\AdminBundle\Entity\Relation;
 
 /**
  * Service for Data Store
@@ -170,12 +170,12 @@ class DataStore
      * Return the parent types
      * @return array
      */
-    public function getParentTypes()
+    public function getRelationTypes()
     {
         return [
-            ClientParent::MOTHER => 'Anya',
-            ClientParent::FATHER => 'Apa',
-            ClientParent::GUARDIAN => 'Gyám'
+            Relation::MOTHER => 'Anya',
+            Relation::FATHER => 'Apa',
+            Relation::GUARDIAN => 'Gyám'
         ];
     }
 }

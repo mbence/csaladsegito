@@ -41,7 +41,7 @@ class AdminExtension extends \Twig_Extension
             'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
             'faddr' => new \Twig_Function_Method($this, 'formatAddress'),
             'pstatus' => new \Twig_Function_Method($this, 'problemStatus'),
-            'parent_types' => new \Twig_Function_Method($this, 'getParentTypes'),
+            'rel_types' => new \Twig_Function_Method($this, 'getRelationTypes'),
         );
     }
 
@@ -130,9 +130,9 @@ class AdminExtension extends \Twig_Extension
         return $this->ds->getGroup(1);
     }
 
-    public function getParentTypes($type = null)
+    public function getRelationTypes($type = null)
     {
-        $ptypes = $this->ds->getParentTypes();
+        $ptypes = $this->ds->getRelationTypes();
 
         if (is_null($type)) {
             return $ptypes;

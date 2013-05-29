@@ -4,7 +4,7 @@
     {% for parent_type, client in parents %}
     <table class="client" cellspacing="0" border="0">
         <tr>
-            <th class="parent">{{ parent_types(parent_type) }}:</th>
+            <th class="parent">{{ rel_types(parent_type) }}:</th>
             <td class="parent" colspan="3">{{ fname(client.firstname, client.lastname, client.title) }}</td>
         </tr>
         <tr>
@@ -66,7 +66,7 @@
     </table><br>
     {% endfor %}
     <div class="button-row">
-    {% for parent_type, type_label in parent_types() %}
+    {% for parent_type, type_label in rel_types() %}
         {% if not parents[parent_type] is defined %}
             <a href="#" class="greybutton"><span>{{ '{type} hozzáadása'|trans({'{type}': type_label}) }}</span></a>
         {% endif %}

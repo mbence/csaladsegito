@@ -1,9 +1,15 @@
 Client:
     type: entity
-    table: client_parent
+    table: relation
     fields:
-        parentId:
+        id:
             id: true
+            type: integer
+            unsigned: false
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        parentId:
             type: integer
             unsigned: false
             nullable: false

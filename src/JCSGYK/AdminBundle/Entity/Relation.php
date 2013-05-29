@@ -7,12 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * ClientParent
+ * Relation
  *
- * @ORM\Table(name="client_parent")
+ * @ORM\Table(name="relation")
  * @ORM\Entity()
  */
-class ClientParent
+class Relation
 {
     /** parent types */
     const MOTHER = 1;
@@ -20,9 +20,19 @@ class ClientParent
     const GUARDIAN = 3;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Client", fetch="EAGER")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var \Client
+     *
+     * @ORM\ManyToOne(targetEntity="Client")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;
 
@@ -30,7 +40,6 @@ class ClientParent
      * @var integer
      *
      * @ORM\Column(name="child_id", type="integer", nullable=false)
-     * @ORM\Id
      */
     private $childId;
 
@@ -43,22 +52,32 @@ class ClientParent
 
 
     /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Set childId
      *
      * @param integer $childId
-     * @return ClientParent
+     * @return Relation
      */
     public function setChildId($childId)
     {
         $this->childId = $childId;
-
+    
         return $this;
     }
 
     /**
      * Get childId
      *
-     * @return integer
+     * @return integer 
      */
     public function getChildId()
     {
@@ -69,19 +88,19 @@ class ClientParent
      * Set type
      *
      * @param integer $type
-     * @return ClientParent
+     * @return Relation
      */
     public function setType($type)
     {
         $this->type = $type;
-
+    
         return $this;
     }
 
     /**
      * Get type
      *
-     * @return integer
+     * @return integer 
      */
     public function getType()
     {
@@ -92,19 +111,19 @@ class ClientParent
      * Set parent
      *
      * @param \JCSGYK\AdminBundle\Entity\Client $parent
-     * @return ClientParent
+     * @return Relation
      */
     public function setParent(\JCSGYK\AdminBundle\Entity\Client $parent = null)
     {
         $this->parent = $parent;
-
+    
         return $this;
     }
 
     /**
      * Get parent
      *
-     * @return \JCSGYK\AdminBundle\Entity\Client
+     * @return \JCSGYK\AdminBundle\Entity\Client 
      */
     public function getParent()
     {
