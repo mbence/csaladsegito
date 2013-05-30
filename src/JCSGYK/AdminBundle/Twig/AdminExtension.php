@@ -42,6 +42,7 @@ class AdminExtension extends \Twig_Extension
             'faddr' => new \Twig_Function_Method($this, 'formatAddress'),
             'pstatus' => new \Twig_Function_Method($this, 'problemStatus'),
             'rel_types' => new \Twig_Function_Method($this, 'getRelationTypes'),
+            'casefield' => new \Twig_Function_Method($this, 'formatCaseNumberFields', ['is_safe' => ['html']]),
         );
     }
 
@@ -80,6 +81,41 @@ class AdminExtension extends \Twig_Extension
     public function formatCaseLabel($type)
     {
         return $this->translator->trans($type == Client::FH ? 'Ügyfélszám' : 'Ügyiratszám');
+    }
+
+    public function formatCaseNumberFields($year, $num)
+    {
+        global $view;
+
+        $co = $this->ds->getCompany();
+        $tpl = $co['caseNumberTemplate'];
+        if (empty($tpl)) {
+            $tpl = '{num}';
+        }
+        preg_match_all('/(.*?)(\{.*?\})(.*?)/', $tpl, $matches, PREG_SET_ORDER);
+        $re = '<table class="client-edit-inner" cellspacing="0" border="0" style="width:auto;"><tr>';
+        foreach ($matches as $m) {
+            if (!empty($m[1])) {
+                $re .= '<td><div class="bottompad4">' . $m[1] . '</div></td>';
+            }
+            if (!empty($m[2])) {
+                $re .= '<td class="short">';
+                if (strpos($m[2], 'year') !== false) {
+                    $re .= $year;
+                }
+                elseif (strpos($m[2], 'num') !== false) {
+                    $re .= $num;
+                }
+                $re .= '</td>';
+            }
+
+            if (!empty($m[3])) {
+                $re .= '<td><div class="bottompad4">' . $m[3] . '</div></td>';
+            }
+        }
+        $re .= '</tr></table>';
+
+        return $re;
     }
 
     public function formatCaseNumber($client)

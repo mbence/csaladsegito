@@ -154,6 +154,7 @@ class ClientController extends Controller
         $user= $this->get('security.context')->getToken()->getUser();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
+        $client = $this->getClient($id);
         $parent = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id, $type);
 
         if (empty($parent[0])) {
@@ -161,11 +162,20 @@ class ClientController extends Controller
             $parent->setType($type);
             $parent->setChildId($id);
             $new_client = new Client($this->container->get('jcs.ds'));
-            $new_client->setCompanyId($companyId);
+            $new_client->setCompanyId($company_id);
             $new_client->setType(Client::PARENT);
-            $new_client->setCaseAdmin($user);
             $new_client->setCreator($user);
             $new_client->setIsArchived(false);
+            // set gender
+            if (Relation::MOTHER == $type) {
+                $new_client->setGender(2);
+            } elseif (Relation::FATHER == $type) {
+                $new_client->setGender(1);
+            }
+            // set case admin and numbers
+            $new_client->setCaseYear($client->getCaseYear());
+            $new_client->setCaseNumber($client->getCaseNumber());
+            $new_client->setCaseAdmin($client->getCaseAdmin());
 
             $parent->setParent($new_client);
         }
@@ -226,6 +236,7 @@ class ClientController extends Controller
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
         $sec = $this->get('security.context');
         $user= $sec->getToken()->getUser();
+        $client_types = $this->container->get('jcs.ds')->getClientTypes();
 
         if (!empty($id)) {
             // get the client data
@@ -239,6 +250,7 @@ class ClientController extends Controller
             if ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE')) {
                 $client->setCaseAdmin($user);
             }
+            $client->setType(key($client_types));
         }
 
         if (!empty($client)) {
@@ -260,7 +272,7 @@ class ClientController extends Controller
             }
 
             $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
-            $client_types = $this->container->get('jcs.ds')->getClientTypes();
+
             $orig_year = $client->getCaseYear();
             $orig_casenum = $client->getCaseNumber();
 

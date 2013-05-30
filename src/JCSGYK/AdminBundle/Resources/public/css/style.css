@@ -44,6 +44,10 @@ body {
 a {
     text-decoration: none;
 }
+.smalltext {
+    color: #666;
+    font-size: 12px;
+}
 .clear {
     clear:both;
 }
@@ -693,7 +697,7 @@ table.problem-list td {
     -webkit-box-sizing: border-box;
     outline: medium none;
 }
-.client-edit .short {
+.client .short, .client-edit .short {
     width: 50px;
 }
 .client-edit table.client-edit {

@@ -8,7 +8,7 @@
 {% include "JCSGYKAdminBundle:Client:_personal_data.html.twig" %}
 {% if is_granted(['ROLE_FAMILY_HELP','ROLE_CHILD_WELFARE']) and client.type == 2 %}
 <div id="parent_container" data-url="{{ path('client_parents', {'id': client.id}) }}">
-    {% include "JCSGYKAdminBundle:Client:_parents.html.twig" with {'edit': true} %}
+    {% include "JCSGYKAdminBundle:Client:_parents.html.twig" %}
 </div>
 {% endif %}
 <div class="problem_container" data-url="{{ path('client_problems', {id: client.id}) }}">

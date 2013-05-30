@@ -9,9 +9,16 @@
 {% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" %}
 
 {% if is_granted(['ROLE_FAMILY_HELP','ROLE_CHILD_WELFARE']) and client.type == 2 %}
-<div id="parent_container" data-url="{{ path('client_parents', {'id': client.id}) }}">
-    {% include "JCSGYKAdminBundle:Client:_parents.html.twig" with {'edit': true} %}
-</div>
+    {% if client.id %}
+    <div id="parent_container" data-url="{{ path('client_parents', {'id': client.id}) }}">
+        {% include "JCSGYKAdminBundle:Client:_parents.html.twig" with {'edit': true} %}
+    </div>
+    {% else %}
+        <div class="client-sub togglable">{{ 'Szülők adatai'|trans }}</div>
+        <div class="noinfo">
+            A szülők adatait, az ügyfél létrehozása után tudja megadni.
+        </div>
+    {% endif %}
 {% endif %}
 
 <div class="problem_container" {% if client.id %}data-url="{{ path('client_problems', {id: client.id}) }}"{% endif %}>

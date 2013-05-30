@@ -33,9 +33,8 @@
         </tr>
         <tr>
             <th>{{ 'Szül. hely, idő'|trans }}:</th>
-            <td>{% if client.birthPlace %}{{ client.birthPlace }}, {% endif %}{{ client.birthDate|fdate }}</td>
-            <th>{{ 'Nem'|trans }}:</th>
-            <td>{{ client.gender|gender }}</td>
+            <td colspan="2">{% if client.birthPlace %}{{ client.birthPlace }}, {% endif %}{{ client.birthDate|fdate }}</td>
+            <td><div class="short floatright">{{ client.gender|gender }}</div></td>
         </tr>
         {% if client.type != 2 %}
         <tr>
@@ -56,7 +55,7 @@
             {% endif %}
             {% if client.phone %}
             <th>{{ 'Telefon'|trans }}:</th>
-            <td>{{ client.phone|fphone }}</td>
+            <td {% if not client.mobile %}colspan="3"{% endif %}>{{ client.phone|fphone }}</td>
             {% endif %}
         </tr>
         {% endif %}
@@ -68,7 +67,7 @@
             {% endif %}
             {% if client.fax %}
             <th>{{ 'Fax'|trans }}:</th>
-            <td>{{ client.fax|fphone }}</td>
+            <td {% if not client.email %}colspan="3"{% endif %}>{{ client.fax|fphone }}</td>
             {% endif %}
         </tr>
         {% endif %}
