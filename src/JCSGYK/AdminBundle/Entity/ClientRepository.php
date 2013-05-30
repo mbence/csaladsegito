@@ -3,6 +3,7 @@
 namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use JCSGYK\AdminBundle\Entity\Client;
 
 /**
  * ParameterRepository
@@ -42,5 +43,17 @@ class ClientRepository extends EntityRepository
                 ->setParameter('client', $client_id)
                 ->getResult();
         }
+    }
+
+    /**
+     * Find the records associated with a clients case
+     */
+    public function getCase(Client $client)
+    {
+        return $this->getEntityManager()
+            ->createQuery("SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.caseYear=:year AND c.caseNumber=:num")
+            ->setParameter('year', $client->getCaseYear())
+            ->setParameter('num', $client->getCaseNumber())
+            ->getResult();
     }
 }

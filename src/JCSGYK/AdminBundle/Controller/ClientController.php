@@ -250,6 +250,7 @@ class ClientController extends Controller
             if ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE')) {
                 $client->setCaseAdmin($user);
             }
+            reset($client_types);
             $client->setType(key($client_types));
         }
 
@@ -299,6 +300,9 @@ class ClientController extends Controller
                             $client->setCaseYear($nextVal['year']);
                             $client->setCaseNumber($nextVal['id']);
                         }
+                        else {
+                            $copy_case = true;
+                        }
 
                         // set the creator
                         $client->setCreator($user);
@@ -311,6 +315,12 @@ class ClientController extends Controller
                         }
 
                         $em->persist($client);
+                        $em->flush();
+
+                        // if case number given, we must copy over a few fields from that case
+                        if (!empty($copy_case)) {
+                            $this->copyCaseData($client);
+                        }
                     }
                     // restore the case number and year
                     elseif (empty($case_num)) {
@@ -382,6 +392,51 @@ class ClientController extends Controller
         }
         else {
             throw new HttpException(400, "Bad request");
+        }
+    }
+
+    /**
+     * Copies over a few fields from the given case
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $client
+     */
+    private function copyCaseData(Client &$client)
+    {
+        if ($client->getCaseNumber() && $client->getCaseYear()) {
+            $em = $this->getDoctrine()->getManager();
+            // find the case
+            $case = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getCase($client);
+
+            if (!empty($case[0])) {
+                $sibling = $case[0];
+
+                // mothers data
+                $this->copyFields($client, $sibling, ['MotherTitle', 'MotherFirstname', 'MotherLastname']);
+
+                // save the location data if empty
+                $this->copyFields($client, $sibling, ['Country', 'ZipCode', 'City', 'Street', 'StreetType', 'StreetNumber', 'FlatNumber', 'LocationCountry', 'LocationZipCode', 'LocationCity', 'LocationStreet', 'LocationStreetType', 'LocationStreetNumber', 'LocationFlatNumber']);
+
+                // copy over the relations
+                $rels = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($sibling->getId());
+                foreach ($rels as $rel) {
+                    $parent = new Relation();
+                    $parent->setType($rel->getType());
+                    $parent->setChildId($client->getId());
+                    $parent->setParent($rel->getParent());
+
+                    $em->persist($parent);
+                }
+                $em->flush();
+            }
+        }
+    }
+
+    private function copyFields(Client &$client, Client &$sibling, array $fields)
+    {
+        foreach ($fields as $field) {
+            $setter = 'set' . $field;
+            $getter = 'get' . $field;
+            $client->$setter($sibling->$getter());
         }
     }
 
