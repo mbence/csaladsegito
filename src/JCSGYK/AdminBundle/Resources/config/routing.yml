@@ -12,8 +12,8 @@ clients:
     requirements:
         client_id: \d+
 client_search:
-    pattern:  /clients/search/{q}
-    defaults: { _controller: JCSGYKAdminBundle:Client:search, q: '' }
+    pattern:  /clients/search
+    defaults: { _controller: JCSGYKAdminBundle:Client:search }
 client_view:
     pattern:  /clients/view/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:view, id: null }

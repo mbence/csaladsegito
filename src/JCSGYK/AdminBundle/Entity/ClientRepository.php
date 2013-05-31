@@ -46,6 +46,17 @@ class ClientRepository extends EntityRepository
     }
 
     /**
+     * Find the children of a client
+     */
+    public function getChildren(Client $client)
+    {
+        return $this->getEntityManager()
+                ->createQuery("SELECT c FROM JCSGYKAdminBundle:Relation c WHERE c.parent=:client")
+                ->setParameter('client', $client)
+                ->getResult();
+    }
+
+    /**
      * Find the records associated with a clients case
      */
     public function getCase(Client $client)

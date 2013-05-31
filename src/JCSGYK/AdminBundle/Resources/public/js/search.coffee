@@ -27,7 +27,7 @@ JcsSearch =
             if $("#quicksearch #q").val() == ''
                 $("#search-results").html(orig_results_text)
             search_url = $(this).attr("action")
-            if $("#q").val() then search_url += '/' + $("#q").val()
+            if $("#q").val() then search_url += '?q=' + encodeURIComponent($("#q").val())
             $.get(search_url, (data) ->
                 nf.stop()
                 if $("#quicksearch #q").val() != ''

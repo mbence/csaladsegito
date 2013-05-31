@@ -12,7 +12,7 @@
             <td class="parent">
                 {% if edit is defined and edit %}
                 <div class="button-row" style="margin: -4px -6px -6px;">
-                    <a href="{{ path('parent_edit', {'id': client.id, 'type': parent.type})}}" class="greybutton edit_parent"><span>{{ 'szerkeszt'|trans }}</span></a>
+                    <a href="{{ path('parent_edit', {'id': client.id, 'type': relation.type})}}" class="greybutton edit_parent"><span>{{ 'szerkeszt'|trans }}</span></a>
                 </div>
                 <div class="clear"></div>
                 {% endif %}

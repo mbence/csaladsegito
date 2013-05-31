@@ -63,6 +63,13 @@ class Client
     /**
      * @var string
      *
+     * @ORM\Column(name="case_label", type="string", length=20, nullable=true)
+     */
+    private $caseLabel;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="title", type="string", length=10, nullable=true)
      */
     private $title;
@@ -2001,5 +2008,28 @@ class Client
     public function getAddresses()
     {
         return $this->addresses;
+    }
+
+    /**
+     * Set caseLabel
+     *
+     * @param string $caseLabel
+     * @return Client
+     */
+    public function setCaseLabel($caseLabel)
+    {
+        $this->caseLabel = $caseLabel;
+
+        return $this;
+}
+
+    /**
+     * Get caseLabel
+     *
+     * @return string
+     */
+    public function getCaseLabel()
+    {
+        return $this->caseLabel;
     }
 }

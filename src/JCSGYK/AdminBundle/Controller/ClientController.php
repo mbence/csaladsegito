@@ -176,6 +176,8 @@ class ClientController extends Controller
             $new_client->setCaseYear($client->getCaseYear());
             $new_client->setCaseNumber($client->getCaseNumber());
             $new_client->setCaseAdmin($client->getCaseAdmin());
+            // set the visible case number
+            $new_client->setCaseLabel($this->container->get('jcs.twig.adminextension')->formatCaseNumber($client));
 
             $parent->setParent($new_client);
         }
@@ -202,6 +204,19 @@ class ClientController extends Controller
                 if (is_null($parent->getId())) {
                     $em->persist($parent->getParent());
                     $em->persist($parent);
+                }
+                // if its a mother, we must update any related client record too
+                if ($parent->getId() && $parent->getType() == Relation::MOTHER) {
+                    // get the related clients
+                    $mother = $parent->getParent();
+                    $siblings = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getChildren($mother);
+                    // update the mothers name fields
+                    foreach ($siblings as $sibling_rel) {
+                        $sibling = $this->getClient($sibling_rel->getChildId());
+                        $sibling->setMotherTitle($mother->getTitle());
+                        $sibling->setMotherFirstname($mother->getFirstname());
+                        $sibling->setMotherLastname($mother->getLastname());
+                    }
                 }
 
                 $em->flush();
@@ -328,6 +343,9 @@ class ClientController extends Controller
                         $client->setCaseNumber($orig_casenum);
                     }
 
+                    // set the visible case number
+                    $client->setCaseLabel($this->container->get('jcs.twig.adminextension')->formatCaseNumber($client));
+
                     // handle/save the utilityproviders
                     foreach ($client->getUtilityprovidernumbers() as $up) {
                         $val = $up->getValue();
@@ -348,7 +366,7 @@ class ClientController extends Controller
                     foreach ($client->getAddresses() as $adr) {
                         $val = $adr->getCity() . $adr->getStreet();
                         if (empty($val)) {
-                            // remove the empty providers
+                            // remove the empty address
                             $client->removeAddress($adr);
                             $em->remove($adr);
                         }
@@ -364,6 +382,15 @@ class ClientController extends Controller
                                 $adr->setModifier($user);
                             }
                         }
+                    }
+
+                    // copy the mothers name from the relatives record
+                    $mother = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($client->getId(), Relation::MOTHER);
+                    if (!empty($mother[0])) {
+                        $mother = $mother[0]->getParent();
+                        $client->setMotherTitle($mother->getTitle());
+                        $client->setMotherFirstname($mother->getFirstname());
+                        $client->setMotherLastname($mother->getLastname());
                     }
 
                     $em->flush();
@@ -410,11 +437,27 @@ class ClientController extends Controller
             if (!empty($case[0])) {
                 $sibling = $case[0];
 
+                // case admin
+                $client->setCaseAdmin($sibling->getCaseAdmin());
+
                 // mothers data
                 $this->copyFields($client, $sibling, ['MotherTitle', 'MotherFirstname', 'MotherLastname']);
 
                 // save the location data if empty
-                $this->copyFields($client, $sibling, ['Country', 'ZipCode', 'City', 'Street', 'StreetType', 'StreetNumber', 'FlatNumber', 'LocationCountry', 'LocationZipCode', 'LocationCity', 'LocationStreet', 'LocationStreetType', 'LocationStreetNumber', 'LocationFlatNumber']);
+                if (!$client->getCity() || !$client->getStreet()) {
+                    $this->copyFields($client, $sibling, ['Country', 'ZipCode', 'City', 'Street', 'StreetType', 'StreetNumber', 'FlatNumber']);
+                }
+                if (!$client->getLocationCity() || !$client->getLocationStreet()) {
+                    $this->copyFields($client, $sibling, ['LocationCountry', 'LocationZipCode', 'LocationCity', 'LocationStreet', 'LocationStreetType', 'LocationStreetNumber', 'LocationFlatNumber']);
+                }
+                // clone the last address of the case
+                $addresses = $sibling->getAddresses();
+                if (!empty($addresses)) {
+                    $act_addr = $addresses->last();
+                    $new_addr = clone $act_addr;
+                    $new_addr->setClient($client);
+                    $em->persist($new_addr);
+                }
 
                 // copy over the relations
                 $rels = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($sibling->getId());
@@ -422,7 +465,17 @@ class ClientController extends Controller
                     $parent = new Relation();
                     $parent->setType($rel->getType());
                     $parent->setChildId($client->getId());
-                    $parent->setParent($rel->getParent());
+                    if ($rel->getType() == Relation::MOTHER) {
+                        // we only link to the mother,
+                        $parent->setParent($rel->getParent());
+                    }
+                    else {
+                        // but clone the other relations
+                        $old_parent = $rel->getParent();
+                        $new_parent = clone $old_parent;
+                        $em->persist($new_parent);
+                        $parent->setParent($new_parent);
+                    }
 
                     $em->persist($parent);
                 }
@@ -620,13 +673,36 @@ class ClientController extends Controller
     }
 
     /**
+     * Try to decide if a sting is a case number
+     * @param text $q
+     */
+    protected function isCase($q)
+    {
+        $company = $this->container->get('jcs.ds')->getCompany();
+        $tpl = $company['caseNumberTemplate'];
+        preg_match_all('/(.*?)(\{.*?\})/', $tpl, $matches, PREG_SET_ORDER);
+
+        $pattern = '';
+        foreach ($matches as $m) {
+            $pattern .= preg_quote($m[1], '/');
+            $pattern .= $m[2] == '{year}' ? '\d{4}' : '\d?';
+        }
+        preg_match("/{$pattern}/i", $q, $case_matches);
+
+        return !empty($case_matches);
+    }
+
+    /**
      * Client search
      * @param string $q search string
      *
      * @Secure(roles="ROLE_USER")
      */
-    public function searchAction($q)
+    public function searchAction()
     {
+        $request = $this->getRequest();
+        $q = $request->query->get('q');
+
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
         $limit = 100;
 
@@ -641,9 +717,13 @@ class ClientController extends Controller
 
             $db = $this->get('doctrine.dbal.default_connection');
             $sql = "SELECT id, type, case_year, case_number, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM client WHERE";
+            // recognize a case number
+            if ($this->isCase($q)) {
+                $sql .= " case_label LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2)";
+            }
             // search for ID
-            if (is_numeric($q)) {
-                $sql .= " (id={$db->quote($q)} AND company_id={$db->quote($company_id)}) OR (social_security_number LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)})";
+            elseif (is_numeric($q)) {
+                $sql .= " (case_number={$db->quote($q)} AND company_id={$db->quote($company_id)} AND type IN (1,2)) OR (social_security_number LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2))";
             }
             else {
                 $search_words = explode(' ', trim($q));
@@ -685,7 +765,7 @@ class ClientController extends Controller
 
                 $sql .= " MATCH (firstname, lastname, street) AGAINST ({$qr} IN BOOLEAN MODE)";
 
-                $xsql = ['company_id=' . $company_id];
+                $xsql = ['company_id=' . $company_id, "type IN (1,2)"];
 
                 // if we search for street number
                 if (!empty($last) || !empty($street_types)) {
