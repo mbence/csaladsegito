@@ -689,7 +689,7 @@ class ClientController extends Controller
         }
         preg_match("/{$pattern}/i", $q, $case_matches);
 
-        return !empty($case_matches);
+        return !empty($case_matches[0]);
     }
 
     /**
