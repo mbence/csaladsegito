@@ -35,7 +35,7 @@ JcsSettings =
         # group selector
         $("#parameter-groups li").click (event) ->
             grp = $(this).data("groupid")
-            if grp
+            if grp?
                 event.stopPropagation()
                 $("#paramedit").show()
                 $("#paramedit .loading").show()

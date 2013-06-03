@@ -17,6 +17,7 @@ use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
 use JCSGYK\AdminBundle\Entity\Company;
 use JCSGYK\AdminBundle\Form\Type\CompanyType;
+use JCSGYK\AdminBundle\Entity\Paramgroup;
 
 class AdminController extends Controller
 {
@@ -106,6 +107,75 @@ class AdminController extends Controller
     }
 
     /**
+     * Lists the paramgroups
+     *
+     * @Secure(roles="ROLE_ADMIN")
+     */
+    public function paramgroupsAction($type)
+    {
+        $request = $this->getRequest();
+
+        $em = $this->getDoctrine()->getManager();
+        $co = $this->container->get('jcs.ds')->getCompanyId();
+
+        // save the current param group
+        if ($request->isMethod('POST')) {
+            $paramsave = $request->request->get('parameter');
+
+            if (!empty($paramsave)) {
+                foreach ($paramsave as $param_id => $param) {
+                    if (!empty($param['id'])) {
+                        // update a parameter
+                        try {
+                            //get the original param
+                            $orig = $em->createQuery('SELECT p FROM JCSGYKAdminBundle:Paramgroup p WHERE p.id=:id AND p.companyId=:company')
+                                ->setParameter('id', $param['id'])
+                                ->setParameter('company', $co)
+                                ->setMaxResults(1)
+                                ->getSingleResult();
+                        }
+                        catch (\Exception $e) {
+                            // original parameter not found, exit
+                            throw new HttpException(400, "Bad request");
+                        }
+
+                        $orig->setPosition($param['position']);
+                        $orig->setLabel($param['label']);
+                        $orig->setValueType(isset($param['valueType']));
+                        $orig->setIsActive(isset($param['isActive']));
+                    }
+                    else {
+                        // insert new param group
+                        if (!empty($param['label'])) {
+                            $new_param = new Paramgroup;
+                            $new_param->setCompanyId($co);
+                            $new_param->setPosition($param['position']);
+                            $new_param->setType($param['type']);
+                            $new_param->setLabel($param['label']);
+                            $new_param->setValueType(isset($param['valueType']));
+                            $new_param->setIsActive(isset($param['isActive']));
+
+                            $em->persist($new_param);
+                        }
+                    }
+                }
+                $em->flush();
+                $act_grp = $request->request->get('group', 0);
+                $this->get('session')->setFlash('notice', 'paramétercsoport elmentve');
+            }
+
+            return $this->redirect($this->generateUrl('admin_paramgroups', ['type' => $request->request->get('group', 0)]));
+        }
+
+        // get all paramgroup types
+        $types = $this->get('jcs.ds')->getGroupTypes();
+        $groups = $this->get('jcs.ds')->getParamgroups();
+
+        return $this->render('JCSGYKAdminBundle:Admin:paramgroups.html.twig', ['groups' => $groups, 'types' => $types, 'act' => $type]);
+
+    }
+
+    /**
      * Lists the params from the parameters table
      *
      * @Secure(roles="ROLE_ADMIN")
@@ -163,9 +233,12 @@ class AdminController extends Controller
 
         // get all params
         $params = $this->get('jcs.ds')->getAll();
-        $groups = $this->container->getParameter('param_groups');
+        //$groups = $this->container->getParameter('param_groups');
+        // get all paramgroup types
+        $types = $this->get('jcs.ds')->getGroupTypes();
+        $groups = $this->get('jcs.ds')->getParamgroups();
 
-        return $this->render('JCSGYKAdminBundle:Admin:params.html.twig', ['params' => $params, 'groups' => $groups, 'act' => $group]);
+        return $this->render('JCSGYKAdminBundle:Admin:params.html.twig', ['params' => $params, 'groups' => $groups, 'act' => $group, 'types' => $types]);
     }
 
     /**

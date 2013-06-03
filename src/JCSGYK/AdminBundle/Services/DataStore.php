@@ -11,6 +11,7 @@ class DataStore
 {
     private $company;
     private $parameters;
+    private $parametergroups;
 
     private $parameterList = [];
     private $groups = [];
@@ -48,6 +49,36 @@ class DataStore
         $co = $this->getCompany();
 
         return isset($co['id']) ? $co['id'] : 1;
+    }
+
+    /**
+     * Get the Paramgroup types
+     * @return array
+     */
+    public function getGroupTypes()
+    {
+        return [
+            0 => 'Rendszer',
+            1 => 'Ügyfél',
+            2 => 'Probléma',
+            3 => 'Esemény'
+        ];
+    }
+
+    /**
+     * Returns all parametergroups in a doctrine object collection
+     *
+     * @return array $parametergroups
+     */
+    public function getParamgroups()
+    {
+        if (empty($this->parametergroups)) {
+            $this->parametergroups = $this->container->get('doctrine')->getManager()
+                ->getRepository('JCSGYKAdminBundle:Paramgroup')
+                ->getAll($this->getCompanyId());
+        }
+
+        return $this->parametergroups;
     }
 
     /**

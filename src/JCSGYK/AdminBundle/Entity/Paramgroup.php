@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Paramgroup
  *
  * @ORM\Table(name="paramgroup")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\ParamgroupRepository")
  */
 class Paramgroup
 {
@@ -29,9 +29,9 @@ class Paramgroup
     private $label;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="type", type="boolean", nullable=true)
+     * @ORM\Column(name="type", type="integer", nullable=true)
      */
     private $type;
 
@@ -41,7 +41,7 @@ class Paramgroup
      * @ORM\Column(name="position", type="integer", nullable=true)
      */
     private $position;
-    
+
     /**
      * @var integer
      *
@@ -50,9 +50,9 @@ class Paramgroup
     private $companyId;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="value_type", type="boolean", nullable=true)
+     * @ORM\Column(name="value_type", type="integer", nullable=true)
      */
     private $valueType;
 
@@ -199,14 +199,14 @@ class Paramgroup
     public function setPosition($position)
     {
         $this->position = $position;
-    
+
         return $this;
     }
 
     /**
      * Get position
      *
-     * @return integer 
+     * @return integer
      */
     public function getPosition()
     {

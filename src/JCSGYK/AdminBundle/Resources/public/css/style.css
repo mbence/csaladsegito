@@ -549,6 +549,14 @@ table.problem-list td {
 #parameter-groups ul li.current, #template-list a.tpl-list.current, #settings-menu a.menuitem.current {
     background-color: #e6e6e6 !important;
 }
+#parameter-groups ul div {
+    color: #3344AA;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 7px 0 1px 0;
+    border-bottom: 1px solid #3344AA;
+}
+
 #parameter-lists {
     width: 440px;
     display: none;
