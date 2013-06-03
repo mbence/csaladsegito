@@ -2,27 +2,17 @@
 <div class="client-sub">{{ 'egyéb adatok'|trans }}</div>
 <div>
     <table class="client-edit" cellspacing="0" border="0">
+        {% for param in cgrps() %}
+        {% set p = 'param_' ~ param.id %}
         <tr>
-            <th>{{ form_label(form.education_code) }}:</th>
+            <th>{{ form_label(form[p]) }}:</th>
             <td>
-                {{ form_errors(form.education_code) }}
-                {{ form_widget(form.education_code) }}
+                {{ form_errors(form[p]) }}
+                {{ form_widget(form[p]) }}
             </td>
         </tr>
-        <tr>
-            <th>{{ form_label(form.ec_activity) }}:</th>
-            <td>
-                {{ form_errors(form.ec_activity) }}
-                {{ form_widget(form.ec_activity) }}
-            </td>
-        </tr>
-        <tr>
-            <th>{{ form_label(form.marital_status) }}:</th>
-            <td>
-                {{ form_errors(form.marital_status) }}
-                {{ form_widget(form.marital_status) }}
-            </td>
-        </tr>
+        {% endfor %}
+
         <tr>
             <th>{{ form_label(form.family_size) }}:</th>
             <td>

@@ -11,7 +11,7 @@ class DataStore
 {
     private $company;
     private $parameters;
-    private $parametergroups;
+    private $paramgroups;
 
     private $parameterList = [];
     private $groups = [];
@@ -72,13 +72,35 @@ class DataStore
      */
     public function getParamgroups()
     {
-        if (empty($this->parametergroups)) {
-            $this->parametergroups = $this->container->get('doctrine')->getManager()
+        if (empty($this->paramgroups)) {
+            $this->paramgroups = $this->container->get('doctrine')->getManager()
                 ->getRepository('JCSGYKAdminBundle:Paramgroup')
                 ->getAll($this->getCompanyId());
         }
 
-        return $this->parametergroups;
+        return $this->paramgroups;
+    }
+
+    /**
+     * Returns only the given type parametergroup, or all groups if no $type given
+     * if unknown group id received, false will return
+     *
+     * @param integer $type
+     * @param boolean $all return all, or only the active groups?
+     * @return array
+     */
+    public function getParamGroup($type = null, $all = false)
+    {
+        $groups = $this->getParamgroups();
+
+        $re = [];
+        foreach ($groups as $grp) {
+            if (($all || $grp->getIsActive()) && (is_null($type) || $grp->getType() == $type)) {
+                $re[] = $grp;
+            }
+        }
+
+        return $re;
     }
 
     /**

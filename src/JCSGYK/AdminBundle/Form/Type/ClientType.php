@@ -5,6 +5,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
+use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Services\DataStore;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
 use JCSGYK\AdminBundle\Form\Type\AddressType;
@@ -13,16 +14,18 @@ use JCSGYK\AdminBundle\Form\Type\ParentType;
 
 class ClientType extends AbstractType
 {
-    protected $ds;
+    private $ds;
+    private $client;
 
     /**
      * Save the Datastore for parameter retrieval
      *
      * @param \JCSGYK\AdminBundle\Services\DataStore $ds
      */
-    public function __construct(DataStore $ds)
+    public function __construct(DataStore $ds, Client $client)
     {
         $this->ds = $ds;
+        $this->client = $client;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -129,6 +132,29 @@ class ClientType extends AbstractType
             'allow_add'    => true,
             'by_reference' => false,
         ]);
+
+        // parametergroups
+        $pgroups = $this->ds->getParamGroup(1);
+
+        foreach ($pgroups as $param) {
+            if ($param->getValueType() == 0) {
+                $builder->add('param_' . $param->getId(), 'choice', [
+                    'label' => $param->getLabel(),
+                    'choices'   => $this->ds->getGroup($param->getId()),
+                    'mapped' => false,
+                    'data' => $this->client->getParam($param->getId()),
+                    'required' => false,
+                ]);
+            }
+            else {
+                $builder->add('param_' . $param->getId(), 'text', [
+                    'label' => $param->getLabel(),
+                    'mapped' => false,
+                    'data' => $this->client->getParam($param->getId()),
+                    'required' => false,
+                ]);
+            }
+        }
 
         $builder->add('addresses', 'collection', [
             'label' => 'Gondozási hely',

@@ -287,7 +287,7 @@ class ClientController extends Controller
                 }
             }
 
-            $form = $this->createForm(new ClientType($this->container->get('jcs.ds')), $client);
+            $form = $this->createForm(new ClientType($this->container->get('jcs.ds'), $client), $client);
 
             $orig_year = $client->getCaseYear();
             $orig_casenum = $client->getCaseNumber();

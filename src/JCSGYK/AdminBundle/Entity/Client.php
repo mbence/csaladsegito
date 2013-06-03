@@ -466,6 +466,7 @@ class Client
         $this->problems = new ArrayCollection();
         $this->archives = new ArrayCollection();
         $this->addresses = new ArrayCollection();
+        $this->params = new ArrayCollection();
 
         $this->setCreatedAt(new \DateTime());
         $this->setModifiedAt(new \DateTime());
@@ -2036,5 +2037,55 @@ class Client
     public function getCaseLabel()
     {
         return $this->caseLabel;
+    }
+
+    /**
+     * Add params
+     *
+     * @param \JCSGYK\AdminBundle\Entity\ClientParam $params
+     * @return Client
+     */
+    public function addParam(\JCSGYK\AdminBundle\Entity\ClientParam $params)
+    {
+        $this->params[] = $params;
+
+        return $this;
+    }
+
+    /**
+     * Remove params
+     *
+     * @param \JCSGYK\AdminBundle\Entity\ClientParam $params
+     */
+    public function removeParam(\JCSGYK\AdminBundle\Entity\ClientParam $params)
+    {
+        $this->params->removeElement($params);
+    }
+
+    /**
+     * Get params
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    public function getParamList()
+    {
+        $re = [];
+        foreach ($this->params as $param) {
+            $re[$param->getParamgroupId()] = $param->getValue();
+        }
+
+        return $re;
+    }
+
+    public function getparam($groupid)
+    {
+        $plist = $this->getParamList();
+
+        return isset($plist[$groupid]) ? $plist[$groupid] : '';
     }
 }
