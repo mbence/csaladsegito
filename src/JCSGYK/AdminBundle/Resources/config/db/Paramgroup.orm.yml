@@ -1,0 +1,35 @@
+Paramgroup:
+    type: entity
+    table: paramgroup
+    fields:
+        id:
+            id: true
+            type: smallint
+            nullable: false
+            generator:
+                strategy: IDENTITY
+        label:
+            type: string
+            length: 32
+            fixed: false
+            nullable: true
+        type:
+            type: boolean
+            nullable: true
+        companyId:
+            type: integer
+            unsigned: false
+            nullable: true
+            column: company_id
+        position:
+            type: smallint
+            nullable: true
+        valueType:
+            type: boolean
+            nullable: true
+            column: value_type
+        isActive:
+            type: boolean
+            nullable: true
+            column: is_active
+    lifecycleCallbacks: {  }

@@ -455,6 +455,11 @@ class Client
      */
     private $addresses;
 
+    /**
+     * @ORM\OneToMany(targetEntity="ClientParam", mappedBy="client", fetch="EAGER")
+     */
+    private $params;
+
     public function __construct()
     {
         $this->utilityprovidernumbers = new ArrayCollection();
@@ -2021,7 +2026,7 @@ class Client
         $this->caseLabel = $caseLabel;
 
         return $this;
-}
+    }
 
     /**
      * Get caseLabel
