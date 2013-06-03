@@ -452,8 +452,8 @@ class ClientController extends Controller
                 }
                 // clone the last address of the case
                 $addresses = $sibling->getAddresses();
-                if (!empty($addresses)) {
-                    $act_addr = $addresses->last();
+                $act_addr = $addresses->last();
+                if (!empty($act_addr)) {
                     $new_addr = clone $act_addr;
                     $new_addr->setClient($client);
                     $em->persist($new_addr);

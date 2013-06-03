@@ -6,7 +6,7 @@
 <div class="archived">Archivált adatlap, csak olvasható!</div>
 {% endif %}
 {% include "JCSGYKAdminBundle:Client:_personal_data.html.twig" %}
-{% if is_granted(['ROLE_FAMILY_HELP','ROLE_CHILD_WELFARE']) and client.type == 2 %}
+{% if (is_granted('ROLE_FAMILY_HELP') or is_granted('ROLE_CHILD_WELFARE')) and client.type == 2 %}
 <div id="parent_container" data-url="{{ path('client_parents', {'id': client.id}) }}">
     {% include "JCSGYKAdminBundle:Client:_parents.html.twig" %}
 </div>
@@ -15,7 +15,7 @@
     {% include "JCSGYKAdminBundle:Client:_problems.html.twig" %}
 </div>
 
-{% if is_granted(['ROLE_FAMILY_HELP','ROLE_CHILD_WELFARE']) %}
+{% if is_granted('ROLE_FAMILY_HELP') or is_granted('ROLE_CHILD_WELFARE') %}
     {% include "JCSGYKAdminBundle:Client:_ids.html.twig" %}
     {% include "JCSGYKAdminBundle:Client:_other_data.html.twig" %}
 {% endif %}
