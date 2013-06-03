@@ -17,6 +17,8 @@ class Client
     const FH = 1;
     /** Child welfare client type */
     const CW = 2;
+    /** Parent type */
+    const PARENT = 3;
 
     /**
      * @var integer
@@ -53,6 +55,13 @@ class Client
      * @ORM\Column(name="case_number", type="integer", nullable=true)
      */
     private $caseNumber;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="case_label", type="string", length=20, nullable=true)
+     */
+    private $caseLabel;
 
     /**
      * @var string
@@ -1795,5 +1804,29 @@ class Client
     public function getCaseNumber()
     {
         return $this->caseNumber;
+    }
+
+
+    /**
+     * Set caseLabel
+     *
+     * @param string $caseLabel
+     * @return Client
+     */
+    public function setCaseLabel($caseLabel)
+    {
+        $this->caseLabel = $caseLabel;
+
+        return $this;
+    }
+
+    /**
+     * Get caseLabel
+     *
+     * @return string
+     */
+    public function getCaseLabel()
+    {
+        return $this->caseLabel;
     }
 }

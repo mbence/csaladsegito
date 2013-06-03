@@ -711,6 +711,12 @@ class ImportController extends Controller
             $this->setUtilityproviders($p, $imp);
             // set archived
             $p->setIsArchived($this->isArchived($imp['Person_ID']));
+            // set the visible case number
+            $p->setCaseLabel($this->container->get('jcs.twig.adminextension')->formatCaseNumber([
+                'type' => $p->getType(),
+                'case_number' => $p->getCaseNumber(),
+                'case_year' => $p->getCaseYear(),
+            ]));
 
             // manage the object
             $em->persist($p);
