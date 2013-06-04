@@ -1,6 +1,6 @@
 parameters:
-    param_groups:
-        1:  "Érdeklődés típusok"
+#    param_groups:
+#        1:  "Érdeklődés típusok"
 #        2:  "Szolgáltatók"
 #        3:  "Végzettség"
 #        4:  "Gazdasági aktivitás"
@@ -10,11 +10,11 @@ parameters:
 #        8:  "Esetkezelés jellege"
 #        9:  "Továbbirányítások"
 #        10: "Esemény, Egyéb tevékenység"
-        11: "Ügyfél archiválások"
-        12: "Ügyfél újranyitás"
-        13: "Probléma lezárások"
-        14: "Állampolgárság"
-        15: "Állampolgársági jogállás"
+#        11: "Ügyfél archiválások"
+#        12: "Ügyfél újranyitás"
+#        13: "Probléma lezárások"
+#        14: "Állampolgárság"
+#        15: "Állampolgársági jogállás"
 
     task_status:
         1: "új"

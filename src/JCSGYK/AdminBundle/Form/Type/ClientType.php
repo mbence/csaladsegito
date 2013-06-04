@@ -69,11 +69,11 @@ class ClientType extends AbstractType
         $builder->add('mother_lastname', 'text', ['label' => 'Vezetéknév', 'required' => false]);
         $builder->add('citizenship', 'choice', [
             'label' => 'Állampolgárság',
-            'choices'   => $this->ds->getGroup(14),
+            'choices'   => $this->ds->getGroup(5),
         ]);
         $builder->add('citizenship_status', 'choice', [
             'label' => 'Állampolgársági jogállás',
-            'choices'   => $this->ds->getGroup(15),
+            'choices'   => $this->ds->getGroup(6),
         ]);
         $builder->add('social_security_number', 'text', ['label' => 'TAJ', 'required' => false]);
         $builder->add('identity_number', 'text', ['label' => 'Szem.a.j', 'required' => false]);
@@ -100,28 +100,7 @@ class ClientType extends AbstractType
         $builder->add('location_street_number', 'text', ['label' => 'Házsz.', 'required' => false]);
         $builder->add('location_flat_number', 'text', ['label' => 'Ajtó', 'required' => false]);
 
-        $builder->add('marital_status', 'choice', [
-            'label' => 'Családi összetétel',
-            'choices'   => $this->ds->getGroup(5),
-        ]);
-
-        // TODO: do we need this two?
-        //$builder->add('citizenship', 'text', ['label' => 'állampolgárság']);
-        //$builder->add('citizenship_status', 'text', ['label' => 'állampolgársági jogállás']);
-
-        $builder->add('education_code', 'choice', [
-            'label' => 'Végzettség',
-            'choices'   => $this->ds->getGroup(3),
-        ]);
-        $builder->add('ec_activity', 'choice', [
-            'label' => 'Gazd. aktiv.',
-            'choices'   => $this->ds->getGroup(4),
-        ]);
-
-        $builder->add('family_size', 'text', ['label' => 'Igénylők', 'required' => false]);
         $builder->add('note', 'textarea', ['label' => 'Megjegyzés', 'required' => false]);
-
-//        $builder->add('case_admin', 'text', ['label' => 'Esetgazda']);
 
         $builder->add('guardian_firstname', 'text', ['label' => 'Keresztnév', 'required' => false]);
         $builder->add('guardian_lastname', 'text', ['label' => 'Vezetéknév', 'required' => false]);
@@ -137,10 +116,12 @@ class ClientType extends AbstractType
         $pgroups = $this->ds->getParamGroup(1);
 
         foreach ($pgroups as $param) {
-            if ($param->getValueType() == 0) {
+            $choices = $this->ds->getGroup($param->getId());
+
+            if (!empty($choices)) {
                 $builder->add('param_' . $param->getId(), 'choice', [
-                    'label' => $param->getLabel(),
-                    'choices'   => $this->ds->getGroup($param->getId()),
+                    'label' => $param->getName(),
+                    'choices'   => $choices,
                     'mapped' => false,
                     'data' => $this->client->getParam($param->getId()),
                     'required' => true,
@@ -148,7 +129,7 @@ class ClientType extends AbstractType
             }
             else {
                 $builder->add('param_' . $param->getId(), 'text', [
-                    'label' => $param->getLabel(),
+                    'label' => $param->getName(),
                     'mapped' => false,
                     'data' => $this->client->getParam($param->getId()),
                     'required' => false,

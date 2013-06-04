@@ -36,22 +36,22 @@ class EventType extends AbstractType
         ]);
         $builder->add('type', 'choice', [
             'label' => 'Megnevezés',
-            'choices'   => $this->ds->getGroup(7),
+            'choices'   => $this->ds->getGroup(106),
             'required' => false
         ]);
         $builder->add('title_code', 'choice', [
             'label' => 'Esetkezelés jellege',
-            'choices'   => $this->ds->getGroup(8),
+            'choices'   => $this->ds->getGroup(107),
             'required' => false
         ]);
         $builder->add('forward_code', 'choice', [
             'label' => 'Továbbirányítás',
-            'choices'   => $this->ds->getGroup(9),
+            'choices'   => $this->ds->getGroup(108),
             'required' => false
         ]);
         $builder->add('activity_code', 'choice', [
             'label' => 'Egyéb tevékenység',
-            'choices'   => $this->ds->getGroup(10),
+            'choices'   => $this->ds->getGroup(109),
             'required' => false
         ]);
         $builder->add('event_date', 'date', [

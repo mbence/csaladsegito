@@ -6,12 +6,12 @@
         <h1 class="client">{{ 'Paraméterek'|trans }}</h1>
         <ul>
         {% set oldtype = -1 %}
-        {% for id, group in groups if group.valueType == 0 %}
+        {% for id, group in groups %}
             {% if group.type != oldtype %}
                 <div>{{ types[group.type]|trans }}</div>
                 {% set oldtype = group.type %}
             {% endif %}
-            <li data-groupid="{{ group.id }}" {% if act == group.id %}class="current"{% endif %}>{{ group.label|trans }}</li>
+            <li data-groupid="{{ group.id }}" {% if act == group.id %}class="current"{% endif %}>{{ group.name|trans }}</li>
         {% endfor %}
         </ul>
     </div>
@@ -19,7 +19,7 @@
 <div class="adminblock" id="parameter-lists">
     <div class="leftpad20 fullheight nocollapse">
         <h1>&nbsp;</h1>
-        {% for id, group in groups if group.valueType == 0 %}
+        {% for id, group in groups %}
             <div class="paramlist" id="paramlist-{{ group.id }}">
                 <form action="{{ path('admin_params') }}" method="POST" name="paramform-{{ group.id }}" id="paramform-{{ group.id }}" class="paramform">
                     <div class="paramcontainer">

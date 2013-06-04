@@ -296,4 +296,7 @@ Client:
             type: date
             nullable: true
             column: agreement_expires_at
+        parameters:
+            type: text
+            nullable: true
     lifecycleCallbacks: {  }

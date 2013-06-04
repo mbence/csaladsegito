@@ -399,7 +399,7 @@ class ClientController extends Controller
                     foreach ($pgroups as $param) {
                         $param_data[$param->getId()] = $form->get('param_' . $param->getId())->getData();
                     }
-                    $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->saveParams($client, $param_data);
+                    $client->setParams($param_data);
 
                     $em->flush();
 

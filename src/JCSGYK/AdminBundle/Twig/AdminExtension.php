@@ -39,23 +39,23 @@ class AdminExtension extends \Twig_Extension
         return array(
             'fname' => new \Twig_Function_Method($this, 'formatName'),
             'param' => new \Twig_Function_Method($this, 'getParam'),
-            'gparam' => new \Twig_Function_Method($this, 'getGroupParam'),
+            'pgroup' => new \Twig_Function_Method($this, 'getParamGroup'),
             'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
             'faddr' => new \Twig_Function_Method($this, 'formatAddress'),
             'pstatus' => new \Twig_Function_Method($this, 'problemStatus'),
             'rel_types' => new \Twig_Function_Method($this, 'getRelationTypes'),
             'casefield' => new \Twig_Function_Method($this, 'formatCaseNumberFields', ['is_safe' => ['html']]),
-            'cgrps' => new \Twig_Function_Method($this, 'clientGroups'),
         );
     }
 
     /**
-     * Returns the array of the parameter groups type=1 (Client)
+     * Returns the array of the parameter groups
+     * @param int $group Paramgroup type
      * @return array of Paramgroups
      */
-    public function clientGroups()
+    public function getParamGroup($group = 1)
     {
-        return $this->ds->getParamGroup(1);
+        return $this->ds->getParamGroup($group);
     }
 
     public function problemStatus(Problem $problem)
@@ -194,32 +194,9 @@ class AdminExtension extends \Twig_Extension
      *
      * @param integer $id Parameter id
      */
-    public function getParam($id)
+    public function getParam($id, $paramGroup = null)
     {
-        $param = $this->ds->get($id);
-
-        return $param ? $param : 'Nincs megadva';
-    }
-
-    /**
-     * Returns a parametergroup by it's id
-     *
-     * @param integer $id Parameter id
-     */
-    public function getGroupParam(Client $client, Paramgroup $pgrp)
-    {
-        $val = $client->getParam($pgrp->getId());
-
-        if ($pgrp->getValueType() == 0) {
-            $param = $this->ds->get($val);
-        }
-        else {
-            $param = (int) $val;
-            // ugggggly family size hack
-            if ($pgrp->getId() == 16) {
-                $param .= ' fő';
-            }
-        }
+        $param = $this->ds->get($id, $paramGroup);
 
         return $param ? $param : 'Nincs megadva';
     }

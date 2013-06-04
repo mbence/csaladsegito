@@ -169,15 +169,21 @@ class DataStore
     }
 
     /**
-     * Returns the selected parameter or false, on faliure
+     * Returns the selected parameter name or the input if no param found
      *
-     * @param integer $id
+     * @param int $id paramter id
+     * @param int $group optional ParamterGroup id
      */
-    public function get($id = null)
+    public function get($id = null, $group = null)
     {
-        $params = $this->getList();
+        if (is_null($group)) {
+            $params = $this->getList();
+        }
+        else {
+            $params = $this->getGroup($group);
+        }
 
-        return isset($params[$id]) ? $params[$id] : false;
+        return isset($params[$id]) ? $params[$id] : $id;
     }
 
     /**

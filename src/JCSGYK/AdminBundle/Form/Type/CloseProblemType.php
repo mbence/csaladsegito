@@ -43,7 +43,7 @@ class CloseProblemType extends AbstractType
         if ($this->operation == 1) {
             $builder->add('close_code', 'choice', [
                 'label' => 'Lezárás oka',
-                'choices' => $this->ds->getGroup(13),
+                'choices' => $this->ds->getGroup(4),
             ]);
         }
         $builder->add('operation', 'hidden', array(

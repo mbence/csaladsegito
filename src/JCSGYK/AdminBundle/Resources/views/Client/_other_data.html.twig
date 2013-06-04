@@ -2,10 +2,10 @@
 <div class="client-sub togglable">{{ 'egyéb adatok'|trans }}</div>
 <div>
     <table class="client" cellspacing="0" border="0">
-        {% for param in cgrps() %}
+        {% for paramGroup in pgroup(1) %}
         <tr>
-            <th>{{ param.label|trans }}:</th>
-            <td>{{ gparam(client, param) }} </td>
+            <th>{{ paramGroup.name|trans }}:</th>
+            <td>{{ param(client.getParam(paramGroup.id), paramGroup.id) }} </td>
         </tr>
         {% endfor %}
     </table>

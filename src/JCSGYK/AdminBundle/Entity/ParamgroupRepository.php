@@ -12,7 +12,7 @@ class ParamgroupRepository extends EntityRepository
     /**
      * Find all Parameter groups, ordered by type, position and label
      */
-    public function getAll($company_id = 1)
+    public function getAll($company_id)
     {
         return $this->getEntityManager()
             ->createQuery('SELECT p FROM JCSGYKAdminBundle:Paramgroup p WHERE p.companyId=0 OR p.companyId=:company ORDER BY p.type, p.position, p.name ASC')

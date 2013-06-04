@@ -35,7 +35,7 @@ class ProblemType extends AbstractType
         $builder->add('description', 'textarea', ['label' => 'Megjegyzés', 'required' => false]);
         $builder->add('type', 'choice', [
             'label' => 'Jellege',
-            'choices'   => $this->ds->getGroup(6),
+            'choices'   => $this->ds->getGroup(105),
             'required' => false
         ]);
         $builder->add('assignee', 'entity', [

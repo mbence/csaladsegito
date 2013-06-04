@@ -190,15 +190,8 @@ class AdminController extends Controller
             foreach ($paramsave as $param_id => $param) {
                 if (!empty($param['id'])) {
                     // update a parameter
-                    try {
-                        //get the original param
-                        $orig = $em->createQuery('SELECT p FROM JCSGYKAdminBundle:Parameter p WHERE p.id=:id AND p.companyId=:company')
-                            ->setParameter('id', $param['id'])
-                            ->setParameter('company', $co)
-                            ->setMaxResults(1)
-                            ->getSingleResult();
-                    }
-                    catch (\Exception $e) {
+                    $orig = $em->getRepository('JCSGYKAdminBundle:Parameter')->getOne($param['id'], $co);
+                    if (empty($orig)) {
                         // original parameter not found, exit
                         throw new HttpException(400, "Bad request");
                     }

@@ -426,6 +426,22 @@ class Client
     private $isArchived;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="parameters", type="text", nullable=true)
+     */
+    private $parameters;
+
+   /**
+     * @var \Date
+     *
+     * @ORM\Column(name="agreement_expires_at", type="date", nullable=true)
+     */
+    private $agreementExpiresAt;
+
+
+
+    /**
      * @ORM\OneToMany(targetEntity="UtilityproviderClientnumber", mappedBy="client")
      */
     private $utilityprovidernumbers;
@@ -442,23 +458,11 @@ class Client
      */
     private $archives;
 
-   /**
-     * @var \Date
-     *
-     * @ORM\Column(name="agreement_expires_at", type="date", nullable=true)
-     */
-    private $agreementExpiresAt;
-
     /**
      * @ORM\OneToMany(targetEntity="Address", mappedBy="client")
      * @ORM\OrderBy({"createdAt" = "ASC"})
      */
     private $addresses;
-
-    /**
-     * @ORM\OneToMany(targetEntity="ClientParam", mappedBy="client", fetch="EAGER")
-     */
-    private $params;
 
     public function __construct()
     {
@@ -466,7 +470,6 @@ class Client
         $this->problems = new ArrayCollection();
         $this->archives = new ArrayCollection();
         $this->addresses = new ArrayCollection();
-        $this->params = new ArrayCollection();
 
         $this->setCreatedAt(new \DateTime());
         $this->setModifiedAt(new \DateTime());
@@ -2040,52 +2043,60 @@ class Client
     }
 
     /**
-     * Add params
+     * Set parameters
      *
-     * @param \JCSGYK\AdminBundle\Entity\ClientParam $params
+     * @param string $parameters
      * @return Client
      */
-    public function addParam(\JCSGYK\AdminBundle\Entity\ClientParam $params)
+    public function setParameters($parameters)
     {
-        $this->params[] = $params;
+        $this->parameters = $parameters;
 
         return $this;
     }
 
     /**
-     * Remove params
+     * Get parameters
      *
-     * @param \JCSGYK\AdminBundle\Entity\ClientParam $params
+     * @return string
      */
-    public function removeParam(\JCSGYK\AdminBundle\Entity\ClientParam $params)
+    public function getParameters()
     {
-        $this->params->removeElement($params);
+        return $this->parameters;
     }
 
     /**
-     * Get params
+     * Json encode and set parameters
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @param array $parameters
+     * @return Client
+     */
+    public function setParams($parameters)
+    {
+        $this->parameters = json_encode($parameters);
+
+        return $this;
+    }
+
+    /**
+     * Json decode and get parameters
+     *
+     * @return array
      */
     public function getParams()
     {
-        return $this->params;
+        return json_decode($this->parameters, true);
     }
 
-    public function getParamList()
+    /**
+     * Return a value of the parameters array
+     * @param int $groupid
+     * @return mixed param value
+     */
+    public function getParam($groupid)
     {
-        $re = [];
-        foreach ($this->params as $param) {
-            $re[$param->getParamgroupId()] = $param->getValue();
-        }
+        $plist = $this->getParams();
 
-        return $re;
-    }
-
-    public function getparam($groupid)
-    {
-        $plist = $this->getParamList();
-
-        return isset($plist[$groupid]) ? $plist[$groupid] : '';
+        return isset($plist[$groupid]) ? $plist[$groupid] : null;
     }
 }
