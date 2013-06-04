@@ -8,26 +8,22 @@ Paramgroup:
             nullable: false
             generator:
                 strategy: IDENTITY
-        label:
-            type: string
-            length: 32
-            fixed: false
-            nullable: true
-        type:
-            type: boolean
-            nullable: true
         companyId:
             type: integer
             unsigned: false
             nullable: true
             column: company_id
+        type:
+            type: boolean
+            nullable: true
         position:
             type: smallint
             nullable: true
-        valueType:
-            type: boolean
+        name:
+            type: string
+            length: 32
+            fixed: false
             nullable: true
-            column: value_type
         isActive:
             type: boolean
             nullable: true

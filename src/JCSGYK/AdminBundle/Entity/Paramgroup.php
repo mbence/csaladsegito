@@ -22,11 +22,11 @@ class Paramgroup
     private $id;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(name="label", type="string", length=32, nullable=true)
+     * @ORM\Column(name="company_id", type="integer", nullable=true)
      */
-    private $label;
+    private $companyId;
 
     /**
      * @var integer
@@ -43,18 +43,11 @@ class Paramgroup
     private $position;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="company_id", type="integer", nullable=true)
+     * @ORM\Column(name="name", type="string", length=32, nullable=true)
      */
-    private $companyId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="value_type", type="integer", nullable=true)
-     */
-    private $valueType;
+    private $name;
 
     /**
      * @var boolean
@@ -76,26 +69,26 @@ class Paramgroup
     }
 
     /**
-     * Set label
+     * Set name
      *
-     * @param string $label
+     * @param string $name
      * @return Paramgroup
      */
-    public function setLabel($label)
+    public function setName($name)
     {
-        $this->label = $label;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get label
+     * Get name
      *
      * @return string
      */
-    public function getLabel()
+    public function getName()
     {
-        return $this->label;
+        return $this->name;
     }
 
     /**
@@ -142,29 +135,6 @@ class Paramgroup
     public function getCompanyId()
     {
         return $this->companyId;
-    }
-
-    /**
-     * Set valueType
-     *
-     * @param boolean $valueType
-     * @return Paramgroup
-     */
-    public function setValueType($valueType)
-    {
-        $this->valueType = $valueType;
-
-        return $this;
-    }
-
-    /**
-     * Get valueType
-     *
-     * @return boolean
-     */
-    public function getValueType()
-    {
-        return $this->valueType;
     }
 
     /**

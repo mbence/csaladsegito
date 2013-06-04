@@ -24,8 +24,7 @@
                             <input class="hiddenpos" type="hidden" name="parameter[{{ loop.index }}][position]" value="{{ param.position }}">
                             <input type="hidden" name="parameter[{{ loop.index }}][type]" value="{{ id }}">
                             <span class="pos"> </span>
-                            <input type="text" value="{{ param.label }}" name="parameter[{{ loop.index }}][label]">
-                            <input type="checkbox" {% if param.valueType %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][valueType]"  title="input" value="1">
+                            <input type="text" value="{{ param.name }}" name="parameter[{{ loop.index }}][name]">
                             <input type="checkbox" {% if param.isActive %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][isActive]" value="1">
                         </div>
                         {% endfor %}
@@ -47,8 +46,7 @@
                 <input type="hidden" name="parameter[%pos%][position]" value="%pos%">
                 <input type="hidden" name="parameter[%pos%][type]" value="%grp%">
                 <span class="pos"> </span>
-                <input type="text" value="" name="parameter[%pos%][label]">
-                <input type="checkbox" name="parameter[%pos%][valueType]" title="input" value="0">
+                <input type="text" value="" name="parameter[%pos%][name]">
                 <input type="checkbox" checked="checked" name="parameter[%pos%][isActive]" value="1">
             </div>
         </div>

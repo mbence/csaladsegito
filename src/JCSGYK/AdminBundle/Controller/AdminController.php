@@ -109,7 +109,7 @@ class AdminController extends Controller
     /**
      * Lists the paramgroups
      *
-     * @Secure(roles="ROLE_ADMIN")
+     * @Secure(roles="ROLE_SUPER_ADMIN")
      */
     public function paramgroupsAction($type)
     {
@@ -126,33 +126,29 @@ class AdminController extends Controller
                 foreach ($paramsave as $param_id => $param) {
                     if (!empty($param['id'])) {
                         // update a parameter
-                        try {
-                            //get the original param
-                            $orig = $em->createQuery('SELECT p FROM JCSGYKAdminBundle:Paramgroup p WHERE p.id=:id AND p.companyId=:company')
-                                ->setParameter('id', $param['id'])
-                                ->setParameter('company', $co)
-                                ->setMaxResults(1)
-                                ->getSingleResult();
-                        }
-                        catch (\Exception $e) {
+                        $orig = $em->getRepository('JCSGYKAdminBundle:Paramgroup')->getOne($param['id'], $co);
+                        if (empty($orig)) {
                             // original parameter not found, exit
                             throw new HttpException(400, "Bad request");
                         }
 
                         $orig->setPosition($param['position']);
-                        $orig->setLabel($param['label']);
-                        $orig->setValueType(isset($param['valueType']));
+                        $orig->setName($param['name']);
                         $orig->setIsActive(isset($param['isActive']));
                     }
                     else {
                         // insert new param group
-                        if (!empty($param['label'])) {
+                        if (!empty($param['name'])) {
                             $new_param = new Paramgroup;
-                            $new_param->setCompanyId($co);
+                            if ($param['type'] == 0) {
+                                $new_param->setCompanyId(0);
+                            }
+                            else {
+                                $new_param->setCompanyId($co);
+                            }
                             $new_param->setPosition($param['position']);
                             $new_param->setType($param['type']);
-                            $new_param->setLabel($param['label']);
-                            $new_param->setValueType(isset($param['valueType']));
+                            $new_param->setName($param['name']);
                             $new_param->setIsActive(isset($param['isActive']));
 
                             $em->persist($new_param);
