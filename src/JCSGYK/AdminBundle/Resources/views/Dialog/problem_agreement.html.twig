@@ -26,10 +26,13 @@
                     <th>{{ 'Állapot'|trans }}:</th>
                     <td>{{ pstatus(problem) }}</td>
                 </tr>
+                {% set pparam = pgroup(2, true) %}
+                {% if pparam %}
                 <tr>
-                    <th>{{ 'Jelleg'|trans }}:</th>
-                    <td colspan="3">{{ param(problem.type) }}</td>
+                    <th>{{ pparam.name|trans }}:</th>
+                    <td colspan="3">{{ param(problem.getParam(pparam.id), pparam.id) }}</td>
                 </tr>
+                {% endif %}
             </table>
         </div>
         <br>

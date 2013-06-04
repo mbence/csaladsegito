@@ -51,11 +51,15 @@ class AdminExtension extends \Twig_Extension
     /**
      * Returns the array of the parameter groups
      * @param int $group Paramgroup type
-     * @return array of Paramgroups
+     * @param boolean $first to get only the first element, set this to true
+     *
+     * @return array of Paramgroups or ID
      */
-    public function getParamGroup($group = 1)
+    public function getParamGroup($group = 1, $first = false)
     {
-        return $this->ds->getParamGroup($group);
+        $list = $this->ds->getParamGroup($group);
+        
+        return !$first ? $list : reset($list);
     }
 
     public function problemStatus(Problem $problem)

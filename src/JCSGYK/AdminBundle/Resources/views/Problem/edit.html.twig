@@ -22,10 +22,16 @@
             </td>
 
         </tr>
+        {% for paramGroup in pgroup(2) %}
+        {% set p = 'param_' ~ paramGroup.id %}
         <tr>
-            <th>{{ form_label(form.type) }}:</th>
-            <td colspan="3">{{ form_errors(form.type) }}{{ form_widget(form.type) }}</td>
+            <th>{{ form_label(form[p]) }}:</th>
+            <td colspan="3">
+                {{ form_errors(form[p]) }}
+                {{ form_widget(form[p]) }}
+            </td>
         </tr>
+        {% endfor %}
         {% if problem.attachment %}
             <tr>
                 <th>{{ 'Csatolt dok.'|trans }}:</th>

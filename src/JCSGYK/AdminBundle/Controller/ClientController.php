@@ -728,10 +728,12 @@ class ClientController extends Controller
             // recognize a case number
             if ($this->isCase($q)) {
                 $sql .= " case_label LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2)";
+                $sql .= " ORDER BY case_label, lastname, firstname LIMIT " . $limit;
             }
             // search for ID
             elseif (is_numeric($q)) {
                 $sql .= " (case_number={$db->quote($q)} AND company_id={$db->quote($company_id)} AND type IN (1,2)) OR (social_security_number LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2))";
+                $sql .= " ORDER BY lastname, firstname LIMIT " . $limit;
             }
             else {
                 $search_words = explode(' ', trim($q));
@@ -787,8 +789,8 @@ class ClientController extends Controller
                 }
 
                 $sql .= " HAVING " . implode(' AND ', $xsql);
+                $sql .= " ORDER BY lastname, firstname LIMIT " . $limit;
             }
-            $sql .= " ORDER BY lastname, firstname LIMIT " . $limit;
             $re = $db->fetchAll($sql);
         }
         $time_end = microtime(true);

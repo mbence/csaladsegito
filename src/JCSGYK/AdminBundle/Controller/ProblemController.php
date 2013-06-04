@@ -109,9 +109,9 @@ class ProblemController extends Controller
                 $this->canEdit($problem);
             }
 
-            $form = $this->createForm(new ProblemType($this->container->get('jcs.ds')), $problem);
+            $form = $this->createForm(new ProblemType($this->container->get('jcs.ds'), $problem), $problem);
 
-            // save the user
+            // save the problem
             if ($request->isMethod('POST')) {
                 $form->bind($request);
 
@@ -143,6 +143,14 @@ class ProblemController extends Controller
                             $em->persist($de);
                         }
                     }
+
+                    // save the parameters
+                    $pgroups = $this->container->get('jcs.ds')->getParamGroup(2);
+                    $param_data = [];
+                    foreach ($pgroups as $param) {
+                        $param_data[$param->getId()] = $form->get('param_' . $param->getId())->getData();
+                    }
+                    $problem->setParams($param_data);
 
                     $em->flush();
 
@@ -382,7 +390,9 @@ class ProblemController extends Controller
 
                 $this->get('session')->setFlash('notice', 'Probléma lezárás jóváhagyva');
 
-                return $this->redirect($this->generateUrl('home'));
+                return $this->render('JCSGYKAdminBundle:Dialog:problem_agreement.html.twig', [
+                    'success' => true,
+                ]);
             }
         }
 

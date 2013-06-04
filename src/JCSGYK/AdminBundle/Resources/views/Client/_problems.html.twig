@@ -10,10 +10,13 @@
             <input type="checkbox" id="showAllProblem">
             <label for="showAllProblem">összes probléma</label>
         </div>
+
+        {% set pparam = pgroup(2, true) %}
+
         <table id="problem-list" class="client problem-list" cellspacing="0" border="0">
             <tr>
                 <th>{{ 'Cím'|trans }}</th>
-                <th>{{ 'Jelleg'|trans }}</th>
+                {% if pparam %}<th>{{ pparam.name|trans }}</th>{% endif %}
                 <th>{{ 'Felelős'|trans }}</th>
                 <th>{{ 'Állapot'|trans }}</th>
                 <th></th>
@@ -22,7 +25,7 @@
             {% for problem in problems %}
             <tr data-isactive="{{ problem.isActive }}" data-problemid="{{ problem.id }}" tabindex="{{ loop.index + 200 }}" {% if loop.first %}class="cursor"{% endif %}>
                 <td>{{ problem.title }}</td>
-                <td>{{ param(problem.type) }}</td>
+                {% if pparam %}<td>{{ param(problem.getParam(pparam.id), pparam.id) }}</td>{% endif %}
                 <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>
                 <td>{{ pstatus(problem) }}</td>
                 <td class="problem-has-agreement">{% if problem.getAgreementExpiresAt() %}M{% endif %}</td>

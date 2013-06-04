@@ -150,12 +150,14 @@ JcsProblem =
                     JcsModal.setContent(data)
                     if $(this).hasClass('templates')
                         JcsProblem.initTemplates()
-                    JcsModal.onClose ->
-                        # TODO: under FF cancelled downloads cause some strange errors
-                        # refresh the event list on close
-                        JcsProblem.reloadEvents($("#eventblock #event-id").data("eventid"))
-                    # hide the submenu
-                    $(this).parent().hide()
+                        # hide the submenu
+                        $(this).parent().hide()
+                        JcsModal.onClose ->
+                            # TODO: under FF cancelled downloads cause some strange errors
+                            # refresh the event list on close
+                            JcsProblem.reloadEvents($("#eventblock #event-id").data("eventid"))
+                    if $(this).hasClass('confirm_problem')
+                        JcsProblem.initConfirm()
 
                 ).error( (data) =>
                     # there was some error :(
@@ -308,6 +310,42 @@ JcsProblem =
                 # there was some error :(
                 AjaxBag.showError(data.statusText)
                 $(".save_problem").removeClass('animbutton')
+            )
+
+            false
+
+        JcsModal.load()
+
+    initConfirm: ->
+        JcsModal.setCloseButton()
+
+        # form submit
+        $("#problem_confirm_form").submit ->
+            $(".confirm_problem").addClass('animbutton')
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                JcsModal.setContent(data)
+
+                # display the result message
+                if JcsModal.find(".result").data("result-notice")
+                    AjaxBag.showNotice(JcsModal.find(".result").data("result-notice"))
+                    JcsModal.close()
+                    JcsClient.reloadClient($("#problemblock #problem-id").data("problemid"))
+                    # reload the whole problem block
+                    problem_id = $("#problemblock #problem-id").data("problemid")
+                    if problem_id
+                        $.get($("#getproblemform").attr("action") + '/' + problem_id, (data) ->
+                            $("#problemblock .problemcontent").html(data).show()
+                            JcsProblem.init()
+                        )
+                else
+                    JcsProblem.initConfirm()
+
+                $(".confirm_problem").removeClass('animbutton')
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $(".confirm_problem").removeClass('animbutton')
             )
 
             false

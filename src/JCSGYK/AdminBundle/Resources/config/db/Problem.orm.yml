@@ -22,8 +22,8 @@ Problem:
         description:
             type: text
             nullable: true
-        type:
-            type: smallint
+        parameters:
+            type: text
             nullable: true
         isActive:
             type: boolean

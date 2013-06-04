@@ -369,7 +369,7 @@ class ImportController extends Controller
             'ClientId' => 'Person_ID',
             'Title' => 'Title',
             'Description' => 'Desciption',
-            'Type' => 'UserProb',
+            'Params' => 'UserProb',
             'IsActive' => 'Status',
             'CreatedAt' => 'CreatedOn',
             'CreatedBy' => 'CreatedBy_ID',
@@ -407,8 +407,8 @@ class ImportController extends Controller
                 elseif (in_array($to, $user_fields)) {
                     $val = isset($id_map[$imp[$from]]) ? $id_map[$imp[$from]] : null;
                 }
-                elseif ('Type' == $to) {
-                    $val =  $this->convertId('ProblemType', $imp[$from]);
+                elseif ('Params' == $to) {
+                    $val =  [105 => $this->convertId('ProblemType', $imp[$from])];
                 }
                 elseif ('IsActive' == $to) {
                     $val = $imp[$from] == 1 ? 1 : 0;

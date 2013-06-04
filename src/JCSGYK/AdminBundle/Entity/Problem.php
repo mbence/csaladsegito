@@ -49,12 +49,11 @@ class Problem
     private $description;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="type", type="integer", nullable=true)
-     * @Assert\NotBlank()
+     * @ORM\Column(name="parameters", type="text", nullable=true)
      */
-    private $type;
+    private $parameters;
 
     /**
      * @var integer
@@ -242,26 +241,26 @@ class Problem
     }
 
     /**
-     * Set type
+     * Set parameters
      *
-     * @param integer $type
+     * @param integer $parameters
      * @return Problem
      */
-    public function setType($type)
+    public function setParameters($parameters)
     {
-        $this->type = $type;
+        $this->parameters = $parameters;
 
         return $this;
     }
 
     /**
-     * Get type
+     * Get parameters
      *
      * @return integer
      */
-    public function getType()
+    public function getParameters()
     {
-        return $this->type;
+        return $this->parameters;
     }
 
     /**
@@ -739,5 +738,45 @@ class Problem
     public function getAgreementExpiresAt()
     {
         return $this->agreementExpiresAt;
+    }
+
+    /**
+     * Json encode and set parameters
+     *
+     * @param array $parameters
+     * @return Client
+     */
+    public function setParams($parameters)
+    {
+        $this->parameters = json_encode($parameters);
+
+        return $this;
+    }
+
+    /**
+     * Json decode and get parameters
+     *
+     * @return array
+     */
+    public function getParams()
+    {
+        return json_decode($this->parameters, true);
+    }
+
+    /**
+     * Return a value of the parameters array
+     * @param int $groupid optional, if not provided, the first value will get returned
+     * @return mixed param value
+     */
+    public function getParam($groupid = null)
+    {
+        $plist = $this->getParams();
+
+        if (!is_null($groupid)) {
+            return isset($plist[$groupid]) ? $plist[$groupid] : null;
+        }
+        else {
+            return reset($plist);
+        }
     }
 }
