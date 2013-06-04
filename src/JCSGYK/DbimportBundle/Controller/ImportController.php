@@ -594,17 +594,17 @@ class ImportController extends Controller
             'LocationStreetNumber' => 'StreetNum1',
             'LocationFlatNumber' => 'FlatNum1',
             'Note' => 'Note',
-            'FamilySize' => 'FamilySize',
-            'EcActivity' => 'EcActivity',
-            'MaritalStatus' => 'MartialStatus',
-            'EducationCode' => 'EducationCode',
+//            'FamilySize' => 'FamilySize',
+//            'EcActivity' => 'EcActivity',
+//            'MaritalStatus' => 'MartialStatus',
+//            'EducationCode' => 'EducationCode',
             'CreatedAt' => 'CreatedOn',
             'CreatedBy' => 'CreatedBy_ID',
             'ModifiedAt' => 'ModifiedOn',
             'ModifiedBy' => 'ModifiedBy_ID',
             'OpenedBy' => 'OpenedBy_ID',
             'DocFile' => 'DocFile',
-            'JobType' => 'JobType',
+//            'JobType' => 'JobType',
             'GuardianFirstname' => 'DelegateName2',
             'GuardianLastname' => 'DelegateName1'
         ];
@@ -668,10 +668,6 @@ class ImportController extends Controller
                    list($val, $st) = $this->streetFix($imp[$from]);
                    $p->setLocationStreetType($st);
                 }
-                // convert ID-s to the parameter system
-                elseif('EcActivity' == $to || 'MaritalStatus' == $to || 'EducationCode' == $to) {
-                    $val = $this->convertId($to, $imp[$from]);
-                }
                 // everything else
                 else {
                     if (!is_array($from)) {
@@ -717,6 +713,15 @@ class ImportController extends Controller
                 'case_number' => $p->getCaseNumber(),
                 'case_year' => $p->getCaseYear(),
             ]));
+
+            // save the parameters
+            $param_data = [
+                101 => $this->convertId('EducationCode', $imp['EducationCode']),
+                102 => $this->convertId('EcActivity', $imp['EcActivity']),
+                103 => $this->convertId('MaritalStatus', $imp['MartialStatus']),
+                104 => $imp['FamilySize']
+            ];
+            $p->setParams($param_data);
 
             // manage the object
             $em->persist($p);

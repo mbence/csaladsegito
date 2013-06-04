@@ -297,13 +297,6 @@ class Client
     /**
      * @var integer
      *
-     * @ORM\Column(name="marital_status", type="integer", nullable=true)
-     */
-    private $maritalStatus;
-
-    /**
-     * @var integer
-     *
      * @ORM\Column(name="citizenship_status", type="integer", nullable=true)
      */
     private $citizenshipStatus;
@@ -316,32 +309,11 @@ class Client
     private $citizenship;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="education_code", type="integer", nullable=true)
-     */
-    private $educationCode;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="note", type="text", nullable=true)
      */
     private $note;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="family_size", type="integer", nullable=true)
-     */
-    private $familySize;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="ec_activity", type="integer", nullable=true)
-     */
-    private $ecActivity;
 
     /**
      * @var integer
@@ -393,13 +365,6 @@ class Client
     private $docFile;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="job_type", type="integer", nullable=true)
-     */
-    private $jobType;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="guardian_firstname", type="string", length=255, nullable=true)
@@ -431,6 +396,13 @@ class Client
      * @ORM\Column(name="agreement_expires_at", type="date", nullable=true)
      */
     private $agreementExpiresAt;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="parameters", type="text", nullable=true)
+     */
+    private $parameters;
 
     public function __construct()
     {
@@ -1243,29 +1215,6 @@ class Client
     }
 
     /**
-     * Set maritalStatus
-     *
-     * @param integer $maritalStatus
-     * @return Client
-     */
-    public function setMaritalStatus($maritalStatus)
-    {
-        $this->maritalStatus = $maritalStatus;
-
-        return $this;
-    }
-
-    /**
-     * Get maritalStatus
-     *
-     * @return integer
-     */
-    public function getMaritalStatus()
-    {
-        return $this->maritalStatus;
-    }
-
-    /**
      * Set citizenshipStatus
      *
      * @param integer $citizenshipStatus
@@ -1312,29 +1261,6 @@ class Client
     }
 
     /**
-     * Set educationCode
-     *
-     * @param integer $educationCode
-     * @return Client
-     */
-    public function setEducationCode($educationCode)
-    {
-        $this->educationCode = $educationCode;
-
-        return $this;
-    }
-
-    /**
-     * Get educationCode
-     *
-     * @return integer
-     */
-    public function getEducationCode()
-    {
-        return $this->educationCode;
-    }
-
-    /**
      * Set note
      *
      * @param string $note
@@ -1355,52 +1281,6 @@ class Client
     public function getNote()
     {
         return $this->note;
-    }
-
-    /**
-     * Set familySize
-     *
-     * @param integer $familySize
-     * @return Client
-     */
-    public function setFamilySize($familySize)
-    {
-        $this->familySize = $familySize;
-
-        return $this;
-    }
-
-    /**
-     * Get familySize
-     *
-     * @return integer
-     */
-    public function getFamilySize()
-    {
-        return $this->familySize;
-    }
-
-    /**
-     * Set ecActivity
-     *
-     * @param integer $ecActivity
-     * @return Client
-     */
-    public function setEcActivity($ecActivity)
-    {
-        $this->ecActivity = $ecActivity;
-
-        return $this;
-    }
-
-    /**
-     * Get ecActivity
-     *
-     * @return integer
-     */
-    public function getEcActivity()
-    {
-        return $this->ecActivity;
     }
 
     /**
@@ -1539,29 +1419,6 @@ class Client
     public function getDocFile()
     {
         return $this->docFile;
-    }
-
-    /**
-     * Set jobType
-     *
-     * @param integer $jobType
-     * @return Client
-     */
-    public function setJobType($jobType)
-    {
-        $this->jobType = $jobType;
-
-        return $this;
-    }
-
-    /**
-     * Get jobType
-     *
-     * @return integer
-     */
-    public function getJobType()
-    {
-        return $this->jobType;
     }
 
     /**
@@ -1828,5 +1685,50 @@ class Client
     public function getCaseLabel()
     {
         return $this->caseLabel;
+    }
+
+    /**
+     * Get parameters
+     *
+     * @return string
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+    /**
+     * Json encode and set parameters
+     *
+     * @param array $parameters
+     * @return Client
+     */
+    public function setParams($parameters)
+    {
+        $this->parameters = json_encode($parameters);
+
+        return $this;
+    }
+
+    /**
+     * Json decode and get parameters
+     *
+     * @return array
+     */
+    public function getParams()
+    {
+        return json_decode($this->parameters, true);
+    }
+
+    /**
+     * Return a value of the parameters array
+     * @param int $groupid
+     * @return mixed param value
+     */
+    public function getParam($groupid)
+    {
+        $plist = $this->getParams();
+
+        return isset($plist[$groupid]) ? $plist[$groupid] : null;
     }
 }
