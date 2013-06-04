@@ -67,4 +67,27 @@ class ClientRepository extends EntityRepository
             ->setParameter('num', $client->getCaseNumber())
             ->getResult();
     }
+
+    /**
+     * Saves the parameters to client_param
+     * @param \JCSGYK\AdminBundle\Entity\Client $client
+     * @param array $param_data ($paramgroup_id => $value)
+     */
+    public function saveParams(Client $client, $param_data)
+    {
+        $client_params = $client->getParams();
+        foreach ($param_data as $group_id => $value) {
+            $act = $client_params->current();
+            if (empty($act)) {
+                // create new params
+                $act = new ClientParam();
+                $act->setClient($client);
+                $this->getEntityManager()->persist($act);
+            }
+            $act->setParamgroupId($group_id);
+            $act->setValue($value);
+
+            $client_params->next();
+        }
+    }
 }

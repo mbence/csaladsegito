@@ -143,7 +143,7 @@ class ClientType extends AbstractType
                     'choices'   => $this->ds->getGroup($param->getId()),
                     'mapped' => false,
                     'data' => $this->client->getParam($param->getId()),
-                    'required' => false,
+                    'required' => true,
                 ]);
             }
             else {
@@ -152,6 +152,7 @@ class ClientType extends AbstractType
                     'mapped' => false,
                     'data' => $this->client->getParam($param->getId()),
                     'required' => false,
+                    'attr' => ['class' => 'short']
                 ]);
             }
         }

@@ -705,7 +705,7 @@ table.problem-list td {
     -webkit-box-sizing: border-box;
     outline: medium none;
 }
-.client .short, .client-edit .short {
+.client .short, .client-edit .short, .client-edit input.short  {
     width: 50px;
 }
 .client-edit table.client-edit {

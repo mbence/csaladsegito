@@ -393,6 +393,14 @@ class ClientController extends Controller
                         $client->setMotherLastname($mother->getLastname());
                     }
 
+                    // save the parameters
+                    $pgroups = $this->container->get('jcs.ds')->getParamGroup(1);
+                    $param_data = [];
+                    foreach ($pgroups as $param) {
+                        $param_data[$param->getId()] = $form->get('param_' . $param->getId())->getData();
+                    }
+                    $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->saveParams($client, $param_data);
+
                     $em->flush();
 
                     if (empty($id)) {
