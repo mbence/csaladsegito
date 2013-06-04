@@ -157,11 +157,11 @@ class Docx
                 'allampolgarsag' => $client->getCitizenship(),
                 'allampjogallas' => $client->getCitizenshipStatus(),
                 // parameters
-                'csaladiosszetetel' => $ae->getParam($client->getParam(103)),
-                'vegzettseg' => $ae->getParam($client->getParam(101)),
-                'gazdaktiv' => $ae->getParam($client->getParam(102)),
-                // other
-                'igenylok' => $client->getParam(104),
+//                'csaladiosszetetel' => $ae->getParam($client->getParam(103)),
+//                'vegzettseg' => $ae->getParam($client->getParam(101)),
+//                'gazdaktiv' => $ae->getParam($client->getParam(102)),
+//                // other
+//                'igenylok' => $client->getParam(104),
                 'megjegyzes' => $client->getNote(),
                 // megbízott
                 'megbizott' => $ae->formatName($client->getGuardianFirstname(), $client->getGuardianLastname()),
