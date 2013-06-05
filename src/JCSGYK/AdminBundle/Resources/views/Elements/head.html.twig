@@ -1,5 +1,5 @@
 <meta charset="UTF-8" />
-<title>{% block title %}Családsegítő Admin{% endblock %}</title>
+<title>{% block title %}{{ co_short() }} {{ 'Admin'|trans }}{% endblock %}</title>
 <link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
 
 {% stylesheets output='css/main.css' combine=true

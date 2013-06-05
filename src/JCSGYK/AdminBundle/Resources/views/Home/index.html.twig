@@ -1,7 +1,5 @@
 {% extends 'JCSGYKAdminBundle::layout.html.twig' %}
 
-{% block title %}Családsegítő Admin{% endblock %}
-
 {% block content %}
     {% if is_granted(['ROLE_FAMILY_HELP']) or is_granted(['ROLE_CHILD_WELFARE']) or is_granted(['ROLE_ADMIN']) %}
     <div class="tasks">

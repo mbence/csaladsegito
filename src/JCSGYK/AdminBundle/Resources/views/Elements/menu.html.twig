@@ -1,5 +1,5 @@
 <div class="menu">
-    <div class="menutitle"><a href="{{ path('home') }}">{{ 'Családsegítő Admin'|trans }}</a></div>
+    <div class="menutitle"><a href="{{ path('home') }}">{{ co_short() }} {{ 'Admin'|trans }}</a></div>
     <div class="menuitems">
         {% for item in menu %}
             <a href="{{ path(item.route) }}"
