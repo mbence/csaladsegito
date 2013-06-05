@@ -217,6 +217,10 @@ class ProblemController extends Controller
                     else {
                         // reopen the problem
                         $problem->setOpener($user);
+                        $problem->setCloser(null);
+                        $problem->setClosedAt(null);
+                        $problem->setConfirmer(null);
+                        $problem->setConfirmedAt(null);
 
                         // close all related tasks
                         $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Task')->closeAll($problem, Task::TYPE_CLOSE);
