@@ -85,14 +85,20 @@ HBlocks =
         if 37 == event.which
             # we step to the previous block if possible
             if $(".contentscroller > .current").prev().is(":visible")
+                event.stopPropagation()
+                event.preventDefault()
                 $(".contentscroller > .current").prev().click()
         # right
         if 39 == event.which
             # if the cursor is on the actually selected and opened element, we just step right
             if $(".contentscroller > .current .walkable tr.cursor").hasClass("current") and $(".contentscroller > .current").next().is(":visible")
+                event.stopPropagation()
+                event.preventDefault()
                 $(".contentscroller > .current").next().click()
             # otherwise we click the current element
             else if $(".contentscroller > .current .walkable tr.cursor").length
+                event.stopPropagation()
+                event.preventDefault()
                 $(".contentscroller > .current .walkable tr.cursor").click()
         # enter
         if 13 == event.which
