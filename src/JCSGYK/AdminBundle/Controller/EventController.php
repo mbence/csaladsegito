@@ -82,7 +82,7 @@ class EventController extends Controller
                 $this->canEdit($event);
             }
 
-            $form = $this->createForm(new EventType($this->container->get('jcs.ds')), $event);
+            $form = $this->createForm(new EventType($this->container->get('jcs.ds'), $event), $event);
 
             // save the user
             if ($request->isMethod('POST')) {
@@ -113,6 +113,14 @@ class EventController extends Controller
                         // save the stats
                         $this->get('jcs.stat')->save(Stat::TYPE_FAMILY_HELP, 2);
                     }
+
+                    // save the parameters
+                    $pgroups = $this->container->get('jcs.ds')->getParamGroup(3);
+                    $param_data = [];
+                    foreach ($pgroups as $param) {
+                        $param_data[$param->getId()] = $form->get('param_' . $param->getId())->getData();
+                    }
+                    $event->setParams($param_data);
 
                     $em->flush();
 

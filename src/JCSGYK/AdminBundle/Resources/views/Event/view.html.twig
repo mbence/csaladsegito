@@ -28,32 +28,16 @@
 
 <div class="client-sub first-sub togglable">{{ 'adatok'|trans }}</div>
 <div>
-    {% if event.type or event.titleCode or event.forwardCode or event.activityCode or event.attachment %}
+    {% if event.hasParams() %}
     <table class="client" cellspacing="0" border="0">
-        {% if event.type %}
-        <tr>
-            <th>{{ 'Megnevezés'|trans }}:</th>
-            <td>{{ param(event.type) }}</td>
-        </tr>
-        {% endif %}
-        {% if event.titleCode %}
-        <tr>
-            <th>{{ 'Esetkezelés jellege'|trans }}:</th>
-            <td>{{ param(event.titleCode) }}</td>
-        </tr>
-        {% endif %}
-        {% if event.forwardCode %}
-        <tr>
-            <th>{{ 'Továbbirányítás'|trans }}:</th>
-            <td>{{ param(event.forwardCode) }}</td>
-        </tr>
-        {% endif %}
-        {% if event.activityCode %}
-        <tr>
-            <th>{{ 'Egyéb tevékenység'|trans }}:</th>
-            <td>{{ param(event.activityCode) }}</td>
-        </tr>
-        {% endif %}
+        {% for paramGroup in pgroup(3) %}
+            {% if event.getParam(paramGroup.id) %}
+            <tr>
+                <th>{{ paramGroup.name|trans }}:</th>
+                <td colspan="3">{{ param(event.getParam(paramGroup.id), paramGroup.id) }} </td>
+            </tr>
+            {% endif %}
+        {% endfor %}
         {% if event.attachment %}
             <tr>
                 <th>{{ 'Csatolt dok.'|trans }}:</th>

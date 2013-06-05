@@ -24,22 +24,16 @@
     <tr><td colspan="4">
         <div class="client-sub first-sub">{{ 'adatok'|trans }}</div>
     </td></tr>
+    {% for paramGroup in pgroup(3) %}
+    {% set p = 'param_' ~ paramGroup.id %}
     <tr>
-        <th>{{ form_label(form.type) }}:</th>
-        <td colspan="3">{{ form_errors(form.type) }}{{ form_widget(form.type) }}</td>
+        <th>{{ form_label(form[p]) }}:</th>
+        <td colspan="3">
+            {{ form_errors(form[p]) }}
+            {{ form_widget(form[p]) }}
+        </td>
     </tr>
-    <tr>
-        <th>{{ form_label(form.title_code) }}:</th>
-        <td colspan="3">{{ form_errors(form.title_code) }}{{ form_widget(form.title_code) }}</td>
-    </tr>
-    <tr>
-        <th>{{ form_label(form.forward_code) }}:</th>
-        <td colspan="3">{{ form_errors(form.forward_code) }}{{ form_widget(form.forward_code) }}</td>
-    </tr>
-    <tr>
-        <th>{{ form_label(form.activity_code) }}:</th>
-        <td colspan="3">{{ form_errors(form.activity_code) }}{{ form_widget(form.activity_code) }}</td>
-    </tr>
+    {% endfor %}
     {% if event.attachment %}
         <tr>
             <th>{{ 'Csatolt dok.'|trans }}:</th>
