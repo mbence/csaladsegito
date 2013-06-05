@@ -28,8 +28,14 @@
 
 <div class="client-sub first-sub togglable">{{ 'adatok'|trans }}</div>
 <div>
-    {% if event.hasParams() %}
+    {% if event.type or event.hasParams() %}
     <table class="client" cellspacing="0" border="0">
+        {% if event.type %}
+        <tr>
+            <th>{{ 'Megnevezés'|trans }}:</th>
+            <td>{{ param(event.type) }}</td>
+        </tr>
+        {% endif %}
         {% for paramGroup in pgroup(3) %}
             {% if event.getParam(paramGroup.id) %}
             <tr>

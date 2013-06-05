@@ -24,6 +24,10 @@
     <tr><td colspan="4">
         <div class="client-sub first-sub">{{ 'adatok'|trans }}</div>
     </td></tr>
+    <tr>
+        <th>{{ form_label(form.type) }}:</th>
+        <td colspan="3">{{ form_errors(form.type) }}{{ form_widget(form.type) }}</td>
+    </tr>
     {% for paramGroup in pgroup(3) %}
     {% set p = 'param_' ~ paramGroup.id %}
     <tr>

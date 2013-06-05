@@ -41,6 +41,13 @@ class Event
     private $description;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="type", type="integer", nullable=true)
+     */
+    private $type;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="parameters", type="text", nullable=true)
@@ -154,6 +161,29 @@ class Event
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Set type
+     *
+     * @param integer $type
+     * @return Event
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return integer
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**

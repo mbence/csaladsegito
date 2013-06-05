@@ -37,6 +37,11 @@ class EventType extends AbstractType
             'label' => 'Esemény részletes leírása',
             'required' => false
         ]);
+        $builder->add('type', 'choice', [
+            'label' => 'Megnevezés',
+            'choices'   => $this->ds->getGroup(7),
+            'required' => false
+        ]);
         // parametergroups
         $pgroups = $this->ds->getParamGroup(3);
 
