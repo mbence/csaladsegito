@@ -199,9 +199,9 @@ class ImportController extends Controller
             'CreatedBy' => 'CreatedBy_ID',
             'ModifiedAt' => 'ModifiedOn',
             'ModifiedBy' => 'ModifiedBy_ID',
-            'TitleCode' => 'TitleCode',
-            'ForwardCode' => 'ForwardCode',
-            'ActivityCode' => 'ActivityCode',
+//            'TitleCode' => 'TitleCode',
+//            'ForwardCode' => 'ForwardCode',
+//            'ActivityCode' => 'ActivityCode',
             'EventDate' => 'EventDate',
             'ClientVisit' => 'ClientVisit',
             'ClientCancel' => 'ClientCancel',
@@ -210,7 +210,7 @@ class ImportController extends Controller
 
         $date_fields = ['CreatedAt', 'ModifiedAt', 'EventDate'];
         $user_fields = ['CreatedBy', 'ModifiedBy'];
-        $id_fields = ['Type', 'TitleCode', 'ForwardCode', 'ActivityCode'];
+        $id_fields = ['Type'];
 
         $this->truncate('event');
 
@@ -281,6 +281,15 @@ class ImportController extends Controller
                 // set the value in the entity
                 $e->$setter($val);
             }
+
+            // save the parameters
+            $this->convertId('Event' . $to, $imp[$from]);
+            $param_data = [
+                106 => $this->convertId('EventTitleCode', $imp['TitleCode']),
+                107 => $this->convertId('EventForwardCode', $imp['ForwardCode']),
+                108 => $this->convertId('EventActivityCode', $imp['ActivityCode']),
+            ];
+            $e->setParams($param_data);
 
             // overwrite the date field
             if (isset($real_date)) {

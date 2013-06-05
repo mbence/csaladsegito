@@ -42,6 +42,13 @@ class Event
     private $type;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="parameters", type="text", nullable=true)
+     */
+    private $parameters;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -70,27 +77,6 @@ class Event
     private $modifiedBy;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="title_code", type="integer", nullable=true)
-     */
-    private $titleCode;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="forward_code", type="integer", nullable=true)
-     */
-    private $forwardCode;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="activity_code", type="integer", nullable=true)
-     */
-    private $activityCode;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="event_date", type="datetime", nullable=true)
@@ -117,8 +103,6 @@ class Event
      * @ORM\Column(name="attachment", type="string", length=255, nullable=true)
      */
     private $attachment;
-
-
 
     /**
      * Get id
@@ -197,6 +181,29 @@ class Event
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Set parameters
+     *
+     * @param integer $parameters
+     * @return Problem
+     */
+    public function setParameters($parameters)
+    {
+        $this->parameters = $parameters;
+
+        return $this;
+    }
+
+    /**
+     * Get parameters
+     *
+     * @return integer
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
     }
 
     /**
@@ -465,4 +472,63 @@ class Event
         return $this;
     }
 
+    /**
+     * Json encode and set parameters
+     *
+     * @param array $parameters
+     * @return Client
+     */
+    public function setParams($parameters)
+    {
+        $this->parameters = json_encode($parameters);
+
+        return $this;
+    }
+
+    /**
+     * Json decode and get parameters
+     *
+     * @return array
+     */
+    public function getParams()
+    {
+        return json_decode($this->parameters, true);
+    }
+
+    /**
+     * Return a value of the parameters array
+     * @param int $groupid optional, if not provided, the first value will get returned
+     * @return mixed param value
+     */
+    public function getParam($groupid = null)
+    {
+        $plist = $this->getParams();
+
+        if (!is_null($groupid)) {
+            return isset($plist[$groupid]) ? $plist[$groupid] : null;
+        }
+        else {
+            return reset($plist);
+        }
+    }
+
+    /**
+     * Checks if there are any parameters set
+     * @return boolean
+     */
+    public function hasParams()
+    {
+        $has = false;
+        $params = $this->getParams();
+        if (!empty($params) && is_array($params)) {
+            foreach ($params as $param) {
+                if (!empty($param)) {
+                    $has = true;
+                    break;
+                }
+            }
+        }
+
+        return $has;
+    }
 }
