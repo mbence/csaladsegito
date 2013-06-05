@@ -45,8 +45,17 @@ class AdminExtension extends \Twig_Extension
             'pstatus' => new \Twig_Function_Method($this, 'problemStatus'),
             'rel_types' => new \Twig_Function_Method($this, 'getRelationTypes'),
             'casefield' => new \Twig_Function_Method($this, 'formatCaseNumberFields', ['is_safe' => ['html']]),
+            'co_short' => new \Twig_Function_Method($this, 'getCompanyShortName'),
         );
     }
+
+    public function getCompanyShortName()
+    {
+        $co = $this->ds->getCompany();
+
+        return !empty($co['shortName']) ? $co['shortName'] : '';
+    }
+
 
     /**
      * Returns the array of the parameter groups
@@ -58,7 +67,7 @@ class AdminExtension extends \Twig_Extension
     public function getParamGroup($group = 1, $first = false)
     {
         $list = $this->ds->getParamGroup($group);
-        
+
         return !$first ? $list : reset($list);
     }
 

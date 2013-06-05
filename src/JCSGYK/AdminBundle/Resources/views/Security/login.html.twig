@@ -3,7 +3,7 @@
 {% block content %}
 <div class="login">
     <div id="logo"></div>
-    <h1>Admin belépés</h1>
+    <h1>{{ co_short() }} {{ 'Admin belépés'|trans }}</h1>
 
     <form id="loginform" name="loginform" action="{{ path("fos_user_security_check") }}" method="post">
         {% if error %}
@@ -18,11 +18,12 @@
         <label for="password">{{ 'security.login.password'|trans({}, 'FOSUserBundle') }}</label>
         <input type="password" class="input" id="password" name="_password" required="required" />
 
-        <input type="submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans({}, 'FOSUserBundle') }}" />
-
+        <div class="toppad">
         <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
         <label for="remember_me">{{ 'security.login.remember_me'|trans({}, 'FOSUserBundle') }}</label>
+        </div>
         
+        <input type="submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans({}, 'FOSUserBundle') }}" />
     </form>
 </div>
 {% endblock content %}
