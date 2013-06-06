@@ -791,7 +791,7 @@ class Client
      */
     public function setSocialSecurityNumber($socialSecurityNumber)
     {
-        $this->socialSecurityNumber = $socialSecurityNumber;
+        $this->socialSecurityNumber = $this::cleanupNum($socialSecurityNumber);
 
         return $this;
     }
@@ -803,7 +803,7 @@ class Client
      */
     public function getSocialSecurityNumber()
     {
-        return $this->socialSecurityNumber;
+        return $this::formatSSN($this->socialSecurityNumber);
     }
 
     /**
@@ -1948,5 +1948,25 @@ class Client
         $plist = $this->getParams();
 
         return isset($plist[$groupid]) ? $plist[$groupid] : null;
+    }
+
+    /**
+     * Removes - . _ and spaces from the input. Used by Social security numbers
+     * @param string $in
+     * @return string
+     */
+    public static function cleanupNum($in)
+    {
+        return strtr(trim($in), ['-' => '', '.' => '', ' ' => '', '_' => '']);
+    }
+
+    /**
+     * Fotmats a ssn, by adding a space after every 3rd char
+     * @param string $ssn
+     * @return string
+     */
+    public static function formatSSN($ssn)
+    {
+        return wordwrap($ssn, 3, ' ', true);
     }
 }

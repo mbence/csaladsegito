@@ -76,7 +76,7 @@ class NiceField
         if $.isFunction(opt.onChange)
             $(o).keypress (event) ->
                 if event.which
-                    opt.onChange()
+                    opt.onChange(event)
 
         if opt.focus
             $(o).focus()

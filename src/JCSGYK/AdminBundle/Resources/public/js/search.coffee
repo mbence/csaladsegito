@@ -9,11 +9,16 @@ JcsSearch =
         nf = new NiceField($("#quicksearch #q"), {
             clearHook: =>
                 @qSubmit()
-            onChange: =>
+            onChange: (event) =>
                 clearTimeout(@qto)
-                @qto = setTimeout( =>
+                if 13 == event.which
+                    event.stopPropagation()
+                    event.preventDefault()
                     @qSubmit()
-                , 300)
+                else
+                    @qto = setTimeout( =>
+                        @qSubmit()
+                    , 300)
 
                 true
             focus: setActive

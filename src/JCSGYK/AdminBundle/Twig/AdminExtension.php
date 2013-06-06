@@ -31,6 +31,7 @@ class AdminExtension extends \Twig_Extension
             'casenum' => new \Twig_Filter_Method($this, 'formatCaseNumber'),
             'caselabel' => new \Twig_Filter_Method($this, 'formatCaseLabel'),
             'adate' => new \Twig_Filter_Method($this, 'formatAgreeDate', ['is_safe' => ['html']]),
+            'ssn' => new \Twig_Filter_Method($this, 'formatSSN', ['is_safe' => ['html']]),
         ];
     }
 
@@ -79,6 +80,16 @@ class AdminExtension extends \Twig_Extension
         }
 
         return $this->translator->trans($re);
+    }
+
+    /**
+     * Formats a social secrity number, inserting a space after every third character
+     * @param type $ssn
+     * @return type
+     */
+    public function formatSSN($ssn)
+    {
+        return wordwrap($ssn, 3, "&nbsp;", true);
     }
 
     public function formatAgreeDate($d)

@@ -111,7 +111,7 @@ class Docx
         if (!empty($data['client']) && $data['client'] instanceof Client) {
             $client = $data['client'];
             $re['uf'] = [
-                'szam' => $ae->formatId($client->getId()),
+                'szam' => $ae->formatCaseNumber($client),
                 'nev' => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
                 'titulus' => $client->getTitle(),
                 'csaladinev' => $client->getLastname(),

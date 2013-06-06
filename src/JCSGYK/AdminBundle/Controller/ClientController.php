@@ -722,7 +722,7 @@ class ClientController extends Controller
 
         $time_start = microtime(true);
         if (!empty($q)) {
-
+            $num_ver = Client::cleanupNum($q);
             $db = $this->get('doctrine.dbal.default_connection');
             $sql = "SELECT id, type, case_year, case_number, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM client WHERE";
             // recognize a case number
@@ -731,8 +731,8 @@ class ClientController extends Controller
                 $sql .= " ORDER BY case_label, lastname, firstname LIMIT " . $limit;
             }
             // search for ID
-            elseif (is_numeric($q)) {
-                $sql .= " (case_number={$db->quote($q)} AND company_id={$db->quote($company_id)} AND type IN (1,2)) OR (social_security_number LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2))";
+            elseif (is_numeric($num_ver)) {
+                $sql .= " (case_number={$db->quote($num_ver)} AND company_id={$db->quote($company_id)} AND type IN (1,2)) OR (social_security_number LIKE {$db->quote($num_ver . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2))";
                 $sql .= " ORDER BY lastname, firstname LIMIT " . $limit;
             }
             else {
@@ -740,6 +740,15 @@ class ClientController extends Controller
                 // We cant use FULLTEXT search for fields with very light weights (same values most of the times)
                 // because the indexer ignores these. Street number and street types are such fields.
                 // We must use HAVING after the FULLTEXT search to filter these fields.
+                $first = reset($search_words);
+                // if the first word is a number, then we use it as a zip code
+                if (is_numeric($first)){
+                    array_shift($search_words);
+                    $first = $db->quote($first);
+                }
+                else {
+                    $first = false;
+                }
                 $last = end($search_words);
                 // if the last word is a number, we use that for the street number search
                 if (preg_match('/^\d+(\/|\.|-)?\w*\.?\*?$/', $last)) {
@@ -778,14 +787,14 @@ class ClientController extends Controller
                 $xsql = ['company_id=' . $company_id, "type IN (1,2)"];
 
                 // if we search for street number
-                if (!empty($last) || !empty($street_types)) {
-
-                    if (!empty($last)) {
-                        $xsql[] = "street_number LIKE " . $last;
-                    }
-                    if (!empty($street_types)) {
-                        $xsql[] = "street_type IN (" . implode(',', $street_types) . ")";
-                    }
+                if (!empty($first)) {
+                    $xsql[] = "zip_code LIKE " . $first;
+                }
+                if (!empty($last)) {
+                    $xsql[] = "street_number LIKE " . $last;
+                }
+                if (!empty($street_types)) {
+                    $xsql[] = "street_type IN (" . implode(',', $street_types) . ")";
                 }
 
                 $sql .= " HAVING " . implode(' AND ', $xsql);
