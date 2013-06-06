@@ -877,11 +877,11 @@ class ImportController extends Controller
     {
         $map = [
             'providers' => [
-                'GazmuvekNum' => 3,
-                'ElmuNum' => 4,
-                'FotavNum' => 5,
+                'ElmuNum' => 1,
+                'GazmuvekNum' => 2,
+                'FotavNum' => 3,
+                'JVKNum' => 4,
                 'DijbeszedoNum' => 6,
-                'JVKNum' => 7,
             ],
             'EducationCode' => [
                 2 => 8,
