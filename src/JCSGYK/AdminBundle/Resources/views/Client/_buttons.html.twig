@@ -92,5 +92,9 @@
         {% if button == 'close' %}
             <div class="close greybutton" title="{{ 'Blokk bezárása'|trans }}"><span>x</span></div>
         {% endif %}
+
+        {% if button == 'reset' %}
+            <button type="reset" class="close greybutton" title="{{ 'Mégse'|trans }}"><span>mégse</span></button>
+        {% endif %}
     {% endfor %}
 </div>

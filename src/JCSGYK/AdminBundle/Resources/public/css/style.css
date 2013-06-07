@@ -74,11 +74,11 @@ h1 {
     font-size: 14px;
     border-radius: 5px;
     border: 1px solid #c8ddf1;
-    padding: 30px 20px 0;
-    background: url('../images/info-icon.png') no-repeat 5px 5px #edf2f6;
+    padding: 10px 10px 0;
+    width: 80%;
     margin: 20px auto;
-    width: 70%;
     text-align: center;
+    background-color: #edf2f6;
 }
 .info p {
     margin-bottom: 10px;
@@ -692,7 +692,7 @@ table.problem-list td {
     font-weight: normal;
     white-space: nowrap;
 }
-.client-edit input[type=text], .edit-note textarea {
+.client-edit input[type=text], .client-edit input[type=password], .edit-note textarea {
     border: 1px solid #a0a0a0;
     border-color: #a9a9a9 #b9b9b9 #b9b9b9;
     background-color: #f9f9f9;
@@ -717,7 +717,9 @@ table.problem-list td {
 .client-edit select {
     font-size: 12px;
 }
-.client-edit input[type=text]:hover, .client-edit input[type=text]:focus, .edit-note textarea:hover, .edit-note textarea:focus {
+.client-edit input[type=text]:hover, .client-edit input[type=text]:focus,
+.client-edit input[type=password]:hover, .client-edit input[type=password]:focus,
+.edit-note textarea:hover, .edit-note textarea:focus {
     border-color: #777 #888 #888;
     background-color: #fafafa;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
@@ -733,7 +735,13 @@ table.problem-list td {
 .errors {
     color: red;
 }
+.errors li {
+    font-size: 12px;
+    line-height: 12px;
+    padding: 0 0 3px;
+}
 .errors + input[type=text], .errors + input[type=text]:hover, .errors + input[type=text]:focus,
+.errors + input[type=password], .errors + input[type=password]:hover, .errors + input[type=password]:focus,
 .errors + textarea, .errors + textarea:hover, .errors + textarea:focus{
     border-color: red;
 }
@@ -780,7 +788,9 @@ g .menuitems a {
 #settings-content {
     margin: 0 0 0 270px;
 }
-
+.settings-password {
+    width: 400px;
+}
 /* Client visit */
 .visit_header {
     color: #5661a2;

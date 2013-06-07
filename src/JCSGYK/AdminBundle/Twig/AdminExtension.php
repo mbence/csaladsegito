@@ -163,12 +163,10 @@ class AdminExtension extends \Twig_Extension
         }
 
         if ($client instanceof Client) {
-            $type = $client->getType();
             $case_number = $client->getCaseNumber();
             $case_year = $client->getCaseYear();
         }
         else {
-            $type = $client['type'];
             $case_number = $client['case_number'];
             $case_year = $client['case_year'];
         }
