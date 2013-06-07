@@ -696,7 +696,6 @@ class ClientController extends Controller
             $pattern .= $m[2] == '{year}' ? '\d{4}' : '\d?';
         }
         preg_match("/(*UTF8){$pattern}/i", $q, $case_matches);
-        var_dump($pattern, !empty($case_matches[0]));
 
         return !empty($case_matches[0]);
     }
