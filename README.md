@@ -1,8 +1,8 @@
-Családsegítő Admin / Family Helper Admin
+Családsegítő Admin / Family Help Admin
 ========================================
 
 Családsegítő és Gyermekjóléti szolgálatok adminisztrációs rendszere /
-Administration system of family helper and child welfare services
+Administration system of family help and child welfare services
 
 ## Requirements
 
