@@ -72,9 +72,15 @@ class ImportController extends Controller
                 $results['caseadmin'] = $this->setCaseadmins($limit);
             }
 
+            // Gyejo
+            if ('gyejo' == $table || 'gyejo100' == $table) {
+                $limit = 'gyejo100' == $table ? 100 : 0;
+
+                $results['gyejo'] = $this->importGyejo($limit);
+            }
             $session->set('results', $results);
 
-            return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
+            //return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
         }
         $r = $session->get('results', $results);
         //$session->remove('results');
@@ -82,6 +88,260 @@ class ImportController extends Controller
         return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);
     }
 
+
+    protected function importGyejo($limit = 100)
+    {
+        include_once 'PHPExcel/PHPExcel/IOFactory.php';
+
+        $input_files = [
+            '2012-2013.xlsx' => ['2013','2012'],
+            '2010-2011.xlsx' => ['2011','1000-2010összesítő']
+        ];
+        //error_reporting(E_ALL ^ E_NOTICE);
+
+        // load the xls sheets
+        foreach ($input_files as $input_file => $sheets) {
+            $this->readXlsx($input_file, $sheets);
+            //break;
+        }
+
+        $n = 100;
+        return $n;
+    }
+
+
+    protected function readXlsx($file, $sheets) {
+        $db_dir = '../src/JCSGYK/DbImportBundle/db/';
+        $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
+        $objReader->setReadDataOnly(true);
+        $objReader->setLoadSheetsOnly($sheets);
+        $objPHPExcel = $objReader->load($db_dir . $file);
+
+        $names = $objPHPExcel->getSheetNames();
+
+        foreach ($names as $index => $name) {
+            $sheet_data = $objPHPExcel->getSheet($index)->toArray();
+            $this->processXlsx($sheet_data);
+
+            //break;
+        }
+
+        return $objPHPExcel;
+    }
+
+    /**
+     * Create new users if not already existing, and return their ID
+     * @param string $user_name
+     * @return int
+     */
+    protected function userRemap($user_name)
+    {
+        return 1;
+    }
+
+    protected function processXlsx($sheet_data)
+    {
+        //var_dump($sheet_data);
+        $field_map = [];
+        $date_fields = ['CreatedAt'];
+        $user_fields = ['CaseAdmin'];
+
+        $em = $this->getDoctrine()->getManager();
+        
+        // clean the table
+        $this->truncate('client');
+
+        // process the rows
+        foreach ($sheet_data as $row_index => $row) {
+            if ($row_index == 0) {
+                // map the columns to the field names. The cols of different sheets have some small differences
+                $field_map = $this->getXlsxMap($row);
+
+                continue;
+            }
+
+            $a = null;
+            $p = new Client();
+            $p->setCompanyId($this->companyID);
+            $p->setType(Client::CW);
+
+            foreach ($field_map as $index => $to) {
+                $from = $row[$index];
+
+                $val = null;
+                $setter = 'Set' . $to;
+                // check and convert date fields
+                if (in_array($to, $date_fields)) {
+                    $from = substr(strtr($from, ['.' => '-']), 0, -1);
+
+                    $val = new \DateTime($from);
+                }
+                // user remap
+                elseif (in_array($to, $user_fields)) {
+                    $val = $this->userRemap($from);
+                }
+                // Street type
+                elseif ('Street' == $to) {
+                   list($val, $st) = $this->streetFix($from);
+                   $p->setStreetType($st);
+                }
+                // Street Number
+                elseif ('StreetNumber' == $to || 'LocationStreetNumber' == $to) {
+                    $val = trim(strtr($from, ['/' => '', '.' => '']));
+                }
+                // Location Street type
+                elseif ('LocationStreet' == $to) {
+                   list($val, $st) = $this->streetFix($from);
+                   $p->setLocationStreetType($st);
+                }
+                // Name
+                elseif ('Name' == $to) {
+                    list($lastname, $firstname) = explode(' ', $from, 2);
+                    if (empty($from)) {
+                        $lastname = 'ismeretlen';
+                        $firstname = 'ismeretlen';
+                    }
+                    $p->setFirstname($firstname);
+                    $p->setLastname($lastname);
+
+                    continue;
+                }
+                // Mothers name
+                elseif ('MotherName' == $to) {
+                    list($lastname, $firstname) = explode(' ', $from, 2);
+                    $p->setMotherFirstname($firstname);
+                    $p->setMotherLastname($lastname);
+
+                    continue;
+                }
+                elseif ('isArchived' == $to) {
+
+                    // set archived
+                    $archived = strpos($from, 'Lezárva') == false ? false : true;
+
+                    // get archived at year
+                    if ($archived) {
+                        $apices = explode(' ', trim($from));
+                        $archived_year = trim(strtr(end($apices), ["\n" => ""]));
+                        if (is_numeric($archived_year)) {
+                            $arch_date = new \DateTime($archived_year . '-12-31');
+                            // create the archive record
+                            $a = new Archive();
+                            $a->setCreatedAt($arch_date);
+                            $a->setCreatedBy($caseAdmin);
+                            $a->setType(87);  // Closed - other
+                            // we still need the client id
+                        }
+                        else {
+                            var_dump($from);
+                            die ('Archive year problem!');
+                        }
+                    }
+
+                    $p->setIsArchived($archived);
+
+                    continue;
+                }
+                elseif ('CaseType' == $to) {
+
+                    continue;
+                }
+                elseif ('MotherSSN' == $to) {
+
+                    continue;
+                }
+                // everything else
+                else {
+                    $val = $from;
+                }
+                // cleanup some unwanted values
+                if ($val === 0 || $val === '0'
+                        || $val === '00000000000' || $val === '000000000'
+                        || $val === '' || $val === 'nincs megadva' || $val === 'uaz'
+                        || $val === '?' || $val == 'Anyja neve 1' || $val == 'Anyja neve 2'
+                        || (is_string($val) && preg_match('/(yyy|xxx|aaa|bbb)/', $val))
+                    ) {
+                   $val = null;
+                }
+
+                // set the value in the entity
+                $p->$setter($val);
+            }
+
+            // manage the object
+            $em->persist($p);
+            $em->flush();
+            // save the archive
+            if (!is_null($a)) {
+                $a->setClientId($p->getId());
+                $em->persist($a);
+                $em->flush();
+            }
+
+            $n++;
+
+        }
+    }
+
+    protected function getXlsxMap($first_row)
+    {
+        $map = [];
+        // map of the xlsx columns
+        // if multiple columns have the same name, we use an array with the target field names
+        $fieldmap = [
+            'Ügyirat szám' => 'CaseLabel',
+            'taj' => ['SocialSecurityNumber', 'MotherSSN'],
+            'Taj' => ['SocialSecurityNumber', 'MotherSSN'],
+            'Állapot' => 'isArchived',
+            'Aktuális Állapot' => 'isArchived',
+            'akta nyitás dátuma' => 'CreatedAt',
+            'Ügy tipusa' => 'CaseType',
+            'Gyermek ( kliens ) neve' => 'Name',
+            'Születési dátum' => 'BirthDate',
+            'Anya taj száma' => 'MotherSSN',
+            'Anyja leánykori neve' => 'MotherName',
+            'Családgondozó neve' => 'CaseAdmin',
+            'Irányitó- szám' => ['ZipCode', 'LocationZipCode'],
+            'Utca' => ['Street', 'LocationStreet'],
+            'Házszám' => ['StreetNumber','LocationStreetNumber'],
+            'Emelet/ajtó' => ['FlatNumber','LocationFlatNumber'],
+
+            'Megjegyzés' => 'Note'
+        ];
+
+        // fields that we already found
+        $seen_fields = [];
+        $unmapped_fields = [];
+        foreach ($first_row as $index => $cell) {
+            // clean up cell name
+            $cell = trim(strtr($cell, ["\n" => "", '    ' => '', '(Á)' => '']));
+
+            if (!isset($fieldmap[$cell])) {
+                $unmapped_fields[] = $cell;
+            }
+            else {
+                $target = $fieldmap[$cell];
+                if (is_array($target)) {
+                    // check if we saw this column?
+                    if (empty($seen_fields[$cell])) {
+                        // first occasion
+                        $target = $target[0];
+                        $seen_fields[$cell] = 1;
+                    }
+                    else {
+                        // not the first time we see this col
+                        $target = $target[$seen_fields[$cell]];
+                        $seen_fields[$cell]++;
+                    }
+                }
+                $map[$index] = $target;
+            }
+        }
+
+        //var_dump($map, $unmapped_fields);
+
+        return $map;
+    }
 
     protected function importArchive($limit = 100)
     {

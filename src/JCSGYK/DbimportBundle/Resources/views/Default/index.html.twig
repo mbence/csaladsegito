@@ -10,6 +10,8 @@
 <br>
 <div class="adminblock">
     <form action="" method="POST" name="start">
+        <fieldset>
+        <legend>Családsegítő</legend>
         <dl class="import_controls">
 
             <dt>1) Users</dt>
@@ -76,6 +78,27 @@
         <div class="clear"></div>
         <br>
     <!--    <button type="submit" name="import" value="all" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import All Tables</button> -->
+    </fieldset>
+    </form>
+</div>
+
+<div class="adminblock leftpad20">
+    <form action="" method="POST" name="start">
+        <fieldset>
+        <legend>Gyermekjólét</legend>
+        <dl class="import_controls">
+
+            <dt>1) XLS</dt>
+            <dd>
+                <button type="submit" class="greybutton" name="import" value="gyejo100" {# onclick="return confirm('{{ 'Biztos benne?'|trans() }}')" #}>Import 100 &nbsp;</button>
+                &nbsp;&nbsp;
+                <button type="submit" class="button" name="import" value="gyejo" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
+                {% if results.gyejo is defined %}
+                    Succesfully imported {{ results.gyejo }}
+                {% endif %}
+            </dd>
+        </dl>
+        </fieldset>
     </form>
 </div>
 {% endblock %}
