@@ -142,12 +142,13 @@ class ImportController extends Controller
     protected function processXlsx($sheet_data)
     {
         //var_dump($sheet_data);
+        $n = 0;
         $field_map = [];
-        $date_fields = ['CreatedAt'];
+        $date_fields = ['CreatedAt', 'BirthDate'];
         $user_fields = ['CaseAdmin'];
 
         $em = $this->getDoctrine()->getManager();
-        
+
         // clean the table
         $this->truncate('client');
 
@@ -161,6 +162,8 @@ class ImportController extends Controller
             }
 
             $a = null;
+            $caseAdmin = null;
+
             $p = new Client();
             $p->setCompanyId($this->companyID);
             $p->setType(Client::CW);
@@ -173,7 +176,6 @@ class ImportController extends Controller
                 // check and convert date fields
                 if (in_array($to, $date_fields)) {
                     $from = substr(strtr($from, ['.' => '-']), 0, -1);
-
                     $val = new \DateTime($from);
                 }
                 // user remap
@@ -196,22 +198,32 @@ class ImportController extends Controller
                 }
                 // Name
                 elseif ('Name' == $to) {
-                    list($lastname, $firstname) = explode(' ', $from, 2);
+                    $names = explode(' ', $from, 2);
                     if (empty($from)) {
-                        $lastname = 'ismeretlen';
-                        $firstname = 'ismeretlen';
+                        $names = ['ismeretlen', 'ismeretlen'];
                     }
-                    $p->setFirstname($firstname);
-                    $p->setLastname($lastname);
+                    if (!empty($names[1])) {
+                        $p->setFirstname($names[1]);
+                    }
+                    if (!empty($names[0])) {
+                        $p->setLastname($names[0]);
+                    }
 
                     continue;
                 }
                 // Mothers name
                 elseif ('MotherName' == $to) {
-                    list($lastname, $firstname) = explode(' ', $from, 2);
-                    $p->setMotherFirstname($firstname);
-                    $p->setMotherLastname($lastname);
-
+                    $names = explode(' ', $from, 2);
+                    if (empty($from)) {
+                        $names = ['ismeretlen', 'ismeretlen'];
+                    }
+                    if (!empty($names[1])) {
+                        $p->setMotherFirstname($names[1]);
+                    }
+                    if (!empty($names[0])) {
+                        $p->setMotherLastname($names[0]);
+                    }
+                   
                     continue;
                 }
                 elseif ('isArchived' == $to) {
@@ -227,8 +239,8 @@ class ImportController extends Controller
                             $arch_date = new \DateTime($archived_year . '-12-31');
                             // create the archive record
                             $a = new Archive();
+                            //var_dump($arch_date);
                             $a->setCreatedAt($arch_date);
-                            $a->setCreatedBy($caseAdmin);
                             $a->setType(87);  // Closed - other
                             // we still need the client id
                         }
@@ -274,6 +286,7 @@ class ImportController extends Controller
             // save the archive
             if (!is_null($a)) {
                 $a->setClientId($p->getId());
+                $a->setCreatedBy($p->getCaseAdmin());
                 $em->persist($a);
                 $em->flush();
             }
@@ -281,6 +294,8 @@ class ImportController extends Controller
             $n++;
 
         }
+
+        return $n;
     }
 
     protected function getXlsxMap($first_row)
