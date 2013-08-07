@@ -740,7 +740,7 @@ class Client
      */
     public function setSocialSecurityNumber($socialSecurityNumber)
     {
-        $this->socialSecurityNumber = $socialSecurityNumber;
+        $this->socialSecurityNumber = $this::cleanupNum($socialSecurityNumber);
 
         return $this;
     }
@@ -1731,5 +1731,15 @@ class Client
         $plist = $this->getParams();
 
         return isset($plist[$groupid]) ? $plist[$groupid] : null;
+    }
+
+    /**
+     * Removes - . _ and spaces from the input. Used by Social security numbers
+     * @param string $in
+     * @return string
+     */
+    public static function cleanupNum($in)
+    {
+        return strtr(trim($in), ['-' => '', '.' => '', ' ' => '', '_' => '']);
     }
 }
