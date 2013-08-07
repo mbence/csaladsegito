@@ -12,6 +12,8 @@ use JCSGYK\DbimportBundle\Entity\Debt;
 use JCSGYK\DbimportBundle\Entity\Event;
 use JCSGYK\DbimportBundle\Entity\Archive;
 use JCSGYK\DbimportBundle\Entity\UtilityproviderClientnumber;
+use JCSGYK\DbimportBundle\Entity\Relation;
+
 
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
@@ -21,6 +23,8 @@ class ImportController extends Controller
     private $companyID = 1;
 
     private $user_id_map = [];
+    private $userlist = [];
+    private $caselist = [];
 
     /**
      * @Secure(roles="ROLE_SUPER_ADMIN")
@@ -94,23 +98,30 @@ class ImportController extends Controller
         include_once 'PHPExcel/PHPExcel/IOFactory.php';
 
         $input_files = [
-            '2012-2013.xlsx' => ['2013','2012'],
-            '2010-2011.xlsx' => ['2011','1000-2010összesítő']
+            '2012-2013.xlsx' => ['2013'], //,'2012'],
+            //'2010-2011.xlsx' => ['2011','1000-2010összesítő']
         ];
         //error_reporting(E_ALL ^ E_NOTICE);
 
+        // clean the tables
+        $this->truncate('client');
+        $this->truncate('archive');
+        $this->truncate('relation');
+        $this->truncate('address');
+
+        $n = 0;
         // load the xls sheets
         foreach ($input_files as $input_file => $sheets) {
-            $this->readXlsx($input_file, $sheets);
+            $n += $this->readXlsx($input_file, $sheets);
             //break;
         }
 
-        $n = 100;
         return $n;
     }
 
 
     protected function readXlsx($file, $sheets) {
+        $n = 0;
         $db_dir = '../src/JCSGYK/DbImportBundle/db/';
         $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
         $objReader->setReadDataOnly(true);
@@ -121,12 +132,12 @@ class ImportController extends Controller
 
         foreach ($names as $index => $name) {
             $sheet_data = $objPHPExcel->getSheet($index)->toArray();
-            $this->processXlsx($sheet_data);
+            $n += $this->processXlsx($sheet_data);
 
             //break;
         }
 
-        return $objPHPExcel;
+        return $n;
     }
 
     /**
@@ -136,7 +147,68 @@ class ImportController extends Controller
      */
     protected function userRemap($user_name)
     {
-        return 1;
+        // initial settings for super users
+        if (empty($this->userlist)) {
+            $this->truncate('admin_user');
+            $sa = $this->addSuperAdmin();
+
+            $this->userlist[$sa->getLastName() . ' ' . $sa->getFirstname()] = $sa->getId();
+
+        }
+
+        // look for username
+        if (isset($this->userlist[$user_name])) {
+            return $this->userlist[$user_name];
+        }
+        else {
+            // user not found, create it
+            $names = explode(' ', trim($user_name), 2);
+            $firstname = !empty($names[1]) ? $names[1] : '';
+            $lastname = !empty($names[0]) ? $names[0] : '';
+
+            $userManager = $this->container->get('fos_user.user_manager');
+            $em = $this->getDoctrine()->getManager();
+
+            $user = $userManager->createUser();
+            $user->setUsername(strtolower(trim(strtr($user_name, [' ' => '']))));
+            $user->setPlainPassword('gyejo');
+            //$user->setEmail();
+            $user->setRoles(['ROLE_CHILD_WELFARE']);
+            $user->setEnabled(false);
+            $user->setCompanyId($this->companyID);
+            $user->setFirstname($firstname);
+            $user->setLastname($lastname);
+            $userManager->updateUser($user);
+
+            $em->flush();
+
+            // save userlist
+            $this->userlist[$user_name] = $user->getId();
+
+            return $user->getId();
+        }
+    }
+
+    protected function addSuperAdmin()
+    {
+        // add the superadmin
+        $userManager = $this->container->get('fos_user.user_manager');
+        $em = $this->getDoctrine()->getManager();
+
+        $user = new User('8monh30zxj404wggc48gsg840sk088k');
+        $user->setUsername('bence');
+        $user->setPassword('tknMFBTjss49Q4QeXpslTbKJptBGMGknSRsCfCCsrUqtB8PTk1BviF1J5qehhHwlvCJ5JEtQYAA3qGurfv4ylw==');
+        $user->setEmail('mxbence@gmail.com');
+        $user->setRoles(['ROLE_SUPER_ADMIN']);
+        $user->setEnabled(true);
+        $user->setCompanyId($this->companyID);
+        $user->setFirstname('Bence');
+        $user->setLastname('Mészáros');
+        $userManager->updateUser($user);
+
+        $em->flush();
+
+        return $user;
     }
 
     protected function processXlsx($sheet_data)
@@ -145,12 +217,8 @@ class ImportController extends Controller
         $n = 0;
         $field_map = [];
         $date_fields = ['CreatedAt', 'BirthDate'];
-        $user_fields = ['CaseAdmin'];
 
         $em = $this->getDoctrine()->getManager();
-
-        // clean the table
-        $this->truncate('client');
 
         // process the rows
         foreach ($sheet_data as $row_index => $row) {
@@ -158,6 +226,10 @@ class ImportController extends Controller
                 // map the columns to the field names. The cols of different sheets have some small differences
                 $field_map = $this->getXlsxMap($row);
 
+                continue;
+            }
+            if (empty($row[0])) {
+                // skip empty rows
                 continue;
             }
 
@@ -179,12 +251,13 @@ class ImportController extends Controller
                     $val = new \DateTime($from);
                 }
                 // user remap
-                elseif (in_array($to, $user_fields)) {
+                elseif ('CaseAdmin' == $to) {
                     $val = $this->userRemap($from);
+                    $p->setCreatedBy($val);
                 }
                 // Street type
                 elseif ('Street' == $to) {
-                   list($val, $st) = $this->streetFix($from);
+                   list($val, $st) = $this->streetFix($from, false);
                    $p->setStreetType($st);
                 }
                 // Street Number
@@ -193,8 +266,12 @@ class ImportController extends Controller
                 }
                 // Location Street type
                 elseif ('LocationStreet' == $to) {
-                   list($val, $st) = $this->streetFix($from);
+                   list($val, $st) = $this->streetFix($from, false);
                    $p->setLocationStreetType($st);
+                }
+                // Zip
+                elseif ('ZipCode' == $to || 'LocationZipCode' == $to) {
+                    $val = substr(trim($from), 0, 4);
                 }
                 // Name
                 elseif ('Name' == $to) {
@@ -223,18 +300,18 @@ class ImportController extends Controller
                     if (!empty($names[0])) {
                         $p->setMotherLastname($names[0]);
                     }
-                   
+
                     continue;
                 }
-                elseif ('isArchived' == $to) {
+                elseif ('IsArchived' == $to) {
 
                     // set archived
-                    $archived = strpos($from, 'Lezárva') == false ? false : true;
+                    $archived = strpos($from, 'Lezárva') === false ? 0 : 1;
 
                     // get archived at year
                     if ($archived) {
-                        $apices = explode(' ', trim($from));
-                        $archived_year = trim(strtr(end($apices), ["\n" => ""]));
+                        $apices = explode("\n", trim($from));
+                        $archived_year = trim(end($apices));
                         if (is_numeric($archived_year)) {
                             $arch_date = new \DateTime($archived_year . '-12-31');
                             // create the archive record
@@ -250,11 +327,20 @@ class ImportController extends Controller
                         }
                     }
 
-                    $p->setIsArchived($archived);
-
-                    continue;
+                    $val = $archived;
+                }
+                elseif ('CaseLabel' == $to) {
+                    list($cyear, $cnum) = explode('/', $from);
+                    $p->setCaseNumber($cnum);
+                    $p->setCaseYear($cyear);
+                    $val = trim($from);
                 }
                 elseif ('CaseType' == $to) {
+                    // only look for 'ÁN'
+
+                    if (strpos($from, 'ÁN') !== false) {
+                        $p->setParams([101 => 113]);
+                    }
 
                     continue;
                 }
@@ -280,9 +366,17 @@ class ImportController extends Controller
                 $p->$setter($val);
             }
 
+            // set the city
+            $p->setCity('Budapest');
+            $ls = $p->getLocationStreet();
+            if (!empty($ls)) {
+                $p->setLocationCity('Budapest');
+            }
+
             // manage the object
             $em->persist($p);
             $em->flush();
+
             // save the archive
             if (!is_null($a)) {
                 $a->setClientId($p->getId());
@@ -291,8 +385,45 @@ class ImportController extends Controller
                 $em->flush();
             }
 
-            $n++;
+            // check the case list if we already had this mother
+            if (!empty($this->caselist[$p->getCaseLabel()])) {
+                // case found, use the mother id
+                $mother_id = $this->caselist[$p->getCaseLabel()];
+            }
+            else {
+                // save the mother
+                $mother = new Client();
+                $mother->setCompanyId($this->companyID);
+                $mother->setType(Client::PARENT);
+                $mother->setCreatedBy($p->getCreatedBy());
+                $mother->setIsArchived(false);
+                $mother->setFirstname($p->getMotherFirstname());
+                $mother->setLastname($p->getMotherLastname());
+                $mother->setGender(2);
+                // set case admin and numbers
+                $mother->setCaseYear($p->getCaseYear());
+                $mother->setCaseNumber($p->getCaseNumber());
+                $mother->setCaseAdmin($p->getCaseAdmin());
+                // set the visible case number
+                $mother->setCaseLabel($p->getCaseLabel());
 
+                $em->persist($mother);
+                $em->flush();
+
+                $mother_id = $mother->getId();
+                $this->caselist[$p->getCaseLabel()] = $mother_id;
+            }
+
+            // save the relation
+            $rel = new Relation();
+            $rel->setType(Relation::MOTHER);
+            $rel->setChildId($p->getId());
+            $rel->setParentId($mother_id);
+
+            $em->persist($rel);
+            $em->flush();
+
+            $n++;
         }
 
         return $n;
@@ -307,8 +438,8 @@ class ImportController extends Controller
             'Ügyirat szám' => 'CaseLabel',
             'taj' => ['SocialSecurityNumber', 'MotherSSN'],
             'Taj' => ['SocialSecurityNumber', 'MotherSSN'],
-            'Állapot' => 'isArchived',
-            'Aktuális Állapot' => 'isArchived',
+            'Állapot' => 'IsArchived',
+            'Aktuális Állapot' => 'IsArchived',
             'akta nyitás dátuma' => 'CreatedAt',
             'Ügy tipusa' => 'CaseType',
             'Gyermek ( kliens ) neve' => 'Name',
@@ -781,16 +912,8 @@ class ImportController extends Controller
         $this->truncate('_tmp_idmap');
 
         // add the superadmin
-        $user = new User('8monh30zxj404wggc48gsg840sk088k');
-        $user->setUsername('bence');
-        $user->setPassword('tknMFBTjss49Q4QeXpslTbKJptBGMGknSRsCfCCsrUqtB8PTk1BviF1J5qehhHwlvCJ5JEtQYAA3qGurfv4ylw==');
-        $user->setEmail('mxbence@gmail.com');
-        $user->setRoles(['ROLE_SUPER_ADMIN']);
-        $user->setEnabled(true);
-        $user->setCompanyId($this->companyID);
-        $user->setFirstname('Bence');
-        $user->setLastname('Mészáros');
-        $userManager->updateUser($user);
+        $this->addSuperAdmin();
+
         // add the testers
         $user = new User('mbxrw64tn4gc88oo8koogwk80wogk84');
         $user->setUsername('jancsor');
@@ -1082,7 +1205,7 @@ class ImportController extends Controller
      * @param string $in street and street type
      * @return array
      */
-    protected function streetFix($in)
+    protected function streetFix($in, $conv = true)
     {
         $street_type = '';
 
@@ -1091,7 +1214,12 @@ class ImportController extends Controller
         // short name fix list
         $stype_convert = ['u' => 'utca', 'u.' => 'utca', 'krt' => 'körút', 'krt.' => 'körút'];
         // get and convert the value
-        $street = $this->conv($in);
+        if ($conv) {
+            $street = $this->conv($in);
+        }
+        else {
+            $street = trim($in);
+        }
         // split the street type from the street
         $stpos = strrpos($street, ' ');
         if ($stpos !== false) {
