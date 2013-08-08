@@ -212,17 +212,13 @@ class ImportController extends Controller
             $this->get('session')->set('caselist', []);
         }
 
-        $length = 10;
+        $length = 30;
 
         foreach ($names as $index => $name) {
             $sheet_data = $objPHPExcel->getSheet($index)->toArray();
             $this->field_map = $this->getXlsxMap($sheet_data[0]);
 
             $paged_data = array_slice($sheet_data, $from, $length);
-
-            var_dump($paged_data);
-            die();
-
 
             $n += $this->processXlsx($paged_data);
         }
@@ -377,8 +373,10 @@ class ImportController extends Controller
                 }
                 // user remap
                 elseif ('CaseAdmin' == $to) {
-                    $val = $this->userRemap($from);
-                    $p->setCreatedBy($val);
+                    if (!empty($from)) {
+                        $val = $this->userRemap($from);
+                        $p->setCreatedBy($val);
+                    }
                 }
                 // Street type
                 elseif ('Street' == $to) {
