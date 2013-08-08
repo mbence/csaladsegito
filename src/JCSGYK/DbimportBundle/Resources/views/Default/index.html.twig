@@ -88,17 +88,32 @@
         <legend>Gyermekjólét</legend>
         <dl class="import_controls">
 
-            <dt>1) XLS</dt>
+            <dt>1) Truncate</dt>
             <dd>
-                <button type="submit" class="greybutton" name="import" value="gyejo100" {# onclick="return confirm('{{ 'Biztos benne?'|trans() }}')" #}>Import 100 &nbsp;</button>
-                &nbsp;&nbsp;
-                <button type="submit" class="button" name="import" value="gyejo" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Import All &nbsp; </button>
-                {% if results.gyejo is defined %}
-                    Succesfully imported {{ results.gyejo }}
-                {% endif %}
+                <button type="submit" class="button" name="import" value="truncate" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Truncate tables &nbsp;</button>
             </dd>
+            {% for sheet in sheets %}
+            <dt>{{ loop.index + 1 }}) {{ sheet.name }}</dt>
+            <dd>
+                <button type="submit" class="button" name="import" id="import_{{ sheet.id }}" value="{{ sheet.id }}" {#onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"#}>Import &nbsp;</button>
+            </dd>
+            {% endfor %}
         </dl>
+        {% if results.gyejo is defined %}
+            <div>{{ results.gyejo }}</div>
+        {% endif %}
         </fieldset>
+        {% if reload.from is defined %}
+            <input type="hidden" name="from" value="{{ reload.from }}">
+        {% endif %}
     </form>
+    {% if reload.script is defined %}
+        <script>
+            setTimeout(function() {
+                $("#{{ reload.script }}").click();
+            }, 10);
+        </script>
+    {% endif %}
+
 </div>
 {% endblock %}

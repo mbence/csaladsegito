@@ -26,6 +26,9 @@ class ImportController extends Controller
     private $userlist = [];
     private $caselist = [];
 
+    private $reload = null;
+
+
     /**
      * @Secure(roles="ROLE_SUPER_ADMIN")
      */
@@ -77,67 +80,182 @@ class ImportController extends Controller
             }
 
             // Gyejo
-            if ('gyejo' == $table || 'gyejo100' == $table) {
-                $limit = 'gyejo100' == $table ? 100 : 0;
-
-                $results['gyejo'] = $this->importGyejo($limit);
+            if ('truncate' == $table) {
+                $results['gyejo'] = $this->truncateTables();
             }
+            $sheets = $this->getSheets();
+            if (isset($sheets[$table])) {
+                $results['gyejo'] = $this->importGyejo($sheets[$table]);
+            }
+
             $session->set('results', $results);
 
             //return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
         }
+
         $r = $session->get('results', $results);
         //$session->remove('results');
 
-        return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r]);
+        return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r, 'sheets' => $this->getSheets($results), 'reload' => $this->reload]);
     }
 
+    protected function getSheets($results = [])
+    {
+        $sheets = [
+            'sheet1' => [
+                'id' => 'sheet1',
+                'name' => '1000',
+                'file' => '2010-2011.xlsx',
+                'results' => null
+            ],
+            'sheet2' => [
+                'id' => 'sheet2',
+                'name' => '2000',
+                'file' => '2010-2011.xlsx',
+                'results' => null
+            ],
+            'sheet3' => [
+                'id' => 'sheet3',
+                'name' => '2002',
+                'file' => '2010-2011.xlsx',
+                'results' => null
+            ],
+            'sheet4' => [
+                'id' => 'sheet4',
+                'name' => '2004',
+                'file' => '2010-2011.xlsx',
+                'results' => null
+            ],
+            'sheet5' => [
+                'id' => 'sheet5',
+                'name' => '2006',
+                'file' => '2010-2011.xlsx',
+                'results' => null
+            ],
+            'sheet6' => [
+                'id' => 'sheet6',
+                'name' => '2008',
+                'file' => '2010-2011.xlsx',
+                'results' => null
+            ],
+            'sheet7' => [
+                'id' => 'sheet7',
+                'name' => '2010',
+                'file' => '2010-2011.xlsx',
+                'results' => null
+            ],
+            'sheet8' => [
+                'id' => 'sheet8',
+                'name' => '2011',
+                'file' => '2010-2011.xlsx',
+                'results' => null
+            ],
+            'sheet9' => [
+                'id' => 'sheet9',
+                'name' => '2012',
+                'file' => '2012-2013.xlsx',
+                'results' => null
+            ],
+            'sheet10' => [
+                'id' => 'sheet10',
+                'name' => '2013',
+                'file' => '2012-2013.xlsx',
+                'results' => null
+            ],
 
-    protected function importGyejo($limit = 100)
+        ];
+        foreach ($sheets as $n => $sheet) {
+            if (isset($result[$sheet['id']])) {
+                $sheets[$n]['results'] = $result[$sheet['id']];
+            }
+        }
+
+        return $sheets;
+    }
+
+    // clean the tables
+    protected function truncateTables()
+    {
+        $tables = ['client', 'archive', 'relation', 'address'];
+
+        foreach ($tables as $table) {
+            $this->truncate($table);
+        }
+
+        // clear the session too
+        $this->get('session')->set('caselist', []);
+
+        return 'Succesfully truncated ' . implode(', ', $tables);
+    }
+
+    protected function importGyejo($sheet)
     {
         include_once 'PHPExcel/PHPExcel/IOFactory.php';
 
-        $input_files = [
-            '2012-2013.xlsx' => ['2013'], //,'2012'],
-            //'2010-2011.xlsx' => ['2011','1000-2010összesítő']
-        ];
-        //error_reporting(E_ALL ^ E_NOTICE);
+        // load the case list
+        $this->caselist = $this->get('session')->get('caselist');
 
-        // clean the tables
-        $this->truncate('client');
-        $this->truncate('archive');
-        $this->truncate('relation');
-        $this->truncate('address');
-
-        $n = 0;
-        // load the xls sheets
-        foreach ($input_files as $input_file => $sheets) {
-            $n += $this->readXlsx($input_file, $sheets);
-            //break;
-        }
-
-        return $n;
-    }
-
-
-    protected function readXlsx($file, $sheets) {
         $n = 0;
         $db_dir = '../src/JCSGYK/DbImportBundle/db/';
         $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
         $objReader->setReadDataOnly(true);
-        $objReader->setLoadSheetsOnly($sheets);
-        $objPHPExcel = $objReader->load($db_dir . $file);
+        $objReader->setLoadSheetsOnly($sheet['name']);
+        $objPHPExcel = $objReader->load($db_dir . $sheet['file']);
 
         $names = $objPHPExcel->getSheetNames();
 
-        foreach ($names as $index => $name) {
-            $sheet_data = $objPHPExcel->getSheet($index)->toArray();
-            $n += $this->processXlsx($sheet_data);
-
-            //break;
+        $request = $this->getRequest();
+        $from = $request->request->get('from');
+        if (empty($from)) {
+            $from = 0;
+            // clear the session too
+            $this->get('session')->set('caselist', []);
         }
 
-        return $n;
+        $length = 10;
+
+        foreach ($names as $index => $name) {
+            $sheet_data = $objPHPExcel->getSheet($index)->toArray();
+            $this->field_map = $this->getXlsxMap($sheet_data[0]);
+
+            $paged_data = array_slice($sheet_data, $from, $length);
+
+            var_dump($paged_data);
+            die();
+
+
+            $n += $this->processXlsx($paged_data);
+        }
+
+        if ($from + $length < count($sheet_data)) {
+            $this->reload = [
+                'from' => $from + $length,
+                'script' => 'import_' . $sheet['id'],
+            ];
+        }
+
+        // save the case list
+        $this->get('session')->set('caselist', $this->caselist);
+
+        return 'Succesfully imported rows ' . $from . '-' . ($from + $length);
+    }
+
+    protected function readUsers()
+    {
+        // find all users
+        $users = $this->getDoctrine()->getManager()->getRepository('JCSGYKAdminBundle:User')
+                ->findBy(['companyId' => $this->companyID]);
+
+        if (!empty($users)) {
+            foreach($users as $user) {
+                $full_name = $user->getLastname() . ' ' . $user->getFirstname();
+                // store the users in the userlist
+                if (empty($this->userlist[$full_name])) {
+                    $this->userlist[$full_name] = $user->getId();
+                }
+            }
+        }
+
     }
 
     /**
@@ -149,11 +267,15 @@ class ImportController extends Controller
     {
         // initial settings for super users
         if (empty($this->userlist)) {
-            $this->truncate('admin_user');
-            $sa = $this->addSuperAdmin();
+            // read the existing users
+            $this->readUsers();
+            if (empty($this->userlist)) {
+                // no user found, initialize with the superadmin
+                $this->truncate('admin_user');
+                $sa = $this->addSuperAdmin();
 
-            $this->userlist[$sa->getLastName() . ' ' . $sa->getFirstname()] = $sa->getId();
-
+                $this->userlist[$sa->getLastName() . ' ' . $sa->getFirstname()] = $sa->getId();
+            }
         }
 
         // look for username
@@ -215,21 +337,22 @@ class ImportController extends Controller
     {
         //var_dump($sheet_data);
         $n = 0;
-        $field_map = [];
         $date_fields = ['CreatedAt', 'BirthDate'];
 
         $em = $this->getDoctrine()->getManager();
 
         // process the rows
         foreach ($sheet_data as $row_index => $row) {
-            if ($row_index == 0) {
-                // map the columns to the field names. The cols of different sheets have some small differences
-                $field_map = $this->getXlsxMap($row);
+            //continue;
 
-                continue;
-            }
-            if (empty($row[0])) {
-                // skip empty rows
+            // check for a proper case number
+            preg_match('#^\d{4}/\d{1,3}$#', $row[0], $matches);
+
+            if (empty($row[0]) || empty($matches)) {
+                // skip empty or deleted rows
+                if (!empty($row[0])) {
+                    var_dump($row[0]);
+                }
                 continue;
             }
 
@@ -240,15 +363,17 @@ class ImportController extends Controller
             $p->setCompanyId($this->companyID);
             $p->setType(Client::CW);
 
-            foreach ($field_map as $index => $to) {
-                $from = $row[$index];
+            foreach ($this->field_map as $index => $to) {
+                $from = trim($row[$index]);
 
                 $val = null;
                 $setter = 'Set' . $to;
                 // check and convert date fields
                 if (in_array($to, $date_fields)) {
-                    $from = substr(strtr($from, ['.' => '-']), 0, -1);
-                    $val = new \DateTime($from);
+                    if (!empty($from)) {
+                        $from = substr(strtr($from, ['.' => '-']), 0, -1);
+                        $val = new \DateTime($from);
+                    }
                 }
                 // user remap
                 elseif ('CaseAdmin' == $to) {
@@ -271,7 +396,7 @@ class ImportController extends Controller
                 }
                 // Zip
                 elseif ('ZipCode' == $to || 'LocationZipCode' == $to) {
-                    $val = substr(trim($from), 0, 4);
+                    $val = substr($from, 0, 4);
                 }
                 // Name
                 elseif ('Name' == $to) {
@@ -279,12 +404,14 @@ class ImportController extends Controller
                     if (empty($from)) {
                         $names = ['ismeretlen', 'ismeretlen'];
                     }
-                    if (!empty($names[1])) {
-                        $p->setFirstname($names[1]);
+                    if (empty($names[0])) {
+                        $names[0] = '-';
                     }
-                    if (!empty($names[0])) {
-                        $p->setLastname($names[0]);
+                    if (empty($names[1])) {
+                        $names[1] = '-';
                     }
+                    $p->setFirstname($names[1]);
+                    $p->setLastname($names[0]);
 
                     continue;
                 }
@@ -294,12 +421,14 @@ class ImportController extends Controller
                     if (empty($from)) {
                         $names = ['ismeretlen', 'ismeretlen'];
                     }
-                    if (!empty($names[1])) {
-                        $p->setMotherFirstname($names[1]);
+                    if (empty($names[0])) {
+                        $names[0] = '-';
                     }
-                    if (!empty($names[0])) {
-                        $p->setMotherLastname($names[0]);
+                    if (empty($names[1])) {
+                        $names[1] = '-';
                     }
+                    $p->setMotherFirstname($names[1]);
+                    $p->setMotherLastname($names[0]);
 
                     continue;
                 }
@@ -310,21 +439,18 @@ class ImportController extends Controller
 
                     // get archived at year
                     if ($archived) {
-                        $apices = explode("\n", trim($from));
+                        $apices = explode("\n", $from);
                         $archived_year = trim(end($apices));
-                        if (is_numeric($archived_year)) {
-                            $arch_date = new \DateTime($archived_year . '-12-31');
-                            // create the archive record
-                            $a = new Archive();
-                            //var_dump($arch_date);
-                            $a->setCreatedAt($arch_date);
-                            $a->setType(87);  // Closed - other
-                            // we still need the client id
+                        if (!is_numeric($archived_year)) {
+                            $archived_year = $p->getCaseYear();
                         }
-                        else {
-                            var_dump($from);
-                            die ('Archive year problem!');
-                        }
+
+                        // create the archive record
+                        $a = new Archive();
+                        //var_dump($arch_date);
+                        $a->setCreatedAt(new \DateTime($archived_year . '-12-31'));
+                        $a->setType(87);  // Closed - other
+                        // we still need the client id
                     }
 
                     $val = $archived;
@@ -333,7 +459,7 @@ class ImportController extends Controller
                     list($cyear, $cnum) = explode('/', $from);
                     $p->setCaseNumber($cnum);
                     $p->setCaseYear($cyear);
-                    $val = trim($from);
+                    $val = $from;
                 }
                 elseif ('CaseType' == $to) {
                     // only look for 'ÁN'
@@ -424,6 +550,11 @@ class ImportController extends Controller
             $em->flush();
 
             $n++;
+        }
+
+        if (!empty($p)) {
+            // setup sequence with the last id
+            $this->get('jcs.seq')->reset(['id' => $this->companyID, 'sequencePolicy' => 1], $p->getId());
         }
 
         return $n;

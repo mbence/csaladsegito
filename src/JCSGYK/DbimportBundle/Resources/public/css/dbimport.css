@@ -1,5 +1,5 @@
 .import_controls dt {
-    width: 150px;
+    width: 180px;
     height: 35px;
     padding: 0 0 0 10px;
     margin: 0 0 6px 0;
@@ -11,7 +11,7 @@
 }
 
 .import_controls dd {
-    width: 420px;
+    width: 300px;
     height: 32px;
     padding: 3px 6px 0 0;
     margin: 0 0 6px 0;
