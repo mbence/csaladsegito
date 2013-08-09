@@ -182,6 +182,14 @@ class ImportController extends Controller
             $this->truncate($table);
         }
 
+        // clear the user table
+        $this->truncate('admin_user');
+        $sa = $this->addSuperAdmin();
+
+        $admin = $this->container->get('jcs.twig.adminextension')->formatFilename($sa->getLastName() . ' ' . $sa->getFirstname());
+        $this->userlist = [$admin => $sa->getId()];
+
+
         // clear the session too
         $this->get('session')->set('caselist', []);
 
@@ -245,9 +253,12 @@ class ImportController extends Controller
         if (!empty($users)) {
             foreach($users as $user) {
                 $full_name = $user->getLastname() . ' ' . $user->getFirstname();
+                // normalize user names
+                $user_name = strtolower($this->container->get('jcs.twig.adminextension')->formatFilename($full_name));
+
                 // store the users in the userlist
-                if (empty($this->userlist[$full_name])) {
-                    $this->userlist[$full_name] = $user->getId();
+                if (empty($this->userlist[$user_name])) {
+                    $this->userlist[$user_name] = $user->getId();
                 }
             }
         }
@@ -259,20 +270,21 @@ class ImportController extends Controller
      * @param string $user_name
      * @return int
      */
-    protected function userRemap($user_name)
+    protected function userRemap($full_name)
     {
+        $full_name = trim($full_name);
+        if (empty($full_name)) {
+            return null;
+        }
+
         // initial settings for super users
         if (empty($this->userlist)) {
             // read the existing users
             $this->readUsers();
-            if (empty($this->userlist)) {
-                // no user found, initialize with the superadmin
-                $this->truncate('admin_user');
-                $sa = $this->addSuperAdmin();
-
-                $this->userlist[$sa->getLastName() . ' ' . $sa->getFirstname()] = $sa->getId();
-            }
         }
+
+        // normalize user names
+        $user_name = strtolower($this->container->get('jcs.twig.adminextension')->formatFilename($full_name));
 
         // look for username
         if (isset($this->userlist[$user_name])) {
@@ -280,15 +292,19 @@ class ImportController extends Controller
         }
         else {
             // user not found, create it
-            $names = explode(' ', trim($user_name), 2);
+            $names = explode(' ', $full_name, 2);
             $firstname = !empty($names[1]) ? $names[1] : '';
             $lastname = !empty($names[0]) ? $names[0] : '';
+
+            if (empty($firstname) && empty($lastname)) {
+                return null;
+            }
 
             $userManager = $this->container->get('fos_user.user_manager');
             $em = $this->getDoctrine()->getManager();
 
             $user = $userManager->createUser();
-            $user->setUsername(strtolower(trim(strtr($user_name, [' ' => '']))));
+            $user->setUsername($user_name);
             $user->setPlainPassword('gyejo');
             //$user->setEmail();
             $user->setRoles(['ROLE_CHILD_WELFARE']);
@@ -367,8 +383,16 @@ class ImportController extends Controller
                 // check and convert date fields
                 if (in_array($to, $date_fields)) {
                     if (!empty($from)) {
-                        $from = substr(strtr($from, ['.' => '-']), 0, -1);
-                        $val = new \DateTime($from);
+                        $from = substr(strtr($from, ['.' => '-']), 0, 10);
+                        preg_match('#^\d{4}-\d{2}-\d{2}$#', $from, $dma);
+
+                        if (!empty($dma)) {
+                            try {
+                               $val = new \DateTime($from);
+                            } catch (\Exception $e) {
+                                // nothing
+                            }
+                        }
                     }
                 }
                 // user remap
