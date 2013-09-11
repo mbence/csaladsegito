@@ -26,3 +26,5 @@ parameters:
         2:
             1: "Új megkeresés"
             2: "Feldolgozott esemény"
+            
+    kenyszi_url: 'http://localhost/kenyszi-szerver/'

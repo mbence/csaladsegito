@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<adatszolgaltatoJogKeres
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:noNamespaceSchemaLocation='file:/Users/bence/www/csaladsegito/src/JCSGYK/AdminBundle/Resources/xml/IntezmenyKapcsolat.xsd'>
+    
+</adatszolgaltatoJogKeres>

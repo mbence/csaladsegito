@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 
 class HomeController extends Controller
@@ -24,4 +25,11 @@ class HomeController extends Controller
         return $this->render('JCSGYKAdminBundle:Home:stat.html.twig', $stat);
     }
 
+    public function kenysziAction()
+    {
+        $kenyszi = $this->get("kenyszi");
+        $result = $kenyszi->run();
+
+        return new Response($result);
+    }
 }

@@ -1,0 +1,2735 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.1">
+	<xs:simpleType name="xsString4">
+		<xs:restriction base="xs:string">
+			<xs:length value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="xsString9">
+		<xs:restriction base="xs:string">
+			<xs:length value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="xsString36">
+		<xs:restriction base="xs:string">
+			<xs:length value="36"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="xsStringMax50">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="xsStringMax60">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="xsStringMax100">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="xsStringMax254">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="254"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="xsStringMax2000">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="2000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="titulus">
+		<xs:annotation>
+			<xs:documentation>Név titulusa</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="statusz">
+		<xs:annotation>
+			<xs:documentation>Kérések státusza</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="RENDBEN"/>
+			<xs:enumeration value="FIGYELMEZTETES"/>
+			<xs:enumeration value="HIBA"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="uzenetTipus">
+		<xs:annotation>
+			<xs:documentation>Üzenetek típusa</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="UZENET"/>
+			<xs:enumeration value="FIGYELMEZTETES"/>
+			<xs:enumeration value="HIBA"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="allampolgarsag">
+		<xs:annotation>
+			<xs:documentation>Állampolgárság</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MAGYAR">
+				<xs:annotation>
+					<xs:documentation>magyar</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HONTALAN">
+				<xs:annotation>
+					<xs:documentation>hontalan</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ISMERETLEN">
+				<xs:annotation>
+					<xs:documentation>ismeretlen</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AFGAN">
+				<xs:annotation>
+					<xs:documentation>afgán</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ALAND_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>aland-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ALBAN">
+				<xs:annotation>
+					<xs:documentation>albán</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ALGERIAI">
+				<xs:annotation>
+					<xs:documentation>algériai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AMERIKAI">
+				<xs:annotation>
+					<xs:documentation>amerikai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AMERIKAI_SZAMOAI">
+				<xs:annotation>
+					<xs:documentation>amerikai-szamoai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AMERIKAI_VIRGIN_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>amerikai-virgin-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ANDORRAI">
+				<xs:annotation>
+					<xs:documentation>andorrai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ANGOLAI">
+				<xs:annotation>
+					<xs:documentation>angolai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ANGUILLAI">
+				<xs:annotation>
+					<xs:documentation>anguillai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ANTARKTISZI">
+				<xs:annotation>
+					<xs:documentation>antarktiszi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ANTIGUA_BARBUDAI">
+				<xs:annotation>
+					<xs:documentation>antigua-barbudai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ARAB_ARE">
+				<xs:annotation>
+					<xs:documentation>arab (ARE)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ARAB_SAU">
+				<xs:annotation>
+					<xs:documentation>arab (SAU)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ARGENTIN">
+				<xs:annotation>
+					<xs:documentation>argentín</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ARUBAI">
+				<xs:annotation>
+					<xs:documentation>arubai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AUSZTRAL">
+				<xs:annotation>
+					<xs:documentation>ausztrál</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AZERBAJDZSANI">
+				<xs:annotation>
+					<xs:documentation>azerbajdzsáni</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BAHAMA_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>bahama-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BAHREINI">
+				<xs:annotation>
+					<xs:documentation>bahreini</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BANGLADESI">
+				<xs:annotation>
+					<xs:documentation>bangladesi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BARBADOSI">
+				<xs:annotation>
+					<xs:documentation>barbadosi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BELARUSZI">
+				<xs:annotation>
+					<xs:documentation>belaruszi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BELGA">
+				<xs:annotation>
+					<xs:documentation>belga</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BELIZE_I">
+				<xs:annotation>
+					<xs:documentation>belize-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BENINI">
+				<xs:annotation>
+					<xs:documentation>benini</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BERMUDAI">
+				<xs:annotation>
+					<xs:documentation>bermudai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BHUTANI">
+				<xs:annotation>
+					<xs:documentation>bhutáni</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BISSAU_GUINEAI">
+				<xs:annotation>
+					<xs:documentation>bissau-guineai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BOLGAR">
+				<xs:annotation>
+					<xs:documentation>bolgár</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BOLIVIAI">
+				<xs:annotation>
+					<xs:documentation>bolíviai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BOSZNIA_HERCEGOVINAI">
+				<xs:annotation>
+					<xs:documentation>bosznia-hercegovinai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BOTSWANAI">
+				<xs:annotation>
+					<xs:documentation>botswanai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BOUVET_SZIGETI">
+				<xs:annotation>
+					<xs:documentation>bouvet-szigeti</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BRAZIL">
+				<xs:annotation>
+					<xs:documentation>brazil</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BRIT">
+				<xs:annotation>
+					<xs:documentation>brit</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BRUNEI">
+				<xs:annotation>
+					<xs:documentation>brunei</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BURKINA_FASO_I">
+				<xs:annotation>
+					<xs:documentation>Burkina Faso-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BURMAI">
+				<xs:annotation>
+					<xs:documentation>burmai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BURUNDI">
+				<xs:annotation>
+					<xs:documentation>burundi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CANTON_ENDERBURY_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>canton-enderbury-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CHILEI">
+				<xs:annotation>
+					<xs:documentation>chilei</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CIPRUSI">
+				<xs:annotation>
+					<xs:documentation>ciprusi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COCOS_KEELING_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>cocos-keeling-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COMORO_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>comoro-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COOK_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>cook-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COSTA_RICA_I">
+				<xs:annotation>
+					<xs:documentation>Costa Rica-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CSADI">
+				<xs:annotation>
+					<xs:documentation>csádi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CSEH">
+				<xs:annotation>
+					<xs:documentation>cseh</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CSEHSZLOVAK">
+				<xs:annotation>
+					<xs:documentation>csehszlovák</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAHOMEYI">
+				<xs:annotation>
+					<xs:documentation>dahomeyi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAN">
+				<xs:annotation>
+					<xs:documentation>dán</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEL_AFRIKAI">
+				<xs:annotation>
+					<xs:documentation>dél-afrikai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DELI_GEORGIAI">
+				<xs:annotation>
+					<xs:documentation>déli-georgiai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEL_KOREAI">
+				<xs:annotation>
+					<xs:documentation>dél-koreai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DOMINIKAI_DMA">
+				<xs:annotation>
+					<xs:documentation>dominikai (DMA)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DOMINIKAI_DOM">
+				<xs:annotation>
+					<xs:documentation>dominikai (DOM)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DZSIBUTI">
+				<xs:annotation>
+					<xs:documentation>dzsibuti</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ECUADORI">
+				<xs:annotation>
+					<xs:documentation>ecuadori</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EGYENLITOI_GUINEAI">
+				<xs:annotation>
+					<xs:documentation>egyenlítői-guineai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EGYIPTOMI">
+				<xs:annotation>
+					<xs:documentation>egyiptomi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ELEFANTCSONTPARTI">
+				<xs:annotation>
+					<xs:documentation>elefántcsontparti</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERITREAI">
+				<xs:annotation>
+					<xs:documentation>eritreai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ESZAKI_MARIANA_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>északi-mariana-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ESZAK_KOREAI">
+				<xs:annotation>
+					<xs:documentation>észak-koreai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ESZT">
+				<xs:annotation>
+					<xs:documentation>észt</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ETIOP">
+				<xs:annotation>
+					<xs:documentation>etióp</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FALKLAND_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>falkland-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FAROER_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>faröer-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FELSO_VOLTAI">
+				<xs:annotation>
+					<xs:documentation>felső-voltai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FIDZSI_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>fidzsi-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FINN">
+				<xs:annotation>
+					<xs:documentation>finn</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FRANCIA">
+				<xs:annotation>
+					<xs:documentation>francia</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FRANCIA_GUYANAI">
+				<xs:annotation>
+					<xs:documentation>francia-guyanai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FRANCIA_POLINEZIAI">
+				<xs:annotation>
+					<xs:documentation>francia-polinéziai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FULOP_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>fülöp-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GABONI">
+				<xs:annotation>
+					<xs:documentation>gaboni</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GAMBIAI">
+				<xs:annotation>
+					<xs:documentation>gambiai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GHANAI">
+				<xs:annotation>
+					<xs:documentation>ghánai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GILBERT_ES_ELLICE_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>Gilbert és Ellice-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GOROG">
+				<xs:annotation>
+					<xs:documentation>görög</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GRENADAI">
+				<xs:annotation>
+					<xs:documentation>grenadai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GRONLANDI">
+				<xs:annotation>
+					<xs:documentation>grönlandi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GRUZ">
+				<xs:annotation>
+					<xs:documentation>grúz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GUADELOUPE_I">
+				<xs:annotation>
+					<xs:documentation>guadeloupe-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GUAMI">
+				<xs:annotation>
+					<xs:documentation>guami</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GUATEMALAI">
+				<xs:annotation>
+					<xs:documentation>guatemalai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GUERNSEYI">
+				<xs:annotation>
+					<xs:documentation>guernseyi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GUINEAI">
+				<xs:annotation>
+					<xs:documentation>guineai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GUYANAI">
+				<xs:annotation>
+					<xs:documentation>guyanai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HAITI">
+				<xs:annotation>
+					<xs:documentation>haiti</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HEARD_SZIGETI">
+				<xs:annotation>
+					<xs:documentation>heard-szigeti</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HOLLAND">
+				<xs:annotation>
+					<xs:documentation>holland</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HOLLAND_ANTILLAKI">
+				<xs:annotation>
+					<xs:documentation>holland-antilláki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HONDURASI">
+				<xs:annotation>
+					<xs:documentation>hondurasi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HONG_KONG_I">
+				<xs:annotation>
+					<xs:documentation>Hong Kong-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HORVAT">
+				<xs:annotation>
+					<xs:documentation>horvát</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INDIAI">
+				<xs:annotation>
+					<xs:documentation>indiai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INDONEZ">
+				<xs:annotation>
+					<xs:documentation>indonéz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IR">
+				<xs:annotation>
+					<xs:documentation>ír</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IRAKI">
+				<xs:annotation>
+					<xs:documentation>iraki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IRANI">
+				<xs:annotation>
+					<xs:documentation>iráni</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IZLANDI">
+				<xs:annotation>
+					<xs:documentation>izlandi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IZRAELI">
+				<xs:annotation>
+					<xs:documentation>izraeli</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JAMAICAI">
+				<xs:annotation>
+					<xs:documentation>jamaicai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JAPAN">
+				<xs:annotation>
+					<xs:documentation>japán</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JEMENI_YEM">
+				<xs:annotation>
+					<xs:documentation>jemeni (YEM)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JEMENI_YMD">
+				<xs:annotation>
+					<xs:documentation>jemeni (YMD)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JERSEYI">
+				<xs:annotation>
+					<xs:documentation>jerseyi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JORDANIAI">
+				<xs:annotation>
+					<xs:documentation>jordániai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JUGOSZLAV">
+				<xs:annotation>
+					<xs:documentation>jugoszláv</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KAJMAN_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>kajmán-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KAMBODZSAI">
+				<xs:annotation>
+					<xs:documentation>kambodzsai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KAMERUNI">
+				<xs:annotation>
+					<xs:documentation>kameruni</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KANADAI">
+				<xs:annotation>
+					<xs:documentation>kanadai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KARACSONY_SZIGETI">
+				<xs:annotation>
+					<xs:documentation>karácsony-szigeti</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KAZAH">
+				<xs:annotation>
+					<xs:documentation>kazah</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KELET_TIMORI">
+				<xs:annotation>
+					<xs:documentation>kelet-timori</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KENYAI">
+				<xs:annotation>
+					<xs:documentation>kenyai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KINAI">
+				<xs:annotation>
+					<xs:documentation>kínai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KIRGIZ">
+				<xs:annotation>
+					<xs:documentation>kirgíz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KIRIBATI">
+				<xs:annotation>
+					<xs:documentation>kiribati</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KOLUMBIAI">
+				<xs:annotation>
+					<xs:documentation>kolumbiai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KONGOI_COD">
+				<xs:annotation>
+					<xs:documentation>kongói (COD)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KONGOI_COG">
+				<xs:annotation>
+					<xs:documentation>kongói (COG)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KOZEP_AFRIKAI">
+				<xs:annotation>
+					<xs:documentation>közép-afrikai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KUBAI">
+				<xs:annotation>
+					<xs:documentation>kubai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KUVAITI">
+				<xs:annotation>
+					<xs:documentation>kuvaiti</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAOSZI">
+				<xs:annotation>
+					<xs:documentation>laoszi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LENGYEL">
+				<xs:annotation>
+					<xs:documentation>lengyel</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LESOTHOI">
+				<xs:annotation>
+					<xs:documentation>lesothói</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LETT">
+				<xs:annotation>
+					<xs:documentation>lett</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LIBANONI">
+				<xs:annotation>
+					<xs:documentation>libanoni</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LIBERIAI">
+				<xs:annotation>
+					<xs:documentation>libériai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LIBIAI">
+				<xs:annotation>
+					<xs:documentation>líbiai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LIECHTENSTEINI">
+				<xs:annotation>
+					<xs:documentation>liechtensteini</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LITVAN">
+				<xs:annotation>
+					<xs:documentation>litván</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LUXEMBURGI">
+				<xs:annotation>
+					<xs:documentation>luxemburgi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MACEDON">
+				<xs:annotation>
+					<xs:documentation>macedón</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MADAGASZKARI">
+				<xs:annotation>
+					<xs:documentation>madagaszkári</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MAKAOI">
+				<xs:annotation>
+					<xs:documentation>makaói</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MALAJZIAI">
+				<xs:annotation>
+					<xs:documentation>malajziai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MALAWI">
+				<xs:annotation>
+					<xs:documentation>malawi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MALDIV_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>maldív-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MALI">
+				<xs:annotation>
+					<xs:documentation>mali</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MALTAI">
+				<xs:annotation>
+					<xs:documentation>máltai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MAROKKOI">
+				<xs:annotation>
+					<xs:documentation>marokkói</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MARSHALL_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>marshall-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MARTINIQUE_I">
+				<xs:annotation>
+					<xs:documentation>martinique-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MAURITANIAI">
+				<xs:annotation>
+					<xs:documentation>mauritániai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MAURITIUSI">
+				<xs:annotation>
+					<xs:documentation>mauritiusi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MAYOTTE_I">
+				<xs:annotation>
+					<xs:documentation>mayotte-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MEXIKOI">
+				<xs:annotation>
+					<xs:documentation>mexikói</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MIANMARI">
+				<xs:annotation>
+					<xs:documentation>mianmari</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MIKRONEZ">
+				<xs:annotation>
+					<xs:documentation>mikronéz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MOLDOVAI">
+				<xs:annotation>
+					<xs:documentation>moldovai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MONACOI">
+				<xs:annotation>
+					<xs:documentation>monacói</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MONGOLIAI">
+				<xs:annotation>
+					<xs:documentation>mongóliai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MONTENEGROI">
+				<xs:annotation>
+					<xs:documentation>montenegrói</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MONTSERRATI">
+				<xs:annotation>
+					<xs:documentation>montserrati</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MOZAMBIKI">
+				<xs:annotation>
+					<xs:documentation>mozambiki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NAMIB">
+				<xs:annotation>
+					<xs:documentation>namíb</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NAURUI">
+				<xs:annotation>
+					<xs:documentation>naurui</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NDK_BELI">
+				<xs:annotation>
+					<xs:documentation>NDK-beli</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NEMET">
+				<xs:annotation>
+					<xs:documentation>német</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NEPALI">
+				<xs:annotation>
+					<xs:documentation>nepáli</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NICARAGUAI">
+				<xs:annotation>
+					<xs:documentation>nicaraguai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NIGERI">
+				<xs:annotation>
+					<xs:documentation>nigeri</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NIGERIAI">
+				<xs:annotation>
+					<xs:documentation>nigériai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NIUE_I">
+				<xs:annotation>
+					<xs:documentation>niue-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NORFOLK_SZIGETI">
+				<xs:annotation>
+					<xs:documentation>norfolk-szigeti</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NORVEG">
+				<xs:annotation>
+					<xs:documentation>norvég</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NSZK_BELI">
+				<xs:annotation>
+					<xs:documentation>NSZK-beli</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NYUGAT_SZAHARAI">
+				<xs:annotation>
+					<xs:documentation>nyugat-szaharai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OLASZ">
+				<xs:annotation>
+					<xs:documentation>olasz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OMANI">
+				<xs:annotation>
+					<xs:documentation>ománi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OROSZ">
+				<xs:annotation>
+					<xs:documentation>orosz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OSZTRAK">
+				<xs:annotation>
+					<xs:documentation>osztrák</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ORMENY">
+				<xs:annotation>
+					<xs:documentation>örmény</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PAKISZTANI">
+				<xs:annotation>
+					<xs:documentation>pakisztáni</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PALAUI">
+				<xs:annotation>
+					<xs:documentation>palaui</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PANAMAI">
+				<xs:annotation>
+					<xs:documentation>panamai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PAPUA_UJ_GUINEA_I">
+				<xs:annotation>
+					<xs:documentation>Pápua Új-Guinea-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARAGUAYI">
+				<xs:annotation>
+					<xs:documentation>paraguayi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PERUI">
+				<xs:annotation>
+					<xs:documentation>perui</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PITCAIRN_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>pitcairn-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PORTUGAL">
+				<xs:annotation>
+					<xs:documentation>portugál</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PUERTO_RICO_I">
+				<xs:annotation>
+					<xs:documentation>Puerto Rico-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="QATARI">
+				<xs:annotation>
+					<xs:documentation>qatari</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REUNIONI">
+				<xs:annotation>
+					<xs:documentation>réunioni</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RHODEZIAI">
+				<xs:annotation>
+					<xs:documentation>rhodéziai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ROMAN">
+				<xs:annotation>
+					<xs:documentation>román</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RUANDAI">
+				<xs:annotation>
+					<xs:documentation>ruandai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SAINT_HELENA_I">
+				<xs:annotation>
+					<xs:documentation>Saint Helena-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SAINT_KITTS_ES_NEVIS_I">
+				<xs:annotation>
+					<xs:documentation>Saint Kitts és Nevis-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SAINT_LUCIA_I">
+				<xs:annotation>
+					<xs:documentation>Saint Lucia-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SAINT_VINCENT_I">
+				<xs:annotation>
+					<xs:documentation>Saint Vincent-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SAINT_PIERRE_I">
+				<xs:annotation>
+					<xs:documentation>saint-pierre-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SALAMON_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>salamon-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SALVADORI">
+				<xs:annotation>
+					<xs:documentation>salvadori</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SAN_MARINO_I">
+				<xs:annotation>
+					<xs:documentation>San Marino-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SAO_TOME_ES_PRINCIPE_I">
+				<xs:annotation>
+					<xs:documentation>Sao Tomé és Príncipe-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SEYCHELLE_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>seychelle-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SIERRA_LEONE_I">
+				<xs:annotation>
+					<xs:documentation>Sierra Leone-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SIKKIMI">
+				<xs:annotation>
+					<xs:documentation>sikkimi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SPANYOL">
+				<xs:annotation>
+					<xs:documentation>spanyol</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SRI_LANKAI">
+				<xs:annotation>
+					<xs:documentation>srí lankai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SURINAME_I">
+				<xs:annotation>
+					<xs:documentation>suriname-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SVAJCI">
+				<xs:annotation>
+					<xs:documentation>svájci</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SVALBARD_ES_JAN_MAYEN_I">
+				<xs:annotation>
+					<xs:documentation>Svalbard és Jan Mayen-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SVED">
+				<xs:annotation>
+					<xs:documentation>svéd</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZAMOAI">
+				<xs:annotation>
+					<xs:documentation>szamoai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZENEGALI">
+				<xs:annotation>
+					<xs:documentation>szenegáli</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZERB">
+				<xs:annotation>
+					<xs:documentation>szerb</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZERBIA_MONTENEGROI">
+				<xs:annotation>
+					<xs:documentation>szerbia-montenegrói</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZINGAPURI">
+				<xs:annotation>
+					<xs:documentation>szingapúri</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZIRIAI">
+				<xs:annotation>
+					<xs:documentation>szíriai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZLOVAK">
+				<xs:annotation>
+					<xs:documentation>szlovák</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZLOVEN">
+				<xs:annotation>
+					<xs:documentation>szlovén</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZOMALIAI">
+				<xs:annotation>
+					<xs:documentation>szomáliai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZOVJET">
+				<xs:annotation>
+					<xs:documentation>szovjet</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZUDANI">
+				<xs:annotation>
+					<xs:documentation>szudáni</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZVAZIFOLDI">
+				<xs:annotation>
+					<xs:documentation>szváziföldi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TADZSIK">
+				<xs:annotation>
+					<xs:documentation>tadzsik</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAJVANI">
+				<xs:annotation>
+					<xs:documentation>tajvani</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TANZANIAI">
+				<xs:annotation>
+					<xs:documentation>tanzániai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="THAI">
+				<xs:annotation>
+					<xs:documentation>thai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TOGOI">
+				<xs:annotation>
+					<xs:documentation>togoi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TOKELAU_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>tokelau-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TONGAI">
+				<xs:annotation>
+					<xs:documentation>tongai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TOROK">
+				<xs:annotation>
+					<xs:documentation>török</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRINIDAD_TOBAGOI">
+				<xs:annotation>
+					<xs:documentation>trinidad-tobagói</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TUNEZIAI">
+				<xs:annotation>
+					<xs:documentation>tunéziai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TURKS_ES_CAICOS_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>Turks és Caicos-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TUVALUI">
+				<xs:annotation>
+					<xs:documentation>tuvalui</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TURKMEN">
+				<xs:annotation>
+					<xs:documentation>türkmén</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UGANDAI">
+				<xs:annotation>
+					<xs:documentation>ugandai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UJ_HEBRIDAKI">
+				<xs:annotation>
+					<xs:documentation>új-hebridáki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UJ_KALEDON">
+				<xs:annotation>
+					<xs:documentation>új-kaledón</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UJ_ZELANDI">
+				<xs:annotation>
+					<xs:documentation>új-zélandi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UKRAN">
+				<xs:annotation>
+					<xs:documentation>ukrán</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="URUGUAYI">
+				<xs:annotation>
+					<xs:documentation>uruguayi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UZBEG">
+				<xs:annotation>
+					<xs:documentation>üzbég</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VANUATUI">
+				<xs:annotation>
+					<xs:documentation>vanuatui</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VATIKANI">
+				<xs:annotation>
+					<xs:documentation>vatikáni</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VENEZUELAI">
+				<xs:annotation>
+					<xs:documentation>venezuelai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VIETNAMI_VDR">
+				<xs:annotation>
+					<xs:documentation>vietnámi (VDR)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VIETNAMI_VNM">
+				<xs:annotation>
+					<xs:documentation>vietnámi (VNM)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WALLIS_ES_FUTUNA_I">
+				<xs:annotation>
+					<xs:documentation>Wallis- és Futuna-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ZAIRE_I">
+				<xs:annotation>
+					<xs:documentation>zaire-i</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ZAMBIAI">
+				<xs:annotation>
+					<xs:documentation>zambiai</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ZIMBABWEI">
+				<xs:annotation>
+					<xs:documentation>zimbabwei</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ZOLD_FOKI_SZIGETEKI">
+				<xs:annotation>
+					<xs:documentation>zöld-foki-szigeteki</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ellatasiSzukseglet">
+		<xs:annotation>
+			<xs:documentation>Gyermek ellátási szükséglete</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ATLAGOS">
+				<xs:annotation>
+					<xs:documentation>Átlagos</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KULONLEGES">
+				<xs:annotation>
+					<xs:documentation>Különleges</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SPECIALIS">
+				<xs:annotation>
+					<xs:documentation>Speciális</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ellatasOka">
+		<xs:annotation>
+			<xs:documentation>Utógondozói ellátás elrendelésének oka</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="LETFENNTARTASI_OK">
+				<xs:annotation>
+					<xs:documentation>Létfenntartási ok</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TANULMANYOK">
+				<xs:annotation>
+					<xs:documentation>Tanulmányok</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZOCIALIS_INTEZMENYRE_VAR">
+				<xs:annotation>
+					<xs:documentation>Szociális intézményre vár</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="hatosagiDontesJellege">
+		<xs:annotation>
+			<xs:documentation>Hatósági döntés jellege</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="IDEIGLENES_HATALYU_ELHELYEZES">
+				<xs:annotation>
+					<xs:documentation>Ideiglenes hatályú elhelyezés</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ATMENETI_NEVELESBE_VETEL">
+				<xs:annotation>
+					<xs:documentation>Átmeneti nevelésbe vétel</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TARTOS_NEVELESBE_VETEL">
+				<xs:annotation>
+					<xs:documentation>Tartós nevelésbe vétel</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_ELRENDELESE">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás elrendelése</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_ELRENDELESE">
+				<xs:annotation>
+					<xs:documentation>Utógondozás elrendelése</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VEDELEMBE_VETEL">
+				<xs:annotation>
+					<xs:documentation>Védelembe vétel</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="jogallasTipus">
+		<xs:annotation>
+			<xs:documentation>Állampolgársági jogállás</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MAGYARORSZAGON_ELO_MAGYAR">
+				<xs:annotation>
+					<xs:documentation>Magyarországon élő magyar</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BEVANDOROLT_KULFOLDI">
+				<xs:annotation>
+					<xs:documentation>Bevándorolt (külföldi) </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LETELEPEDETT">
+				<xs:annotation>
+					<xs:documentation>Letelepedett</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MENEKULT_KULFOLDI">
+				<xs:annotation>
+					<xs:documentation>Menekült (külföldi)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OLTALMAZOTT_KULFOLDI">
+				<xs:annotation>
+					<xs:documentation>Oltalmazott (külföldi)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EGT_TARTOZKODASI_ENGEDELYES">
+				<xs:annotation>
+					<xs:documentation>EGT tartózkodási engedélyes</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZABAD_MOZGAS_ES_TARTOZKODAS_JOGAVAL_RENDELKEZO">
+				<xs:annotation>
+					<xs:documentation>Szabad mozgás és tartózkodás jogával rendelkező</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="szolgaltatoTevekenysegTipus">
+		<xs:annotation>
+			<xs:documentation>Szolgáltatás tevékenység típusa</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SPECIALIS_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Speciális gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZO_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozó lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FEROHELY">
+				<xs:annotation>
+					<xs:documentation>Férőhely</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EMELT_SZINTU_ELLATAS">
+				<xs:annotation>
+					<xs:documentation>Emelt szintű ellátás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KULONLEGES_HIVATASOS_NEVELOSZULO">
+				<xs:annotation>
+					<xs:documentation>Különleges hivatásos nevelőszülő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NEVELOSZULO">
+				<xs:annotation>
+					<xs:documentation>Nevelőszülő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KULONLEGES_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Különleges gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IDOSZAKOS_FEROHELY">
+				<xs:annotation>
+					<xs:documentation>Időszakos férőhely</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HIVATASOS_NEVELOSZULO">
+				<xs:annotation>
+					<xs:documentation>Hivatásos nevelőszülő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IDOSEK_ELLATASA">
+				<xs:annotation>
+					<xs:documentation>Átlagos szükségletűek ellátása</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEMENS_BETEGEK_ELLATASA">
+				<xs:annotation>
+					<xs:documentation>Demens személyek ellátása</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KULONLEGES_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Különleges lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SPECIALIS_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Speciális lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SPECIALIS_HIVATASOS_NEVELOSZULO">
+				<xs:annotation>
+					<xs:documentation>Speciális hivatásos nevelőszülő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tegyesz">
+		<xs:annotation>
+			<xs:documentation>Területi Gyermekvédelmi Szakszolgálat kód</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BUDAPEST">
+				<xs:annotation>
+					<xs:documentation>Budapest</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BARANYA_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Baranya megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BACS_KISKUN_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Bács-Kiskun megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BEKES_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Békés megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BORSOD_ABAUJ_ZEMPLEN_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Borsod-Abaúj-Zemplén megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CSONGRAD_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Csongrád megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FEJER_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Fejér megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYOR_MOSON_SOPRON_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Győr-Moson-Sopron megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HAJDU_BIHAR_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Hajdú-Bihar megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HEVES_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Heves megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KOMAROM_ESZTERGOM_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Komárom-Esztergom megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NOGRAD_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Nógrád megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PEST_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Pest megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SOMOGY_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Somogy megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZABOLCS_SZATMAR_BEREG_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Szabolcs-Szatmár-Bereg megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JASZ_NAGYKUN_SZOLNOK_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Jász-Nagykun-Szolnok megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TOLNA_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Tolna megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VAS_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Vas megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VESZPREM_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Veszprém megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ZALA_MEGYE">
+				<xs:annotation>
+					<xs:documentation>Zala megye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="neveloszuloiElhelyezes">
+		<xs:annotation>
+			<xs:documentation>Gyermek hatósági döntéssel elrendelt nevelőszülői elhelyezése</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NEVELOSZULO">
+				<xs:annotation>
+					<xs:documentation>Nevelőszülő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HIVATASOS_NEVELOSZULO">
+				<xs:annotation>
+					<xs:documentation>Hivatásos nevelőszülő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SPECIALIS_HIVATASOS_NEVELOSZULO">
+				<xs:annotation>
+					<xs:documentation>Speciális hivatásos nevelőszülő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KULONLEGES_HIVATASOS_NEVELOSZULO">
+				<xs:annotation>
+					<xs:documentation>Különleges hivatásos nevelőszülő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="nem">
+		<xs:annotation>
+			<xs:documentation>Igénybevevő neme</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FERFI">
+				<xs:annotation>
+					<xs:documentation>férfi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NO">
+				<xs:annotation>
+					<xs:documentation>nő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="gyermekVagyFelnott">
+		<xs:annotation>
+			<xs:documentation>Igénybevevő besorolása</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="GYERMEK">
+				<xs:annotation>
+					<xs:documentation>Gyermek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FIATAL_FELNOTT">
+				<xs:annotation>
+					<xs:documentation>Fiatal felnőtt</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FELNOTT">
+				<xs:annotation>
+					<xs:documentation>Felnőtt</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="kozteruletJellege">
+		<xs:annotation>
+			<xs:documentation>Cím közterületének jellege</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AKNA">
+				<xs:annotation>
+					<xs:documentation>akna</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ALLAMI_GAZDASAG">
+				<xs:annotation>
+					<xs:documentation>állami gazdaság</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ALLOMAS">
+				<xs:annotation>
+					<xs:documentation>állomás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ALULJARO">
+				<xs:annotation>
+					<xs:documentation>aluljáró</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AROK">
+				<xs:annotation>
+					<xs:documentation>árok</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ATJARO">
+				<xs:annotation>
+					<xs:documentation>átjáró</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BANYA">
+				<xs:annotation>
+					<xs:documentation>bánya</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BOKOR">
+				<xs:annotation>
+					<xs:documentation>bokor</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CSATORNAORHAZ">
+				<xs:annotation>
+					<xs:documentation>csatornaőrház</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DOMB">
+				<xs:annotation>
+					<xs:documentation>domb</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DULO">
+				<xs:annotation>
+					<xs:documentation>dűlő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DULOUT">
+				<xs:annotation>
+					<xs:documentation>dűlőút</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EMLEKUT">
+				<xs:annotation>
+					<xs:documentation>emlékút</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERDEJE">
+				<xs:annotation>
+					<xs:documentation>erdeje</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERDO">
+				<xs:annotation>
+					<xs:documentation>erdő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ERDOSOR">
+				<xs:annotation>
+					<xs:documentation>erdősor</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FARM">
+				<xs:annotation>
+					<xs:documentation>farm</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FASOR">
+				<xs:annotation>
+					<xs:documentation>fasor</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FENNSIK">
+				<xs:annotation>
+					<xs:documentation>fennsík</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FORDULO">
+				<xs:annotation>
+					<xs:documentation>forduló</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FORRAS">
+				<xs:annotation>
+					<xs:documentation>forrás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FOTER">
+				<xs:annotation>
+					<xs:documentation>főtér</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FOUT">
+				<xs:annotation>
+					<xs:documentation>főút</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GAT">
+				<xs:annotation>
+					<xs:documentation>gát</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GATORHAZ">
+				<xs:annotation>
+					<xs:documentation>gátőrház</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HATARSOR">
+				<xs:annotation>
+					<xs:documentation>határsor</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HATARUT">
+				<xs:annotation>
+					<xs:documentation>határút</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HEGY">
+				<xs:annotation>
+					<xs:documentation>hegy</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HELYRAJZI_SZAM_HRSZ">
+				<xs:annotation>
+					<xs:documentation>helyrajzi szám (HRSZ.)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HIDFO">
+				<xs:annotation>
+					<xs:documentation>hídfő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IPARTELEP">
+				<xs:annotation>
+					<xs:documentation>ipartelep</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KAPU">
+				<xs:annotation>
+					<xs:documentation>kapu</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KERESZT">
+				<xs:annotation>
+					<xs:documentation>kereszt</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KERT">
+				<xs:annotation>
+					<xs:documentation>kert</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KERTALJA">
+				<xs:annotation>
+					<xs:documentation>kertalja</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KERTEK">
+				<xs:annotation>
+					<xs:documentation>kertek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KERULET">
+				<xs:annotation>
+					<xs:documentation>kerület</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KILATO">
+				<xs:annotation>
+					<xs:documentation>kilátó</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KOLONIA">
+				<xs:annotation>
+					<xs:documentation>kolónia</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KORZO">
+				<xs:annotation>
+					<xs:documentation>korzó</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KOBANYA">
+				<xs:annotation>
+					<xs:documentation>kőbánya</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KOROND">
+				<xs:annotation>
+					<xs:documentation>körönd</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KORTER">
+				<xs:annotation>
+					<xs:documentation>körtér</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KORUT">
+				<xs:annotation>
+					<xs:documentation>körút</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KORUTJA">
+				<xs:annotation>
+					<xs:documentation>körútja</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KORVASUT">
+				<xs:annotation>
+					<xs:documentation>körvasút</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KORZET">
+				<xs:annotation>
+					<xs:documentation>körzet</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KOZ">
+				<xs:annotation>
+					<xs:documentation>köz</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KULTERULET">
+				<xs:annotation>
+					<xs:documentation>külterület</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAKONEGYED">
+				<xs:annotation>
+					<xs:documentation>lakónegyed</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAKOPARK">
+				<xs:annotation>
+					<xs:documentation>lakópark</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAKOTELEP">
+				<xs:annotation>
+					<xs:documentation>lakótelep</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEJARO">
+				<xs:annotation>
+					<xs:documentation>lejáró</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEJTO">
+				<xs:annotation>
+					<xs:documentation>lejtő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEPCSO">
+				<xs:annotation>
+					<xs:documentation>lépcső</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LIGET">
+				<xs:annotation>
+					<xs:documentation>liget</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MAJOR">
+				<xs:annotation>
+					<xs:documentation>major</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MELYUT">
+				<xs:annotation>
+					<xs:documentation>mélyút</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OROM">
+				<xs:annotation>
+					<xs:documentation>orom</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ORSZAGUT">
+				<xs:annotation>
+					<xs:documentation>országút</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OBOL">
+				<xs:annotation>
+					<xs:documentation>öböl</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARK">
+				<xs:annotation>
+					<xs:documentation>park</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PART">
+				<xs:annotation>
+					<xs:documentation>part</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PAVILON">
+				<xs:annotation>
+					<xs:documentation>pavilon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PIAC">
+				<xs:annotation>
+					<xs:documentation>piac</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PINCE">
+				<xs:annotation>
+					<xs:documentation>pince</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="POSTAFIOK">
+				<xs:annotation>
+					<xs:documentation>Postafiók</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PUSZTA">
+				<xs:annotation>
+					<xs:documentation>puszta</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RAKPART">
+				<xs:annotation>
+					<xs:documentation>rakpart</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REPULOTER">
+				<xs:annotation>
+					<xs:documentation>repülőtér</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RESZ">
+				<xs:annotation>
+					<xs:documentation>rész</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RET">
+				<xs:annotation>
+					<xs:documentation>rét</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SANC">
+				<xs:annotation>
+					<xs:documentation>sánc</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SAROK">
+				<xs:annotation>
+					<xs:documentation>sarok</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SETANY">
+				<xs:annotation>
+					<xs:documentation>sétány</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SOR">
+				<xs:annotation>
+					<xs:documentation>sor</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="STRAND">
+				<xs:annotation>
+					<xs:documentation>strand</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SUGARUT">
+				<xs:annotation>
+					<xs:documentation>sugárút</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZEL">
+				<xs:annotation>
+					<xs:documentation>szél</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZER">
+				<xs:annotation>
+					<xs:documentation>szer</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZIGET">
+				<xs:annotation>
+					<xs:documentation>sziget</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SZOLO">
+				<xs:annotation>
+					<xs:documentation>szőlő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TANYA">
+				<xs:annotation>
+					<xs:documentation>tanya</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TANYAK">
+				<xs:annotation>
+					<xs:documentation>tanyák</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TELEK">
+				<xs:annotation>
+					<xs:documentation>telek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TELEP">
+				<xs:annotation>
+					<xs:documentation>telep</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TER">
+				<xs:annotation>
+					<xs:documentation>tér</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TERE">
+				<xs:annotation>
+					<xs:documentation>tere</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TERMINAL">
+				<xs:annotation>
+					<xs:documentation>terminál</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TETO">
+				<xs:annotation>
+					<xs:documentation>tető</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TO">
+				<xs:annotation>
+					<xs:documentation>tó</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TOMBBELSO">
+				<xs:annotation>
+					<xs:documentation>tömbbelső</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UDVAR">
+				<xs:annotation>
+					<xs:documentation>udvar</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UJSOR">
+				<xs:annotation>
+					<xs:documentation>újsor</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UT">
+				<xs:annotation>
+					<xs:documentation>út</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTCA">
+				<xs:annotation>
+					<xs:documentation>utca</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTCAJA">
+				<xs:annotation>
+					<xs:documentation>utcája</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTFEL">
+				<xs:annotation>
+					<xs:documentation>útfél</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTJA">
+				<xs:annotation>
+					<xs:documentation>útja</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UDULO_TELEP">
+				<xs:annotation>
+					<xs:documentation>üdülő-telep</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VOLGY">
+				<xs:annotation>
+					<xs:documentation>völgy</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ZUG">
+				<xs:annotation>
+					<xs:documentation>zug</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="szolgaltatasTipus">
+		<xs:annotation>
+			<xs:documentation>Szolgáltatás típus</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ETKEZTETES_ETKEZTETES">
+				<xs:annotation>
+					<xs:documentation>Étkeztetés / Étkeztetés</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CSALADSEGITES_CSALADSEGITES">
+				<xs:annotation>
+					<xs:documentation>Családsegítés / Családsegítés</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_UTOGONDOZO_OTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Utógondozó otthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAMOGATO_SZOLGALTATAS_SZALLITAS">
+				<xs:annotation>
+					<xs:documentation>Támogató szolgáltatás / Szállítás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_NEVELOSZULOI_HALOZAT">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Nevelőszülői hálózat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_SPECIALIS_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Speciális lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONT_NYUJTO_ELLATAS_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthont nyújtó ellátás / Lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_KULONLEGES_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Különleges lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_UTOGONDOZO_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Utógondozó lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_SPECIALIS_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Speciális gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONT_NYUJTO_ELLATAS_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthont nyújtó ellátás / Gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_KULONLEGES_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Különleges gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_UTOGONDOZO_OTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Utógondozó otthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKEK_NAPKOZBENI_ELLATASA_BOLCSODE">
+				<xs:annotation>
+					<xs:documentation>Gyermekek napközbeni ellátása / Bölcsőde</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAMOGATO_SZOLGALTATAS_SZEMELYI_SEGITES">
+				<xs:annotation>
+					<xs:documentation>Támogató szolgáltatás / Személyi segítés</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAKOOTTHON_SZENVEDELYBETEGEK_LAKOOTTHONA">
+				<xs:annotation>
+					<xs:documentation>Lakóotthon / Szenvedélybetegek lakóotthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_NEVELOSZULOI_HALOZAT">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Nevelőszülői hálózat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HAZI_SEGITSEGNYUJTAS_HAZI_SEGITSEGNYUJTAS">
+				<xs:annotation>
+					<xs:documentation>Házi segítségnyújtás / Házi segítségnyújtás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_SPECIALIS_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Speciális lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_KULONLEGES_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Különleges lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_UTOGONDOZO_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Utógondozó lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONT_NYUJTO_ELLATAS_NEVELOSZULOI_HALOZAT">
+				<xs:annotation>
+					<xs:documentation>Otthont nyújtó ellátás / Nevelőszülői hálózat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_SPECIALIS_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Speciális gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKEK_NAPKOZBENI_ELLATASA_HETES_BOLCSODE">
+				<xs:annotation>
+					<xs:documentation>Gyermekek napközbeni ellátása / Hetes bölcsőde</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAKOOTTHON_PSZICHIATRIAI_BETEGEK_LAKOOTTHONA">
+				<xs:annotation>
+					<xs:documentation>Lakóotthon / Pszichiátriai betegek lakóotthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONT_NYUJTO_ELLATAS_SPECIALIS_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthont nyújtó ellátás / Speciális lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_KULONLEGES_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Különleges gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKEK_NAPKOZBENI_ELLATASA_CSALADI_NAPKOZI">
+				<xs:annotation>
+					<xs:documentation>Gyermekek napközbeni ellátása / Családi napközi</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONT_NYUJTO_ELLATAS_KULONLEGES_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthont nyújtó ellátás / Különleges lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_HELYETTES_ES_NEVELOSZULOI_HALOZAT">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Helyettes és nevelőszülői hálózat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONT_NYUJTO_ELLATAS_SPECIALIS_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthont nyújtó ellátás / Speciális gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONT_NYUJTO_ELLATAS_KULONLEGES_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthont nyújtó ellátás / Különleges gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKJOLETI_SZOLGALTATAS_GYERMEKJOLETI_KOZPONT">
+				<xs:annotation>
+					<xs:documentation>Gyermekjóléti szolgáltatás / Gyermekjóléti központ</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="APOLAST_GONDOZAST_NYUJTO_INTEZMENY_IDOSEK_OTTHONA">
+				<xs:annotation>
+					<xs:documentation>Ápolást, gondozást nyújtó intézmény / Idősek otthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NAPPALI_ELLATAS_DEMENS_SZEMELYEK_NAPPALI_ELLATASA">
+				<xs:annotation>
+					<xs:documentation>Nappali ellátás / Demens személyek nappali ellátása</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKJOLETI_SZOLGALTATAS_GYERMEKJOLETI_SZOLGALAT">
+				<xs:annotation>
+					<xs:documentation>Gyermekjóléti szolgáltatás / Gyermekjóléti szolgálat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NAPPALI_ELLATAS_NAPPALI_ELLATAS_IDOSKORUAK_SZAMARA">
+				<xs:annotation>
+					<xs:documentation>Nappali ellátás / Nappali ellátás időskorúak számára</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NAPPALI_ELLATAS_SZENVEDELYBETEGEK_NAPPALI_ELLATASA">
+				<xs:annotation>
+					<xs:documentation>Nappali ellátás / Szenvedélybetegek nappali ellátása</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKEK_ATMENETI_GONDOZASA_ONALLO_HELYETTES_SZULO">
+				<xs:annotation>
+					<xs:documentation>Gyermekek átmeneti gondozása / Önálló helyettes szülő</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZAS_TERULETI_GYERMEKVEDELMI_SZAKSZOLGALTATAS">
+				<xs:annotation>
+					<xs:documentation>Utógondozás / Területi Gyermekvédelmi Szakszolgáltatás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKEK_ATMENETI_GONDOZASA_HELYETTES_SZULOI_HALOZAT">
+				<xs:annotation>
+					<xs:documentation>Gyermekek átmeneti gondozása / Helyettes szülői hálózat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKEK_NAPKOZBENI_ELLATASA_CSALADI_NAPKOZI_HALOZAT">
+				<xs:annotation>
+					<xs:documentation>Gyermekek napközbeni ellátása / Családi napközi hálózat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NAPPALI_ELLATAS_FOGYATEKOS_SZEMELYEK_NAPPALI_ELLATASA">
+				<xs:annotation>
+					<xs:documentation>Nappali ellátás / Fogyatékos személyek nappali ellátása</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_HELYETTES_ES_NEVELOSZULOI_HALOZAT">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Helyettes és nevelőszülői hálózat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKEK_ATMENETI_GONDOZASA_CSALADOK_ATMENETI_OTTHONA">
+				<xs:annotation>
+					<xs:documentation>Gyermekek átmeneti gondozása / Családok átmeneti otthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NAPPALI_ELLATAS_PSZICHIATRIAI_BETEGEK_NAPPALI_ELLATASA">
+				<xs:annotation>
+					<xs:documentation>Nappali ellátás / Pszichiátriai betegek nappali ellátása</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKEK_ATMENETI_GONDOZASA_GYERMEKEK_ATMENETI_OTTHONA">
+				<xs:annotation>
+					<xs:documentation>Gyermekek átmeneti gondozása / Gyermekek átmeneti otthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKEK_NAPKOZBENI_ELLATASA_CSALADI_GYERMEKFELUGYELET">
+				<xs:annotation>
+					<xs:documentation>Gyermekek napközbeni ellátása / Családi gyermekfelügyelet</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="APOLAST_GONDOZAST_NYUJTO_INTEZMENY_HAJLEKTALANOK_OTTHONA">
+				<xs:annotation>
+					<xs:documentation>Ápolást, gondozást nyújtó intézmény / Hajléktalanok otthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONT_NYUJTO_ELLATAS_HELYETTES_ES_NEVELOSZULOI_HALOZAT">
+				<xs:annotation>
+					<xs:documentation>Otthont nyújtó ellátás / Helyettes és nevelőszülői hálózat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONTEREMTESI_TAMOGATAST_KOVETO_UTOGONDOZAS_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthonteremtési támogatást követő utógondozás / Lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GYERMEKJOLETI_SZOLGALTATAS_ONALLO_GYERMEKJOLETI_SZOLGALTATO">
+				<xs:annotation>
+					<xs:documentation>Gyermekjóléti szolgáltatás / Önálló gyermekjóléti szolgáltató</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IDOSKORUAK_GONDOZOHAZANAK_SZOLGALTATASAI_EJJELI_MENEDEKHELY">
+				<xs:annotation>
+					<xs:documentation>Időskorúak gondozóházának szolgáltatásai / Éjjeli menedékhely</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONTEREMTESI_TAMOGATAST_KOVETO_UTOGONDOZAS_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthonteremtési támogatást követő utógondozás / Gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="APOLAST_GONDOZAST_NYUJTO_INTEZMENY_SZENVEDELYBETEGEK_OTTHONA">
+				<xs:annotation>
+					<xs:documentation>Ápolást, gondozást nyújtó intézmény / Szenvedélybetegek otthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NAPPALI_ELLATAS_NAPPALI_ELLATAS_HAJLEKTALAN_SZEMELYEK_SZAMARA">
+				<xs:annotation>
+					<xs:documentation>Nappali ellátás / Nappali ellátás hajléktalan személyek számára</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAKOOTTHON_FOGYATEKOS_SZEMELYEK_APOLO_GONDOZO_CELU_LAKOOTTHONA">
+				<xs:annotation>
+					<xs:documentation>Lakóotthon / Fogyatékos személyek ápoló-gondozó célú lakóotthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IDOSKORUAK_GONDOZOHAZANAK_SZOLGALTATASAI_IDOSKORUAK_GONDOZOHAZA">
+				<xs:annotation>
+					<xs:documentation>Időskorúak gondozóházának szolgáltatásai / Időskorúak gondozóháza</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAKOOTTHON_FOGYATEKOS_SZEMELYEK_REHABILITACIOS_CELU_LAKOOTTHONA">
+				<xs:annotation>
+					<xs:documentation>Lakóotthon / Fogyatékos személyek rehabilitációs célú lakóotthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="APOLAST_GONDOZAST_NYUJTO_INTEZMENY_PSZICHIATRIAI_BETEGEK_OTTHONA">
+				<xs:annotation>
+					<xs:documentation>Ápolást, gondozást nyújtó intézmény / Pszichiátriai betegek otthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REHABILITACIOS_INTEZMENY_HAJLEKTALANOK_REHABILITACIOS_INTEZMENYE">
+				<xs:annotation>
+					<xs:documentation>Rehabilitációs intézmény / Hajléktalanok rehabilitációs intézménye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONTEREMTESI_TAMOGATAST_KOVETO_UTOGONDOZAS_NEVELOSZULOI_HALOZAT">
+				<xs:annotation>
+					<xs:documentation>Otthonteremtési támogatást követő utógondozás / Nevelőszülői hálózat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_LAKASOTTHON_ALTAL_MUKODTETETT_KULSO_FEROHELYEK">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Lakásotthon által működtetett külső férőhelyek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONTEREMTESI_TAMOGATAST_KOVETO_UTOGONDOZAS_SPECIALIS_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthonteremtési támogatást követő utógondozás / Speciális lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONTEREMTESI_TAMOGATAST_KOVETO_UTOGONDOZAS_KULONLEGES_LAKASOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthonteremtési támogatást követő utógondozás / Különleges lakásotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REHABILITACIOS_INTEZMENY_SZENVEDELYBETEGEK_REHABILITACIOS_INTEZMENYE">
+				<xs:annotation>
+					<xs:documentation>Rehabilitációs intézmény / Szenvedélybetegek rehabilitációs intézménye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_GYERMEKOTTHON_ALTAL_MUKODTETETT_KULSO_FEROHELYEK">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Gyermekotthon által működtetett külső férőhelyek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONTEREMTESI_TAMOGATAST_KOVETO_UTOGONDOZAS_SPECIALIS_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthonteremtési támogatást követő utógondozás / Speciális gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONTEREMTESI_TAMOGATAST_KOVETO_UTOGONDOZAS_KULONLEGES_GYERMEKOTTHON">
+				<xs:annotation>
+					<xs:documentation>Otthonteremtési támogatást követő utógondozás / Különleges gyermekotthon</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EGYEB_SPECIALIS_SZOCIALIS_INTEZMENY_EGYEB_SPECIALIS_SZOCIALIS_INTEZMENY">
+				<xs:annotation>
+					<xs:documentation>Egyéb speciális szociális intézmény / Egyéb speciális szociális intézmény</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REHABILITACIOS_INTEZMENY_FOGYATEKOS_SZEMELYEK_REHABILITACIOS_INTEZMENYE">
+				<xs:annotation>
+					<xs:documentation>Rehabilitációs intézmény / Fogyatékos személyek rehabilitációs intézménye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REHABILITACIOS_INTEZMENY_PSZICHIATRIAI_BETEGEK_REHABILITACIOS_INTEZMENYE">
+				<xs:annotation>
+					<xs:documentation>Rehabilitációs intézmény / Pszichiátriai betegek rehabilitációs intézménye</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_UTOGONDOZO_OTTHON_ALTAL_MUKODTETETT_KULSO_FEROHELYEK">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Utógondozó otthon által működtetett külső férőhelyek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IDOSKORUAK_GONDOZOHAZANAK_SZOLGALTATASAI_FOGYATEKOS_SZEMELYEK_GONDOZOHAZA">
+				<xs:annotation>
+					<xs:documentation>Időskorúak gondozóházának szolgáltatásai / Fogyatékos személyek gondozóháza</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JELZORENDSZERES_HAZI_SEGITSEGNYUJTAS_JELZORENDSZERES_HAZI_SEGITSEGNYUJTAS">
+				<xs:annotation>
+					<xs:documentation>Jelzőrendszeres házi segítségnyújtás / Jelzőrendszeres házi segítségnyújtás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IDOSKORUAK_GONDOZOHAZANAK_SZOLGALTATASAI_SZENVEDELYBETEGEK_ATMENETI_OTTHONA">
+				<xs:annotation>
+					<xs:documentation>Időskorúak gondozóházának szolgáltatásai / Szenvedélybetegek átmeneti otthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_NEVELOSZULOI_HALOZAT_ALTAL_MUKODTETETT_KULSO_FEROHELYEK">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Nevelőszülői hálózat által működtetett külső férőhelyek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KOZOSSEGI_ELLATASOK_SZENVEDELYBETEGEK_RESZERE_NYUJTOTT_KOZOSSEGI_ALAPELLATAS">
+				<xs:annotation>
+					<xs:documentation>Közösségi ellátások / Szenvedélybetegek részére nyújtott közösségi alapellátás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_SPECIALIS_LAKASOTTHON_ALTAL_MUKODTETETT_KULSO_FEROHELYEK">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Speciális lakásotthon által működtetett külső férőhelyek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_KULONLEGES_LAKASOTTHON_ALTAL_MUKODTETETT_KULSO_FEROHELYEK">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Különleges lakásotthon által működtetett külső férőhelyek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_SPECIALIS_GYERMEKOTTHON_ALTAL_MUKODTETETT_KULSO_FEROHELYEK">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Speciális gyermekotthon által működtetett külső férőhelyek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IDOSKORUAK_GONDOZOHAZANAK_SZOLGALTATASAI_PSZICHIATRIAI_BETEGEK_ATMENETI_OTTHONA">
+				<xs:annotation>
+					<xs:documentation>Időskorúak gondozóházának szolgáltatásai / Pszichiátriai betegek átmeneti otthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONTEREMTESI_TAMOGATAST_KOVETO_UTOGONDOZAS_HELYETTES_ES_NEVELOSZULOI_HALOZAT">
+				<xs:annotation>
+					<xs:documentation>Otthonteremtési támogatást követő utógondozás / Helyettes és nevelőszülői hálózat</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_KULONLEGES_GYERMEKOTTHON_ALTAL_MUKODTETETT_KULSO_FEROHELYEK">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Különleges gyermekotthon által működtetett külső férőhelyek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IDOSKORUAK_GONDOZOHAZANAK_SZOLGALTATASAI_HAJLEKTALAN_SZEMELYEK_ATMENETI_SZALLASA">
+				<xs:annotation>
+					<xs:documentation>Időskorúak gondozóházának szolgáltatásai / Hajléktalan személyek átmeneti szállása</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="KOZOSSEGI_ELLATASOK_PSZICHIATRIAI_BETEGEK_RESZERE_NYUJTOTT_KOZOSSEGI_ALAPELLATAS">
+				<xs:annotation>
+					<xs:documentation>Közösségi ellátások / Pszichiátriai betegek részére nyújtott közösségi alapellátás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="APOLAST_GONDOZAST_NYUJTO_INTEZMENY_FOGYATEKOS_LATAS_MOZGAS_ERTELMI_SZEMELYEK_OTTHONA">
+				<xs:annotation>
+					<xs:documentation>Ápolást, gondozást nyújtó intézmény / Fogyatékos (látás, mozgás, értelmi) személyek otthona</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTTHONTEREMTESI_TAMOGATAST_KOVETO_UTOGONDOZAS_TERULETI_GYERMEKVEDELMI_SZAKSZOLGALTATAS">
+				<xs:annotation>
+					<xs:documentation>Otthonteremtési támogatást követő utógondozás / Területi Gyermekvédelmi Szakszolgáltatás</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_HELYETTES_ES_NEVELOSZULOI_HALOZAT_ALTAL_MUKODTETETT_KULSO_FEROHELYEK">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Helyettes és nevelőszülői hálózat által működtetett külső férőhelyek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UTOGONDOZOI_ELLATAS_TERULETI_GYERMEKVEDELMI_SZAKSZOLGALTATAS_ALTAL_MUKODTETETT_KULSO_FEROHELYEK">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás / Területi Gyermekvédelmi Szakszolgáltatás által működtetett külső férőhelyek</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

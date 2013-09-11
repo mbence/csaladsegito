@@ -1,0 +1,994 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.1">
+	<xs:include schemaLocation="KenysziB2B.xsd"/>
+	<xs:complexType name="uzenet">
+		<xs:annotation>
+			<xs:documentation>Egy adott üzenet tartalma</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="uzenetTipus" type="uzenetTipus">
+				<xs:annotation>
+					<xs:documentation>Üzenet típusa</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="uzenetSzoveg" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Üzenet szövege</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="valasz">
+		<xs:annotation>
+			<xs:documentation>Az egyes válaszok közös adatai</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="statusz" type="statusz"/>
+			<xs:element name="uzenet" type="uzenet" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="cim">
+		<xs:annotation>
+			<xs:documentation>Igénybevevő címe</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="iranyitoszam" type="xsString4">
+				<xs:annotation>
+					<xs:documentation>Irányítószám</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="telepules" type="xsStringMax60">
+				<xs:annotation>
+					<xs:documentation>Település neve</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="kozteruletJellege" type="kozteruletJellege" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Közterület jellege (utca, út, stb.)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="kozterulet" type="xsStringMax100" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Közterület neve</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="hazszam" type="xsStringMax50" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Házszám</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:group name="igenybevevoAzonositoAdat">
+		<xs:annotation>
+			<xs:documentation>Igénybevevő azonosítására szolgáló adatok</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="viseltCsaladiNev" type="xsStringMax254">
+				<xs:annotation>
+					<xs:documentation>Családi neve</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="viseltKeresztNev" type="xsStringMax254">
+				<xs:annotation>
+					<xs:documentation>Utóneve</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="szuletesiCsaladiNev" type="xsStringMax254">
+				<xs:annotation>
+					<xs:documentation>Születési nevének családi neve</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="szuletesiKeresztNev" type="xsStringMax254">
+				<xs:annotation>
+					<xs:documentation>Születési nevének utóneve</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="szuletesiHely" type="xsStringMax100">
+				<xs:annotation>
+					<xs:documentation>Születési helye</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="szuletesiIdo" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Születési ideje</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="anyjaCsaladiNev" type="xsStringMax254">
+				<xs:annotation>
+					<xs:documentation>Anyja nevének családi neve</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="anyjaKeresztNev" type="xsStringMax254">
+				<xs:annotation>
+					<xs:documentation>Anyja nevének utóneve</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="tajKerelmezesDatuma" type="xs:date" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>TAJ kérelmezés dátuma</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="tajszam" type="xsString9" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>TAJ száma</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:group>
+	<xs:complexType name="igenybevevo">
+		<xs:annotation>
+			<xs:documentation>A szolgáltatást/ellátást igénybevevő személy adatai</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="idTevadminIgenybevevo" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Igénybevevő Kenyszi rendszeren belüli azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="igenybevevoAzonositoAdat"/>
+			<xs:element name="viseltTitulus" type="titulus" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Nevének titulusa</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="szuletesiTitulus" type="titulus" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Születési nevének titulusa</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="anyjaTitulus" type="titulus" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Anyja nevének titulusa</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="neme" type="nem" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Neme</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="allandoLakhely" type="cim" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Állandó lakhelyének címe</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="tartozkodasiHely" type="cim" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tartózkodási helye</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="allampolgarsagiJogallasTipus" type="jogallasTipus">
+				<xs:annotation>
+					<xs:documentation>Állampolgársági jogállása</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="allampolgarsag" type="allampolgarsag">
+				<xs:annotation>
+					<xs:documentation>Állampolgársága</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="gyermek">
+		<xs:annotation>
+			<xs:documentation>Gyermek igénybevevő további adatai</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="gyermekEllatasiSzukseglet" type="ellatasiSzukseglet" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Ellátási szükséglete</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="gyermekNeveloszuloiElhelyezes" type="neveloszuloiElhelyezes">
+				<xs:annotation>
+					<xs:documentation>Hatósági döntéssel elrendelt nevelőszülői elhelyezése</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="fiatalFelnott">
+		<xs:annotation>
+			<xs:documentation>Fiatal felnőtt igénybevevő további adatai</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="fiatalFelnottEllatasa" type="neveloszuloiElhelyezes">
+				<xs:annotation>
+					<xs:documentation>Nevelőszülőnél nyújtott utógondozói ellátása</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="fiatalFelnottEllatasOka" type="ellatasOka">
+				<xs:annotation>
+					<xs:documentation>Utógondozói ellátás elrendelésének oka</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="felnott">
+		<xs:annotation>
+			<xs:documentation>Felnőtt igénybevevő további adatai</xs:documentation>
+		</xs:annotation>
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:complexType name="igenyles">
+		<xs:annotation>
+			<xs:documentation>Igénylés adatai</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="idLocalIgenyles" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Az igénylés technikai azonosítója (ez alapján lehet majd a válaszban megtalálni)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="idTevadminJog" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Jogosultság azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="megallapodasKezdete" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Megállapodás kezdetének dátuma</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="megallapodasVege" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Megállapodás végének dátuma (lehet határozatlan)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="szolgaltatoTevekenyegTipus" type="szolgaltatoTevekenysegTipus" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Szolgáltató tevékenység típusa</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="megallapodas">
+		<xs:annotation>
+			<xs:documentation>Megállapodás típusú igénylés adatai</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="igenyles">
+				<xs:sequence>
+					<xs:element name="igenybevevo" type="igenybevevo"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="hatarozat">
+		<xs:annotation>
+			<xs:documentation>Határozat típusú igénylés adatai</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="igenyles">
+				<xs:sequence>
+					<xs:element name="igenybevevo" type="igenybevevo"/>
+					<xs:choice>
+						<xs:element name="gyermek" type="gyermek"/>
+						<xs:element name="fiatalFelnott" type="fiatalFelnott"/>
+						<xs:element name="felnott" type="felnott"/>
+					</xs:choice>
+					<xs:element name="szervNeve" type="xsStringMax100">
+						<xs:annotation>
+							<xs:documentation>Határozatot hozó szerv neve</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="hatarozatSzama" type="xsStringMax50">
+						<xs:annotation>
+							<xs:documentation>Határozat száma</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="hatarozatDatum" type="xs:date">
+						<xs:annotation>
+							<xs:documentation>Határozat kelte</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="jogerosDatum" type="xs:date" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Határozat jogerőre emelkedésének dátuma</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="dontesJellege" type="hatosagiDontesJellege" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Hatósági döntés jellege</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="neveloNeve" type="xsStringMax100" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Nevelőszülő neve</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="neveloCime" type="xsStringMax254" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Nevelőszülő címe</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="tegyesz" type="tegyesz" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>TEGYESZ (megye megnevezése)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="keres">
+		<xs:annotation>
+			<xs:documentation>Kérések közös adatai</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
+	<xs:element name="nyugta">
+		<xs:annotation>
+			<xs:documentation>Az egyes kérésekre adott azonnali válasz</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="valasz">
+					<xs:sequence>
+						<xs:element name="uzenetAzonosito" type="xsString36" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Üzenet azonosítója, amire hivatkozni kell a válasz lekérdezésekor</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="varhatoValaszido" type="xs:long" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Várható válaszidő milliszekundumban</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="adatszolgaltatoJogKeres">
+		<xs:annotation>
+			<xs:documentation>Egy munkatárs le tudja kérdezni, hogy milyen adatszolgáltató jogai vannak, azaz milyen szolgáltatónak milyen szolgáltatására küldhet adatokat és ezeket milyen szolgáltatásnyújtási időszakban teheti meg</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="keres">
+					<xs:sequence/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="adatszolgaltatoJog">
+		<xs:annotation>
+			<xs:documentation>Egy adott adatszolgáltatási jogosultság adatai</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="idTevadminJog" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Jogosultság Kenyszi rendszerbeli azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="agazatiAzonosito" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Szolgáltató ágazati azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="szolgaltatasTipus" type="szolgaltatasTipus">
+				<xs:annotation>
+					<xs:documentation>Szolgáltatás típus</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ervenyessegKezdet" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Szolgáltatásnyújtási időszak kezdete</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ervenyessegVeg" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Szolgáltatásnyújtási időszak vége (lehet határozatlan)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="adatszolgaltatoJogValasz">
+		<xs:annotation>
+			<xs:documentation>Egy adott munkatárshoz kapcsolódó adatszolgáltatási jogokat tartalmazza</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="jog" type="adatszolgaltatoJog" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ujIgenylesKeres">
+		<xs:annotation>
+			<xs:documentation>Ezen a belépési ponton keresztül lehet új megállapodásokat illetve új határozatokat küldeni a Kenyszi rendszerbe. A kérés során hivatkozni kell az adatszolgáltató jog azonosítóra, amellyel megadható, hogy az adott igénylés melyik szolgáltató melyik szolgáltatására vonatkozik. Ezen kívül természetesen meg kell adni az igénylés és az igénybevevő adatait</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="keres">
+					<xs:sequence>
+						<xs:element name="megallapodas" type="megallapodas" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="hatarozat" type="hatarozat" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="igenylesValasz">
+		<xs:annotation>
+			<xs:documentation>Egy adott igénybevevő és igénylés feldolgozásának eredményét tartalmazza</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="valasz">
+				<xs:sequence>
+					<xs:element name="idLocalIgenyles" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Igénylés technikai azonosítója</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="idTevadminIgenyles" type="xs:long" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Igénylés Kenyszi rendszeren belüli azonosítója (ha valami hiba történt az igényléssel vagy az igénybevevővel, akkor ez üres)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="idTevadminIgenybevevo" type="xs:long" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Igénybevevő Kenyszi rendszeren belüli azonosítója (ha valami hiba történt az igényléssel vagy az igénybevevővel, akkor ez üres)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ujIgenylesValasz">
+		<xs:annotation>
+			<xs:documentation>Az újonnan felküldött igénylések feldolgozásának eredményeit tartalmazza</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="igenyles" type="igenylesValasz" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="modositottIgenybevevo">
+		<xs:annotation>
+			<xs:documentation>A szolgáltatást/ellátást igénybevevő személy módosított adatai</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="igenybevevo">
+				<xs:sequence>
+					<xs:element name="idTevadminIgenybevevo" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Igénybevevő Kenyszi rendszeren belüli azonosítója</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:group ref="igenybevevoAzonositoAdat"/>
+					<xs:element name="viseltTitulus" type="titulus" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Nevének titulusa</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="szuletesiTitulus" type="titulus" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Születési nevének titulusa</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="anyjaTitulus" type="titulus" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Anyja nevének titulusa</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="neme" type="nem" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Neme</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="allandoLakhely" type="cim" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Állandó lakhelyének címe</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="tartozkodasiHely" type="cim" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Tartózkodási helye</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="allampolgarsagiJogallasTipus" type="jogallasTipus">
+						<xs:annotation>
+							<xs:documentation>Állampolgársági jogállása</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="allampolgarsag" type="allampolgarsag">
+						<xs:annotation>
+							<xs:documentation>Állampolgársága</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="modositottMegallapodas">
+		<xs:annotation>
+			<xs:documentation>A módosítandó megállapodás adatait tartalmazza</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="igenyles">
+				<xs:sequence>
+					<xs:element name="idTevadminIgenyles" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Igénylés Kenyszi rendszeren belüli azonosítója</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="igenybevevo" type="modositottIgenybevevo"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="modositottHatarozat">
+		<xs:annotation>
+			<xs:documentation>A módosítandó határozat adatait tartalmazza</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="igenyles">
+				<xs:sequence>
+					<xs:element name="idTevadminIgenyles" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Igénylés Kenyszi rendszeren belüli azonosítója</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="igenybevevo" type="modositottIgenybevevo"/>
+					<xs:choice>
+						<xs:element name="gyermek" type="gyermek"/>
+						<xs:element name="fiatalFelnott" type="fiatalFelnott"/>
+						<xs:element name="felnott" type="felnott"/>
+					</xs:choice>
+					<xs:element name="szervNeve" type="xsStringMax100">
+						<xs:annotation>
+							<xs:documentation>Határozatot hozó szerv neve</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="hatarozatSzama" type="xsStringMax50">
+						<xs:annotation>
+							<xs:documentation>Határozat száma</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="hatarozatDatum" type="xs:date">
+						<xs:annotation>
+							<xs:documentation>Határozat kelte</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="jogerosDatum" type="xs:date" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Határozat jogerőre emelkedésének dátuma</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="dontesJellege" type="hatosagiDontesJellege" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Hatósági döntés jellege</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="neveloNeve" type="xsStringMax100" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Nevelőszülő neve</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="neveloCime" type="xsStringMax254" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Nevelőszülő címe</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="tegyesz" type="tegyesz" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>TEGYESZ (megye megnevezése)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="modositottIgenylesKeres">
+		<xs:annotation>
+			<xs:documentation>Módosított megállapodások illetve módosított határozatok benyújtásának módja. A módosítási kérés során hivatkozni kell a felvételkor kapott Kenyszi rendszeren belüli azonosítókra (igénylés, igénybevevő)</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="keres">
+					<xs:sequence>
+						<xs:element name="megallapodas" type="modositottMegallapodas" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="hatarozat" type="modositottHatarozat" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="igenylesModositasValasz">
+		<xs:annotation>
+			<xs:documentation>Válasz egy adott igénybevevő és igénylés módosítására</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="igenylesValasz">
+				<xs:sequence>
+					<xs:element name="statusz" type="statusz"/>
+					<xs:element name="uzenet" type="uzenet" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="idLocalIgenyles" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Igénylés technikai azonosítója</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="idTevadminIgenyles" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Igénylés Kenyszi rendszeren belüli azonosítója</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="idTevadminIgenybevevo" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Igénybevevő Kenyszi rendszeren belüli azonosítója</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="modositottIgenylesValasz">
+		<xs:annotation>
+			<xs:documentation>Válasz igénylések módosításaira</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="igenyles" type="igenylesModositasValasz" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="igenylesIdKeres">
+		<xs:annotation>
+			<xs:documentation>Ezen interfész rendszer indulása, használatba vétele előtti vagy más módon a Kenyszi rendszerbe való adatbetöltés esetén van lehetőség ezen adatok azonosítóinak lekérdezésére. Ez a belépési pont csak arra szolgál, hogy le lehessen kérdezni a Kenyszi rendszerben lévő igénylések és igénybevevők azonosítóit, amelyek szükségesek az esetleges módosítások elküldéséhez</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="keres">
+					<xs:sequence>
+						<xs:element name="kezdoDatum" type="xs:date" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Megadható, hogy mely dátum óta felvett igénylések azonosítóit adja vissza</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="igenybevevoId">
+		<xs:annotation>
+			<xs:documentation>Egy igénybevevő azonosításához szükséges adatokat tartalmazza</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="idTevadminIgenybevevo" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Igénybevevő Kenyszi rendszeren belüli azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="igenybevevoAzonositoAdat"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="igenylesId">
+		<xs:annotation>
+			<xs:documentation>A lekért igénylési azonosítókat, egyéb lokális azonosításhoz szükséges adatokat tartalmazza</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="idTevadminJog" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Jogosultság azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="idTevadminIgenyles" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Igénylés Kenyszi rendszeren belüli azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="megallapodasKezdete" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Megállapodás kezdetének dátuma</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="megallapodasVege" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Megállapodás végének dátuma (lehet határozatlan)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="szolgaltatoTevekenyegTipus" type="szolgaltatoTevekenysegTipus" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Szolgáltató tevékenység típusa</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="igenybevevo" type="igenybevevoId"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="megallapodasId">
+		<xs:annotation>
+			<xs:documentation>Megállapodás Kenyszi rendszeren belüli azonosítója</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="igenylesId"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="hatarozatId">
+		<xs:annotation>
+			<xs:documentation>Határozat Kenyszi rendszeren belüli azonosítója</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="megallapodasId">
+				<xs:sequence>
+					<xs:element name="hatarozatSzama" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Határozat száma</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="igenylesIdValasz">
+		<xs:annotation>
+			<xs:documentation>A lekérdezett igénylések és a hozzájuk tartozó igénybevevők azonosításához szükséges adatokat tartalmazza</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="megallapodas" type="megallapodasId" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="hatarozat" type="hatarozatId" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="igenybevetel">
+		<xs:annotation>
+			<xs:documentation>Egy adott igénybevétel adatai</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="idTevadminIgenybevevo" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Igénybevevő Kenyszi rendszeren belüli azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="igenybevett" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Igénybevette-e</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="igenybevetelKotegKozos">
+		<xs:annotation>
+			<xs:documentation>Egy igénybevétel köteg elemeinek közös adatai</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="idTevadminJog" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Jogosultság Kenyszi rendszerbeli azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="igenybevetelNapja" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Igénybevétel napjának dátuma</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="igenybevetelKoteg">
+		<xs:annotation>
+			<xs:documentation>Az igénybevételek egy adott szolgáltatás egy adott napjára vonatkozó megadására szolgál</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="igenybevetelKotegKozos">
+				<xs:sequence>
+					<xs:element name="igenybevetel" type="igenybevetel" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="igenybevetelKeres">
+		<xs:annotation>
+			<xs:documentation>Az igénybevételek szolgáltatásonkénti és naponkénti kötegelt megadására szolgál</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="keres">
+					<xs:sequence>
+						<xs:element name="igenybevetelKoteg" type="igenybevetelKoteg" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="igenybevetelElemValasz">
+		<xs:annotation>
+			<xs:documentation>Egy igénybevételre adott válasz</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="valasz">
+				<xs:sequence>
+					<xs:element name="idTevadminIgenybevevo" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Igénybevevő Kenyszi rendszeren belüli azonosítója</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="igenybevetelKotegValasz">
+		<xs:annotation>
+			<xs:documentation>Az igénybevételek kötegelt válasza</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="valasz">
+				<xs:sequence>
+					<xs:element name="idTevadminJog" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Jogosultság Kenyszi rendszerbeli azonosítója</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="igenybevetelNapja" type="xs:date">
+						<xs:annotation>
+							<xs:documentation>Igénybevétel napjának dátuma</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="igenybevetel" type="igenybevetelElemValasz" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="igenybevetelValasz">
+		<xs:annotation>
+			<xs:documentation>A megadott igénybevételek feldolgozásának eredményét adja vissza</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="igenybevetelKoteg" type="igenybevetelKotegValasz" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="onrevizio">
+		<xs:annotation>
+			<xs:documentation>A napi igénybevétel önellenőrzéssel javítandó adatainak megadására szolgál</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="igenybevetel">
+				<xs:sequence>
+					<xs:element name="javitasOka" type="xsStringMax2000">
+						<xs:annotation>
+							<xs:documentation>Javítás oka</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="onrevizioKoteg">
+		<xs:annotation>
+			<xs:documentation>A napi igénybevétel önellenőrzéssel javítandó adatainak megadására szolgál</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="igenybevetelKotegKozos">
+				<xs:sequence>
+					<xs:element name="onrevizio" type="onrevizio" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="onrevizioKeres">
+		<xs:annotation>
+			<xs:documentation>Az önrevízió tételeinek szolgáltatásonkénti és naponkénti kötegelt megadására szolgál</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="keres">
+					<xs:sequence>
+						<xs:element name="onrevizioKoteg" type="onrevizioKoteg" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="onrevizioValasz">
+		<xs:annotation>
+			<xs:documentation>Az önellenőrzés keretében megküldött adatok feldolgozási eredményeit tartalmazza</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="onrevizioKoteg" type="igenybevetelKotegValasz" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="igenybevetelIntervallum">
+		<xs:annotation>
+			<xs:documentation>Igénybevétel intervallum</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="idTevadminJog" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Jogosultság azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="igenybevetelKezdet" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Igénybevétel kezdete</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="igenybevetelVeg" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Igénybevétel vége</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="toroltIgenybevetelKeres">
+		<xs:annotation>
+			<xs:documentation>Az ütközés illetve egyéb okok miatt törölt igénybevételek lekérdezésére szolgál</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="keres">
+					<xs:sequence>
+						<xs:element name="igenybevetelIntervallum" type="igenybevetelIntervallum" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="toroltIgenybevetel">
+		<xs:annotation>
+			<xs:documentation>Törölt igénybevétel adatai</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="idTevadminIgenybevevo" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Igénybevevő Kenyszi rendszeren belüli azonosítója</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="igenybevetelNapja" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Igénybevétel napjának dátuma</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="toroltIgenybevetelKotegValasz">
+		<xs:annotation>
+			<xs:documentation>Törölt igénybevételek jogosultságonként</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="valasz">
+				<xs:sequence>
+					<xs:element name="idTevadminJog" type="xs:long">
+						<xs:annotation>
+							<xs:documentation>Jogosultság Kenyszi rendszerbeli azonosítója</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="toroltIgenybevetel" type="toroltIgenybevetel" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="toroltIgenybevetelValasz">
+		<xs:annotation>
+			<xs:documentation>Az ütközés illetve egyéb okok miatt törölt igénybevételeket tartalmazza</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="toroltIgenybevetelKoteg" type="toroltIgenybevetelKotegValasz" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="valaszKeres">
+		<xs:annotation>
+			<xs:documentation>Az egyes belépési pontoknál tett kérések válaszait egy újabb webszolgáltatás kéréssel lehet lekérdezni. A kéréseknél a webszolgáltatás egy üzenetazonosítót ad vissza, amelyre a válasz lekérdezéskor hivatkozni kell</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="keres">
+					<xs:sequence>
+						<xs:element name="uzenetAzonosito" type="xsString36">
+							<xs:annotation>
+								<xs:documentation>Üzenet azonosítója</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

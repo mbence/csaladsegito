@@ -29,3 +29,6 @@ services:
     jcs.seq:
         class: JCSGYK\AdminBundle\Services\ClientSequenceService
         arguments:    ['@doctrine']
+    kenyszi:
+        class: JCSGYK\AdminBundle\Services\Kenyszi
+        arguments:    ['@service_container']

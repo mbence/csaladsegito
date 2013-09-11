@@ -1,0 +1,453 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<definitions targetNamespace="http://kenyszib2b.hu/" name="KenysziB2BService" xmlns:tns="http://kenyszib2b.hu/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsaws="http://www.w3.org/2005/08/addressing"
+	xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+	<types>
+		<xs:schema targetNamespace="http://kenyszib2b.hu/" version="1.1" xmlns:tns="http://kenyszib2b.hu/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:element name="adatszolgaltatoJogLekeres" type="tns:adatszolgaltatoJogLekeres" />
+			<xs:element name="adatszolgaltatoJogLekeresResponse" type="tns:adatszolgaltatoJogLekeresResponse" />
+			<xs:element name="adatszolgaltatoJogValasz" type="tns:adatszolgaltatoJogValasz" />
+			<xs:element name="adatszolgaltatoJogValaszResponse" type="tns:adatszolgaltatoJogValaszResponse" />
+			<xs:element name="igenybevetelKuldes" type="tns:igenybevetelKuldes" />
+			<xs:element name="igenybevetelKuldesResponse" type="tns:igenybevetelKuldesResponse" />
+			<xs:element name="igenybevetelValasz" type="tns:igenybevetelValasz" />
+			<xs:element name="igenybevetelValaszResponse" type="tns:igenybevetelValaszResponse" />
+			<xs:element name="igenylesIdLekeres" type="tns:igenylesIdLekeres" />
+			<xs:element name="igenylesIdLekeresResponse" type="tns:igenylesIdLekeresResponse" />
+			<xs:element name="igenylesIdValasz" type="tns:igenylesIdValasz" />
+			<xs:element name="igenylesIdValaszResponse" type="tns:igenylesIdValaszResponse" />
+			<xs:element name="modositottIgenylesKuldes" type="tns:modositottIgenylesKuldes" />
+			<xs:element name="modositottIgenylesKuldesResponse" type="tns:modositottIgenylesKuldesResponse" />
+			<xs:element name="modositottIgenylesValasz" type="tns:modositottIgenylesValasz" />
+			<xs:element name="modositottIgenylesValaszResponse" type="tns:modositottIgenylesValaszResponse" />
+			<xs:element name="onrevizioKuldes" type="tns:onrevizioKuldes" />
+			<xs:element name="onrevizioKuldesResponse" type="tns:onrevizioKuldesResponse" />
+			<xs:element name="onrevizioValasz" type="tns:onrevizioValasz" />
+			<xs:element name="onrevizioValaszResponse" type="tns:onrevizioValaszResponse" />
+			<xs:element name="toroltIgenybevetelLekeres" type="tns:toroltIgenybevetelLekeres" />
+			<xs:element name="toroltIgenybevetelLekeresResponse" type="tns:toroltIgenybevetelLekeresResponse" />
+			<xs:element name="toroltIgenybevetelValasz" type="tns:toroltIgenybevetelValasz" />
+			<xs:element name="toroltIgenybevetelValaszResponse" type="tns:toroltIgenybevetelValaszResponse" />
+			<xs:element name="ujIgenylesKuldes" type="tns:ujIgenylesKuldes" />
+			<xs:element name="ujIgenylesKuldesResponse" type="tns:ujIgenylesKuldesResponse" />
+			<xs:element name="ujIgenylesValasz" type="tns:ujIgenylesValasz" />
+			<xs:element name="ujIgenylesValaszResponse" type="tns:ujIgenylesValaszResponse" />
+			<xs:complexType name="modositottIgenylesKuldes">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="modositottIgenylesKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="modositottIgenylesKuldesResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="onrevizioKuldes">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="onrevizioKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="onrevizioKuldesResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ujIgenylesKuldes">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="ujIgenylesKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ujIgenylesKuldesResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="adatszolgaltatoJogLekeres">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="adatszolgaltatoJogKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="adatszolgaltatoJogLekeresResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="igenylesIdLekeres">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="igenylesIdKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="igenylesIdLekeresResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="igenybevetelValasz">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="valaszKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="igenybevetelValaszResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="onrevizioValasz">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="valaszKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="onrevizioValaszResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="adatszolgaltatoJogValasz">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="valaszKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="adatszolgaltatoJogValaszResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ujIgenylesValasz">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="valaszKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ujIgenylesValaszResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="igenybevetelKuldes">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="igenybevetelKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="igenybevetelKuldesResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="igenylesIdValasz">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="valaszKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="igenylesIdValaszResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="modositottIgenylesValasz">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="valaszKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="modositottIgenylesValaszResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="toroltIgenybevetelLekeres">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="toroltIgenybevetelKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="toroltIgenybevetelLekeresResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="toroltIgenybevetelValasz">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="valaszKeresXml" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="toroltIgenybevetelValaszResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="xs:base64Binary" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:schema>
+	</types>
+	<message name="adatszolgaltatoJogValaszResponse">
+		<part element="tns:adatszolgaltatoJogValaszResponse" name="parameters"/>
+	</message>
+	<message name="igenylesIdLekeresResponse">
+		<part element="tns:igenylesIdLekeresResponse" name="parameters"/>
+	</message>
+	<message name="modositottIgenylesKuldesResponse">
+		<part element="tns:modositottIgenylesKuldesResponse" name="parameters"/>
+	</message>
+	<message name="modositottIgenylesValasz">
+		<part element="tns:modositottIgenylesValasz" name="parameters"/>
+	</message>
+	<message name="adatszolgaltatoJogLekeres">
+		<part element="tns:adatszolgaltatoJogLekeres" name="parameters"/>
+	</message>
+	<message name="ujIgenylesValaszResponse">
+		<part element="tns:ujIgenylesValaszResponse" name="parameters"/>
+	</message>
+	<message name="igenybevetelValaszResponse">
+		<part element="tns:igenybevetelValaszResponse" name="parameters"/>
+	</message>
+	<message name="adatszolgaltatoJogValasz">
+		<part element="tns:adatszolgaltatoJogValasz" name="parameters"/>
+	</message>
+	<message name="igenybevetelKuldes">
+		<part element="tns:igenybevetelKuldes" name="parameters"/>
+	</message>
+	<message name="onrevizioValasz">
+		<part element="tns:onrevizioValasz" name="parameters"/>
+	</message>
+	<message name="igenylesIdLekeres">
+		<part element="tns:igenylesIdLekeres" name="parameters"/>
+	</message>
+	<message name="igenybevetelKuldesResponse">
+		<part element="tns:igenybevetelKuldesResponse" name="parameters"/>
+	</message>
+	<message name="onrevizioKuldesResponse">
+		<part element="tns:onrevizioKuldesResponse" name="parameters"/>
+	</message>
+	<message name="modositottIgenylesValaszResponse">
+		<part element="tns:modositottIgenylesValaszResponse" name="parameters"/>
+	</message>
+	<message name="onrevizioValaszResponse">
+		<part element="tns:onrevizioValaszResponse" name="parameters"/>
+	</message>
+	<message name="onrevizioKuldes">
+		<part element="tns:onrevizioKuldes" name="parameters"/>
+	</message>
+	<message name="igenylesIdValaszResponse">
+		<part element="tns:igenylesIdValaszResponse" name="parameters"/>
+	</message>
+	<message name="igenylesIdValasz">
+		<part element="tns:igenylesIdValasz" name="parameters"/>
+	</message>
+	<message name="modositottIgenylesKuldes">
+		<part element="tns:modositottIgenylesKuldes" name="parameters"/>
+	</message>
+	<message name="ujIgenylesKuldes">
+		<part element="tns:ujIgenylesKuldes" name="parameters"/>
+	</message>
+	<message name="ujIgenylesKuldesResponse">
+		<part element="tns:ujIgenylesKuldesResponse" name="parameters"/>
+	</message>
+	<message name="ujIgenylesValasz">
+		<part element="tns:ujIgenylesValasz" name="parameters"/>
+	</message>
+	<message name="adatszolgaltatoJogLekeresResponse">
+		<part element="tns:adatszolgaltatoJogLekeresResponse" name="parameters"/>
+	</message>
+	<message name="igenybevetelValasz">
+		<part element="tns:igenybevetelValasz" name="parameters"/>
+	</message>
+	<message name="toroltIgenybevetelLekeres">
+		<part element="tns:toroltIgenybevetelLekeres" name="parameters"/>
+	</message>
+	<message name="toroltIgenybevetelLekeresResponse">
+		<part element="tns:toroltIgenybevetelLekeresResponse" name="parameters"/>
+	</message>
+	<message name="toroltIgenybevetelValasz">
+		<part element="tns:toroltIgenybevetelValasz" name="parameters"/>
+	</message>
+	<message name="toroltIgenybevetelValaszResponse">
+		<part element="tns:toroltIgenybevetelValaszResponse" name="parameters"/>
+	</message>
+	<portType name="KenysziB2BIface">
+		<operation name="modositottIgenylesKuldes">
+			<input message="tns:modositottIgenylesKuldes" name="modositottIgenylesKuldes"/>
+			<output message="tns:modositottIgenylesKuldesResponse" name="modositottIgenylesKuldesResponse"/>
+		</operation>
+		<operation name="onrevizioKuldes">
+			<input message="tns:onrevizioKuldes" name="onrevizioKuldes"/>
+			<output message="tns:onrevizioKuldesResponse" name="onrevizioKuldesResponse"/>
+		</operation>
+		<operation name="ujIgenylesKuldes">
+			<input message="tns:ujIgenylesKuldes" name="ujIgenylesKuldes"/>
+			<output message="tns:ujIgenylesKuldesResponse" name="ujIgenylesKuldesResponse"/>
+		</operation>
+		<operation name="adatszolgaltatoJogLekeres">
+			<input message="tns:adatszolgaltatoJogLekeres" name="adatszolgaltatoJogLekeres"/>
+			<output message="tns:adatszolgaltatoJogLekeresResponse" name="adatszolgaltatoJogLekeresResponse"/>
+		</operation>
+		<operation name="igenylesIdLekeres">
+			<input message="tns:igenylesIdLekeres" name="igenylesIdLekeres"/>
+			<output message="tns:igenylesIdLekeresResponse" name="igenylesIdLekeresResponse"/>
+		</operation>
+		<operation name="igenybevetelValasz">
+			<input message="tns:igenybevetelValasz" name="igenybevetelValasz"/>
+			<output message="tns:igenybevetelValaszResponse" name="igenybevetelValaszResponse"/>
+		</operation>
+		<operation name="onrevizioValasz">
+			<input message="tns:onrevizioValasz" name="onrevizioValasz"/>
+			<output message="tns:onrevizioValaszResponse" name="onrevizioValaszResponse"/>
+		</operation>
+		<operation name="adatszolgaltatoJogValasz">
+			<input message="tns:adatszolgaltatoJogValasz" name="adatszolgaltatoJogValasz"/>
+			<output message="tns:adatszolgaltatoJogValaszResponse" name="adatszolgaltatoJogValaszResponse"/>
+		</operation>
+		<operation name="ujIgenylesValasz">
+			<input message="tns:ujIgenylesValasz" name="ujIgenylesValasz"/>
+			<output message="tns:ujIgenylesValaszResponse" name="ujIgenylesValaszResponse"/>
+		</operation>
+		<operation name="igenybevetelKuldes">
+			<input message="tns:igenybevetelKuldes" name="igenybevetelKuldes"/>
+			<output message="tns:igenybevetelKuldesResponse" name="igenybevetelKuldesResponse"/>
+		</operation>
+		<operation name="igenylesIdValasz">
+			<input message="tns:igenylesIdValasz" name="igenylesIdValasz"/>
+			<output message="tns:igenylesIdValaszResponse" name="igenylesIdValaszResponse"/>
+		</operation>
+		<operation name="modositottIgenylesValasz">
+			<input message="tns:modositottIgenylesValasz" name="modositottIgenylesValasz"/>
+			<output message="tns:modositottIgenylesValaszResponse" name="modositottIgenylesValaszResponse"/>
+		</operation>
+		<operation name="toroltIgenybevetelLekeres">
+			<input message="tns:toroltIgenybevetelLekeres" name="toroltIgenybevetelLekeres"/>
+			<output message="tns:toroltIgenybevetelLekeresResponse" name="toroltIgenybevetelLekeresResponse"/>
+		</operation>
+		<operation name="toroltIgenybevetelValasz">
+			<input message="tns:toroltIgenybevetelValasz" name="toroltIgenybevetelValasz"/>
+			<output message="tns:toroltIgenybevetelValaszResponse" name="toroltIgenybevetelValaszResponse"/>
+		</operation>
+	</portType>
+	<binding name="KenysziB2BServicePortBinding" type="tns:KenysziB2BIface">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="modositottIgenylesKuldes">
+			<soap:operation soapAction="" />
+			<input name="modositottIgenylesKuldes">
+				<soap:body use="literal" />
+			</input>
+			<output name="modositottIgenylesKuldesResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="onrevizioKuldes">
+			<soap:operation soapAction="" style="document" />
+			<input name="onrevizioKuldes">
+				<soap:body use="literal" />
+			</input>
+			<output name="onrevizioKuldesResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="ujIgenylesKuldes">
+			<soap:operation soapAction="" style="document" />
+			<input name="ujIgenylesKuldes">
+				<soap:body use="literal" />
+			</input>
+			<output name="ujIgenylesKuldesResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="adatszolgaltatoJogLekeres">
+			<soap:operation soapAction="" style="document" />
+			<input name="adatszolgaltatoJogLekeres">
+				<soap:body use="literal" />
+			</input>
+			<output name="adatszolgaltatoJogLekeresResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="igenylesIdLekeres">
+			<soap:operation soapAction="" style="document" />
+			<input name="igenylesIdLekeres">
+				<soap:body use="literal" />
+			</input>
+			<output name="igenylesIdLekeresResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="igenybevetelValasz">
+			<soap:operation soapAction="" style="document" />
+			<input name="igenybevetelValasz">
+				<soap:body use="literal" />
+			</input>
+			<output name="igenybevetelValaszResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="onrevizioValasz">
+			<soap:operation soapAction="" style="document" />
+			<input name="onrevizioValasz">
+				<soap:body use="literal" />
+			</input>
+			<output name="onrevizioValaszResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="adatszolgaltatoJogValasz">
+			<soap:operation soapAction="" style="document" />
+			<input name="adatszolgaltatoJogValasz">
+				<soap:body use="literal" />
+			</input>
+			<output name="adatszolgaltatoJogValaszResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="ujIgenylesValasz">
+			<soap:operation soapAction="" style="document" />
+			<input name="ujIgenylesValasz">
+				<soap:body use="literal" />
+			</input>
+			<output name="ujIgenylesValaszResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="igenybevetelKuldes">
+			<soap:operation soapAction="" style="document" />
+			<input name="igenybevetelKuldes">
+				<soap:body use="literal" />
+			</input>
+			<output name="igenybevetelKuldesResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="igenylesIdValasz">
+			<soap:operation soapAction="" style="document" />
+			<input name="igenylesIdValasz">
+				<soap:body use="literal" />
+			</input>
+			<output name="igenylesIdValaszResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="modositottIgenylesValasz">
+			<soap:operation soapAction="" style="document" />
+			<input name="modositottIgenylesValasz">
+				<soap:body use="literal" />
+			</input>
+			<output name="modositottIgenylesValaszResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="toroltIgenybevetelLekeres">
+			<soap:operation soapAction="" style="document" />
+			<input name="toroltIgenybevetelLekeres">
+				<soap:body use="literal" />
+			</input>
+			<output name="toroltIgenybevetelLekeresResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+		<operation name="toroltIgenybevetelValasz">
+			<soap:operation soapAction="" style="document" />
+			<input name="toroltIgenybevetelValasz">
+				<soap:body use="literal" />
+			</input>
+			<output name="toroltIgenybevetelValaszResponse">
+				<soap:body use="literal" />
+			</output>
+		</operation>
+	</binding>
+	<service name="KenysziB2BService">
+		<port binding="tns:KenysziB2BServicePortBinding" name="KenysziB2BPort">
+			<soap:address location="http://localhost:8180/KenysziWs/KenysziB2B" />
+		</port>
+	</service>
+</definitions>
