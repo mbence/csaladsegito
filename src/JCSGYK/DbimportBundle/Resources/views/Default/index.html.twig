@@ -79,6 +79,21 @@
         <br>
     <!--    <button type="submit" name="import" value="all" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Import All Tables</button> -->
     </fieldset>
+    <fieldset>
+        <legend>Adat keverő</legend>
+        <dl class="import_controls">
+            <dt>1) Clients</dt>
+            <dd>
+                <button type="submit" class="button" name="import" value="user" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"> &nbsp; Randomize All &nbsp; </button>
+                {% if results.user is defined %}
+                    Succesfully imported {{ results.user }}
+                {% endif %}
+            </dd>
+        </dl>
+        <div class="clear"></div>
+        <br>
+    </fieldset>
+
     </form>
 </div>
 

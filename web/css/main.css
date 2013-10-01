@@ -1,0 +1,1609 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	/*font-size: 100%;*/
+	/*font: inherit;*/
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/*! jQuery UI - v1.10.0 - 2013-02-12
+* http://jqueryui.com
+* Includes: jquery.ui.core.css
+* Copyright (c) 2013 jQuery Foundation and other contributors Licensed MIT */
+
+.ui-helper-hidden{display:none}.ui-helper-hidden-accessible{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.ui-helper-reset{margin:0;padding:0;border:0;outline:0;line-height:1.3;text-decoration:none;font-size:100%;list-style:none}.ui-helper-clearfix:before,.ui-helper-clearfix:after{content:"";display:table}.ui-helper-clearfix:after{clear:both}.ui-helper-clearfix{min-height:0}.ui-helper-zfix{width:100%;height:100%;top:0;left:0;position:absolute;opacity:0;filter:Alpha(Opacity=0)}.ui-front{z-index:100}.ui-state-disabled{cursor:default!important}.ui-icon{display:block;text-indent:-99999px;overflow:hidden;background-repeat:no-repeat}.ui-widget-overlay{position:fixed;top:0;left:0;width:100%;height:100%}
+/*rules for the plot target div.  These will be cascaded down to all plot elements according to css rules*/
+.jqplot-target {
+    position: relative;
+    color: #666666;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 1em;
+/*    height: 300px;
+    width: 400px;*/
+}
+
+/*rules applied to all axes*/
+.jqplot-axis {
+    font-size: 0.75em;
+}
+
+.jqplot-xaxis {
+    margin-top: 10px;
+}
+
+.jqplot-x2axis {
+    margin-bottom: 10px;
+}
+
+.jqplot-yaxis {
+    margin-right: 10px;
+}
+
+.jqplot-y2axis, .jqplot-y3axis, .jqplot-y4axis, .jqplot-y5axis, .jqplot-y6axis, .jqplot-y7axis, .jqplot-y8axis, .jqplot-y9axis, .jqplot-yMidAxis {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/*rules applied to all axis tick divs*/
+.jqplot-axis-tick, .jqplot-xaxis-tick, .jqplot-yaxis-tick, .jqplot-x2axis-tick, .jqplot-y2axis-tick, .jqplot-y3axis-tick, .jqplot-y4axis-tick, .jqplot-y5axis-tick, .jqplot-y6axis-tick, .jqplot-y7axis-tick, .jqplot-y8axis-tick, .jqplot-y9axis-tick, .jqplot-yMidAxis-tick {
+    position: absolute;
+    white-space: pre;
+}
+
+
+.jqplot-xaxis-tick {
+    top: 0px;
+    /* initial position untill tick is drawn in proper place */
+    left: 15px;
+/*    padding-top: 10px;*/
+    vertical-align: top;
+}
+
+.jqplot-x2axis-tick {
+    bottom: 0px;
+    /* initial position untill tick is drawn in proper place */
+    left: 15px;
+/*    padding-bottom: 10px;*/
+    vertical-align: bottom;
+}
+
+.jqplot-yaxis-tick {
+    right: 0px;
+    /* initial position untill tick is drawn in proper place */
+    top: 15px;
+/*    padding-right: 10px;*/
+    text-align: right;
+}
+
+.jqplot-yaxis-tick.jqplot-breakTick {
+	right: -20px;
+	margin-right: 0px;
+	padding:1px 5px 1px 5px;
+/*	background-color: white;*/
+	z-index: 2;
+	font-size: 1.5em;
+}
+
+.jqplot-y2axis-tick, .jqplot-y3axis-tick, .jqplot-y4axis-tick, .jqplot-y5axis-tick, .jqplot-y6axis-tick, .jqplot-y7axis-tick, .jqplot-y8axis-tick, .jqplot-y9axis-tick {
+    left: 0px;
+    /* initial position untill tick is drawn in proper place */
+    top: 15px;
+/*    padding-left: 10px;*/
+/*    padding-right: 15px;*/
+    text-align: left;
+}
+
+.jqplot-yMidAxis-tick {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.jqplot-xaxis-label {
+    margin-top: 10px;
+    font-size: 11pt;
+    position: absolute;
+}
+
+.jqplot-x2axis-label {
+    margin-bottom: 10px;
+    font-size: 11pt;
+    position: absolute;
+}
+
+.jqplot-yaxis-label {
+    margin-right: 10px;
+/*    text-align: center;*/
+    font-size: 11pt;
+    position: absolute;
+}
+
+.jqplot-yMidAxis-label {
+    font-size: 11pt;
+    position: absolute;
+}
+
+.jqplot-y2axis-label, .jqplot-y3axis-label, .jqplot-y4axis-label, .jqplot-y5axis-label, .jqplot-y6axis-label, .jqplot-y7axis-label, .jqplot-y8axis-label, .jqplot-y9axis-label {
+/*    text-align: center;*/
+    font-size: 11pt;
+    margin-left: 10px;
+    position: absolute;
+}
+
+.jqplot-meterGauge-tick {
+    font-size: 0.75em;
+    color: #999999;
+}
+
+.jqplot-meterGauge-label {
+    font-size: 1em;
+    color: #999999;
+}
+
+table.jqplot-table-legend {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+table.jqplot-table-legend, table.jqplot-cursor-legend {
+    background-color: rgba(255,255,255,0.6);
+    border: 1px solid #cccccc;
+    position: absolute;
+    font-size: 0.75em;
+}
+
+td.jqplot-table-legend {
+    vertical-align:middle;
+}
+
+/*
+These rules could be used instead of assigning
+element styles and relying on js object properties.
+*/
+
+/*
+td.jqplot-table-legend-swatch {
+    padding-top: 0.5em;
+    text-align: center;
+}
+
+tr.jqplot-table-legend:first td.jqplot-table-legend-swatch {
+    padding-top: 0px;
+}
+*/
+
+td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
+    cursor: pointer;
+}
+
+.jqplot-table-legend .jqplot-series-hidden {
+    text-decoration: line-through;
+}
+
+div.jqplot-table-legend-swatch-outline {
+    border: 1px solid #cccccc;
+    padding:1px;
+}
+
+div.jqplot-table-legend-swatch {
+    width:0px;
+    height:0px;
+    border-top-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 6px;
+    border-right-width: 6px;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-right-style: solid;
+}
+
+.jqplot-title {
+    top: 0px;
+    left: 0px;
+    padding-bottom: 0.5em;
+    font-size: 1.2em;
+}
+
+table.jqplot-cursor-tooltip {
+    border: 1px solid #cccccc;
+    font-size: 0.75em;
+}
+
+
+.jqplot-cursor-tooltip {
+    border: 1px solid #cccccc;
+    font-size: 0.75em;
+    white-space: nowrap;
+    background: rgba(208,208,208,0.5);
+    padding: 1px;
+}
+
+.jqplot-highlighter-tooltip, .jqplot-canvasOverlay-tooltip {
+    border: 1px solid #cccccc;
+    font-size: 0.75em;
+    white-space: nowrap;
+    background: rgba(208,208,208,0.5);
+    padding: 1px;
+}
+
+.jqplot-point-label {
+    font-size: 0.75em;
+    z-index: 2;
+}
+      
+td.jqplot-cursor-legend-swatch {
+    vertical-align: middle;
+    text-align: center;
+}
+
+div.jqplot-cursor-legend-swatch {
+    width: 1.2em;
+    height: 0.7em;
+}
+
+.jqplot-error {
+/*   Styles added to the plot target container when there is an error go here.*/
+    text-align: center;
+}
+
+.jqplot-error-message {
+/*    Styling of the custom error message div goes here.*/
+    position: relative;
+    top: 46%;
+    display: inline-block;
+}
+
+div.jqplot-bubble-label {
+    font-size: 0.8em;
+/*    background: rgba(90%, 90%, 90%, 0.15);*/
+    padding-left: 2px;
+    padding-right: 2px;
+    color: rgb(20%, 20%, 20%);
+}
+
+div.jqplot-bubble-label.jqplot-bubble-label-highlight {
+    background: rgba(90%, 90%, 90%, 0.7);
+}
+
+div.jqplot-noData-container {
+	text-align: center;
+	background-color: rgba(96%, 96%, 96%, 0.3);
+}
+
+/* tables */
+table.tablesorter thead tr .header {
+	background-image: url(../images/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+        padding-right: 14px;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(../images/asc.gif);
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(../images/desc.gif);
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+background-color: #ededed;
+}
+
+.login {
+    margin: auto;
+    padding: 84px 0 0;
+    width: 360px;
+}
+.login #logo {
+    height: 100px;
+    width: 210px;
+    margin: 30px auto 20px;
+    background: url('../images/logo1.png') no-repeat left top;
+}
+.login H1 {
+    font-size: 26px;
+    text-align: center;
+    font-family: "Optima Regular", "Optima Regular IE";
+    color: #705533;
+}
+.login form {
+    background-color: #e9e0d7;
+    border: 1px solid #c2b39f;
+    box-shadow: 0 4px 10px -1px #e3d9cb;
+    font-weight: normal;
+    margin: 4px 0 0 0;
+    border-radius: 3px;
+    padding: 30px 34px 24px;
+}
+.login form .input, .login form input[type="text"] {
+    background-color: #FBFBFB;
+    border: 1px solid #c2b39f;
+    border-radius: 3px;
+    box-shadow: 1px 1px 2px rgba(200, 200, 200, 0.8) inset;
+    color: #555555;
+    font-size: 20px;
+    font-weight: 200;
+    line-height: 1;
+    margin:2px 0 5px 0px;
+    outline: 0 none;
+    padding: 3px;
+    width: 282px;
+}
+.login form label {
+    color: #555;
+    font-size: 15px;
+}
+.login form #_submit {
+    background-color: #eec123;
+    /*background-image: -moz-linear-gradient(center top , #1E8CBE 0%, #0074A2 100%);*/
+    border: 0 none !important;
+    border-radius: 2px 2px 2px 2px !important;
+    box-shadow: 0 2px 1px #eedea3 inset;
+    color: #fff;
+    display: block;
+    /*float: left;*/
+    font-size: 14px;
+    font-weight: bold;
+    height: auto !important;
+    letter-spacing: 1px;
+    margin: 16px 0 0 0;
+    padding: 8px 15px 6px;
+    text-shadow: none;
+    text-transform: uppercase;
+
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: -o-linear-gradient(top, #eec123, #d3a70e);
+}
+.login form #_submit:hover {
+    color: #000;
+    cursor: pointer;
+}
+.login form #remember_me {
+    /*margin: 0 0 0 10px;*/
+}
+.login .error {
+    color: #f33636;
+    text-align: center;
+    margin: -20px 0 4px 0;
+    /*font-weight: bold;*/
+}
+/* Headers */
+#header {
+    background-color: #e6e6e6;
+    border-bottom: 1px solid #c7baac;
+}
+#header .headright {
+    float: right;
+    line-height: 23px;
+    color: #888;
+    font-size: 13px;
+    padding: 2px 4px 0 0;
+}
+#header .headright .username {
+    color: #555;
+}
+#header .headright .username:hover {
+    /*background-color: #c2b39f;*/
+}
+#header .headright a.logout {
+    padding: 1px 6px;
+    color: #333;
+    border: 1px solid transparent;
+}
+#header .headright a.logout:hover {
+    border-color: #d6cab9;
+    color: #000;
+    box-shadow: 0 0 1px 1px #ddd inset, 0 0 1px 1px #fff;
+}
+
+/* Menu */
+#header .menu {
+    padding: 1px 0 0 0;
+}
+#header .menu .menutitle a {
+    padding: 3px 16px 0 10px;
+    color: #555;
+    font: 16px "Optima Bold", "Optima Bold IE";
+    float: left;
+}
+#header .menu .menuitems {
+    float:left;
+    padding: 2px;
+}
+#header .menu .menuitems a {
+    color: #333;
+    font: 14px "Optima Regular", "Optima Regular IE";
+    display: inline-block;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    vartical-align: bottom;
+}
+#header .menu .menuitems a:hover {
+    border-color: #d6cab9;
+    color: #000;
+    box-shadow: 0 0 1px 1px #eee inset, 0 0 1px 1px #ddd;
+}
+#header .menu .menuitems a.current {
+    background-color: #d6d6d6;
+    border-color: #d6cab9;
+    color: #000;
+}
+#header .menu .menuitems a.current:hover {
+    box-shadow: none;
+}
+#header .menu .menuitems a.adm-menu {
+    color: #6678B1;
+}
+/* Inquiry */
+.inquiry {
+    text-align: right;
+    border-top: 1px solid #c7baac;
+    background-color: #f5f5f5;
+    padding: 0 10px 1px;
+}
+.inquiry > span {
+    text-align: right;
+    font-size: 12px;
+    display: inline-block;
+    margin: 0 0 2px 0;
+    line-height: 14px;
+    vertical-align: bottom;
+}
+.inquiry ul {
+    display: inline-block;
+}
+.inquiry li {
+    display: inline-block;
+    margin: 4px 0 2px 0;
+    vertical-align: bottom;
+}
+@charset "utf-8";
+@font-face {
+	font-family: "Optima Regular";
+	src: url("../images/font/optimah_regular-webfont.ttf");
+}
+@font-face {
+	font-family: "Optima Regular IE";
+	src: url("../images/font/optimah_regular-webfont.eot");
+} /* IE */
+@font-face {
+	font-family: "Optima Bold";
+	src: url("../images/font/optimah_bold-webfont.ttf");
+}
+@font-face {
+	font-family: "Optima Bold IE";
+	src: url("../images/font/optimah_bold-webfont.eot");
+} /* IE */
+@font-face {
+	font-family: "Optima Italic";
+	src: url("../images/font/optimah_italic-webfont.ttf");
+}
+@font-face {
+	font-family: "Optima Italic IE";
+	src: url("../images/font/optimah_italic_webfont.eot");
+} /* IE */
+@font-face {
+	font-family: "Optima Bold Italic";
+	src: url("../images/font/optimah_bold_italic-webfont.ttf");
+}
+@font-face {
+	font-family: "Optima Bold Italic IE";
+	src: url("../images/font/optimah_bold_italic-webfont.eot");
+} /* IE */
+
+html {
+    height: 100%;
+}
+body {
+    height: 100%;
+    background-color: #fff;
+    font-family: "Trebuchet MS";
+    /*font-family: "Optima Regular", "Optima Regular IE";*/
+}
+a {
+    text-decoration: none;
+}
+.smalltext {
+    color: #666;
+    font-size: 12px;
+}
+.clear {
+    clear:both;
+}
+.right {
+    text-align: right;
+}
+.floatright {
+    float: right;
+}
+#container {
+    min-height: 100%;
+    margin: 0 0 -28px 0;
+}
+h1 {
+    color: #34a;
+    margin: 15px 0 15px 0;
+    font-weight: normal;
+    font-size: 23px;
+}
+
+.info {
+    color: #039;
+    line-height: 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #c8ddf1;
+    padding: 10px 10px 0;
+    width: 80%;
+    margin: 20px auto;
+    text-align: center;
+    background-color: #edf2f6;
+}
+.info p {
+    margin-bottom: 10px;
+}
+
+/* Footer */
+footer#colophon {
+    height: 22px;
+    text-align: center;
+    padding: 6px 0 0 0;
+}
+footer#colophon .credits, footer#colophon .credits a {
+    font: 12px "Optima Regular", "Optima Regular IE";
+    color: #888;
+}
+footer#colophon .credits a:hover {
+    color: #333;
+}
+
+
+
+/* Content */
+#content {
+    background-color: #fff;
+    padding: 0 10px 40px;
+}
+#content .breadcrumb, #content .breadcrumb a {
+    font: 14px "Optima Regular", "Optima Regular IE";
+    color: #666;
+}
+#content .breadcrumb a:hover {
+    color: #000;
+}
+#content .breadcrumb {
+    display: inline-block;
+    margin: 4px 0 10px 0;
+    border-bottom: 1px solid #c2b39f;
+}
+
+.flashbag, .ajaxbag {
+    position: relative;
+    text-align: center;
+    z-index: 10000;
+}
+.flashbag div, .ajaxbag div {
+    padding: 3px 15px;
+    border-radius: 3px;
+    position: absolute;
+    z-index: 1000;
+    left: 50%;
+    font-size: 15px;
+    font-weight: bold;
+    box-shadow: 0 1px 1px 1px rgba(0,0,0,0.1);
+}
+.ajaxbag div {
+    display: none;
+}
+.ajaxbag div.ajax-loader {
+    top: 0px;
+}
+.flashbag div.flash-notice, .ajaxbag div.ajax-notice {
+    color: #fff;
+    background-color: #6cee2b;
+    top: 3px;
+    text-shadow: 0 0 2px #4c9d43;
+}
+.ajaxbag div.ajax-error {
+    background-color: #e62033;
+}
+/* ajax bgs */
+.ajax-loading3 {
+    background: url('../images/ajax-loader3.gif') no-repeat 395px 10px;
+}
+
+/* blocks */
+.contentwrapper {
+    overflow: auto;
+    width: 100%;
+}
+.contentscroller {
+    width: 100%;
+}
+.contentscroller > div {
+    border-top: 2px solid transparent;
+    padding-top: 10px;
+}
+.contentscroller > div:hover {
+    border-color: #ddd;
+}
+.contentscroller > div.current {
+    border-color: #989ec2;
+}
+.close:hover {
+    color: #d04a37;
+}
+#searchblock {
+    width: 45%;
+    min-width: 470px;
+    float: left;
+    position: relative;
+}
+#clientblock, #problemblock, #eventblock {
+    width: 45%;
+    min-width: 470px;
+    /*margin: 0 0 0 20px;*/
+    float: left;
+    height: 100%;
+    overflow: auto;
+    position: relative;
+    display: none;
+}
+#clientblock .loading, #problemblock .loading, #eventblock .loading, #useredit .loading, .modal .loading {
+    color: #666;
+    height: 95%;
+    background: url('../images/ajax-loader3.gif') no-repeat center center;
+    display: none;
+}
+#clientblock .clientcontent, #clientblock #getclientform, #problemblock #getproblemform, #eventblock #geteventform {
+    display: none;
+}
+#rightspacerblock {
+    width: 45%;
+    float: left;
+}
+
+/* search */
+.nothing-found {
+    color: #333;
+}
+#search-head {
+    margin: 0 0 10px 0;
+    padding: 0 6px 0 0;
+}
+#search-results {
+    padding: 0 6px 0 0;
+    color: #039;
+    overflow: auto;
+    height: 500px;
+}
+#search-results p {
+    line-height: 20px;
+    margin-bottom: 10px;
+}
+table.search-results {
+    width: 100%;
+}
+table.search-results th, table.client .parent {
+    font-size: 15px;
+    font-weight: normal;
+    color: #039;
+    border-bottom: 2px solid #6678B1;
+    padding: 6px;
+}
+table.client .parent {
+    border-bottom-width: 1px;
+}
+table.search-results td {
+    padding: 5px 6px;
+    font-size: 13px;
+    color: #34a;
+    border-bottom: 1px solid #CCC;
+    cursor: pointer;
+}
+table.search-results tr:hover td, table.search-results tr.cursor td, .problem-list tr.cursor td {
+    background-color: #f5f5f5;
+}
+table.search-results tr.current td, table.search-results tr.current:hover td, .problem-list tr.current td, .problem-list tr.current:hover td {
+    background-color: #e6e6e6 !important;
+}
+.search-footer {
+    color: #aaa;
+    font-size: 12px;
+    margin: 10px 0 0 0;
+}
+
+/* Client */
+.archived {
+    font-size: 13px;
+    color: #d04a37;
+    line-height: 16px;
+    text-align: center;
+}
+h1.client {
+    color: #34a;
+    margin: 0 0 15px 0;
+    font-weight: normal;
+    font-size: 23px;
+    padding: 0 0 0 15px;
+}
+table.client {
+    color: #039;
+    font-size: 13px;
+    width: 100%;
+}
+table.client th {
+    color: #5661a2;
+    font-weight: normal;
+    padding: 5px 6px 5px;
+    border-bottom: 1px solid #DDD;
+    text-align: right;
+    width: 25%;
+    white-space: nowrap;
+}
+table.client td {
+    /*font-weight: bold;*/
+    padding: 5px 6px 5px;
+    border-bottom: 1px solid #DDD;
+}
+table.client td:last-child {
+    min-width: 90px;
+}
+table.client tr:hover td, table.client tr:hover th  {
+    background-color: #f5f5f5;
+}
+table.caseowner th {
+    border-bottom: none;
+}
+table.caseowner td {
+    border-bottom: none;
+    color: #360;
+}
+td.caseowner  {
+    color: #360;
+}
+
+.halfbox {
+    float: left;
+    width: 50%;
+}
+.rightpad {
+    margin-right: 6px;
+}
+.leftpad {
+    margin-left: 6px;
+}
+.leftpad20 {
+    margin-left: 20px;
+}
+.toppad {
+    margin-top: 6px;
+}
+.toppad10 {
+    margin-top: 10px;
+}
+.bottompad {
+    margin-bottom: 6px;
+}
+.bottompad4 {
+    margin-bottom: 4px;
+}
+.bottompad25 {
+    margin-bottom: 25px;
+}
+.fullheight {
+    height: 100%;
+}
+.nocollapse {
+    padding-top: 1px;
+    margin-top: -1px;
+}
+.center {
+    text-align: center;
+}
+.hidden {
+    display: none;
+}
+.bluetext {
+    color: #5661a2;
+}
+.client-sub {
+    font-size: 12px;
+    color: #666;
+    margin: 14px 0 0 0;
+    background-color: #ddd;
+    text-align: center;
+    padding: 2px 4px 4px;
+}
+.first-sub {
+    margin: 0;
+}
+.client-comment {
+    color: #444;
+    font-size: 13px;
+    padding: 6px 12px;
+    border: 1px solid #F5F5F5;
+    font-family: monospace;
+}
+.togglable {
+    cursor: pointer;
+    position: relative;
+}
+
+.togglable span {
+    display: block;
+    position: absolute;
+    left: 7px;
+    top: 7px;
+    width: 7px;
+    height: 4px;
+    background: url('../images/sprs.png') no-repeat -52px 0px;
+    opacity: 0.7;
+}
+.togglable span.collapsed {
+    transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    opacity: 1;
+}
+/* Problem list */
+table.problem-list th {
+    text-align: left;
+    width: auto;
+    font-size: 13px;
+    font-weight: normal;
+    color: #555;
+    border-bottom: 1px solid #6678B1;
+}
+table.problem-list tr:hover th {
+    background-color: #fff;
+}
+table.problem-list td {
+    cursor: pointer;
+}
+.smallopt label {
+    font-size: 13px;
+    color: #333;
+    line-height: 29px;
+}
+.smallopt input {
+    margin: 0;
+}
+.button.new_problem {
+    margin-left: 10px;
+}
+.problem-has-agreement {
+    width: 10px;
+}
+
+/* Debts */
+.problem-list tr.debt-sum {
+}
+.problem-list tr.debt-sum td {
+    border-bottom: 0;
+    color: #555;
+}
+#debt-list td, .archives table.archive-list td {
+    cursor: auto;
+}
+/* Events */
+.event-list td {
+    line-height: 17px;
+    padding: 3px 6px;
+}
+.event-description {
+    color: #039;
+    line-height: 19px;
+    font-size: 15px;
+    padding: 6px 12px;
+    border: 1px solid #F5F5F5;
+    margin-bottom: 15px;
+}
+.noinfo {
+    color: #666;
+    text-align: center;
+    font-size: 13px;
+    padding: 6px;
+}
+
+/* Admin */
+.update-output {
+    margin: 10px 0 0 0;
+    border: 1px solid #eee;
+    padding: 3px;
+    background-color: #f5f5f5;
+}
+
+.adminblock {
+    width: 50%;
+    float: left;
+}
+#userlist, #useredit {
+    height: 100%;
+    overflow: auto;
+    position: relative;
+}
+#useredit .loading, #useredit #getuserform {
+    display: none;
+}
+#useredit {
+    width: 50%;
+    max-width: 500px;
+}
+.editform div {
+    color: #039;
+    line-height: 30px;
+    font-size: 15px;
+}
+.editform div:hover {
+    background-color: #f5f5f5;
+}
+.editform label {
+    width: 130px;
+    text-align: right;
+    margin: 2px 10px 0 0;
+    display: inline-block;
+    vertical-align: center;
+}
+.editform input[type=text], .editform input[type=email], .editform input[type=datetime] {
+    width: 300px;
+    font-size: 15px;
+    background-color: #fcfcfc;
+    border: 1px solid #ccc;
+    padding: 3px 5px 2px;
+    color: #555;
+}
+.editform .readonly {
+    color: #89c;
+}
+.editform #user_roles {
+    display: inline-block;
+    line-height: 16px;
+    padding: 3px 10px 2px;
+    border: 1px solid #ccc;
+    width: 190px;
+}
+.editform #user_roles label {
+    clear: right;
+    text-align: left;
+    margin: 0;
+    width: 170px;
+}
+.editform #user_roles input[type=checkbox] {
+    clear: left;
+    margin: 3px 4px 3px 0;
+}
+.editform .formbuttons {
+    margin: 20px 0 0 0;
+    text-align: right;
+}
+
+.editform .formbuttons .button span, .editform .formbuttons .greybutton span{
+    width: 60px;
+}
+.editform > div > ul {
+    color: #d04a37;
+    width: 100%;
+    text-align: right;
+}
+
+/* parameters */
+#parameter-groups, #template-list, #settings-menu {
+    width: 260px;
+}
+#parameter-groups ul li, #template-list a.tpl-list, #settings-menu a.menuitem {
+    text-align: right;
+    border-bottom: 1px solid #CCCCCC;
+    color: #3344AA;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 5px 10px;
+    display: block;
+}
+#parameter-groups ul li:hover, #template-list a.tpl-list:hover, #settings-menu a.menuitem:hover   {
+    background-color: #f5f5f5;
+}
+#parameter-groups ul li.current, #template-list a.tpl-list.current, #settings-menu a.menuitem.current {
+    background-color: #e6e6e6 !important;
+}
+#parameter-groups ul div {
+    color: #3344AA;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 7px 0 1px 0;
+    border-bottom: 1px solid #3344AA;
+}
+
+#parameter-lists {
+    width: 440px;
+    display: none;
+}
+#parameter-lists .formbuttons, #template-edit .formbuttons {
+    margin: 20px 0 0 0;
+    text-align: right;
+}
+#parameter-lists .formbuttons .button span, #parameter-lists .formbuttons .greybutton span{
+    width: 60px;
+}
+#parameter-lists .param {
+    padding: 2px;
+}
+#parameter-lists .param:hover {
+    background-color: #f5f5f5;
+}
+#parameter-lists .pos {
+    background: url('../images/sprs.png') no-repeat -64px 2px;
+    cursor: move;
+    width: 26px;
+    height: 22px;
+    float: left;
+}
+#parameter-lists input[type=text] {
+    width: 330px;
+}
+#newparam-template {
+    display: none;
+}
+
+/* Templates */
+.template-top {
+    width: 700px;
+}
+#template-edit {
+    width: 440px;
+}
+
+.client-template-cont {
+    max-height: 300px;
+    overflow: auto;
+    margin: 20px 0 0 0;
+}
+.client-template-list {
+    text-align: center;
+}
+.client-template-list input {
+    float: left;
+    margin: 7px 0 0 7px;
+}
+.client-template-list label {
+    display: block;
+    margin: 0 0 5px 0;
+    padding: 5px 18px 5px 5px;
+    background-color: #f5f5f5;
+    color: #333;
+    font-size: 15px;
+    cursor: pointer;
+}
+.client-template-list label:hover {
+    background-color: #eee;
+}
+.client-template-list input:checked+label {
+    background-color: #ccc;
+}
+
+/* Stats */
+.stats {
+    float: right;
+}
+
+.inquiry-stats {
+    float: right;
+    width: 320px
+}
+.stat-legend {
+    float: right;
+}
+.stat-legend td {
+    padding: 1px 2px;
+}
+.monthchart .jqplot-xaxis-tick {
+    font-size: 10px;
+    letter-spacing: -2px;
+}
+
+/* Client edit form */
+.client-edit, .client-edit-inner {
+    color: #039;
+    font-size: 13px;
+    width: 100%;
+}
+.client-edit > tbody > tr > th {
+    vertical-align: middle;
+    width: 10%;
+    color: #5661a2;
+    font-weight: normal;
+    padding: 2px 3px 6px 6px;
+    border-bottom: 1px solid #DDD;
+    text-align: right;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+.client-edit th.high {
+
+}
+.client-edit > tbody > tr > th:first-child {
+    padding-left: 0;
+}
+.client-edit > tbody > tr > td {
+    padding: 2px 0;
+    border-bottom: 1px solid #DDD;
+    vertical-align: bottom;
+}
+.client-edit-inner td {
+    padding: 0 0 0 6px;
+    vertical-align: bottom;
+}
+.client-edit-inner td:first-child {
+    padding: 0;
+}
+.client-edit label.above {
+    color: #858cb7;
+    font-weight: normal;
+    white-space: nowrap;
+    line-height: 12px;
+    font-size: 11px;
+    font-style: italic;
+}
+.client-edit label {
+    color: #5661A2;
+    font-weight: normal;
+    white-space: nowrap;
+}
+.client-edit input[type=text], .client-edit input[type=password], .edit-note textarea {
+    border: 1px solid #a0a0a0;
+    border-color: #a9a9a9 #b9b9b9 #b9b9b9;
+    background-color: #f9f9f9;
+    color: #333;
+    font-size: 13px;
+    width: 100%;
+    padding: 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    outline: medium none;
+}
+.client .short, .client-edit .short, .client-edit input.short  {
+    width: 50px;
+}
+.client-edit table.client-edit {
+    /*margin: -2px -6px;*/
+}
+.client-edit table.client-edit td {
+    border: none;
+}
+.client-edit select {
+    font-size: 12px;
+}
+.client-edit input[type=text]:hover, .client-edit input[type=text]:focus,
+.client-edit input[type=password]:hover, .client-edit input[type=password]:focus,
+.edit-note textarea:hover, .edit-note textarea:focus {
+    border-color: #777 #888 #888;
+    background-color: #fafafa;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+.noborder {
+    border: none !important;
+}
+.edit-note textarea {
+    margin-top: 2px;
+    padding: 3px;
+    min-height: 80px;
+}
+.errors {
+    color: red;
+}
+.errors li {
+    font-size: 12px;
+    line-height: 12px;
+    padding: 0 0 3px;
+}
+.errors + input[type=text], .errors + input[type=text]:hover, .errors + input[type=text]:focus,
+.errors + input[type=password], .errors + input[type=password]:hover, .errors + input[type=password]:focus,
+.errors + textarea, .errors + textarea:hover, .errors + textarea:focus{
+    border-color: red;
+}
+.delete_provider, .delete_debt {
+    line-height: 22px;
+    display: inline-block;
+    color: #666;
+}
+
+/* modal dialog */
+.modal {
+    background-color:#fff;
+    display:none;
+    min-width:500px;
+    padding:20px 10px;
+    text-align:left;
+    border:2px solid #bbb;
+
+    opacity: 0.8;
+    border-radius: 4px;
+    box-shadow: 0 0 50px #ccc;
+}
+.modal .archives {
+    overflow: auto;
+    max-height: 200px;
+}
+.client-edit td.td-right-pad {
+    padding-right: 6px;
+}
+.problem-open-alert {
+    margin: 20px 0;
+    color: red;
+    font-size: 15px;
+    text-align: center;
+}
+
+/* Settings */
+#settings-menu {
+    float: left;
+}
+g .menuitems a {
+    font: 15px "Optima Regular", "Optima Regular IE";
+}
+#settings-content {
+    margin: 0 0 0 270px;
+}
+.settings-password {
+    width: 400px;
+}
+/* Client visit */
+.visit_header {
+    color: #5661a2;
+    font-size: 13px;
+    margin: 10px 0 4px 0;
+    text-align: center;
+}
+
+/* Tasks */
+.tasks {
+    width: 600px;
+    float: left;
+}
+table.task-list, table.task-list-readonly  {
+    color: #039;
+    font-size: 13px;
+    width: 100%;
+}
+table.task-list th, table.task-list-readonly th {
+    color: #555;
+    border-bottom: 1px solid #6678B1;
+    font-size: 13px;
+    font-weight: normal;
+    padding: 5px 6px 5px;
+    text-align: left;
+    white-space: nowrap;
+}
+table.task-list td, table.task-list-readonly td {
+    padding: 5px 6px 5px;
+    border-bottom: 1px solid #DDD;
+}
+table.task-list td {
+    cursor: pointer;
+}
+table.task-list tr:hover td {
+    background-color: #f5f5f5;
+}
+
+/* Agreement */
+.agreement-date > div {
+    float: left;
+}
+#form_agreement_exp_type input, #form_agreement_exp_type label {
+    display: inline;
+    float: left;
+}
+#form_agreement_exp_type input {
+    clear: left;
+}
+.agreement-date {
+    color: #336600;
+}
+.agreement-date.expired {
+    color: #993300;
+}
+.button, .greybutton {
+    border-radius: 2px;
+    border: 1px solid transparent;
+
+    height: 26px;
+    min-width: 7px;
+    padding: 0 12px;
+    margin: 0 0 0 2px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 13px;
+
+    background-color: #d3a70e;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: -o-linear-gradient(top, #eec123, #d3a70e);
+
+    text-decoration: none;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+    display: inline-block;
+    vertical-align: bottom;
+    text-align: center;
+}
+.button span, .greybutton span {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 26px;
+}
+.button .icon, .morebutton .icon, .close .icon {
+    width: 13px;
+    height: 13px;
+    display: inline-block;
+}
+button.button span, button.greybutton span {
+    padding-bottom: 2px;
+}
+a.button .icon, .morebutton .icon  {
+    margin: 6px 0 0 0;
+}
+button.button .icon {
+    vertical-align: top;
+    padding: 0;
+}
+.button img, .greybutton img {
+    vertical-align: text-top;
+    display: inline-block;
+    margin: 0 0 -1px 0;
+}
+.button:hover {
+    border-color: #a3820e;
+    background-color: #b28e13;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#b28e13));
+    background: -webkit-linear-gradient(top, #eec123, #b28e13);
+    background: -moz-linear-gradient(top, #eec123, #b28e13);
+    background: -ms-linear-gradient(top, #eec123, #b28e13);
+    background: -o-linear-gradient(top, #eec123, #b28e13);
+    box-shadow: 0 1px 0 0 rgba(0,0,0,0.1);
+}
+.greybutton {
+    background: #f5f5f5;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f1f1f1), to(#e5e5e5));
+    background: -webkit-linear-gradient(top, #f1f1f1, #e5e5e5);
+    background: -moz-linear-gradient(top, #f1f1f1, #e5e5e5);
+    background: -ms-linear-gradient(top, #f1f1f1, #e5e5e5);
+    background: -o-linear-gradient(top, #f1f1f1, #e5e5e5);
+    border-color: rgba(0,0,0,0.1);
+    color: #777;
+}
+.greybutton:hover {
+    border-color: #b5b5b5;
+    color: #444;
+    background: #f8f8f8;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f8f8f8), to(#f1f1f1));
+    background: -webkit-linear-gradient(top, #f8f8f8, #f1f1f1);
+    background: -moz-linear-gradient(top, #f1f1f1, #d0d0d0);
+    background: -ms-linear-gradient(top, #f8f8f8, #f1f1f1);
+    background: -o-linear-gradient(top, #f8f8f8, #f1f1f1);
+    box-shadow: 0 1px 0 0 rgba(0,0,0,0.1);
+}
+
+button.button, button.greybutton {
+    height: 29px;
+}
+.button-row {
+/*    position:absolute;
+    right: 10px;
+    top: 10px;*/
+    float: right;
+}
+
+.animbutton, .animbutton:hover {
+    background: url('../images/nf-loader.gif') no-repeat center, webkit-gradient(linear, 0% 0%, 0% 100%, from(#eec123), to(#d3a70e));
+    background: url('../images/nf-loader.gif') no-repeat center, -webkit-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -moz-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -ms-linear-gradient(top, #eec123, #d3a70e);
+    background: url('../images/nf-loader.gif') no-repeat center, -o-linear-gradient(top, #eec123, #d3a70e);
+    cursor: wait;
+    color: transparent;
+    text-shadow: none;
+}
+
+.greybutton.animbutton, .greybutton.animbutton:hover, .submenu.animbutton, .submenu.animbutton:hover  {
+    background: url('../images/nf-loader.gif') no-repeat center, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f5f5f5), to(#f1f1f1));
+    background: url('../images/nf-loader.gif') no-repeat center, -webkit-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: url('../images/nf-loader.gif') no-repeat center, -moz-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: url('../images/nf-loader.gif') no-repeat center, -ms-linear-gradient(top, #f5f5f5, #f1f1f1);
+    background: url('../images/nf-loader.gif') no-repeat center, -o-linear-gradient(top, #f5f5f5, #f1f1f1);
+    cursor: wait;
+    color: transparent;
+    text-shadow: none;
+}
+.animbutton span, .animbutton.redtext span {
+    background-image: none !important;
+    color: transparent;
+    text-shadow: none;
+}
+
+/* button icons */
+.button .edit-icon {
+    background: url('../images/iconset.png') no-repeat -180px 0;
+}
+.button .search-icon {
+    background: url('../images/iconset.png') no-repeat -77px 0;
+}
+.button .back-icon {
+    background: url('../images/iconset.png') no-repeat -25px -336px;
+}
+.redtext span {
+    color: #a33;
+}
+
+.morebutton {
+    position: relative;
+}
+.morebutton .sub-vertical {
+    display: none;
+    position: absolute;
+    top: 28px;
+    right: 0px;
+    border: 1px solid #ccc;
+    width: 140px;
+    background-color: #fff;
+    z-index: 900;
+    padding: 6px 0;
+    box-shadow: 0 1px 1px 1px rgba(0,0,0,0.1);
+}
+.morebutton span.icon {
+    background: url('../images/sprs.png') no-repeat -52px 0;
+    width: 7px;
+    height: 4px;
+    margin: 1px 0 0 5px;
+}
+.close span.icon {
+    background: url('../images/sprs.png') no-repeat -52px -11px;
+    width: 4px;
+    height: 7px;
+    margin: 10px 0 0 0;
+}
+.sub-vertical .submenu {
+    line-height: 25px;
+    display: block;
+    color: #656565;
+    text-align: left;
+    padding: 0 20px;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}
+
+.sub-vertical .submenu:hover {
+    background-color: #eee;
+}
+
+/* Quicksearch */
+.quicksearch {
+    padding: 10px 6px 0 0;
+    width: 100%;
+}
+.searchfield {
+    background-color: transparent;
+    border: 0;
+    outline:none;
+}
+.searchfield-container {
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+.quicksearch input[type=text]{
+    height: 20px;
+    width: 350px;
+    font: 16px Arial,Helvetica;
+    padding: 4px 27px 3px 8px;
+    color: #555;
+}
+.quicksearch input:-ms-input-placeholder {
+    color: #bbb;
+    font-style: italic;
+}
+.quicksearch input:-moz-placeholder {
+    color: #bbb;
+    font-style: italic;
+}
+.quicksearch input::-webkit-input-placeholder
+{
+    color: #bbb;
+    font-style: italic;
+}
+.quicksearch button.searchbutton {
+    width: 60px;
+    margin: 0 0 0 12px;
+    height: 29px;
+}
+.quicksearch .searchbutton span.searchicon {
+    background: url('../images/sprs.png') no-repeat 0 0;
+    width: 13px;
+    height: 13px;
+    display: inline-block;
+}
+.quicksearch .searchbutton:hover span.searchicon {
+    /*background: url('../images/sprs.png') no-repeat -34px 0;*/
+}
+
+/* Nicefield */
+.nf-container {
+    padding: 0;
+    margin: 0;
+    position: relative;
+    float: left;
+    background-color: #FBFBFB;
+    border: 1px solid #c2b39f;
+    border-radius: 2px;
+    box-shadow: 1px 1px 2px rgba(200, 200, 200, 0.8) inset;
+}
+.nf-indicator {
+    position: absolute;
+    display: none;
+    right: 8px;
+    top: 0px;
+    width: 16px;
+    height: 28px;
+    background: url('../images/nf-loader.gif') no-repeat center center;
+}
+.nf-clear {
+    position: absolute;
+    display: block;
+    right: 0px;
+    top: 0px;
+    width: 25px;
+    height: 25px;
+    background: url('../images/nf-clear.png') no-repeat center center;
+    cursor: pointer;
+    opacity: 0.8;
+}
+.nf-clear:hover {
+    opacity: 1;
+}

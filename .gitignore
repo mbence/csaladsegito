@@ -9,8 +9,6 @@ vendor/*
 */cache/*
 web/uploads/*
 web/bundles/*
-web/css/*
-web/js/*
 web/uploads/*
 
 composer.phar
