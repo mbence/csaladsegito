@@ -321,7 +321,7 @@ class AdminController extends Controller
             // clear cache
             $ex[] = "php app/console cache:clear --env=prod --no-debug";
             // assetic dump
-            $ex[] = "php app/console assetic:dump --env=prod --no-debug";
+            //$ex[] = "php app/console assetic:dump --env=prod --no-debug";
             // asset install
             //$ex[] = "php app/console assets:install";
 
