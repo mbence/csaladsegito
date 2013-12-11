@@ -88,6 +88,11 @@ class ImportController extends Controller
                 $results['gyejo'] = $this->importGyejo($sheets[$table]);
             }
 
+            // rnadomize names for demo
+            if ('random' == $table) {
+                $results['random'] = $this->randomizeClients();
+            }
+
             $session->set('results', $results);
 
             //return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
@@ -97,6 +102,82 @@ class ImportController extends Controller
         //$session->remove('results');
 
         return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r, 'sheets' => $this->getSheets($results), 'reload' => $this->reload]);
+    }
+
+
+    protected function randomizeClients()
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        // select all clients
+        $clients = $em->getRepository('JCSGYKAdminBundle:Client')->findBy(['companyId' => $this->companyID]);
+
+        $fields = [
+            'FirstName',
+            'LastName',
+            'Gender',
+            'BirthFirstName',
+            'BirthLastName',
+            'BirthDate',
+            'BirthPlace',
+            'MotherFirstName',
+            'MotherLastName',
+            'SocialSecurityNumber',
+            'IdentityNumber',
+            'IdCardNumber',
+            'Mobile',
+            'Phone',
+            'Fax',
+            'Email',
+            'ZipCode',
+            'City',
+            'Street',
+            'StreetNumber',
+            'FlatNumber',
+            'LocationZipCode',
+            'LocationCity',
+            'LocationStreet',
+            'LocationStreetNumber',
+            'LocationFlatNumber',
+            'Note',
+            'GuardianFirstname',
+            'GuardianLastname'
+        ];
+
+        $arr = [];
+        foreach ($fields as $field) {
+            $arr[$field] = [];
+        }
+
+        // get the names, addresses, birthdates
+        foreach ($clients as $client) {
+            foreach ($fields as $field) {
+                $getter = 'get' . $field;
+                $arr[$field][] = $client->$getter();
+            }
+        }
+
+        // randomize all data
+        foreach ($fields as $field) {
+            shuffle($arr[$field]);
+        }
+
+        // update the records
+        $n = 0;
+        foreach ($clients as $client) {
+            foreach ($fields as $field) {
+                if (isset($arr[$field][$n])) {
+                    $setter = 'set' . $field;
+                    $client->$setter($arr[$field][$n]);
+                }
+            }
+            $n++;
+        }
+        // save
+        $em->flush();
+        // done
+
+        return $n . ' records processed.';
     }
 
     protected function getSheets($results = [])
