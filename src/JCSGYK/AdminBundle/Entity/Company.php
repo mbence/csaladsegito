@@ -73,6 +73,12 @@ class Company
      */
     private $isActive;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="logo", type="string", length=255, nullable=true)
+     */
+    private $logo;
 
     /**
      * Get id
@@ -231,17 +237,40 @@ class Company
     public function setCaseNumberTemplate($caseNumberTemplate)
     {
         $this->caseNumberTemplate = $caseNumberTemplate;
-    
+
         return $this;
     }
 
     /**
      * Get caseNumberTemplate
      *
-     * @return string 
+     * @return string
      */
     public function getCaseNumberTemplate()
     {
         return $this->caseNumberTemplate;
+    }
+
+    /**
+     * Set logo
+     *
+     * @param string $logo
+     * @return Company
+     */
+    public function setLogo($logo)
+    {
+        $this->logo = $logo;
+
+        return $this;
+    }
+
+    /**
+     * Get logo
+     *
+     * @return string 
+     */
+    public function getLogo()
+    {
+        return $this->logo;
     }
 }

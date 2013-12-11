@@ -47,6 +47,7 @@ class AdminExtension extends \Twig_Extension
             'rel_types' => new \Twig_Function_Method($this, 'getRelationTypes'),
             'casefield' => new \Twig_Function_Method($this, 'formatCaseNumberFields', ['is_safe' => ['html']]),
             'co_short' => new \Twig_Function_Method($this, 'getCompanyShortName'),
+            'co_logo' => new \Twig_Function_Method($this, 'getCompanyLogo'),
         );
     }
 
@@ -55,6 +56,13 @@ class AdminExtension extends \Twig_Extension
         $co = $this->ds->getCompany();
 
         return !empty($co['shortName']) ? $co['shortName'] : '';
+    }
+
+    public function getCompanyLogo()
+    {
+        $co = $this->ds->getCompany();
+
+        return !empty($co['logo']) ? $co['logo'] : '';
     }
 
 
