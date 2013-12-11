@@ -4,10 +4,8 @@
     width: 360px;
 }
 .login #logo {
-    height: 100px;
-    width: 210px;
     margin: 30px auto 20px;
-    background: url('../images/logo1.png') no-repeat left top;
+    text-align: center;
 }
 .login H1 {
     font-size: 26px;

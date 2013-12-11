@@ -22,6 +22,7 @@ class CompanyType extends AbstractType
             ]
         ]);
         $builder->add('case_number_template', 'text', ['label' => 'Üsz formátum']);
+        $builder->add('logo', 'text', ['label' => 'Logo']);
         $builder->add('is_active', 'checkbox', ['label' => 'Aktív']);
     }
 
