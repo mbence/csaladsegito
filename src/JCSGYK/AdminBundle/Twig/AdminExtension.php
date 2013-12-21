@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Twig;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 
 use JCSGYK\AdminBundle\Entity\Client;
+use JCSGYK\DbimportBundle\Entity\Client as DbClient;
 use JCSGYK\AdminBundle\Entity\Problem;
 use JCSGYK\AdminBundle\Entity\Paramgroup;
 
@@ -170,7 +171,7 @@ class AdminExtension extends \Twig_Extension
             $tpl = '{num}';
         }
 
-        if ($client instanceof Client) {
+        if ($client instanceof Client || $client instanceof DbClient) {
             $case_number = $client->getCaseNumber();
             $case_year = $client->getCaseYear();
         }
@@ -319,7 +320,16 @@ class AdminExtension extends \Twig_Extension
      */
     public function gender($gender_id)
     {
-        return $this->translator->trans($gender_id == 1 ? 'férfi' : 'nő');
+        if ($gender_id == 1) {
+            $gender = 'férfi';
+        }
+        elseif ($gender_id == 2) {
+            $gender = 'nő';
+        }
+        else {
+            $gender = '';
+        }
+        return $this->translator->trans($gender);
     }
 
     /**
