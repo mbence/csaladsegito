@@ -14,94 +14,152 @@ use JCSGYK\DbimportBundle\Entity\Archive;
 use JCSGYK\DbimportBundle\Entity\UtilityproviderClientnumber;
 use JCSGYK\DbimportBundle\Entity\Relation;
 
-
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 
 class ImportController extends Controller
 {
     private $companyID = 1;
+    private $company;
 
     private $user_id_map = [];
     private $userlist = [];
     private $caselist = [];
 
     private $reload = null;
-
+    private $session;
+    private $xlsxOptions = [
+        'regexp' => '#^\d{4}/\d{1,3}$#',
+        'c_type' => Client::CW,
+        'clean_street_numbers' => true,
+    ];
 
     /**
      * @Secure(roles="ROLE_SUPER_ADMIN")
      */
 
-    public function indexAction(Request $request)
+    public function indexAction()
     {
+        $request = $this->getRequest();
+        $this->company = $this->get('jcs.ds')->getCompany();
+
         // disable the profiler, for it fails with the huge query numbers
         if ($this->container->has('profiler'))
         {
             $this->container->get('profiler')->disable();
         }
 
-        $session = $this->get('session');
+        $this->session = $request->getSession();
         $results = [];
 
+        $tab = 1;
         if ($request->isMethod('POST')) {
-
+            $tab = $request->get('tab');
             $table = $request->get('import');
-
-            if ('user' == $table || 'all' == $table || 'user10' == $table) {
-                $limit = 'user10' == $table ? 10 : 0;
-
-                $results['user'] = $this->importUser($limit, $table);
+            if (0 == $tab) { // Jozsefvaros
+                $results = $this->jozsefvaros($table);
             }
-            if ('client' == $table || 'all' == $table || 'client100' == $table) {
-                $limit = 'client100' == $table ? 100 : 0;
-
-                $results['client'] = $this->importClient($limit);
+            elseif (1 == $tab) { // Ferencvaros
+                $results = $this->ferencvaros($table);
             }
-            if ('archive' == $table || 'all' == $table || 'archive100' == $table) {
-                $limit = 'archive100' == $table ? 100 : 0;
-
-                $results['archive'] = $this->importArchive($limit);
+            elseif (2 == $tab) { // randomizer
+                $results = $this->randomizer($table);
             }
-            if ('problem' == $table || 'all' == $table || 'problem100' == $table) {
-                $limit = 'problem100' == $table ? 100 : 0;
-
-                $results['problem'] = $this->importProblem($limit);
-            }
-            if ('event' == $table || 'all' == $table || 'event100' == $table) {
-                $limit = 'event100' == $table ? 100 : 0;
-
-                $results['events'] = $this->importEvent($limit);
-            }
-            if ('caseadmin' == $table || 'all' == $table || 'caseadmin100' == $table) {
-                $limit = 'caseadmin100' == $table ? 100 : 0;
-
-                $results['caseadmin'] = $this->setCaseadmins($limit);
-            }
-
-            // Gyejo
-            if ('truncate' == $table) {
-                $results['gyejo'] = $this->truncateTables();
-            }
-            $sheets = $this->getSheets();
-            if (isset($sheets[$table])) {
-                $results['gyejo'] = $this->importGyejo($sheets[$table]);
-            }
-
-            // rnadomize names for demo
-            if ('random' == $table) {
-                $results['random'] = $this->randomizeClients();
-            }
-
-            $session->set('results', $results);
-
-            //return $this->redirect($this->generateUrl('jcsgyk_dbimport_homepage'));
         }
 
-        $r = $session->get('results', $results);
-        //$session->remove('results');
+        return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', [
+            'tab' => $tab,
+            'results' => $results,
+            'sheets' => $this->getSheets($results),
+            'd9sheets' => $this->getSheetsD9($results),
+            'reload' => $this->reload
+        ]);
+    }
 
-        return $this->render('JCSGYKDbimportBundle:Default:index.html.twig', ['results' => $r, 'sheets' => $this->getSheets($results), 'reload' => $this->reload]);
+    private function jozsefvaros($table)
+    {
+        $results = [];
+
+        if ('user' == $table || 'all' == $table || 'user10' == $table) {
+            $limit = 'user10' == $table ? 10 : 0;
+
+            $results['user'] = $this->importUser($limit, $table);
+        }
+        if ('client' == $table || 'all' == $table || 'client100' == $table) {
+            $limit = 'client100' == $table ? 100 : 0;
+
+            $results['client'] = $this->importClient($limit);
+        }
+        if ('archive' == $table || 'all' == $table || 'archive100' == $table) {
+            $limit = 'archive100' == $table ? 100 : 0;
+
+            $results['archive'] = $this->importArchive($limit);
+        }
+        if ('problem' == $table || 'all' == $table || 'problem100' == $table) {
+            $limit = 'problem100' == $table ? 100 : 0;
+
+            $results['problem'] = $this->importProblem($limit);
+        }
+        if ('event' == $table || 'all' == $table || 'event100' == $table) {
+            $limit = 'event100' == $table ? 100 : 0;
+
+            $results['events'] = $this->importEvent($limit);
+        }
+        if ('caseadmin' == $table || 'all' == $table || 'caseadmin100' == $table) {
+            $limit = 'caseadmin100' == $table ? 100 : 0;
+
+            $results['caseadmin'] = $this->setCaseadmins($limit);
+        }
+
+        // Truncate
+        if ('truncate' == $table) {
+            $results['truncate'] = $this->truncateTables();
+        }
+
+        // Gyejo
+        $sheets = $this->getSheets();
+        if (isset($sheets[$table])) {
+            $results['gyejo'] = $this->importXlsx($sheets[$table]);
+        }
+
+        return $results;
+    }
+
+    // Ferencvaros
+    private function ferencvaros($table)
+    {
+        $results = [];
+
+        // Truncate
+        if ('truncate' == $table) {
+            $results['truncate'] = $this->truncateTables();
+        }
+        $d9sheets = $this->getSheetsD9();
+        $this->xlsxOptions = [
+            'regexp' => '#^.+$#',
+            'c_type' => Client::FH,
+            'clean_street_numbers' => false,
+        ];
+
+//        var_dump($d9sheets,$table);
+        if (isset($d9sheets[$table])) {
+            $results['ferenc'] = $this->importXlsx($d9sheets[$table]);
+        }
+
+        return $results;
+    }
+
+    private function randomizer($table)
+    {
+        $results = [];
+
+        // randomize names for demo
+        if ('random' == $table) {
+            $results['random'] = $this->randomizeClients();
+        }
+
+        return $results;
     }
 
 
@@ -178,6 +236,55 @@ class ImportController extends Controller
         // done
 
         return $n . ' records processed.';
+    }
+
+    protected function getSheetsD9($results = [])
+    {
+        $sheets = [
+            'd9sheet1' => [
+                'id' => 'd9sheet1',
+                'name' => '2013',
+                'file' => 'ferencvaros_2013.xlsx',
+                'results' => null,
+                'note_fields' => [23,24,25,26,27,28],
+                'note_text' => 'Hozzátartozók: ',
+                'archived' => false,
+            ],
+            'd9sheet2' => [
+                'id' => 'd9sheet2',
+                'name' => '2012',
+                'file' => 'ferencvaros_2012.xlsx',
+                'results' => null,
+                'note_fields' => [23,24,25,26,27,28],
+                'note_text' => 'Hozzátartozók: ',
+                'archived' => 2012,
+            ],
+            'd9sheet3' => [
+                'id' => 'd9sheet3',
+                'name' => '2011',
+                'file' => 'ferencvaros_2011.xlsx',
+                'results' => null,
+                'note_fields' => [23,24,25,26,27,28],
+                'note_text' => 'Hozzátartozók: ',
+                'archived' => 2011,
+            ],
+            'd9sheet4' => [
+                'id' => 'd9sheet4',
+                'name' => 'Munka1',
+                'file' => 'ferencvaros_pottyos.xlsx',
+                'results' => null,
+                'note_fields' => [22, 23, 24],
+                'note_text' => 'Hozzátartozók: ',
+                'archived' => false,
+            ],
+        ];
+        foreach ($sheets as $n => $sheet) {
+            if (isset($result[$sheet['id']])) {
+                $sheets[$n]['results'] = $result[$sheet['id']];
+            }
+        }
+
+        return $sheets;
     }
 
     protected function getSheets($results = [])
@@ -274,15 +381,18 @@ class ImportController extends Controller
         // clear the session too
         $this->get('session')->set('caselist', []);
 
+        // reset the client sequence
+        $this->get('jcs.seq')->reset($this->company);
+
         return 'Succesfully truncated ' . implode(', ', $tables);
     }
 
-    protected function importGyejo($sheet)
+    protected function importXlsx($sheet)
     {
         include_once 'PHPExcel/PHPExcel/IOFactory.php';
 
         // load the case list
-        $this->caselist = $this->get('session')->get('caselist');
+        $this->caselist = $this->session->get('caselist');
 
         $n = 0;
         $db_dir = '../src/JCSGYK/DbImportBundle/db/';
@@ -298,7 +408,7 @@ class ImportController extends Controller
         if (empty($from)) {
             $from = 0;
             // clear the session too
-            $this->get('session')->set('caselist', []);
+            $this->session->set('caselist', []);
         }
 
         $length = 30;
@@ -309,7 +419,7 @@ class ImportController extends Controller
 
             $paged_data = array_slice($sheet_data, $from, $length);
 
-            $n += $this->processXlsx($paged_data);
+            $n += $this->processXlsx($paged_data, $this->xlsxOptions, $sheet);
         }
 
         if ($from + $length < count($sheet_data)) {
@@ -320,7 +430,7 @@ class ImportController extends Controller
         }
 
         // save the case list
-        $this->get('session')->set('caselist', $this->caselist);
+        $this->session->set('caselist', $this->caselist);
 
         return 'Succesfully imported rows ' . $from . '-' . ($from + $length);
     }
@@ -426,7 +536,7 @@ class ImportController extends Controller
         return $user;
     }
 
-    protected function processXlsx($sheet_data)
+    protected function processXlsx($sheet_data, $options, $sheet)
     {
         //var_dump($sheet_data);
         $n = 0;
@@ -439,13 +549,35 @@ class ImportController extends Controller
             //continue;
 
             // check for a proper case number
-            preg_match('#^\d{4}/\d{1,3}$#', $row[0], $matches);
+            preg_match($options['regexp'], $row[0], $matches);
 
-            if (empty($row[0]) || empty($matches)) {
+            if (empty($row[0]) || empty($matches) || $row[0] == 'Név') {
                 // skip empty or deleted rows
-                if (!empty($row[0])) {
+                if (!empty($row[0]) && $row[0] != 'Név') {
                     var_dump($row[0]);
                 }
+                continue;
+            }
+
+// ONLY FOR FERENCVÁROS!
+            // check for ssn and name, and skip if already there
+            // get name col
+            $rev_map = array_flip($this->field_map);
+            $names = explode(' ', $row[$rev_map['Name']], 2);
+            if (empty($names[1])) {
+                $names[1] = '';
+            }
+            $ssn =  Client::cleanupNum($row[$rev_map['SocialSecurityNumber']]);
+
+            $ssn_check = $em->createQuery("SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.socialSecurityNumber LIKE :ssn AND c.lastname LIKE :lastname AND c.firstname LIKE :firstname")
+                ->setParameter('ssn', $ssn)
+                ->setParameter('lastname', $names[0])
+                ->setParameter('firstname', $names[1])
+                ->setMaxResults(1)
+                ->getResult();
+
+            if (!empty($ssn_check)) {
+                var_dump($row);
                 continue;
             }
 
@@ -454,7 +586,7 @@ class ImportController extends Controller
 
             $p = new Client();
             $p->setCompanyId($this->companyID);
-            $p->setType(Client::CW);
+            $p->setType($options['c_type']);
 
             foreach ($this->field_map as $index => $to) {
                 $from = trim($row[$index]);
@@ -466,13 +598,15 @@ class ImportController extends Controller
                     if (!empty($from)) {
                         $from = substr(strtr($from, ['.' => '-']), 0, 10);
                         preg_match('#^\d{4}-\d{2}-\d{2}$#', $from, $dma);
-
                         if (!empty($dma)) {
                             try {
                                $val = new \DateTime($from);
                             } catch (\Exception $e) {
                                 // nothing
                             }
+                        }
+                        else {
+                            $val = $this->getDate($from);
                         }
                     }
                 }
@@ -490,7 +624,10 @@ class ImportController extends Controller
                 }
                 // Street Number
                 elseif ('StreetNumber' == $to || 'LocationStreetNumber' == $to) {
-                    $val = trim(strtr($from, ['/' => '', '.' => '']));
+                    if ($options['clean_street_numbers']) {
+                        $from = strtr($from, ['/' => '', '.' => '']);
+                    }
+                    $val = trim($from);
                 }
                 // Location Street type
                 elseif ('LocationStreet' == $to) {
@@ -518,6 +655,23 @@ class ImportController extends Controller
 
                     continue;
                 }
+                // Birth Name
+                elseif ('BirthName' == $to) {
+                    $names = explode(' ', $from, 2);
+                    if (empty($from)) {
+                        $names = ['', ''];
+                    }
+                    if (empty($names[0])) {
+                        $names[0] = '-';
+                    }
+                    if (empty($names[1])) {
+                        $names[1] = '-';
+                    }
+                    $p->setBirthFirstname($names[1]);
+                    $p->setBirthLastname($names[0]);
+
+                    continue;
+                }
                 // Mothers name
                 elseif ('MotherName' == $to) {
                     $names = explode(' ', $from, 2);
@@ -533,6 +687,30 @@ class ImportController extends Controller
                     $p->setMotherFirstname($names[1]);
                     $p->setMotherLastname($names[0]);
 
+                    continue;
+                }
+                // Guardian Name
+                elseif ('Guardian' == $to) {
+                    $names = explode(' ', $from, 2);
+                    if (empty($from)) {
+                        $names = ['', ''];
+                    }
+                    if (empty($names[0])) {
+                        $names[0] = '-';
+                    }
+                    if (empty($names[1])) {
+                        $names[1] = '-';
+                    }
+                    $p->setGuardianFirstname($names[1]);
+                    $p->setGuardianLastname($names[0]);
+
+                    continue;
+                }
+                // guardian phone hack
+                elseif ('GuardianPhone' == $to) {
+                    if (!empty($from)) {
+                        $p->setGuardianFirstname(sprintf('%s (%s)', $p->getGuardianFirstname(), $from));
+                    }
                     continue;
                 }
                 elseif ('IsArchived' == $to) {
@@ -559,9 +737,11 @@ class ImportController extends Controller
                     $val = $archived;
                 }
                 elseif ('CaseLabel' == $to) {
-                    list($cyear, $cnum) = explode('/', $from);
-                    $p->setCaseNumber($cnum);
-                    $p->setCaseYear($cyear);
+                    if ($p->getType() == Client::CW) {
+                        list($cyear, $cnum) = explode('/', $from);
+                        $p->setCaseNumber($cnum);
+                        $p->setCaseYear($cyear);
+                    }
                     $val = $from;
                 }
                 elseif ('CaseType' == $to) {
@@ -595,11 +775,57 @@ class ImportController extends Controller
                 $p->$setter($val);
             }
 
+            // process the notes
+            if (!empty($sheet['note_fields'])) {
+                $note_tmp = [];
+                foreach ($sheet['note_fields'] as $notefield) {
+                    $val = trim($row[$notefield]);
+                    if (!empty($val)) {
+                        $note_tmp[] = $val;
+                    }
+                }
+                $val = '';
+                if (!empty($note_tmp)) {
+                    if (!empty($sheet['note_text'])) {
+                        $val = $sheet['note_text'];
+                    }
+                    $val .= implode(', ', $note_tmp);
+
+                    $p->setNote($val);
+                }
+            }
+
+            // check the sheet archived prop
+            if (!empty($sheet['archived'])) {
+                // create the archive record
+                $a = new Archive();
+                //var_dump($arch_date);
+                $a->setCreatedAt(new \DateTime($sheet['archived'] . '-12-31'));
+                $a->setType(87);  // Closed - other
+                // we still need the client id
+                $p->setIsArchived(1);
+            }
+
             // set the city
             $p->setCity('Budapest');
             $ls = $p->getLocationStreet();
             if (!empty($ls)) {
                 $p->setLocationCity('Budapest');
+            }
+
+            // check for a valid case number (in some cases, there is no CaseNumber provided)
+            if (empty($p->getCaseNumber())) {
+                // get a new number and fix the record
+                $nextVal = $this->get('jcs.seq')->nextVal($this->company);
+                if (false === $nextVal) {
+                    // this is really bad
+                    throw new HttpException(500);
+                }
+
+                $p->setCaseYear($nextVal['year']);
+                $p->setCaseNumber($nextVal['id']);
+                // set the visible case number
+                $p->setCaseLabel($this->container->get('jcs.twig.adminextension')->formatCaseNumber($p));
             }
 
             // manage the object
@@ -612,45 +838,49 @@ class ImportController extends Controller
                 $a->setCreatedBy($p->getCaseAdmin());
                 $em->persist($a);
                 $em->flush();
+                $a = null;
             }
 
-            // check the case list if we already had this mother
-            if (!empty($this->caselist[$p->getCaseLabel()])) {
-                // case found, use the mother id
-                $mother_id = $this->caselist[$p->getCaseLabel()];
-            }
-            else {
-                // save the mother
-                $mother = new Client();
-                $mother->setCompanyId($this->companyID);
-                $mother->setType(Client::PARENT);
-                $mother->setCreatedBy($p->getCreatedBy());
-                $mother->setIsArchived(false);
-                $mother->setFirstname($p->getMotherFirstname());
-                $mother->setLastname($p->getMotherLastname());
-                $mother->setGender(2);
-                // set case admin and numbers
-                $mother->setCaseYear($p->getCaseYear());
-                $mother->setCaseNumber($p->getCaseNumber());
-                $mother->setCaseAdmin($p->getCaseAdmin());
-                // set the visible case number
-                $mother->setCaseLabel($p->getCaseLabel());
+            // Mother data and relation only for Child Welfare
+            if ($p->getType() == Client::CW) {
+                // check the case list if we already had this mother
+                if (!empty($this->caselist[$p->getCaseLabel()])) {
+                    // case found, use the mother id
+                    $mother_id = $this->caselist[$p->getCaseLabel()];
+                }
+                else {
+                    // save the mother
+                    $mother = new Client();
+                    $mother->setCompanyId($this->companyID);
+                    $mother->setType(Client::PARENT);
+                    $mother->setCreatedBy($p->getCreatedBy());
+                    $mother->setIsArchived(false);
+                    $mother->setFirstname($p->getMotherFirstname());
+                    $mother->setLastname($p->getMotherLastname());
+                    $mother->setGender(2);
+                    // set case admin and numbers
+                    $mother->setCaseYear($p->getCaseYear());
+                    $mother->setCaseNumber($p->getCaseNumber());
+                    $mother->setCaseAdmin($p->getCaseAdmin());
+                    // set the visible case number
+                    $mother->setCaseLabel($p->getCaseLabel());
 
-                $em->persist($mother);
+                    $em->persist($mother);
+                    $em->flush();
+
+                    $mother_id = $mother->getId();
+                    $this->caselist[$p->getCaseLabel()] = $mother_id;
+                }
+
+                // save the relation
+                $rel = new Relation();
+                $rel->setType(Relation::MOTHER);
+                $rel->setChildId($p->getId());
+                $rel->setParentId($mother_id);
+
+                $em->persist($rel);
                 $em->flush();
-
-                $mother_id = $mother->getId();
-                $this->caselist[$p->getCaseLabel()] = $mother_id;
             }
-
-            // save the relation
-            $rel = new Relation();
-            $rel->setType(Relation::MOTHER);
-            $rel->setChildId($p->getId());
-            $rel->setParentId($mother_id);
-
-            $em->persist($rel);
-            $em->flush();
 
             $n++;
         }
@@ -686,7 +916,24 @@ class ImportController extends Controller
             'Házszám' => ['StreetNumber','LocationStreetNumber'],
             'Emelet/ajtó' => ['FlatNumber','LocationFlatNumber'],
 
-            'Megjegyzés' => 'Note'
+            'Megjegyzés' => 'Note',
+
+            // ferencvaros
+            'Név' => 'Name',
+            'Családgondozó' => 'CaseAdmin',
+            'Születési név' => 'BirthName',
+            'Anyja neve' => 'MotherName',
+            'Születési hely' => 'BirthPlace',
+            'Születési idő' => 'BirthDate',
+            'telefonszám' => ['Phone', 'GuardianPhone'],
+            'Lakcím (utca)' => 'Street',
+            'Lakcím (hsz.em.a.)' => 'StreetNumber',
+            'Tart. hely (utca)' => 'LocationStreet',
+            'Tart. Hely (hsz.em.a.)' => 'LocationStreetNumber',
+            'TAJ szám' => 'SocialSecurityNumber',
+            'állampolgárság' => 'Citizenship',
+            'Törvényes képviselő neve' => 'Guardian',
+            'Ellátás megkezdésének dátuma' => 'CreatedAt'
         ];
 
         // fields that we already found
@@ -708,10 +955,13 @@ class ImportController extends Controller
                         $target = $target[0];
                         $seen_fields[$cell] = 1;
                     }
-                    else {
+                    elseif(isset($target[$seen_fields[$cell]])) {
                         // not the first time we see this col
                         $target = $target[$seen_fields[$cell]];
                         $seen_fields[$cell]++;
+                    }
+                    else {
+                        continue;
                     }
                 }
                 $map[$index] = $target;
