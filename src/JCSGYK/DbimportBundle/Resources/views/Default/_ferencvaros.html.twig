@@ -1,0 +1,29 @@
+<div class="adminblock leftpad20">
+    <form action="" method="POST" name="start">
+        <input type="hidden" name="tab" value="1">
+        <fieldset>
+        <legend>Csaladsegítő</legend>
+        {% if results.truncate is defined %}
+        <div>{{ results.truncate }}</div>
+        {% endif %}
+        <dl class="import_controls">
+            <dt>1) Truncate</dt>
+            <dd>
+                <button type="submit" class="button" name="import" value="truncate" onclick="return confirm('{{ 'Biztos benne?'|trans() }}')">Truncate tables &nbsp;</button>
+            </dd>
+            {% for sheet in d9sheets %}
+            <dt>{{ loop.index + 1 }}) {{ sheet.name }}</dt>
+            <dd>
+                <button type="submit" class="button" name="import" id="import_{{ sheet.id }}" value="{{ sheet.id }}" {#onclick="return confirm('{{ 'Biztos benne?'|trans() }}')"#}>Import &nbsp;</button>
+            </dd>
+            {% endfor %}
+        </dl>
+        {% if results.ferenc is defined %}
+            <div>{{ results.ferenc }}</div>
+        {% endif %}
+        </fieldset>
+        {% if reload.from is defined %}
+            <input type="hidden" name="from" value="{{ reload.from }}">
+        {% endif %}
+    </form>
+</div>
