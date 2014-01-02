@@ -138,7 +138,6 @@ class ImportController extends Controller
         $d9sheets = $this->getSheetsD9();
         $this->xlsxOptions = [
             'regexp' => '#^.+$#',
-            'c_type' => Client::FH,
             'clean_street_numbers' => false,
         ];
 
@@ -249,6 +248,7 @@ class ImportController extends Controller
                 'note_fields' => [23,24,25,26,27,28],
                 'note_text' => 'Hozzátartozók: ',
                 'archived' => false,
+                'c_type' => Client::FH,
             ],
             'd9sheet2' => [
                 'id' => 'd9sheet2',
@@ -258,6 +258,7 @@ class ImportController extends Controller
                 'note_fields' => [23,24,25,26,27,28],
                 'note_text' => 'Hozzátartozók: ',
                 'archived' => 2012,
+                'c_type' => Client::FH,
             ],
             'd9sheet3' => [
                 'id' => 'd9sheet3',
@@ -267,6 +268,7 @@ class ImportController extends Controller
                 'note_fields' => [23,24,25,26,27,28],
                 'note_text' => 'Hozzátartozók: ',
                 'archived' => 2011,
+                'c_type' => Client::FH,
             ],
             'd9sheet4' => [
                 'id' => 'd9sheet4',
@@ -276,7 +278,18 @@ class ImportController extends Controller
                 'note_fields' => [22, 23, 24],
                 'note_text' => 'Hozzátartozók: ',
                 'archived' => false,
+                'c_type' => Client::FH,
             ],
+            'd9sheet5' => [
+                'id' => 'd9sheet5',
+                'name' => 'Gyejo',
+                'file' => 'ferencvaros_gyejo.xlsx',
+                'results' => null,
+                'note_fields' => [],
+                'note_text' => '',
+                'archived' => false,
+                'c_type' => Client::CW,
+            ],            
         ];
         foreach ($sheets as $n => $sheet) {
             if (isset($result[$sheet['id']])) {
@@ -551,28 +564,34 @@ class ImportController extends Controller
             // check for a proper case number
             preg_match($options['regexp'], $row[0], $matches);
 
-            if (empty($row[0]) || empty($matches) || $row[0] == 'Név') {
+            if (empty($row[0]) || empty($matches) || $row[0] == 'Név' || $row[0] == 'Sorszám') {
                 // skip empty or deleted rows
-                if (!empty($row[0]) && $row[0] != 'Név') {
+                if (!empty($row[0]) && $row[0] != 'Név' && $row[0] != 'Sorszám') {
                     var_dump($row[0]);
                 }
                 continue;
             }
 
 // ONLY FOR FERENCVÁROS!
-            // check for ssn and name, and skip if already there
+            // check for ssn, name and mothers name, and skip if already there
             // get name col
             $rev_map = array_flip($this->field_map);
             $names = explode(' ', $row[$rev_map['Name']], 2);
             if (empty($names[1])) {
                 $names[1] = '';
             }
+            $mothersnames = explode(' ', $row[$rev_map['MotherName']], 2);
+            if (empty($mothersnames[1])) {
+                $mothersnames[1] = '';
+            }
             $ssn =  Client::cleanupNum($row[$rev_map['SocialSecurityNumber']]);
 
-            $ssn_check = $em->createQuery("SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.socialSecurityNumber LIKE :ssn AND c.lastname LIKE :lastname AND c.firstname LIKE :firstname")
+            $ssn_check = $em->createQuery("SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.socialSecurityNumber LIKE :ssn AND c.lastname LIKE :lastname AND c.firstname LIKE :firstname AND c.motherLastname LIKE :mother_lastname AND c.motherFirstname LIKE :mother_firstname")
                 ->setParameter('ssn', $ssn)
                 ->setParameter('lastname', $names[0])
                 ->setParameter('firstname', $names[1])
+                ->setParameter('mother_lastname', $mothersnames[0])
+                ->setParameter('mother_firstname', $mothersnames[1])
                 ->setMaxResults(1)
                 ->getResult();
 
@@ -586,7 +605,9 @@ class ImportController extends Controller
 
             $p = new Client();
             $p->setCompanyId($this->companyID);
-            $p->setType($options['c_type']);
+            $client_type = isset($sheet['c_type']) ? $sheet['c_type'] : (isset($options['c_type']) ? $options['c_type'] : Client::FH);
+            
+            $p->setType($client_type);
 
             foreach ($this->field_map as $index => $to) {
                 $from = trim($row[$index]);
@@ -933,7 +954,17 @@ class ImportController extends Controller
             'TAJ szám' => 'SocialSecurityNumber',
             'állampolgárság' => 'Citizenship',
             'Törvényes képviselő neve' => 'Guardian',
-            'Ellátás megkezdésének dátuma' => 'CreatedAt'
+            'Ellátás megkezdésének dátuma' => 'CreatedAt',
+            
+            // ferencvaros gyejo
+            'Sorszam' => 'CaseNumber',
+            'Szül. idő' => 'BirthDate',
+            'TAJ' => 'SocialSecurityNumber',
+            'Ir. Sz.' => 'ZipCode',
+            'Cím' => 'Street',
+            'kezdete' => 'CreatedAt',
+            'Csg.' => 'CaseAdmin',
+            'Anya neve' => 'MotherName',
         ];
 
         // fields that we already found
