@@ -37,7 +37,7 @@ class TaskRepository extends EntityRepository
     {
         $user = $sec->getToken()->getUser();
 
-        if ($type == Task::TYPE_VISIT) {
+        if ($type == Task::TYPE_VISIT || $type == Task::TYPE_DISPATCH) {
             return $this->getEntityManager()
                 ->createQuery("SELECT t FROM JCSGYKAdminBundle:Task t WHERE t.type=:type AND t.assignee=:user AND t.status!=:status ORDER BY t.createdAt DESC")
                 ->setParameter('type', $type)

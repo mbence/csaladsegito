@@ -18,7 +18,14 @@
             <th>{{ client.type|caselabel }}:</th>
             <td>{{ client|casenum }}</td>
         </tr>
+        {% if form.dispatch is defined %}
+        <tr>
+            <th>{{ form_label(form.dispatch) }}:</th>
+            <td>{{ form_errors(form.dispatch) }}{{ form_widget(form.dispatch) }}</td>
+        </tr>
+        {% endif %}
     </table>
+
     <div class="errors center hidden" id="visit-error">{{ 'Kérem válasszon ügyintézőt!'|trans }}</div>
     <div class="client-template-cont">
         <div class="client-template-list">

@@ -87,3 +87,9 @@ JcsSearch =
         # check for results number and click tr if only 1
         if $("#search-results tbody tr").size() == 1
             $("#search-results tbody tr").eq(0).click()
+
+        # highlight the search keywords
+        keywords = $("#quicksearch #q").val().split(" ")
+        $("#search-results").highlight key for key in keywords
+        
+        true

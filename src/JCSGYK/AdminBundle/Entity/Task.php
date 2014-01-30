@@ -57,6 +57,12 @@ class Task
      */
     private $problem;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="dispatch_id", type="smallint", nullable=true)
+     */
+    private $dispatch;
 
     /**
      * @var \DateTime
@@ -78,6 +84,8 @@ class Task
     const TYPE_VISIT = 1;
     /** Problem close type */
     const TYPE_CLOSE = 2;
+    /** Client dispatch type */
+    const TYPE_DISPATCH = 3;
 
     /** Status constants */
     const STATUS_PENDING = 1;
@@ -282,5 +290,28 @@ class Task
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * Set dispatch
+     *
+     * @param integer $dispatch
+     * @return Task
+     */
+    public function setDispatch($dispatch)
+    {
+        $this->dispatch = $dispatch;
+
+        return $this;
+    }
+
+    /**
+     * Get dispatch
+     *
+     * @return integer
+     */
+    public function getDispatch()
+    {
+        return $this->dispatch;
     }
 }

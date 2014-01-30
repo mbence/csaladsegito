@@ -1570,6 +1570,10 @@ button.button, button.greybutton {
 .quicksearch .searchbutton:hover span.searchicon {
     /*background: url('../images/sprs.png') no-repeat -34px 0;*/
 }
+.highlight {
+    background-color: #ffff66;
+    color: #223399;
+}
 
 /* Nicefield */
 .nf-container {

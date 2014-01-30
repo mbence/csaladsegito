@@ -29,10 +29,10 @@ class TaskController extends Controller
 
         $tasks = $em->getRepository("JCSGYKAdminBundle:Task")->getList($type, $sec);
 
-        if ($type == Task::TYPE_VISIT) {
+        if ($type == Task::TYPE_VISIT || $type == Task::TYPE_DISPATCH) {
             // Display a list of TYPE_VISIT tasks
 
-            return $this->render('JCSGYKAdminBundle:Task:visits.html.twig', ['tasks' => $tasks, 'task_status' => $task_status]);
+            return $this->render('JCSGYKAdminBundle:Task:visits.html.twig', ['tasks' => $tasks, 'task_status' => $task_status, 'type' => $type]);
         }
         elseif ($type == Task::TYPE_CLOSE) {
             // Display a list of problems waiting for confirmation (TYPE_CLOSE)

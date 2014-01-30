@@ -103,7 +103,7 @@ class EventController extends Controller
                         $em->persist($event);
 
                         // check for any pending visit task regarding this user and client, and mark it done if found
-                        $tasks = $em->getRepository("JCSGYKAdminBundle:Task")->findBy(['type' => Task::TYPE_VISIT, 'assignee' => $user, 'client' => $problem->getClient()]);
+                        $tasks = $em->getRepository("JCSGYKAdminBundle:Task")->findBy(['assignee' => $user, 'client' => $problem->getClient()]);
                         if (!empty($tasks)) {
                             foreach ($tasks as $tk => $task) {
                                 $tasks[$tk]->setStatus(Task::STATUS_DONE);

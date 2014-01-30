@@ -93,16 +93,38 @@ class ClientController extends Controller
                     $listed_user_ids[] = $user->getId();
                 }
             }
+            // get the dispatch paramGroup but only for Child Welfare companies
+            if ($this->container->get('jcs.ds')->companyIsCW()) {
+                $dispatch_list = $this->container->get('jcs.ds')->getGroup(8);
+            }
 
             // make the form
-            $form = $this->createFormBuilder()
+            $form_builder = $this->createFormBuilder()
                 ->add('userlist', 'choice', [
                     'label' => '',
                     'choices' => $userlist,
                     'expanded' => true,
                     'multiple' => false,
-                ])
-                ->getForm();
+                ]);
+            if (!empty($dispatch_list)) {
+                // get group label
+                $pgs = $this->container->get('jcs.ds')->getParamGroup(0);
+                $pg_label = '';
+                foreach ($pgs as $pg) {
+                    if ($pg->getId() == 8) {
+                        $pg_label = $pg->getName();
+                        break;
+                    }
+                }
+                $form_builder->add('dispatch', 'choice', [
+                    'label' => $pg_label,
+                    'choices' => $dispatch_list,
+                    'expanded' => false,
+                    'multiple' => false,
+                    'required' => false,
+                ]);
+            }
+            $form = $form_builder->getForm();
 
             // save the visit
             if ($request->isMethod('POST')) {
@@ -113,8 +135,9 @@ class ClientController extends Controller
                     $user= $this->get('security.context')->getToken()->getUser();
 
                     $assignee = $em->getRepository("JCSGYKAdminBundle:User")->find($data['userlist']);
+                    $dispatch = !empty($data['dispatch']) ? $data['dispatch'] : null;
 
-                    $this->saveVisitTask($client, $assignee, $user);
+                    $this->saveVisitTask($client, $assignee, $user, $dispatch);
 
                     $this->get('session')->setFlash('notice', 'Megkeresés elmentve');
 
@@ -131,16 +154,17 @@ class ClientController extends Controller
         }
     }
 
-    private function saveVisitTask($client, $assignee, $user)
+    private function saveVisitTask($client, $assignee, $user, $dispatch = null)
     {
         $em = $this->getDoctrine()->getManager();
+        $type = is_null($dispatch) ? Task::TYPE_VISIT : Task::TYPE_DISPATCH;
 
         $task = new Task();
         $task->setAssignee($assignee);
         $task->setCreator($user);
         $task->setClient($client);
-        $task->setType(Task::TYPE_VISIT);
-
+        $task->setType($type);
+        $task->setDispatch($dispatch);
         $em->persist($task);
         $em->flush();
 
@@ -782,7 +806,7 @@ class ClientController extends Controller
 
                 $qr = $db->quote('+' . implode('* +', $search_words) . '*');
 
-                $sql .= " MATCH (firstname, lastname, street) AGAINST ({$qr} IN BOOLEAN MODE)";
+                $sql .= " MATCH (firstname, lastname, street, mother_firstname, mother_lastname) AGAINST ({$qr} IN BOOLEAN MODE)";
 
                 $xsql = ['company_id=' . $company_id, "type IN (1,2)"];
 

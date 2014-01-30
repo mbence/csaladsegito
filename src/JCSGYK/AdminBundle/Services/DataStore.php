@@ -3,6 +3,7 @@
 namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JCSGYK\AdminBundle\Entity\Relation;
+use JCSGYK\AdminBundle\Entity\Client;
 
 /**
  * Service for Data Store
@@ -49,6 +50,28 @@ class DataStore
         $co = $this->getCompany();
 
         return isset($co['id']) ? $co['id'] : 1;
+    }
+
+    /**
+     * Decide if a company has Child Welfare functions
+     * @return boolean
+     */
+    public function companyIsCW()
+    {
+        $co = $this->getCompany();
+
+        return false !== strpos($co['types'], (string) Client::CW);
+    }
+
+    /**
+     * Decide if a company has Family Help functions
+     * @return boolean
+     */
+    public function companyIsFH()
+    {
+        $co = $this->getCompany();
+
+        return false !== strpos($co['types'], (string) Client::FH);
     }
 
     /**
