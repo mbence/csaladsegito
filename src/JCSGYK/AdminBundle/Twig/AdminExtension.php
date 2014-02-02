@@ -283,7 +283,8 @@ class AdminExtension extends \Twig_Extension
     public function formatDate($d = null, $type = '')
     {
         if (is_null($d)) {
-            $d = new \DateTime();
+            return false;
+            //$d = new \DateTime();
         }
         if ($d instanceof \DateTime) {
             // TODO: find a better place for the month names
