@@ -41,6 +41,8 @@ class ImportController extends Controller
 
     public function indexAction()
     {
+        $this->memLog('Start');
+
         $request = $this->getRequest();
         $this->company = $this->get('jcs.ds')->getCompany();
 
@@ -53,8 +55,11 @@ class ImportController extends Controller
         $this->session = $request->getSession();
         $results = [];
 
-        $tab = 1;
+        $tab = 0;
         if ($request->isMethod('POST')) {
+
+            set_time_limit(0);
+
             $tab = $request->get('tab');
             $table = $request->get('import');
             if (0 == $tab) { // Jozsefvaros
@@ -120,7 +125,14 @@ class ImportController extends Controller
         // Gyejo
         $sheets = $this->getSheets();
         if (isset($sheets[$table])) {
-            $results['gyejo'] = $this->importXlsx($sheets[$table]);
+            $this->memlog('Start: --- ' . $table . ' ---');
+            // import all sheets at once!
+            foreach ($sheets as $sheet) {
+                $this->memlog('Sheet: ' . $sheet['name']);
+
+                $results['gyejo'] = $this->importXlsx($sheet);
+            }
+            die();
         }
 
         return $results;
@@ -289,7 +301,7 @@ class ImportController extends Controller
                 'note_text' => '',
                 'archived' => false,
                 'c_type' => Client::CW,
-            ],            
+            ],
         ];
         foreach ($sheets as $n => $sheet) {
             if (isset($result[$sheet['id']])) {
@@ -318,6 +330,12 @@ class ImportController extends Controller
             'sheet3' => [
                 'id' => 'sheet3',
                 'name' => '2002',
+                'file' => '2010-2011.xlsx',
+                'results' => null
+            ],
+            'sheet3b' => [
+                'id' => 'sheet3b',
+                'name' => '2003',
                 'file' => '2010-2011.xlsx',
                 'results' => null
             ],
@@ -354,13 +372,19 @@ class ImportController extends Controller
             'sheet9' => [
                 'id' => 'sheet9',
                 'name' => '2012',
-                'file' => '2012-2013.xlsx',
+                'file' => '2012-2014.xlsx',
                 'results' => null
             ],
             'sheet10' => [
                 'id' => 'sheet10',
                 'name' => '2013',
-                'file' => '2012-2013.xlsx',
+                'file' => '2012-2014.xlsx',
+                'results' => null
+            ],
+            'sheet11' => [
+                'id' => 'sheet11',
+                'name' => '2014',
+                'file' => '2012-2014.xlsx',
                 'results' => null
             ],
 
@@ -400,9 +424,17 @@ class ImportController extends Controller
         return 'Succesfully truncated ' . implode(', ', $tables);
     }
 
+    protected function memLog($msg) {
+        $mem = round(memory_get_usage(true) / 1024 / 1024);
+        $this->get('logger')->alert(sprintf('MEM: %s MB, (%s)', $mem, $msg));
+    }
+
+
     protected function importXlsx($sheet)
     {
         include_once 'PHPExcel/PHPExcel/IOFactory.php';
+
+        $this->memLog('Start xls file load');
 
         // load the case list
         $this->caselist = $this->session->get('caselist');
@@ -424,28 +456,37 @@ class ImportController extends Controller
             $this->session->set('caselist', []);
         }
 
-        $length = 30;
+        $length = 10000;
 
         foreach ($names as $index => $name) {
+            $this->memLog('Start xls sheet data read: ' . $name . ', from: ' . $from);
+
             $sheet_data = $objPHPExcel->getSheet($index)->toArray();
+            $sheet_length = count($sheet_data);
             $this->field_map = $this->getXlsxMap($sheet_data[0]);
 
             $paged_data = array_slice($sheet_data, $from, $length);
+            unset($sheet_data);
 
             $n += $this->processXlsx($paged_data, $this->xlsxOptions, $sheet);
+            unset($paged_data);
         }
 
-        if ($from + $length < count($sheet_data)) {
-            $this->reload = [
-                'from' => $from + $length,
-                'script' => 'import_' . $sheet['id'],
-            ];
-        }
+//        if ($from + $length < $sheet_length) {
+//            $this->reload = [
+//                'from' => $from + $length,
+//                'script' => 'import_' . $sheet['id'],
+//            ];
+//        }
 
         // save the case list
         $this->session->set('caselist', $this->caselist);
 
-        return 'Succesfully imported rows ' . $from . '-' . ($from + $length);
+        $endrow = $from + $length < $sheet_length ? $from + $length : $sheet_length;
+        $msg = 'Succesfully imported rows ' . $from . '-' . $endrow;
+        $this->memLog($msg);
+
+        return $msg;
     }
 
     protected function readUsers()
@@ -522,8 +563,12 @@ class ImportController extends Controller
 
             // save userlist
             $this->userlist[$user_name] = $user->getId();
+            $user_id = $user->getId();
 
-            return $user->getId();
+            $em->detach($user);
+            unset($user);
+
+            return $user_id;
         }
     }
 
@@ -546,11 +591,15 @@ class ImportController extends Controller
 
         $em->flush();
 
+        $em->detach($user);
+
         return $user;
     }
 
     protected function processXlsx($sheet_data, $options, $sheet)
     {
+        $this->memLog('Start processXlsx');
+
         //var_dump($sheet_data);
         $n = 0;
         $date_fields = ['CreatedAt', 'BirthDate'];
@@ -572,6 +621,7 @@ class ImportController extends Controller
                 continue;
             }
 
+            /*
 // ONLY FOR FERENCVÁROS!
             // check for ssn, name and mothers name, and skip if already there
             // get name col
@@ -586,19 +636,23 @@ class ImportController extends Controller
             }
             $ssn =  Client::cleanupNum($row[$rev_map['SocialSecurityNumber']]);
 
-            $ssn_check = $em->createQuery("SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.socialSecurityNumber LIKE :ssn AND c.lastname LIKE :lastname AND c.firstname LIKE :firstname AND c.motherLastname LIKE :mother_lastname AND c.motherFirstname LIKE :mother_firstname")
+            $ssn_check_q = $em->createQuery("SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.socialSecurityNumber LIKE :ssn AND c.lastname LIKE :lastname AND c.firstname LIKE :firstname AND c.motherLastname LIKE :mother_lastname AND c.motherFirstname LIKE :mother_firstname")
                 ->setParameter('ssn', $ssn)
                 ->setParameter('lastname', $names[0])
                 ->setParameter('firstname', $names[1])
                 ->setParameter('mother_lastname', $mothersnames[0])
                 ->setParameter('mother_firstname', $mothersnames[1])
-                ->setMaxResults(1)
-                ->getResult();
+                ->setMaxResults(1);
+            $ssn_check = $ssn_check_q->getResult();
 
             if (!empty($ssn_check)) {
                 var_dump($row);
                 continue;
             }
+            $ssn_check_q->free();
+            unset($ssn_check_q);
+            unset($ssn_check);
+            */
 
             $a = null;
             $caseAdmin = null;
@@ -606,7 +660,7 @@ class ImportController extends Controller
             $p = new Client();
             $p->setCompanyId($this->companyID);
             $client_type = isset($sheet['c_type']) ? $sheet['c_type'] : (isset($options['c_type']) ? $options['c_type'] : Client::FH);
-            
+
             $p->setType($client_type);
 
             foreach ($this->field_map as $index => $to) {
@@ -859,7 +913,8 @@ class ImportController extends Controller
                 $a->setCreatedBy($p->getCaseAdmin());
                 $em->persist($a);
                 $em->flush();
-                $a = null;
+                $em->detach($a);
+                unset($a);
             }
 
             // Mother data and relation only for Child Welfare
@@ -891,6 +946,9 @@ class ImportController extends Controller
 
                     $mother_id = $mother->getId();
                     $this->caselist[$p->getCaseLabel()] = $mother_id;
+
+                    $em->detach($mother);
+                    unset($mother);
                 }
 
                 // save the relation
@@ -901,14 +959,25 @@ class ImportController extends Controller
 
                 $em->persist($rel);
                 $em->flush();
+
+                $em->detach($rel);
+                unset($rel);
             }
+            $last_p_id = $p->getId();
+            $em->flush();
+            $em->detach($p);
+            unset($p);
+            $em->clear();
 
             $n++;
+            if ($n % 100 == 0) {
+                $this->memLog('Processed rows: ' . $n);
+            }
         }
 
-        if (!empty($p)) {
+        if (!empty($last_p_id)) {
             // setup sequence with the last id
-            $this->get('jcs.seq')->reset(['id' => $this->companyID, 'sequencePolicy' => 1], $p->getId());
+            $this->get('jcs.seq')->reset(['id' => $this->companyID, 'sequencePolicy' => 1], $last_p_id);
         }
 
         return $n;
@@ -955,7 +1024,7 @@ class ImportController extends Controller
             'állampolgárság' => 'Citizenship',
             'Törvényes képviselő neve' => 'Guardian',
             'Ellátás megkezdésének dátuma' => 'CreatedAt',
-            
+
             // ferencvaros gyejo
             'Sorszam' => 'CaseNumber',
             'Szül. idő' => 'BirthDate',

@@ -75,7 +75,11 @@
 
 <div class="adminblock leftpad20">
     <form action="" method="POST" name="start">
+        <input type="hidden" name="tab" value="0">
         <fieldset>
+        {% if results.truncate is defined %}
+        <div>{{ results.truncate }}</div>
+        {% endif %}
         <legend>Gyermekjólét</legend>
         <dl class="import_controls">
 
