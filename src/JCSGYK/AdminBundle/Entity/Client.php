@@ -12,7 +12,6 @@ use Symfony\Component\Security\Core\SecurityContext;
  *
  * @ORM\Table(name="client")
  * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\ClientRepository")
- * @ORM\HasLifecycleCallbacks
  */
 class Client
 {
@@ -451,14 +450,6 @@ class Client
         }
 
         $this->setAgreementExpiresAt($new_date);
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function setModifiedAtValue()
-    {
-       $this->setModifiedAt(new \DateTime());
     }
 
     /**

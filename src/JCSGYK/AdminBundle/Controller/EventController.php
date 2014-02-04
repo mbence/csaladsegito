@@ -5,6 +5,7 @@ namespace JCSGYK\AdminBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use JMS\SecurityExtraBundle\Annotation\PreAuthorize;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -18,7 +19,7 @@ class EventController extends Controller
     /**
      * Display event deatails
      *
-     * @Secure(roles="ROLE_USER")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
      */
     public function viewAction($id)
     {
@@ -42,7 +43,7 @@ class EventController extends Controller
     /**
      * Edits the event
      *
-     * @Secure(roles="ROLE_USER")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
      */
     public function editAction($id = null, $problem_id = null)
     {
@@ -70,14 +71,7 @@ class EventController extends Controller
 
         if (!empty($event)) {
             // check user rights
-            if (empty($id)) {
-                // create a new event
-                $sec = $this->get('security.context');
-                if (!$problem->canEdit($sec)) {
-                    throw new AccessDeniedException();
-                }
-            }
-            else {
+            if (!empty($id)) {
                 // edit existing event
                 $this->canEdit($event);
             }
@@ -141,7 +135,7 @@ class EventController extends Controller
     /**
      * Delete an event
      *
-     * @Secure(roles="ROLE_USER")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
      */
     public function deleteAction($id)
     {

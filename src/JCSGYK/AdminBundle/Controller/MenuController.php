@@ -93,7 +93,7 @@ class MenuController extends Controller
                 'title' => 'Ügyfél újranyitása',
                 'class' => 'archive_client',
                 'more'  => true,
-                'role'  => 'ROLE_ADMIN',
+                'role'  => 'ROLE_ASSISTANCE',
                 'requirement' => $client->getIsArchived() == 1
             ],
             // edit_client - Client:edit

@@ -1,7 +1,7 @@
 {# Problems #}
 <div class="client-sub {% if notoggle is not defined %}togglable{% endif %}">{{ 'problémák'|trans }}</div>
 <div>
-    {% if can_edit is defined and can_edit %}
+    {% if is_expr_granted("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')") %}
         {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_problem']} %}
     {% endif %}
 
@@ -23,7 +23,14 @@
             </tr>
             <tbody class="walkable">
             {% for problem in problems %}
-            <tr data-isactive="{{ problem.isActive }}" data-problemid="{{ problem.id }}" tabindex="{{ loop.index + 200 }}" {% if loop.first %}class="cursor"{% endif %}>
+            <tr data-isactive="{{ problem.isActive }}"
+                {% if is_expr_granted("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')") %}
+                    data-problemid="{{ problem.id }}"
+                    {% if loop.first %}class="cursor"{% endif %}
+                {% else %}
+                    class="no-cursor"
+                {% endif %}
+                tabindex="{{ loop.index + 200 }}">
                 <td>{{ problem.title }}</td>
                 {% if pparam %}<td>{{ param(problem.getParam(pparam.id), pparam.id) }}</td>{% endif %}
                 <td>{% if problem.assignee.firstname is defined %}{{ fname(problem.assignee.firstname, problem.assignee.lastname) }}{% endif %}</td>

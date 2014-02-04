@@ -1480,8 +1480,8 @@ JcsProblem = {
       if ($(this).data("eventid") != null) {
         $("#eventblock .loading").show();
         $("#eventblock .eventcontent").hide();
+        HBlocks.setBlockSizes(4);
         $("#eventblock").show();
-        HBlocks.setBlockSizes();
         HBlocks.scrollTo(4);
         event_url = $("#geteventform").attr("action") + "/" + $(this).data("eventid");
         $.get(event_url, function(data) {
@@ -2111,12 +2111,17 @@ HBlocks = {
       Count the visible blocks, and set the widths for scrolling
   */
 
-  setBlockSizes: function() {
-    var blockNum, blockW, rSpacerW, scrollerW;
+  setBlockSizes: function(blockNum) {
+    var blockW, rSpacerW, scrollerW;
 
+    if (blockNum == null) {
+      blockNum = false;
+    }
     blockW = this.blockW();
     rSpacerW = Math.round(($(window).innerWidth() - 40 - blockW) / 2);
-    blockNum = $(".contentscroller > div:visible").length - 1;
+    if (!blockNum) {
+      blockNum = $(".contentscroller > div:visible").length - 1;
+    }
     scrollerW = (blockW * blockNum) + rSpacerW;
     $(".contentscroller").width(scrollerW);
     if (scrollerW > $(window).innerWidth() - 40) {
@@ -2124,7 +2129,7 @@ HBlocks = {
     } else {
       $("#content").css('padding-bottom', '40px');
     }
-    $(".contentscroller > div:visible").width(blockW);
+    $(".contentscroller > div").width(blockW);
     $("#rightspacerblock").width(rSpacerW);
     return true;
   },

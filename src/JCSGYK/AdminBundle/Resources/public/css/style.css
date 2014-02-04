@@ -253,7 +253,12 @@ table.search-results tr.current td, table.search-results tr.current:hover td, .p
     font-size: 12px;
     margin: 10px 0 0 0;
 }
-
+tr.no-cursor td {
+    cursor: default !important;
+}
+tr.no-cursor:hover td {
+    background-color: inherit !important;
+}
 /* Client */
 .archived {
     font-size: 13px;

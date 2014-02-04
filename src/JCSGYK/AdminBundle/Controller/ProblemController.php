@@ -5,6 +5,7 @@ namespace JCSGYK\AdminBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use JMS\SecurityExtraBundle\Annotation\PreAuthorize;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -20,7 +21,7 @@ class ProblemController extends Controller
     /**
      * Show the problem details
      *
-     * @Secure(roles="ROLE_USER")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
      */
     public function viewAction($id)
     {
@@ -61,7 +62,7 @@ class ProblemController extends Controller
     /**
      * Edits the problem
      *
-     * @Secure(roles="ROLE_USER")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
      */
     public function editAction($id = null, $client_id = null)
     {
@@ -97,14 +98,7 @@ class ProblemController extends Controller
 
         if (!empty($problem)) {
             // check user rights (thows Access Denied in failure!)
-            if (empty($id)) {
-                // create a new problem
-                $sec = $this->get('security.context');
-                if (!$client->canEdit($sec)) {
-                    throw new AccessDeniedException();
-                }
-            }
-            else {
+            if (!empty($id)) {
                 // edit existing problem
                 $this->canEdit($problem);
             }
@@ -172,7 +166,7 @@ class ProblemController extends Controller
     /**
      * Closes the problem
      *
-     * @Secure(roles="ROLE_USER")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
      */
     public function closeAction($id)
     {
@@ -257,7 +251,7 @@ class ProblemController extends Controller
     /**
      * Get the list of events for a problem
      *
-     * @Secure(roles="ROLE_USER")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
      */
     public function getEventsAction($id)
     {

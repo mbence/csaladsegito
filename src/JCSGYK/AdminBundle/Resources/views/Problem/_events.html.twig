@@ -1,7 +1,7 @@
 {# Events #}
 <div class="client-sub {% if notoggle is not defined %}togglable{% endif %}">{{ 'események'|trans }}</div>
 <div>
-    {% if can_edit is defined and can_edit %}
+    {% if is_expr_granted("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')") %}
         <div class="toppad ">
             {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_event']} %}
             <div class="clear"></div>

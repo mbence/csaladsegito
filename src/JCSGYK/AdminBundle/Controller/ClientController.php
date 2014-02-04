@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use JMS\SecurityExtraBundle\Annotation\PreAuthorize;
+use JMS\SecurityExtraBundle\Security\Authorization\Expression\Expression;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use JCSGYK\AdminBundle\Entity\Client;
@@ -224,6 +226,7 @@ class ClientController extends Controller
 
                 // set modifier user
                 $parent->getParent()->setModifier($user);
+                $parent->getParent()->setModifiedAt(new \DateTime());
 
                 if (is_null($parent->getId())) {
                     $em->persist($parent->getParent());
@@ -323,6 +326,7 @@ class ClientController extends Controller
                 if ($form->isValid()) {
                     // set modifier user
                     $client->setModifier($user);
+                    $client->setModifiedAt(new \DateTime());
                     $case_num = $client->getCaseNumber();
 
                     // save the new user data
@@ -528,7 +532,7 @@ class ClientController extends Controller
     /**
      * Archive clients
      *
-     * @Secure(roles="ROLE_ADMIN")
+     * @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ASSISTANCE')")
      */
     public function archiveAction($id)
     {
