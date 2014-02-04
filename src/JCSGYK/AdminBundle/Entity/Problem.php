@@ -91,6 +91,7 @@ class Problem
     /**
      * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
      * @ORM\JoinColumn(name="assigned_to", referencedColumnName="id")
+     * @Assert\NotBlank()
      */
     private $assignee;
 

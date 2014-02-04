@@ -145,7 +145,6 @@ class ClientType extends AbstractType
             'by_reference' => false,
         ]);
 
-        // TODO: do something about disabled users (a custom form control probably)
         $builder->add('case_admin', 'entity', [
             'label' => 'Esetgazda',
             'class' => 'JCSGYKAdminBundle:User',

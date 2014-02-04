@@ -68,8 +68,10 @@ class ProblemType extends AbstractType
             'class' => 'JCSGYKAdminBundle:User',
             'query_builder' => function(UserRepository $er) {
                 return $er->createQueryBuilder('u')
+                    ->where('u.enabled=1')
                     ->orderBy('u.lastname', 'ASC', 'u.firstname', 'ASC');
             },
+            'required' => false,
         ]);
 
         $builder->add('debts', 'collection', [
