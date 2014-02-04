@@ -36,8 +36,8 @@ JcsProblem =
             if $(this).data("eventid")?
                 $("#eventblock .loading").show()
                 $("#eventblock .eventcontent").hide()
+                HBlocks.setBlockSizes(4)
                 $("#eventblock").show()
-                HBlocks.setBlockSizes()
                 HBlocks.scrollTo(4)
 
                 # start the ajax request

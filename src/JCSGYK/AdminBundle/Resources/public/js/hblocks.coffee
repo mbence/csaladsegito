@@ -181,12 +181,14 @@ HBlocks =
     ###
         Count the visible blocks, and set the widths for scrolling
     ###
-    setBlockSizes: ->
+    setBlockSizes: (blockNum = false) ->
         blockW = @blockW()
         rSpacerW = Math.round(($(window).innerWidth() - 40 - blockW) / 2)
 
         # count visible blocks
-        blockNum = $(".contentscroller > div:visible").length - 1
+        if !blockNum
+          blockNum = $(".contentscroller > div:visible").length - 1
+
         scrollerW = (blockW * blockNum) + rSpacerW
         $(".contentscroller").width(scrollerW)
 
@@ -197,7 +199,7 @@ HBlocks =
             $("#content").css('padding-bottom', '40px')
 
         # set block widths
-        $(".contentscroller > div:visible").width(blockW)
+        $(".contentscroller > div").width(blockW)
 
         $("#rightspacerblock").width(rSpacerW);
 
