@@ -34,7 +34,7 @@ class ProblemType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
-        $builder->add('title', 'text', ['label' => 'Probléma', 'required' => false]);
+        $builder->add('title', 'text', ['label' => 'Cím', 'required' => false]);
         $builder->add('description', 'textarea', ['label' => 'Megjegyzés', 'required' => false]);
 
         // parametergroups
@@ -48,8 +48,10 @@ class ProblemType extends AbstractType
                     'label' => $param->getName(),
                     'choices'   => $choices,
                     'mapped' => false,
-                    'data' => $this->problem->getParam($param->getId()),
-                    'required' => true,
+                    'data' => $this->ds->paramConvert($this->problem->getParam($param->getId()), $param->getMultiple()),
+                    'required' => $param->getRequired(),
+                    'multiple' => $param->getMultiple(),
+                    'expanded' => $param->getMultiple(),
                 ]);
             }
             else {

@@ -74,6 +74,9 @@ JcsProblem =
 
             false
 
+        # multiselect
+        JcsToggle.multiselect($("#problem_edit"))
+
         # problem edit
         $("#problem_edit").submit ->
             $(".save_problem").addClass('animbutton')

@@ -4,9 +4,9 @@
     <table class="client-edit" cellspacing="0" border="0">
         {% for paramGroup in pgroup(1) %}
         {% set p = 'param_' ~ paramGroup.id %}
-        <tr>
+        <tr {% if paramGroup.multiple %}class="multirow"{% endif %}>
             <th>{{ form_label(form[p]) }}:</th>
-            <td>
+            <td class="full-widget">
                 {{ form_errors(form[p]) }}
                 {{ form_widget(form[p]) }}
             </td>

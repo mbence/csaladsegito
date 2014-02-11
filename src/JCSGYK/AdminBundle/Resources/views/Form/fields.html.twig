@@ -13,3 +13,15 @@
     {% endif %}
 {% endspaceless %}
 {% endblock form_errors %}
+
+{% block choice_widget_expanded %}
+{% spaceless %}
+    <div class="multiselect" {{ block('widget_container_attributes') }}>
+        <div class="multihead">{{ 'Válasszon!'|trans }}</div>
+    {% for child in form %}
+        {{ form_widget(child) }}
+        {{ form_label(child) }}
+    {% endfor %}
+    </div>
+{% endspaceless %}
+{% endblock choice_widget_expanded %}

@@ -11,6 +11,7 @@ JcsMenu =
         # close the vertical-submenus on click
         $(document).on "click", ->
             $(".sub-vertical").hide()
+            JcsToggle.multiselectOff()
 
 
     ###

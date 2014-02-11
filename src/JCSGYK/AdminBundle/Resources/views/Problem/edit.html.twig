@@ -24,7 +24,7 @@
         </tr>
         {% for paramGroup in pgroup(2) %}
         {% set p = 'param_' ~ paramGroup.id %}
-        <tr>
+        <tr {% if paramGroup.multiple %}class="multirow"{% endif %}>
             <th>{{ form_label(form[p]) }}:</th>
             <td colspan="3">
                 {{ form_errors(form[p]) }}

@@ -135,6 +135,8 @@ class AdminController extends Controller
                         $orig->setPosition($param['position']);
                         $orig->setName($param['name']);
                         $orig->setIsActive(isset($param['isActive']));
+                        $orig->setRequired(isset($param['required']));
+                        $orig->setMultiple(isset($param['multiple']));
                     }
                     else {
                         // insert new param group
@@ -150,6 +152,8 @@ class AdminController extends Controller
                             $new_param->setType($param['type']);
                             $new_param->setName($param['name']);
                             $new_param->setIsActive(isset($param['isActive']));
+                            $new_param->setRequired(isset($param['required']));
+                            $new_param->setMultiple(isset($param['multiple']));
 
                             $em->persist($new_param);
                         }

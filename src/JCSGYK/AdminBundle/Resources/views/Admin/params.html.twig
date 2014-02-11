@@ -23,6 +23,10 @@
             <div class="paramlist" id="paramlist-{{ group.id }}">
                 <form action="{{ path('admin_params') }}" method="POST" name="paramform-{{ group.id }}" id="paramform-{{ group.id }}" class="paramform">
                     <div class="paramcontainer">
+                        <div class="param-legend">
+                        {% if group.required %}{{ 'Megállapodás esetén kötelezően kitöltendő mező!'|trans }}{% endif %}
+                        {% if group.multiple %}{{ 'Multi-select mező'|trans }}{% endif %}
+                        </div>
                         {% for param in params if group.id == param.group %}
                         <div class="param">
                             <input type="hidden" name="parameter[{{ loop.index }}][id]" value="{{ param.id }}">

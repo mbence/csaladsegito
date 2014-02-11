@@ -49,6 +49,7 @@ class AdminExtension extends \Twig_Extension
             'casefield' => new \Twig_Function_Method($this, 'formatCaseNumberFields', ['is_safe' => ['html']]),
             'co_short' => new \Twig_Function_Method($this, 'getCompanyShortName'),
             'co_logo' => new \Twig_Function_Method($this, 'getCompanyLogo'),
+            'pgroup_by_id' => new \Twig_Function_Method($this, 'getParamGroupById'),
         );
     }
 
@@ -66,6 +67,10 @@ class AdminExtension extends \Twig_Extension
         return !empty($co['logo']) ? $co['logo'] : '';
     }
 
+    public function getParamGroupById($id)
+    {
+       return $this->ds->getParamGroupById($id);
+    }
 
     /**
      * Returns the array of the parameter groups

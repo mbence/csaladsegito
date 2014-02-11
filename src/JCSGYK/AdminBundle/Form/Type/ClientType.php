@@ -123,8 +123,10 @@ class ClientType extends AbstractType
                     'label' => $param->getName(),
                     'choices'   => $choices,
                     'mapped' => false,
-                    'data' => $this->client->getParam($param->getId()),
-                    'required' => true,
+                    'data' => $this->ds->paramConvert($this->client->getParam($param->getId()), $param->getMultiple()),
+                    'required' => $param->getRequired(),
+                    'multiple' => $param->getMultiple(),
+                    'expanded' => $param->getMultiple(),
                 ]);
             }
             else {

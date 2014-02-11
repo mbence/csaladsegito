@@ -56,8 +56,19 @@ class Paramgroup
      */
     private $isActive;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="required", type="boolean", nullable=true)
+     */
+    private $required;
 
-
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="multiple", type="boolean", nullable=true)
+     */
+    private $multiple;
     /**
      * Get id
      *
@@ -181,5 +192,51 @@ class Paramgroup
     public function getPosition()
     {
         return $this->position;
+    }
+
+    /**
+     * Set required
+     *
+     * @param boolean $required
+     * @return Paramgroup
+     */
+    public function setRequired($required)
+    {
+        $this->required = $required;
+
+        return $this;
+    }
+
+    /**
+     * Get required
+     *
+     * @return boolean 
+     */
+    public function getRequired()
+    {
+        return $this->required;
+    }
+
+    /**
+     * Set multiple
+     *
+     * @param boolean $multiple
+     * @return Paramgroup
+     */
+    public function setMultiple($multiple)
+    {
+        $this->multiple = $multiple;
+
+        return $this;
+    }
+
+    /**
+     * Get multiple
+     *
+     * @return boolean 
+     */
+    public function getMultiple()
+    {
+        return $this->multiple;
     }
 }

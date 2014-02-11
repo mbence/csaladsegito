@@ -105,6 +105,26 @@ class DataStore
     }
 
     /**
+     * Returns parametergroup
+     *
+     * @return array $parametergroups
+     */
+    public function getParamgroupById($id)
+    {
+        $group = null;
+        $groups = $this->getParamgroups();
+
+        foreach ($groups as $g) {
+            if ($g->getId() == $id) {
+                $group = $g;
+                break;
+            }
+        }
+
+        return $group;
+    }
+
+    /**
      * Returns only the given type parametergroup, or all groups if no $type given
      * if unknown group id received, false will return
      *
@@ -194,10 +214,10 @@ class DataStore
     /**
      * Returns the selected parameter name or the input if no param found
      *
-     * @param int $id paramter id
+     * @param int or array $ids paramter id or array of ids
      * @param int $group optional ParamterGroup id
      */
-    public function get($id = null, $group = null)
+    public function get($ids = null, $group = null)
     {
         if (is_null($group)) {
             $params = $this->getList();
@@ -206,7 +226,15 @@ class DataStore
             $params = $this->getGroup($group);
         }
 
-        return isset($params[$id]) ? $params[$id] : $id;
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $re = [];
+        foreach ($ids as $id) {
+            $re[] = isset($params[$id]) ? $params[$id] : $id;
+        }
+
+        return implode(', ', $re);
     }
 
     /**
@@ -259,5 +287,28 @@ class DataStore
             Relation::FATHER => 'Apa',
             Relation::GUARDIAN => 'Gyám'
         ];
+    }
+
+    /**
+     * Converts parameters to the right type according to $is_multiple
+     *
+     * Multiple chioce widgets need arrays as input data, single chioce widgets need scalars
+     * @param mixed $param
+     * @param bool $is_multiple
+     * @return mixed converted parameter
+     */
+    public function paramConvert($param, $is_multiple = false)
+    {
+        if ($is_multiple) {
+            if (!is_array($param)) {
+                $param = [$param];
+            }
+        } else {
+            if (is_array($param)) {
+                $param = reset($param);
+            }
+        }
+
+        return $param;
     }
 }

@@ -32,6 +32,9 @@ JcsClient =
         true
 
     initForm: ->
+        # multiselect
+        JcsToggle.multiselect($("#client_edit"))
+
         # count the current utilityproviders we have (e.g. 2), use that as the new
         # index when inserting a new item (e.g. 2)
         $(".utilityproviders").data('index', $(".utilityproviders").find('tr').length);

@@ -18,6 +18,11 @@
             <div class="paramlist" id="paramlist-{{ id }}">
                 <form action="{{ path('admin_paramgroups') }}" method="POST" name="paramform-{{ id }}" id="paramform-{{ id }}" class="paramform">
                     <div class="paramcontainer">
+                        <div class="param-headers">
+                            {{ 'aktív'|trans }}
+                            {{ 'kötelező'|trans }}
+                            {{ 'multi'|trans }}
+                        </div>
                         {% for param in groups if id == param.type %}
                         <div class="param">
                             <input type="hidden" name="parameter[{{ loop.index }}][id]" value="{{ param.id }}">
@@ -26,6 +31,8 @@
                             <span class="pos"> </span>
                             <input type="text" value="{{ param.name }}" name="parameter[{{ loop.index }}][name]">
                             <input type="checkbox" {% if param.isActive %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][isActive]" value="1">
+                            <input type="checkbox" {% if param.required %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][required]" value="1">
+                            <input type="checkbox" {% if param.multiple %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][multiple]" value="1">
                         </div>
                         {% endfor %}
                     </div>

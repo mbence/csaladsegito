@@ -906,6 +906,20 @@ JcsToggle = {
       return n++;
     });
     return JcsOpt.set("toggles_" + block, tg_status);
+  },
+  multiselect: function(parent) {
+    $("div.multiselect", parent).off("click").on("click", function(event) {
+      return event.stopPropagation();
+    });
+    $("div.multiselect .multihead", parent).off("click").on("click", function() {
+      return $(this).parent().toggleClass("active");
+    });
+    return $("div.multiselect input", parent).on("focus", function() {
+      return $(this).parent().addClass("active");
+    });
+  },
+  multiselectOff: function() {
+    return $("div.multiselect").removeClass("active");
   }
 };
 
@@ -922,7 +936,8 @@ JcsMenu = {
   init: function() {
     JcsMenu.inquiry();
     return $(document).on("click", function() {
-      return $(".sub-vertical").hide();
+      $(".sub-vertical").hide();
+      return JcsToggle.multiselectOff();
     });
   },
   /*
@@ -1123,6 +1138,7 @@ JcsClient = {
   initForm: function() {
     var _this = this;
 
+    JcsToggle.multiselect($("#client_edit"));
     $(".utilityproviders").data('index', $(".utilityproviders").find('tr').length);
     $(".add_utilityprovider").on('click', function(e) {
       e.preventDefault();
@@ -1510,6 +1526,7 @@ JcsProblem = {
       _this.addDebtForm($(".debts"));
       return false;
     });
+    JcsToggle.multiselect($("#problem_edit"));
     $("#problem_edit").submit(function() {
       var _this = this;
 
@@ -1832,6 +1849,7 @@ JcsEvent = {
     return true;
   },
   initForm: function() {
+    JcsToggle.multiselect($("#event_edit"));
     $("#event_edit").submit(function() {
       var _this = this;
 

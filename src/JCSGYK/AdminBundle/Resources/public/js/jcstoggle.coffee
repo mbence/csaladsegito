@@ -34,3 +34,17 @@ JcsToggle =
             n++
         # save toggle status
         JcsOpt.set("toggles_" + block, tg_status)
+
+    multiselect: (parent) ->
+        $("div.multiselect", parent).off("click").on("click", (event) ->
+            event.stopPropagation()
+        )
+        $("div.multiselect .multihead", parent).off("click").on("click", ->
+            $(this).parent().toggleClass("active")
+        )
+        $("div.multiselect input", parent).on("focus", ->
+            $(this).parent().addClass("active")
+        )
+
+    multiselectOff: ->
+        $("div.multiselect").removeClass("active")

@@ -800,6 +800,12 @@ table.client td:last-child {
 table.client tr:hover td, table.client tr:hover th  {
     background-color: #f5f5f5;
 }
+table.client tr.multirow td {
+    line-height: 15px;
+}
+table.client tr.multirow th, table.client-edit tr.multirow th {
+    vertical-align: middle;
+}
 table.caseowner th {
     border-bottom: none;
 }
@@ -1038,6 +1044,17 @@ table.problem-list td {
 }
 
 /* parameters */
+.param-headers {
+    font-size: 10px;
+    text-align: right;
+}
+.param-legend {
+    font-size: 12px;
+    color: #666;
+    padding: 0 0 4px;
+    margin: -12px 0 0 0;
+    height: 12px;
+}
 #parameter-groups, #template-list, #settings-menu {
     width: 260px;
 }
@@ -1065,7 +1082,7 @@ table.problem-list td {
 }
 
 #parameter-lists {
-    width: 440px;
+    width: 470px;
     display: none;
 }
 #parameter-lists .formbuttons, #template-edit .formbuttons {
@@ -1224,6 +1241,13 @@ table.problem-list td {
 .client-edit select {
     font-size: 12px;
 }
+#client_citizenship_status, #client_citizenship {
+    width: 49%;
+}
+.full-widget select {
+    width: 100%;
+    box-sizing: content-box;
+}
 .client-edit input[type=text]:hover, .client-edit input[type=text]:focus,
 .client-edit input[type=password]:hover, .client-edit input[type=password]:focus,
 .edit-note textarea:hover, .edit-note textarea:focus {
@@ -1257,7 +1281,50 @@ table.problem-list td {
     display: inline-block;
     color: #666;
 }
-
+.multihead {
+    color: #555;
+    paddin: 2px;
+    margin: 0 0 6px 8px;
+    cursor: pointer;
+}
+table.client-edit tr.multirow td {
+    line-height: 15px;
+    position: relative;
+    display: block;
+    min-height: 17px;
+    width: 100%;
+}
+table.client-edit div.multiselect input[type=checkbox] {
+    float:left;
+    clear: left;
+    margin: 1px 4px 2px 8px;
+}
+table.client-edit div.multiselect label {
+    display: block;
+    padding: 1px 14px 2px 20px;
+    cursor: pointer;
+    color: #222;
+}
+table.client-edit div.multiselect label:hover {
+    background-color: #89c;
+}
+table.client-edit div.multiselect {
+    max-height: 15px;
+    overflow: hidden;
+/*    transition: max-height 1s 0s;
+    -webkit-transition: max-height 1s 0s;*/
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: #fff;
+    padding: 2px 0 4px;
+}
+table.client-edit div.multiselect.active {
+    max-height: 1000px;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 3px 0 #888;
+    z-index: 10001;
+}
 /* modal dialog */
 .modal {
     background-color:#fff;

@@ -15,6 +15,9 @@ JcsEvent =
         true
 
     initForm: ->
+        # multiselect
+        JcsToggle.multiselect($("#event_edit"))
+
         # event edit
         $("#event_edit").submit ->
             $(".save_event").addClass('animbutton')
