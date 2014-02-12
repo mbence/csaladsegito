@@ -44,8 +44,11 @@ class ClientType extends AbstractType
                 'choices'   => $client_types,
             ]);
         }
-        $builder->add('case_year', 'text', ['label' => '', 'required' => false]);
-        $builder->add('case_number', 'text', ['label' => '', 'required' => false]);
+        // case number and year only editable for Child Welfare clients!
+        if ($this->client->getType() != Client::FH) {
+            $builder->add('case_year', 'text', ['label' => '', 'required' => false]);
+            $builder->add('case_number', 'text', ['label' => '', 'required' => false]);
+        }
 
         $builder->add('title', 'text', ['label' => 'Titulus', 'required' => false]);
         $builder->add('firstname', 'text', ['label' => 'Keresztnév']);
