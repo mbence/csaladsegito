@@ -21,10 +21,14 @@ class ProblemController extends Controller
     /**
      * Show the problem details
      *
-     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
+     *
      */
+
+
     public function viewAction($id)
     {
+        // Removed temporary @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
+
         if (!empty($id)) {
             // get problem data
             $problem = $this->getProblem($id);

@@ -95,10 +95,8 @@ class ClientController extends Controller
                     $listed_user_ids[] = $user->getId();
                 }
             }
-            // get the dispatch paramGroup but only for Child Welfare companies
-            if ($this->container->get('jcs.ds')->companyIsCW()) {
-                $dispatch_list = $this->container->get('jcs.ds')->getGroup(8);
-            }
+            // get the dispatch paramGroup
+            $dispatch_list = $this->container->get('jcs.ds')->getGroup(8);
 
             // make the form
             $form_builder = $this->createFormBuilder()
@@ -516,7 +514,11 @@ class ClientController extends Controller
                     $em->persist($parent);
                 }
                 $em->flush();
+
+                return true;
             }
+
+            return false;
         }
     }
 

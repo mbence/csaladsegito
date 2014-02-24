@@ -668,8 +668,9 @@ class Problem
         $user_id = $sec->getToken()->getUser()->getId();
 
         return $sec->isGranted('ROLE_ADMIN') ||
-            $this->creator->getID() == $user_id ||
-            (!empty($this->assignee) && $this->assignee->getId() == $user_id);
+            (($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD WELFARE')) &&
+            ($this->creator->getID() == $user_id || (!empty($this->assignee) && $this->assignee->getId() == $user_id))
+        );
     }
 
     /**

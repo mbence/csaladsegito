@@ -771,7 +771,9 @@ table.problem-list td {
 }
 .errors + input[type=text], .errors + input[type=text]:hover, .errors + input[type=text]:focus,
 .errors + input[type=password], .errors + input[type=password]:hover, .errors + input[type=password]:focus,
-.errors + textarea, .errors + textarea:hover, .errors + textarea:focus{
+.errors + textarea, .errors + textarea:hover, .errors + textarea:focus,
+.errors + table > tbody > tr:first-child > td > input[type=text]
+{
     border-color: red;
 }
 .delete_provider, .delete_debt {

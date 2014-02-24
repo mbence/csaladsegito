@@ -1497,18 +1497,18 @@ class ImportController extends Controller
 
         // add the superadmin
         $this->addSuperAdmin();
-
-        // add the testers
-        $user = new User('mbxrw64tn4gc88oo8koogwk80wogk84');
-        $user->setUsername('jancsor');
-        $user->setPassword('UlRgqRKTRfNE8twyzle8kclhvqc0hbbSj5nAldhdqHXCczfr8Jn3wMMWfGYcpqqA+OlZz+83lO+bC6wuMz6N4w==');
-        $user->setEmail('jancso@gmail.com');
-        $user->setRoles(['ROLE_ADMIN']);
-        $user->setEnabled(true);
-        $user->setCompanyId($this->companyID);
-        $user->setFirstname('Richárd');
-        $user->setLastname('Jancsó');
-        $userManager->updateUser($user);
+//
+//        // add the testers
+//        $user = new User('mbxrw64tn4gc88oo8koogwk80wogk84');
+//        $user->setUsername('jancsor');
+//        $user->setPassword('UlRgqRKTRfNE8twyzle8kclhvqc0hbbSj5nAldhdqHXCczfr8Jn3wMMWfGYcpqqA+OlZz+83lO+bC6wuMz6N4w==');
+//        $user->setEmail('jancso@gmail.com');
+//        $user->setRoles(['ROLE_ADMIN']);
+//        $user->setEnabled(true);
+//        $user->setCompanyId($this->companyID);
+//        $user->setFirstname('Richárd');
+//        $user->setLastname('Jancsó');
+//        $userManager->updateUser($user);
 
         foreach ($csaszir_users as $csaszir_user) {
             $user = $userManager->createUser();
@@ -1713,6 +1713,9 @@ class ImportController extends Controller
                 104 => $imp['FamilySize']
             ];
             $p->setParams($param_data);
+
+            // set the client id to the case number
+            $p->setId($p->getCaseNumber());
 
             // manage the object
             $em->persist($p);

@@ -19,10 +19,11 @@ class EventController extends Controller
     /**
      * Display event deatails
      *
-     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
+     *
      */
     public function viewAction($id)
     {
+        // removed temporary @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
         if (!empty($id)) {
             $event = $this->getEvent($id);
         }

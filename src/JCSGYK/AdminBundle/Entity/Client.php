@@ -6,12 +6,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\SecurityContext;
+use JCSGYK\AdminBundle\Validator\Constraints\ClientClass;
 
 /**
  * Client
  *
  * @ORM\Table(name="client")
  * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\ClientRepository")
+ *
+ * @ClientClass()
  */
 class Client
 {
@@ -1718,7 +1721,7 @@ class Client
      *
      * A user can edit a certain record if
      * - the client is not archived
-     * - she has ROLE_ADMIN
+     * - she has ROLE_ADMIN or ROLE_ASSISTANCE
      * - she is the creator of the record
      * - she is the case admin of this client
      *
@@ -1729,7 +1732,7 @@ class Client
         $user_id = $sec->getToken()->getUser()->getId();
 
         return $this->isArchived == 0 && (
-            $sec->isGranted('ROLE_ADMIN') ||
+            $sec->isGranted('ROLE_ADMIN') || $sec->isGranted('ROLE_ASSISTANCE') ||
             $this->creator->getID() == $user_id ||
             (!empty($this->caseAdmin) && $this->caseAdmin->getId() == $user_id)
         );

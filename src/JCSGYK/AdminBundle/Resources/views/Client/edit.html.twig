@@ -8,7 +8,7 @@
 
 {% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" %}
 
-{% if (is_granted('ROLE_FAMILY_HELP') or is_granted('ROLE_CHILD_WELFARE')) and client.type == 2 %}
+{% if client.type == 2 %} {# (is_granted('ROLE_FAMILY_HELP') or is_granted('ROLE_CHILD_WELFARE')) and  #}
     {% if client.id %}
     <div id="parent_container" data-url="{{ path('client_parents', {'id': client.id}) }}">
         {% include "JCSGYKAdminBundle:Client:_parents.html.twig" with {'edit': true} %}
@@ -25,10 +25,10 @@
     {% include "JCSGYKAdminBundle:Client:_problems.html.twig" with {notoggle: true} %}
 </div>
 
-{% if is_granted('ROLE_FAMILY_HELP') or is_granted('ROLE_CHILD_WELFARE') %}
+{#{% if is_granted('ROLE_FAMILY_HELP') or is_granted('ROLE_CHILD_WELFARE') %}#}
     {% include "JCSGYKAdminBundle:Client:_edit_ids.html.twig" %}
     {% include "JCSGYKAdminBundle:Client:_edit_other_data.html.twig" %}
-{% endif %}
+{#{% endif %}#}
 
 {% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: client} %}
 

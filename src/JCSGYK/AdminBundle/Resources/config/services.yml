@@ -29,6 +29,13 @@ services:
     jcs.seq:
         class: JCSGYK\AdminBundle\Services\ClientSequenceService
         arguments:    ['@doctrine']
+    jcs.client_validator:
+        class:      JCSGYK\AdminBundle\Validator\Constraints\ClientClassValidator
+        arguments:    ['@doctrine']
+        tags:
+            - { name: validator.constraint_validator, alias: client_validator }
+
+
     kenyszi:
         class: JCSGYK\AdminBundle\Services\Kenyszi
         arguments:    ['@service_container']

@@ -24,12 +24,12 @@
             <tbody class="walkable">
             {% for problem in problems %}
             <tr data-isactive="{{ problem.isActive }}"
-                {% if is_expr_granted("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')") %}
+{#                {% if is_expr_granted("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')") %}#}
                     data-problemid="{{ problem.id }}"
                     {% if loop.first %}class="cursor"{% endif %}
-                {% else %}
+                {#{% else %}
                     class="no-cursor"
-                {% endif %}
+                {% endif %}#}
                 tabindex="{{ loop.index + 200 }}">
                 <td>{{ problem.title }}</td>
                 {% if pparam %}<td>{{ param(problem.getParam(pparam.id), pparam.id) }}</td>{% endif %}
