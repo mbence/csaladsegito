@@ -61,11 +61,19 @@ class ClientRepository extends EntityRepository
      */
     public function getCase(Client $client)
     {
-        return $this->getEntityManager()
-            ->createQuery("SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.caseYear=:year AND c.caseNumber=:num")
-            ->setParameter('year', $client->getCaseYear())
-            ->setParameter('num', $client->getCaseNumber())
-            ->getResult();
+        $year = $client->getCaseYear();
+        $yop = is_null($year) ? 'IS NULL' : '=:year';
+
+        $q = $this->getEntityManager()
+            ->createQuery("SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.companyId=:co AND c.caseYear {$yop} AND c.caseNumber=:num")
+            ->setParameter('co', $client->getCompanyId())
+            ->setParameter('num', $client->getCaseNumber());
+
+        if (!is_null($year)) {
+            $q->setParameter('year', $year);
+        }
+
+        return $q->getResult();
     }
 
     /**
