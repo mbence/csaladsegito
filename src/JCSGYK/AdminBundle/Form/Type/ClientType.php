@@ -156,6 +156,7 @@ class ClientType extends AbstractType
             'query_builder' => function(UserRepository $er) {
                 return $er->createQueryBuilder('u')
                     ->where('u.enabled=1')
+                    ->andWhere("u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'")
                     ->orderBy('u.lastname', 'ASC', 'u.firstname', 'ASC');
             },
             'required' => false,
