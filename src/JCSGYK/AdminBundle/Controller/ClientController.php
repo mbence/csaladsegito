@@ -758,7 +758,7 @@ class ClientController extends Controller
             // recognize a case number
             if ($this->isCase($q)) {
                 $sql .= " case_label LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2)";
-                $sql .= " ORDER BY case_label, lastname, firstname LIMIT " . $limit;
+                $sql .= " ORDER BY case_year, LENGTH(case_number), case_number, lastname, firstname LIMIT " . $limit;
             }
             // search for ID
             elseif (is_numeric($num_ver)) {
