@@ -292,6 +292,7 @@ class ClientController extends Controller
             }
             reset($client_types);
             $client->setType(key($client_types));
+            $client->setCompanyId($company_id);
         }
 
         if (!empty($client)) {
