@@ -666,9 +666,9 @@ class Problem
     public function canEdit(SecurityContext $sec)
     {
         $user_id = $sec->getToken()->getUser()->getId();
-
+        
         return $sec->isGranted('ROLE_ADMIN') ||
-            (($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD WELFARE')) &&
+            (($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE')) &&
             ($this->creator->getID() == $user_id || (!empty($this->assignee) && $this->assignee->getId() == $user_id))
         );
     }
