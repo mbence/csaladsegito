@@ -11,6 +11,7 @@
         {{ form_errors(form) }}
 
         {% include "JCSGYKAdminBundle:Client:_edit_parent.html.twig" %}
+        {% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" with {client: parent.parent} %}
 
         <div class="toppad10">
             {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_parent', title:'Szülő mentése', label:'mentés'}] } %}
