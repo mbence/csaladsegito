@@ -61,7 +61,8 @@ class ClientType extends AbstractType
             'label' => 'Születési idő',
             'widget' => 'choice',
             'format' => 'yMMdd',
-            'required' => false
+            'required' => false,
+            'years' => range(1920, date('Y'))
         ]);
         $builder->add('birth_place', 'text', ['label' => 'Születési hely', 'required' => false]);
         $builder->add('birth_title', 'text', ['label' => 'Titulus', 'required' => false]);
