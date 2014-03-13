@@ -50,6 +50,7 @@ class AdminExtension extends \Twig_Extension
             'co_short' => new \Twig_Function_Method($this, 'getCompanyShortName'),
             'co_logo' => new \Twig_Function_Method($this, 'getCompanyLogo'),
             'pgroup_by_id' => new \Twig_Function_Method($this, 'getParamGroupById'),
+            'is_cw' => new \Twig_Function_Method($this, 'companyIsCW'),
         );
     }
 
@@ -58,6 +59,11 @@ class AdminExtension extends \Twig_Extension
         $co = $this->ds->getCompany();
 
         return !empty($co['shortName']) ? $co['shortName'] : '';
+    }
+
+    public function companyIsCW()
+    {
+        return $this->ds->companyIsCW();
     }
 
     public function getCompanyLogo()
