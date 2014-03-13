@@ -416,8 +416,8 @@ class ClientController extends Controller
                     if (!empty($mother[0])) {
                         $mother = $mother[0]->getParent();
                         $client->setMotherTitle($mother->getTitle());
-                        $client->setMotherFirstname($mother->getFirstname());
-                        $client->setMotherLastname($mother->getLastname());
+                        $client->setMotherFirstname($mother->getBirthFirstname());
+                        $client->setMotherLastname($mother->getBirthLastname());
                     }
 
                     // save the parameters
