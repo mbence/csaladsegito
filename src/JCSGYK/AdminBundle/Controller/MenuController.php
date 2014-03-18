@@ -5,6 +5,7 @@ namespace JCSGYK\AdminBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use JMS\SecurityExtraBundle\Security\Authorization\Expression\Expression;
 
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\Problem;
@@ -93,7 +94,7 @@ class MenuController extends Controller
                 'title' => 'Ügyfél újranyitása',
                 'class' => 'archive_client',
                 'more'  => true,
-                'role'  => 'ROLE_ASSISTANCE',
+                'role'  => new Expression('hasRole("ROLE_ADMIN") or hasRole("ROLE_ASSISTANCE")'),
                 'requirement' => $client->getIsArchived() == 1
             ],
             // edit_client - Client:edit
