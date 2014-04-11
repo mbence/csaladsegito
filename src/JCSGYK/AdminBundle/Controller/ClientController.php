@@ -139,7 +139,7 @@ class ClientController extends Controller
 
                     $this->saveVisitTask($client, $assignee, $user, $dispatch);
 
-                    $this->get('session')->setFlash('notice', 'Megkeresés elmentve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Megkeresés elmentve');
 
                     return $this->render('JCSGYKAdminBundle:Dialog:visit.html.twig', [
                         'success' => true,
@@ -246,7 +246,7 @@ class ClientController extends Controller
 
                 $em->flush();
 
-                $this->get('session')->setFlash('notice', 'Szülő elmentve');
+                $this->get('session')->getFlashBag()->add('notice', 'Szülő elmentve');
 
                 return $this->render('JCSGYKAdminBundle:Dialog:parent.html.twig', [
                     'success' => true
@@ -435,7 +435,7 @@ class ClientController extends Controller
                         $this->saveVisitTask($client, $client->getCaseAdmin(), $user);
                     }
 
-                    $this->get('session')->setFlash('notice', 'Ügyfél elmentve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Ügyfél elmentve');
 
                     //return $this->redirect($this->generateUrl('client_edit', ['id' => $client->getId()]));
                     return $this->redirect($this->generateUrl('client_view', ['id' => $client->getId()]));
@@ -591,7 +591,7 @@ class ClientController extends Controller
 
                     $em->flush();
 
-                    $this->get('session')->setFlash('notice', 'Ügyfél elmentve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Ügyfél elmentve');
 
                     return $this->render('JCSGYKAdminBundle:Dialog:client_archive.html.twig', [
                         'success' => true,

@@ -42,7 +42,7 @@ class AssistanceController extends Controller
             return new Response($msg);
         }
         else {
-            $this->get('session')->setFlash('notice',$msg);
+            $this->get('session')->getFlashBag()->add('notice',$msg);
         }
 
         return $this->redirect($this->generateUrl('home'));

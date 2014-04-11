@@ -152,7 +152,7 @@ class ProblemController extends Controller
 
                     $em->flush();
 
-                    $this->get('session')->setFlash('notice', 'Probléma elmentve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Probléma elmentve');
 
                     //return $this->redirect($this->generateUrl('problem_edit', ['id' => $problem->getId(), 'client_id' => $client->getId()]));
                     return $this->redirect($this->generateUrl('problem_view', ['id' => $problem->getId()]));
@@ -233,7 +233,7 @@ class ProblemController extends Controller
                     $problem->getClient()->updateAgreementDate();
                     $em->flush();
 
-                    $this->get('session')->setFlash('notice', ($operation ? 'Probléma lezárva' : 'Probléma újranyitva'));
+                    $this->get('session')->getFlashBag()->add('notice', ($operation ? 'Probléma lezárva' : 'Probléma újranyitva'));
 
                     return $this->render('JCSGYKAdminBundle:Dialog:problem_close.html.twig', [
                         'success' => true,
@@ -314,7 +314,7 @@ class ProblemController extends Controller
                     $problem->getClient()->updateAgreementDate();
                     $em->flush();
 
-                    $this->get('session')->setFlash('notice', 'Probléma törölve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Probléma törölve');
 
                     return $this->render('JCSGYKAdminBundle:Dialog:problem_delete.html.twig', [
                         'success' => true,
@@ -390,7 +390,7 @@ class ProblemController extends Controller
 
                 $em->flush();
 
-                $this->get('session')->setFlash('notice', 'Probléma lezárás jóváhagyva');
+                $this->get('session')->getFlashBag()->add('notice', 'Probléma lezárás jóváhagyva');
 
                 return $this->render('JCSGYKAdminBundle:Dialog:problem_agreement.html.twig', [
                     'success' => true,
@@ -453,7 +453,7 @@ class ProblemController extends Controller
             $operation = $form->get('operation')->getData();
             if ($operation != $has_agreement) {
                 $msg = $has_agreement ? "A megállapodás már rögzítésre került" : "A megállapodás már törlésre került";
-                $this->get('session')->setFlash('error', $msg);
+                $this->get('session')->getFlashBag()->add('error', $msg);
             }
             elseif ($form->isValid()) {
                 $em = $this->getDoctrine()->getManager();
@@ -495,7 +495,7 @@ class ProblemController extends Controller
 
                 $msg = $has_agreement ? "A megállapodás törölve" : "A megállapodás rögzítve";
 
-                $this->get('session')->setFlash('notice', $msg);
+                $this->get('session')->getFlashBag()->add('notice', $msg);
 
                 return $this->render('JCSGYKAdminBundle:Dialog:problem_agreement.html.twig', [
                     'success' => true,

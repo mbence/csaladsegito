@@ -119,7 +119,7 @@ class EventController extends Controller
 
                     $em->flush();
 
-                    $this->get('session')->setFlash('notice', 'Esemény elmentve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Esemény elmentve');
 
                     //return $this->redirect($this->generateUrl('event_edit', ['id' => $event->getId(), 'problem_id' => $problem->getId()]));
                     return $this->redirect($this->generateUrl('event_view', ['id' => $event->getId()]));
@@ -168,7 +168,7 @@ class EventController extends Controller
 
                     $em->flush();
 
-                    $this->get('session')->setFlash('notice', 'Esemény törölve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Esemény törölve');
 
                     return $this->render('JCSGYKAdminBundle:Dialog:event_delete.html.twig', [
                         'success' => true,

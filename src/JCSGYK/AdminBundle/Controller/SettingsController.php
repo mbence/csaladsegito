@@ -28,7 +28,7 @@ class SettingsController extends Controller
 
         $process = $formHandler->process($user);
         if ($process) {
-            $this->get('session')->setFlash('notice', 'Jelszó sikeresen megváltoztatva');
+            $this->get('session')->getFlashBag()->add('notice', 'Jelszó sikeresen megváltoztatva');
 
             return $this->redirect($this->generateUrl('settings'));
         }

@@ -91,7 +91,7 @@ class AdminController extends Controller
                     }
                     $em->flush();
 
-                    $this->get('session')->setFlash('notice', 'felhasználó elmentve');
+                    $this->get('session')->getFlashBag()->add('notice', 'felhasználó elmentve');
 
                     return $this->redirect($this->generateUrl('admin_users', ['id' => $user->getId()]));
                 }
@@ -161,7 +161,7 @@ class AdminController extends Controller
                 }
                 $em->flush();
                 $act_grp = $request->request->get('group', 0);
-                $this->get('session')->setFlash('notice', 'paramétercsoport elmentve');
+                $this->get('session')->getFlashBag()->add('notice', 'paramétercsoport elmentve');
             }
 
             return $this->redirect($this->generateUrl('admin_paramgroups', ['type' => $request->request->get('group', 0)]));
@@ -172,7 +172,6 @@ class AdminController extends Controller
         $groups = $this->get('jcs.ds')->getParamgroups();
 
         return $this->render('JCSGYKAdminBundle:Admin:paramgroups.html.twig', ['groups' => $groups, 'types' => $types, 'act' => $type]);
-
     }
 
     /**
@@ -220,7 +219,7 @@ class AdminController extends Controller
             }
             $em->flush();
             $act_grp = $request->request->get('group', 1);
-            $this->get('session')->setFlash('notice', 'paraméterek elmentve');
+            $this->get('session')->getFlashBag()->add('notice', 'paraméterek elmentve');
             return $this->redirect($this->generateUrl('admin_params', ['group' => $request->request->get('group', 1)]));
         }
 
@@ -287,7 +286,7 @@ class AdminController extends Controller
                         }
                     }
 
-                    $this->get('session')->setFlash('notice', 'Cég elmentve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Cég elmentve');
 
                     return $this->redirect($this->generateUrl('admin_companies', ['id' => $company->getId()]));
                 }
@@ -396,7 +395,7 @@ class AdminController extends Controller
 
                     $em->flush();
 
-                    $this->get('session')->setFlash('notice', 'Nyomtatvány elmentve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Nyomtatvány elmentve');
 
                     return $this->redirect($this->generateUrl('admin_templates', ['id' => $template->getId()]));
                 }
@@ -492,7 +491,7 @@ class AdminController extends Controller
 
                     $em->flush();
 
-                    $this->get('session')->setFlash('notice', 'Szolgáltató elmentve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Szolgáltató elmentve');
 
                     return $this->redirect($this->generateUrl('admin_providers', ['id' => $provider->getId()]));
                 }
