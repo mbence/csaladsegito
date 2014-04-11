@@ -436,12 +436,19 @@ class Client
      */
     private $catering;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Invoice", mappedBy="client")
+     */
+    private $invoices;
+
+
     public function __construct()
     {
         $this->utilityprovidernumbers = new ArrayCollection();
         $this->problems = new ArrayCollection();
         $this->archives = new ArrayCollection();
         $this->addresses = new ArrayCollection();
+        $this->invoices = new ArrayCollection();
 
         $this->setCreatedAt(new \DateTime());
         $this->setModifiedAt(new \DateTime());
