@@ -67,6 +67,11 @@ class User extends BaseUser
      */
     private $tasks;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Club", mappedBy="coordinator")
+     */
+    private $clubCoordinator;
+
     public function __construct($salt = null)
     {
         parent::__construct();
@@ -79,8 +84,10 @@ class User extends BaseUser
         $this->clientcreated = new ArrayCollection();
         $this->clientmodified = new ArrayCollection();
         $this->archivecreated = new ArrayCollection();
+        $this->clubCoordinator = new ArrayCollection();
         $this->tasks = new ArrayCollection();
     }
+    
     public function __toString()
     {
         return $this->getLastname() . ' ' . $this->getFirstname();
