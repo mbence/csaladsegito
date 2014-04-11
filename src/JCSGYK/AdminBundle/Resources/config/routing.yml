@@ -137,6 +137,9 @@ admin_templates_download:
 admin_companies:
     pattern:  /admin/companies/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:companies, id: null }
+admin_clubs:
+    pattern:  /admin/clubs/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:clubs, id: null }
 
 login_redirector:
     pattern:   /loginredirector
