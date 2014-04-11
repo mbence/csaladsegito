@@ -63,6 +63,13 @@ class Club
     private $foodtypes;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_active", type="boolean", nullable=true)
+     */
+    private $isActive;
+
+    /**
      * Get id
      *
      * @return integer
@@ -208,5 +215,28 @@ class Club
     public function getCoordinator()
     {
         return $this->coordinator;
+    }
+    
+    /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     * @return Company
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
     }
 }
