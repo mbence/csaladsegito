@@ -36,6 +36,13 @@ class Paramgroup
     private $type;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="key", type="string", length=32, nullable=true)
+     */
+    private $key;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="position", type="integer", nullable=true)
@@ -210,7 +217,7 @@ class Paramgroup
     /**
      * Get required
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getRequired()
     {
@@ -233,10 +240,34 @@ class Paramgroup
     /**
      * Get multiple
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getMultiple()
     {
         return $this->multiple;
+    }
+
+    /**
+     * Set key
+     *
+     * @param string $key
+     *
+     * @return Paramgroup
+     */
+    public function setKey($key)
+    {
+        $this->key = $key;
+
+        return $this;
+    }
+
+    /**
+     * Get key
+     *
+     * @return string 
+     */
+    public function getKey()
+    {
+        return $this->key;
     }
 }
