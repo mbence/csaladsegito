@@ -431,6 +431,11 @@ class Client
      */
     private $addresses;
 
+    /**
+     * @ORM\OneToOne(targetEntity="Catering", mappedBy="client")
+     */
+    private $catering;
+
     public function __construct()
     {
         $this->utilityprovidernumbers = new ArrayCollection();
