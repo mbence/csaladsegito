@@ -73,7 +73,7 @@ class User extends BaseUser
     private $clubCoordinator;
 
     /**
-     * @ORM\OneToMany(targetEntity="MonthlyClosing", mappedBy="starter")
+     * @ORM\OneToMany(targetEntity="MonthlyClosing", mappedBy="creator")
      */
     private $closings;
 

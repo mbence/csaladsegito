@@ -53,7 +53,7 @@ class MonthlyClosing
      * @ORM\ManyToOne(targetEntity="User", inversedBy="closings")
      * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
-    private $createdBy;
+    private $creator;
 
     /**
      * @var \DateTime
@@ -162,7 +162,7 @@ class MonthlyClosing
     /**
      * Get date
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDate()
     {
@@ -186,7 +186,7 @@ class MonthlyClosing
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -210,7 +210,7 @@ class MonthlyClosing
     /**
      * Get createdBy
      *
-     * @return \JCSGYK\AdminBundle\Entity\User 
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
     public function getCreatedBy()
     {
