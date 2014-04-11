@@ -17,6 +17,8 @@ use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
 use JCSGYK\AdminBundle\Entity\Company;
 use JCSGYK\AdminBundle\Form\Type\CompanyType;
+use JCSGYK\AdminBundle\Entity\Club;
+use JCSGYK\AdminBundle\Form\Type\ClubType;
 use JCSGYK\AdminBundle\Entity\Paramgroup;
 
 class AdminController extends Controller
@@ -299,6 +301,78 @@ class AdminController extends Controller
             $companies = $em->getRepository('JCSGYKAdminBundle:Company')->findBy([], ['name' => 'ASC']);
 
             return $this->render('JCSGYKAdminBundle:Admin:companies.html.twig', ['companies' => $companies, 'id' => $id, 'act' => $company, 'form' => $form_view]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
+
+    /**
+     * Edit the clubs parameters
+     *
+     * @Secure(roles="ROLE_SUPER_ADMIN")
+     */
+    public function clubsAction($id = null)
+    {
+        $request = $this->getRequest();
+        $club = null;
+        $form_view = null;
+
+        $em = $this->getDoctrine()->getManager();
+
+        if ('new' == $id) {
+            // new club
+            $club = new Club;
+        }
+        elseif (!is_null($id)) {
+            $club = $em->getRepository('JCSGYKAdminBundle:Club')->find($id);
+        }
+
+        if (is_null($id) || !empty($club)) {
+
+            if (!empty($club)) {
+                $form = $this->createForm(new ClubType(), $club);
+                // $original_policy = $club->getSequencePolicy();
+            }
+
+            // save the current club
+            if ($request->isMethod('POST')) {
+
+                $form->bind($request);
+
+                if ($form->isValid()) {
+
+                    if (is_null($club->getId())) {
+                        $em->persist($club);
+                    }
+
+                    $em->flush();
+
+                    // if ('new' == $id) {
+                    //     // reset - create the sequence for this new club
+                    //     $this->get('jcs.seq')->reset(['id' => $club->getId(), 'sequencePolicy' => $club->getSequencePolicy()]);
+                    // }
+                    // else {
+                    //     // update the sequence for the policy change
+                    //     if ($original_policy != $club->getSequencePolicy()) {
+                    //         $year = $club->getSequencePolicy() == Club::BY_YEAR ? date('Y') : null;
+                    //         $this->get('jcs.seq')->setYear(['id' => $club->getId(), 'sequencePolicy' => $club->getSequencePolicy()], $year);
+                    //     }
+                    // }
+
+                    $this->get('session')->getFlashBag()->add('notice', 'Klub elmentve');
+
+                    return $this->redirect($this->generateUrl('admin_clubs', ['id' => $club->getId()]));
+                }
+            }
+
+            if (!empty($form)) {
+                $form_view = $form->createView();
+            }
+            // get all clubs
+            $clubs = $em->getRepository('JCSGYKAdminBundle:Club')->findBy([], ['name' => 'ASC']);
+
+            return $this->render('JCSGYKAdminBundle:Admin:clubs.html.twig', ['clubs' => $clubs, 'id' => $id, 'act' => $club, 'form' => $form_view]);
         }
         else {
             throw new HttpException(400, "Bad request");

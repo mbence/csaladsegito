@@ -1,0 +1,82 @@
+{% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
+
+{% block settings_content %}
+
+<div class="template-top">
+    <div class="floatright right">
+        <a href="{{ path('admin_clubs', {'id': 'new'}) }}" class="button" id="new_club"><span>{{ 'új klub'|trans }}</span></a>
+    </div>
+    <h1 class="client">{{ 'Klubok'|trans }}</h1>
+</div>
+<div class="adminblock" id="template-list">
+    <div class="rightpad fullheight nocollapse">
+        {% for co in clubs %}
+            <a href="{{ path('admin_clubs', {'id': co.id}) }}" class="tpl-list{% if act and act.id == co.id %} current{% endif %}">
+                {{ co.shortname }} &nbsp;&nbsp;&nbsp; {{ co.isActive|check }}
+            </a>
+        {% endfor %}
+    </div>
+</div>
+<div class="adminblock" id="template-edit">
+    <div class="leftpad20 fullheight nocollapse">
+        {% if form %}
+            {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+
+            <form action="{{ path('admin_clubs', {'id': id}) }}" id="template_edit" novalidate method="post" {{ form_enctype(form) }}>
+                {{ form_errors(form) }}
+
+                <table class="client-edit" cellspacing="0" border="0">
+                    <tr>
+                        <th>{{ form_label(form.name) }}:</th>
+                        <td>{{ form_errors(form.name) }}{{ form_widget(form.name) }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ form_label(form.address) }}:</th>
+                        <td>{{ form_errors(form.address) }}{{ form_widget(form.address) }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ form_label(form.phone) }}:</th>
+                        <td>{{ form_errors(form.phone) }}{{ form_widget(form.phone) }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ form_label(form.coordinator) }}:</th>
+                        <td>{{ form_errors(form.coordinator) }}{{ form_widget(form.coordinator) }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ form_label(form.foodtypes) }}:</th>
+                        <td>{{ form_errors(form.foodtypes) }}{{ form_widget(form.foodtypes) }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ form_label(form.is_active) }}:</th>
+                        <td>{{ form_errors(form.is_active) }}{{ form_widget(form.is_active) }}</td>
+                    </tr>
+                </table>
+                <br><br>
+                <div class="formbuttons">
+                    <button type="reset" href="{{ path('admin_clubs') }}" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
+                    <button type="submit" class="button" name="clubsave" value="save"><span>{{ 'mentés'|trans }}</span></button>
+                </div>
+                {{ form_widget(form._token) }}
+            </form>
+            <div class="info">
+                <p>
+                    {{ 'Típusok: <br>1 = Családsegítő<br>2 = Gyermekjólét<br>Több típus esetén vesszővel elválasztva adjuk meg!'|trans|raw }}
+                </p>
+                <p>
+                    {{ 'Üsz formátum:<br>{year} = év<br>{num} = ügy szám<br>{num,x} = ügy szám, x helyiértékkel<br>Pl: "{year}/{num,5}" = 2013/00123'|trans|raw }}
+                </p>
+            </div>
+        {% else %}
+            <div class="info">
+                <p>
+                    {{ 'A klubok  szerkesztéséhez kattintson a bal oldai listában a megfelelő sorra!'|trans }}
+                </p>
+                <p>
+                    {{ "Új klubot a narancsárga 'új klub' gombra katttintve hozhat létre."|trans }}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<div class="clear"></div>
+{% endblock %}

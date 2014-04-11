@@ -5,6 +5,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use JCSGYK\AdminBundle\Entity\Club;
+use JCSGYK\AdminBundle\Entity\UserRepository;
 
 class ClubType extends AbstractType
 {
