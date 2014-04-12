@@ -10,9 +10,9 @@
 </div>
 <div class="adminblock" id="template-list">
     <div class="rightpad fullheight nocollapse">
-        {% for co in clubs %}
-            <a href="{{ path('admin_clubs', {'id': co.id}) }}" class="tpl-list{% if act and act.id == co.id %} current{% endif %}">
-                {{ co.shortname }} &nbsp;&nbsp;&nbsp; {{ co.isActive|check }}
+        {% for club in clubs %}
+            <a href="{{ path('admin_clubs', {'id': club.id}) }}" class="tpl-list{% if act and act.id == club.id %} current{% endif %}">
+                {{ club.name }} &nbsp;&nbsp;&nbsp; {{ club.isActive|check }}
             </a>
         {% endfor %}
     </div>
@@ -58,14 +58,10 @@
                 </div>
                 {{ form_widget(form._token) }}
             </form>
-            <div class="info">
+{#            <div class="info">
                 <p>
-                    {{ 'Típusok: <br>1 = Családsegítő<br>2 = Gyermekjólét<br>Több típus esetén vesszővel elválasztva adjuk meg!'|trans|raw }}
                 </p>
-                <p>
-                    {{ 'Üsz formátum:<br>{year} = év<br>{num} = ügy szám<br>{num,x} = ügy szám, x helyiértékkel<br>Pl: "{year}/{num,5}" = 2013/00123'|trans|raw }}
-                </p>
-            </div>
+            </div>#}
         {% else %}
             <div class="info">
                 <p>

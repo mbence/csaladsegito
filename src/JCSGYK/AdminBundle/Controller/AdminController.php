@@ -310,7 +310,7 @@ class AdminController extends Controller
     /**
      * Edit the clubs parameters
      *
-     * @Secure(roles="ROLE_SUPER_ADMIN")
+     * @Secure(roles="ROLE_ADMIN")
      */
     public function clubsAction($id = null)
     {
@@ -332,7 +332,6 @@ class AdminController extends Controller
 
             if (!empty($club)) {
                 $form = $this->createForm(new ClubType(), $club);
-                // $original_policy = $club->getSequencePolicy();
             }
 
             // save the current club
@@ -343,22 +342,14 @@ class AdminController extends Controller
                 if ($form->isValid()) {
 
                     if (is_null($club->getId())) {
+                        // get the current company id from the datatore
+                        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+                        // save the company id too
+                        $club->setCompanyId($company_id);
                         $em->persist($club);
                     }
 
                     $em->flush();
-
-                    // if ('new' == $id) {
-                    //     // reset - create the sequence for this new club
-                    //     $this->get('jcs.seq')->reset(['id' => $club->getId(), 'sequencePolicy' => $club->getSequencePolicy()]);
-                    // }
-                    // else {
-                    //     // update the sequence for the policy change
-                    //     if ($original_policy != $club->getSequencePolicy()) {
-                    //         $year = $club->getSequencePolicy() == Club::BY_YEAR ? date('Y') : null;
-                    //         $this->get('jcs.seq')->setYear(['id' => $club->getId(), 'sequencePolicy' => $club->getSequencePolicy()], $year);
-                    //     }
-                    // }
 
                     $this->get('session')->getFlashBag()->add('notice', 'Klub elmentve');
 
