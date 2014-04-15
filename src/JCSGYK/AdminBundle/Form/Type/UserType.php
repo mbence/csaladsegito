@@ -38,6 +38,7 @@ class UserType extends AbstractType
             'ROLE_ASSISTANCE' => 'Asszisztens',
             'ROLE_FAMILY_HELP' => 'Családsegítő',
             'ROLE_CHILD_WELFARE' => 'Gyermekvédelem',
+            'ROLE_CATERING' => 'Étkeztetés',
             'ROLE_ADMIN' => 'Admin',
         ];
         if (!empty($co['types'])) {
@@ -47,6 +48,9 @@ class UserType extends AbstractType
             }
             if (!isset($types[2])) {
                 unset($choices['ROLE_CHILD_WELFARE']);
+            }
+            if (!isset($types[3])) {
+                unset($choices['ROLE_CATERING']);
             }
         }
         if ($this->security->isGranted('ROLE_SUPER_ADMIN')) {

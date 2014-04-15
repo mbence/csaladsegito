@@ -16,7 +16,9 @@ class MenuController extends Controller
     public function mainAction()
     {
         $items = [
-            ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
+            ['route' => 'clients', 'label' => 'Családgondozó', 'role' => 'ROLE_USER'],
+            ['route' => 'clients', 'label' => 'Gyermekjólét', 'role' => 'ROLE_USER'],
+            ['route' => 'clients', 'label' => 'Étkeztetés', 'role' => 'ROLE_USER'],
             ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'],
         ];
 
@@ -65,7 +67,7 @@ class MenuController extends Controller
     {
         $sec = $this->get('security.context');
         // true if only assistance roles are present
-        $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE');
+        $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE') && !$sec->isGranted('ROLE_CATERING');
 
         $items = [
             // client_histroy - Template:history
