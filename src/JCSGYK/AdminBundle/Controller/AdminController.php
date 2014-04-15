@@ -138,7 +138,7 @@ class AdminController extends Controller
                         $orig->setName($param['name']);
                         $orig->setIsActive(isset($param['isActive']));
                         $orig->setRequired(isset($param['required']));
-                        $orig->setMultiple(isset($param['multiple']));
+                        $orig->setControl((isset($param['control']) ? 1 : 0));
                     }
                     else {
                         // insert new param group
@@ -155,7 +155,7 @@ class AdminController extends Controller
                             $new_param->setName($param['name']);
                             $new_param->setIsActive(isset($param['isActive']));
                             $new_param->setRequired(isset($param['required']));
-                            $new_param->setMultiple(isset($param['multiple']));
+                            $new_param->setControl((isset($param['control']) ? 1 : 0));
 
                             $em->persist($new_param);
                         }
@@ -227,12 +227,34 @@ class AdminController extends Controller
 
         // get all params
         $params = $this->get('jcs.ds')->getAll();
-        //$groups = $this->container->getParameter('param_groups');
+        $system_groups = $this->container->getParameter('system_parameter_groups');
+
         // get all paramgroup types
         $types = $this->get('jcs.ds')->getGroupTypes();
         $groups = $this->get('jcs.ds')->getParamGroup();
 
-        return $this->render('JCSGYKAdminBundle:Admin:params.html.twig', ['params' => $params, 'groups' => $groups, 'act' => $group, 'types' => $types]);
+        // merge the system groups with the dynamic groups
+        $all_groups = [];
+        foreach ($system_groups as $k => $sg) {
+            $all_groups[] = [
+                'id' => $k,
+                'name' => $sg[0],
+                'type' => 0,
+                'required' => $sg[1],
+                'control' => $sg[2]
+            ];
+        }
+        foreach ($groups as $g) {
+            $all_groups[] = [
+                'id' => $g->getId(),
+                'name' => $g->getName(),
+                'type' => $g->getType(),
+                'required' => $g->getRequired(),
+                'control' => $g->getControl()
+            ];
+        }
+
+        return $this->render('JCSGYKAdminBundle:Admin:params.html.twig', ['params' => $params, 'groups' => $all_groups, 'act' => $group, 'types' => $types]);
     }
 
     /**

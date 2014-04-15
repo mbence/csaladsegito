@@ -1,15 +1,16 @@
 parameters:
-    system_parameters:
-        inquiry: "Érdeklődés típusok"
-        citizenship: "Állampolgárság"
-        citizenship_status: "Állampolgársági jogállás"
-        client_archives: "Ügyfél archiválások"
-        client_reopens: "Ügyfél újranyitás"
-        problem_closings: "Probléma lezárások"
-        events: "Esemény"
-        signals: "Jelzések"
-        lunch_types: "Ebéd Típusok"
-        lunch_costs: "Díjtáblázat"
+    system_parameter_groups:
+        # key: ["name", required, type (normal, multiple, table)]
+        inquiry: ["Érdeklődés típusok", 0, 0]
+        citizenship: ["Állampolgárság", 0, 0]
+        citizenship_status: ["Állampolgársági jogállás", 0, 0]
+        client_archives: ["Ügyfél archiválások", 0, 0]
+        client_reopens: ["Ügyfél újranyitás", 0, 0]
+        problem_closings: ["Probléma lezárások", 0, 0]
+        events: ["Esemény", 0, 0]
+        signals: ["Jelzések", 0, 0]
+        lunch_types: ["Ebéd Típusok", 0, 0]
+        lunch_costs: ["Díjtáblázat", 0, 0]
 
     task_status:
         1: "új"

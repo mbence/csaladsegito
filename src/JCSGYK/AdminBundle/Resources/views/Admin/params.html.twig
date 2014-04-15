@@ -25,7 +25,7 @@
                     <div class="paramcontainer">
                         <div class="param-legend">
                         {% if group.required %}{{ 'Megállapodás esetén kötelezően kitöltendő mező!'|trans }}{% endif %}
-                        {% if group.multiple %}{{ 'Multi-select mező'|trans }}{% endif %}
+                        {% if group.control %}{{ 'Multi-select mező'|trans }}{% endif %}
                         </div>
                         {% for param in params if group.id == param.group %}
                         <div class="param">

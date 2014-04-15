@@ -32,7 +32,7 @@
                             <input type="text" value="{{ param.name }}" name="parameter[{{ loop.index }}][name]">
                             <input type="checkbox" {% if param.isActive %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][isActive]" value="1">
                             <input type="checkbox" {% if param.required %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][required]" value="1">
-                            <input type="checkbox" {% if param.multiple %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][multiple]" value="1">
+                            <input type="checkbox" {% if param.control %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][control]" value="1">
                         </div>
                         {% endfor %}
                     </div>

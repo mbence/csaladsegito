@@ -64,11 +64,12 @@ class Paramgroup
     private $required;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="multiple", type="boolean", nullable=true)
+     * @ORM\Column(name="control", type="integer", nullable=true)
      */
-    private $multiple;
+    private $control;
+
     /**
      * Get id
      *
@@ -218,26 +219,26 @@ class Paramgroup
     }
 
     /**
-     * Set multiple
+     * Set control
      *
-     * @param boolean $multiple
+     * @param integer $control
+     *
      * @return Paramgroup
      */
-    public function setMultiple($multiple)
+    public function setControl($control)
     {
-        $this->multiple = $multiple;
+        $this->control = $control;
 
         return $this;
     }
 
     /**
-     * Get multiple
+     * Get control
      *
-     * @return boolean
+     * @return integer
      */
-    public function getMultiple()
+    public function getControl()
     {
-        return $this->multiple;
+        return $this->control;
     }
-
 }
