@@ -29,9 +29,9 @@ class Parameter
     private $companyId;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="group_id", type="integer", nullable=true)
+     * @ORM\Column(name="group_id", type="string", length=32, nullable=true)
      */
     private $group;
 
@@ -94,7 +94,7 @@ class Parameter
     /**
      * Set group
      *
-     * @param integer $group
+     * @param string $group
      * @return Parameter
      */
     public function setGroup($group)
@@ -107,7 +107,7 @@ class Parameter
     /**
      * Get group
      *
-     * @return integer
+     * @return string
      */
     public function getGroup()
     {

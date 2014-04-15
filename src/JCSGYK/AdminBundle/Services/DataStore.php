@@ -241,7 +241,7 @@ class DataStore
      * Returns the selected group, or all groups and parameters if no $id given
      * if unknown group id received, false will return
      *
-     * @param integer $id
+     * @param mixed - int $id (in case of paramgroups) or string $key for named system params
      * @param boolean $all return all, or only the active params?
      * @return mixed
      */

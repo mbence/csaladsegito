@@ -36,13 +36,6 @@ class Paramgroup
     private $type;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="key", type="string", length=32, nullable=true)
-     */
-    private $key;
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="position", type="integer", nullable=true)
@@ -247,27 +240,4 @@ class Paramgroup
         return $this->multiple;
     }
 
-    /**
-     * Set key
-     *
-     * @param string $key
-     *
-     * @return Paramgroup
-     */
-    public function setKey($key)
-    {
-        $this->key = $key;
-
-        return $this;
-    }
-
-    /**
-     * Get key
-     *
-     * @return string 
-     */
-    public function getKey()
-    {
-        return $this->key;
-    }
 }

@@ -1,20 +1,15 @@
 parameters:
-#    param_groups:
-#        1:  "Érdeklődés típusok"
-#        2:  "Szolgáltatók"
-#        3:  "Végzettség"
-#        4:  "Gazdasági aktivitás"
-#        5:  "Családi összetétel"
-#        6:  "Problémák"
-#        7:  "Esemény megnevezés"
-#        8:  "Esetkezelés jellege"
-#        9:  "Továbbirányítások"
-#        10: "Esemény, Egyéb tevékenység"
-#        11: "Ügyfél archiválások"
-#        12: "Ügyfél újranyitás"
-#        13: "Probléma lezárások"
-#        14: "Állampolgárság"
-#        15: "Állampolgársági jogállás"
+    system_parameters:
+        inquiry: "Érdeklődés típusok"
+        citizenship: "Állampolgárság"
+        citizenship_status: "Állampolgársági jogállás"
+        client_archives: "Ügyfél archiválások"
+        client_reopens: "Ügyfél újranyitás"
+        problem_closings: "Probléma lezárások"
+        events: "Esemény"
+        signals: "Jelzések"
+        lunch_types: "Ebéd Típusok"
+        lunch_costs: "Díjtáblázat"
 
     task_status:
         1: "új"
@@ -26,5 +21,5 @@ parameters:
         2:
             1: "Új megkeresés"
             2: "Feldolgozott esemény"
-            
+
     kenyszi_url: 'http://localhost/kenyszi-szerver/'

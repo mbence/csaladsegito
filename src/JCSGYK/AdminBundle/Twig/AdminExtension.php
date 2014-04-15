@@ -217,7 +217,7 @@ class AdminExtension extends \Twig_Extension
 
     public function getInquiryTypes()
     {
-        return $this->ds->getGroup(1);
+        return $this->ds->getGroup('inquiry');
     }
 
     public function getRelationTypes($type = null)

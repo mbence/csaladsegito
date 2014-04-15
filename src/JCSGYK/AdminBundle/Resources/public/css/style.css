@@ -580,7 +580,7 @@ table.problem-list td {
 }
 
 #parameter-lists {
-    width: 470px;
+    width: 450px;
     display: none;
 }
 #parameter-lists .formbuttons, #template-edit .formbuttons {
@@ -604,7 +604,7 @@ table.problem-list td {
     float: left;
 }
 #parameter-lists input[type=text] {
-    width: 330px;
+    width: 310px;
 }
 #newparam-template {
     display: none;
