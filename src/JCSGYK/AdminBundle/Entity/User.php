@@ -77,6 +77,11 @@ class User extends BaseUser
      */
     private $closings;
 
+    /**
+     * @ORM\OneToMany(targetEntity="LunchOrder", mappedBy="creator")
+     */
+    private $lunchorders;
+
     public function __construct($salt = null)
     {
         parent::__construct();
@@ -92,6 +97,7 @@ class User extends BaseUser
         $this->clubCoordinator = new ArrayCollection();
         $this->closings = new ArrayCollection();
         $this->tasks = new ArrayCollection();
+        $this->lunchorders = new ArrayCollection();
     }
 
     public function __toString()
