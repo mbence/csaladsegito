@@ -27,7 +27,7 @@ class ClientController extends Controller
      *
      * @Secure(roles="ROLE_USER")
      */
-    public function indexAction($client_id = null, $problem_id = null)
+    public function indexAction($client_type = 'fh', $client_id = null, $problem_id = null)
     {
         return $this->render('JCSGYKAdminBundle:Client:index.html.twig', ['client_id' => $client_id, 'problem_id' => $problem_id]);
     }

@@ -7,9 +7,10 @@ home_stat:
 
 # Clients #
 clients:
-    pattern:  /clients/{client_id}/{problem_id}
-    defaults: { _controller: JCSGYKAdminBundle:Client:index, client_id: null, problem_id: null }
+    pattern:  /clients/{client_type}/{client_id}/{problem_id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:index, client_type: 'fh', client_id: null, problem_id: null }
     requirements:
+        client_type: fh|cw|ca
         client_id: \d+
 client_search:
     pattern:  /clients/search
