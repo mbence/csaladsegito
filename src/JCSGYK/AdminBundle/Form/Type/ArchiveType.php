@@ -36,7 +36,7 @@ class ArchiveType extends AbstractType
     {
         $builder->add('type', 'choice', [
             'label' => ($this->operation == 0 ? 'Lezárás oka' : 'Újranyitás oka'),
-            'choices' => $this->ds->getGroup($this->operation == 0 ? 2 : 3),
+            'choices' => $this->ds->getGroup($this->operation == 0 ? 'client_archives' : 'client_reopens'),
         ]);
         $builder->add('description', 'textarea', [
             'label' => 'Megjegyzés',

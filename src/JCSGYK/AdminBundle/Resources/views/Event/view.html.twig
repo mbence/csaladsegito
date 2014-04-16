@@ -38,7 +38,7 @@
         {% endif %}
         {% for paramGroup in pgroup(3) %}
             {% if event.getParam(paramGroup.id) %}
-            <tr {% if paramGroup.multiple %}class="multirow"{% endif %}>
+            <tr {% if paramGroup.control %}class="multirow"{% endif %}>
                 <th>{{ paramGroup.name|trans }}:</th>
                 <td colspan="3">{{ param(event.getParam(paramGroup.id), paramGroup.id) }} </td>
             </tr>

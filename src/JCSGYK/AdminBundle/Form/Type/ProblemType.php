@@ -48,10 +48,10 @@ class ProblemType extends AbstractType
                     'label' => $param->getName(),
                     'choices'   => $choices,
                     'mapped' => false,
-                    'data' => $this->ds->paramConvert($this->problem->getParam($param->getId()), $param->getMultiple()),
+                    'data' => $this->ds->paramConvert($this->problem->getParam($param->getId()), $param->getControl()),
                     'required' => $param->getRequired(),
-                    'multiple' => $param->getMultiple(),
-                    'expanded' => $param->getMultiple(),
+                    'multiple' => $param->getControl(),
+                    'expanded' => $param->getControl(),
                 ]);
             }
             else {

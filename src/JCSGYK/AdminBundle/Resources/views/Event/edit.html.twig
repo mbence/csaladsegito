@@ -24,13 +24,13 @@
     <tr><td colspan="4">
         <div class="client-sub first-sub">{{ 'adatok'|trans }}</div>
     </td></tr>
-    <tr {% if pgroup_by_id(7).multiple %}class="multirow"{% endif %}>
+    <tr {% if get_pgroup_control('events') %}class="multirow"{% endif %}>
         <th>{{ form_label(form.type) }}:</th>
         <td colspan="3" class="full-widget">{{ form_errors(form.type) }}{{ form_widget(form.type) }}</td>
     </tr>
     {% for paramGroup in pgroup(3) %}
     {% set p = 'param_' ~ paramGroup.id %}
-    <tr {% if paramGroup.multiple %}class="multirow"{% endif %}>
+    <tr {% if paramGroup.control %}class="multirow"{% endif %}>
         <th>{{ form_label(form[p]) }}:</th>
         <td colspan="3" class="full-widget">
             {{ form_errors(form[p]) }}

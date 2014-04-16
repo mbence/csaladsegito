@@ -26,7 +26,7 @@
             <td>{{ pstatus(problem) }}</td>
         </tr>
         {% for paramGroup in pgroup(2) %}
-        <tr {% if paramGroup.multiple %}class="multirow"{% endif %}>
+        <tr {% if paramGroup.control %}class="multirow"{% endif %}>
             <th>{{ paramGroup.name|trans }}:</th>
             <td colspan="3">{{ param(problem.getParam(paramGroup.id), paramGroup.id) }} </td>
         </tr>

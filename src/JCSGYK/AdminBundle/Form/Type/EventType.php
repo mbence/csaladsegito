@@ -37,14 +37,15 @@ class EventType extends AbstractType
             'label' => 'Esemény részletes leírása',
             'required' => false
         ]);
-        $g7 = $this->ds->getParamgroupById(7);
+        $g7 = $this->ds->getParamgroupById('events');
+
         $builder->add('type', 'choice', [
             'label' => 'Megnevezés',
-            'choices'   => $this->ds->getGroup(7),
-            'data' => $this->ds->paramConvert($this->event->getType(), $g7->getMultiple()),
-            'required' => $g7->getRequired(),
-            'multiple' => $g7->getMultiple(),
-            'expanded' => $g7->getMultiple(),
+            'choices'   => $this->ds->getGroup('events'),
+            'data' => $this->ds->paramConvert($this->event->getType(), $g7[2]),
+            'required' => $g7[1],
+            'multiple' => $g7[2],
+            'expanded' => $g7[2],
         ]);
         // parametergroups
         $pgroups = $this->ds->getParamGroup(3);
@@ -57,10 +58,10 @@ class EventType extends AbstractType
                     'label' => $param->getName(),
                     'choices'   => $choices,
                     'mapped' => false,
-                    'data' => $this->ds->paramConvert($this->event->getParam($param->getId()), $param->getMultiple()),
+                    'data' => $this->ds->paramConvert($this->event->getParam($param->getId()), $param->getControl()),
                     'required' => $param->getRequired(),
-                    'multiple' => $param->getMultiple(),
-                    'expanded' => $param->getMultiple(),
+                    'multiple' => $param->getControl(),
+                    'expanded' => $param->getControl(),
                 ]);
             }
             else {

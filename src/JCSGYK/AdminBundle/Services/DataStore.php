@@ -112,12 +112,24 @@ class DataStore
     public function getParamgroupById($id)
     {
         $group = null;
-        $groups = $this->getParamgroups();
 
-        foreach ($groups as $g) {
-            if ($g->getId() == $id) {
-                $group = $g;
-                break;
+        // pgroups with numeric id come from the database
+        if (is_numeric($id)) {
+            $groups = $this->getParamgroups();
+
+            foreach ($groups as $g) {
+                if ($g->getId() == $id) {
+                    $group = $g;
+                    break;
+                }
+            }
+        }
+        // pgroups with string ids (keys) come from Reources/config/parameters.yml
+        else {
+            $groups = $this->container->getParameter('system_parameter_groups');
+
+            if (isset($groups[$id])) {
+                $group = $groups[$id];
             }
         }
 

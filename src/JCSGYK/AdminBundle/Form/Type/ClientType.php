@@ -73,11 +73,11 @@ class ClientType extends AbstractType
         $builder->add('mother_lastname', 'text', ['label' => 'Vezetéknév', 'required' => false]);
         $builder->add('citizenship', 'choice', [
             'label' => 'Állampolgárság',
-            'choices'   => $this->ds->getGroup(5),
+            'choices'   => $this->ds->getGroup('citizenship'),
         ]);
         $builder->add('citizenship_status', 'choice', [
             'label' => 'Állampolgársági jogállás',
-            'choices'   => $this->ds->getGroup(6),
+            'choices'   => $this->ds->getGroup('citizenship_status'),
         ]);
         $builder->add('social_security_number', 'text', ['label' => 'TAJ', 'required' => false]);
         $builder->add('identity_number', 'text', ['label' => 'Szem.a.j', 'required' => false]);
@@ -127,10 +127,10 @@ class ClientType extends AbstractType
                     'label' => $param->getName(),
                     'choices'   => $choices,
                     'mapped' => false,
-                    'data' => $this->ds->paramConvert($this->client->getParam($param->getId()), $param->getMultiple()),
+                    'data' => $this->ds->paramConvert($this->client->getParam($param->getId()), $param->getControl()),
                     'required' => $param->getRequired(),
-                    'multiple' => $param->getMultiple(),
-                    'expanded' => $param->getMultiple(),
+                    'multiple' => $param->getControl(),
+                    'expanded' => $param->getControl(),
                 ]);
             }
             else {

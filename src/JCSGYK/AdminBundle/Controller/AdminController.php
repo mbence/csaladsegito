@@ -171,6 +171,8 @@ class AdminController extends Controller
 
         // get all paramgroup types
         $types = $this->get('jcs.ds')->getGroupTypes();
+        // remove system type
+        unset($types[0]);
         $groups = $this->get('jcs.ds')->getParamgroups();
 
         return $this->render('JCSGYKAdminBundle:Admin:paramgroups.html.twig', ['groups' => $groups, 'types' => $types, 'act' => $type]);

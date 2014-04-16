@@ -56,11 +56,11 @@ class ParentType extends AbstractType
         $builder->add('mother_lastname', 'text', ['label' => 'Vezetéknév', 'required' => false]);
         $builder->add('citizenship', 'choice', [
             'label' => 'Állampolgárság',
-            'choices'   => $this->ds->getGroup(5),
+            'choices'   => $this->ds->getGroup('citizenship'),
         ]);
         $builder->add('citizenship_status', 'choice', [
             'label' => 'Állampolgársági jogállás',
-            'choices'   => $this->ds->getGroup(6),
+            'choices'   => $this->ds->getGroup('citizenship_status'),
         ]);
         $builder->add('mobile', 'text', ['label' => 'Mobil', 'required' => false]);
         $builder->add('phone', 'text', ['label' => 'Telefon', 'required' => false]);
