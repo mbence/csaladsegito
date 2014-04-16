@@ -16,9 +16,9 @@ class MenuController extends Controller
     public function mainAction()
     {
         $items = [
-            ['route' => 'clients', 'label' => 'Családgondozó', 'role' => 'ROLE_USER'],
-            ['route' => 'clients', 'label' => 'Gyermekjólét', 'role' => 'ROLE_USER'],
-            ['route' => 'clients', 'label' => 'Étkeztetés', 'role' => 'ROLE_USER'],
+            ['route' => 'clients', 'options' => ['client_type' => 'fh'], 'label' => 'Családgondozó', 'role' => 'ROLE_USER'],
+            ['route' => 'clients', 'options' => ['client_type' => 'cw'], 'label' => 'Gyermekjólét', 'role' => 'ROLE_USER'],
+            ['route' => 'clients', 'options' => ['client_type' => 'ca'], 'label' => 'Étkeztetés', 'role' => 'ROLE_USER'],
             ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'],
         ];
 
@@ -280,6 +280,10 @@ class MenuController extends Controller
             }
             $m['class'] = implode(' ', $class_list);
             if ($sec->isGranted($m['role'])) {
+                // if options is not defined, add to the array
+                if (!isset($m['options'])) {
+                    $m['options'] = [];
+                }
                 $user_menu[] = $m;
             }
         }

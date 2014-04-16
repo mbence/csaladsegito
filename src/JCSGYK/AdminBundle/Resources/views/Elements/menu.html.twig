@@ -2,7 +2,7 @@
     <div class="menutitle"><a href="{{ path('home') }}">{{ co_short() }} {{ 'Admin'|trans }}</a></div>
     <div class="menuitems">
         {% for item in menu %}
-            <a href="{{ path(item.route) }}"
+            <a href="{{ path(item.route, item.options) }}"
                class="{% if item.class is defined %}{{ item.class}}{% endif %}"
                {% if item.id is defined %}id="{{ item.id }}"{% endif %}>
                 {{ item.label|trans() }}
