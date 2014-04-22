@@ -173,9 +173,9 @@ class DataStore
     public function getClientTypes()
     {
         $client_types = [
-            1 => 'Családsegítő',
-            2 => 'Gyermekjólét',
-            4 => 'Étkeztetés'
+            Client::FH => 'Családsegítő',
+            Client::CW => 'Gyermekjólét',
+            Client::CA => 'Étkeztetés'
         ];
         // check the company for enabled types, and remove the unneded ones
         $co = $this->getCompany();
@@ -187,13 +187,13 @@ class DataStore
         // the new client's type is depending of the users roles
         if (!$sec->isGranted('ROLE_SUPER_ADMIN') && !$sec->isGranted('ROLE_ASSISTANCE')) {
             if (!$sec->isGranted('ROLE_FAMILY_HELP')) {
-                unset($client_types[1]);
+                unset($client_types[Client::FH]);
             }
             if (!$sec->isGranted('ROLE_CHILD_WELFARE')) {
-                unset($client_types[2]);
+                unset($client_types[Client::CW]);
             }
             if (!$sec->isGranted('ROLE_CATERING')) {
-                unset($client_types[4]);
+                unset($client_types[Client::CA]);
             }
         }
 
