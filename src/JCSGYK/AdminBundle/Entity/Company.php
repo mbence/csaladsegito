@@ -53,16 +53,16 @@ class Company
     private $types;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="sequence_policy", type="integer", nullable=true)
+     * @ORM\Column(name="sequence_policy", type="string", length=64, nullable=true)
      */
     private $sequencePolicy;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="case_number_template", type="string", length=64, nullable=true)
+     * @ORM\Column(name="case_number_template", type="text", nullable=true)
      */
     private $caseNumberTemplate;
 
@@ -208,12 +208,12 @@ class Company
     /**
      * Set sequencePolicy
      *
-     * @param integer $sequencePolicy
+     * @param array $sequencePolicy
      * @return Company
      */
-    public function setSequencePolicy($sequencePolicy)
+    public function setSequencePolicy(array $sequencePolicy)
     {
-        $this->sequencePolicy = $sequencePolicy;
+        $this->sequencePolicy = json_encode($sequencePolicy);
 
         return $this;
     }
@@ -221,22 +221,22 @@ class Company
     /**
      * Get sequencePolicy
      *
-     * @return integer
+     * @return array
      */
     public function getSequencePolicy()
     {
-        return $this->sequencePolicy;
+        return json_decode($this->sequencePolicy, true);
     }
 
     /**
      * Set caseNumberTemplate
      *
-     * @param string $caseNumberTemplate
+     * @param array $caseNumberTemplate
      * @return Company
      */
-    public function setCaseNumberTemplate($caseNumberTemplate)
+    public function setCaseNumberTemplate(array $caseNumberTemplate)
     {
-        $this->caseNumberTemplate = $caseNumberTemplate;
+        $this->caseNumberTemplate = json_encode($caseNumberTemplate);
 
         return $this;
     }
@@ -244,11 +244,11 @@ class Company
     /**
      * Get caseNumberTemplate
      *
-     * @return string
+     * @return array
      */
     public function getCaseNumberTemplate()
     {
-        return $this->caseNumberTemplate;
+        return json_decode($this->caseNumberTemplate);
     }
 
     /**
@@ -267,7 +267,7 @@ class Company
     /**
      * Get logo
      *
-     * @return string 
+     * @return string
      */
     public function getLogo()
     {
