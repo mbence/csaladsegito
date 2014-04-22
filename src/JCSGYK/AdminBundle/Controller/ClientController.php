@@ -335,7 +335,7 @@ class ClientController extends Controller
                         if (empty($case_num)) {
                             // if not defined, get the next case number from the ClientSequence Service
                             // also checks for year changes and resets the sequence for a new year if needed
-                            $nextVal = $this->get('jcs.seq')->nextVal($co);
+                            $nextVal = $this->get('jcs.seq')->nextVal($co, $client->getType());
                             if (false === $nextVal) {
                                 // this is really bad
                                 throw new HttpException(500);
@@ -717,10 +717,10 @@ class ClientController extends Controller
      * Try to decide if a sting is a case number
      * @param text $q
      */
-    protected function isCase($q)
+    protected function isCase($q, $client_type)
     {
         $company = $this->container->get('jcs.ds')->getCompany();
-        $tpl = $company['caseNumberTemplate'];
+        $tpl = $company['caseNumberTemplate'][$client_type];
         preg_match_all('/(.*?)(\{.*?\})/', $tpl, $matches, PREG_SET_ORDER);
 
         $pattern = '';
@@ -762,7 +762,7 @@ class ClientController extends Controller
             $db = $this->get('doctrine.dbal.default_connection');
             $sql = "SELECT id, type, case_year, case_number, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM client WHERE";
             // recognize a case number
-            if ($this->isCase($q)) {
+            if ($this->isCase($q, $client_type)) {
                 $sql .= " case_label LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type={$client_type}";
                 $sql .= " ORDER BY case_year, LENGTH(case_number), case_number, lastname, firstname LIMIT " . $limit;
             }

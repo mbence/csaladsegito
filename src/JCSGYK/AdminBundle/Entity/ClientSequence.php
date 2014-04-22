@@ -12,11 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ClientSequence
 {
-    /** Family help client type */
-    const FH = 1;
-    /** Child welfare client type */
-    const CW = 2;
-
     /**
      * @var integer
      *
@@ -39,6 +34,13 @@ class ClientSequence
      */
     private $year;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="type", type="integer", nullable=true)
+     */
+    private $type;
+    
     /**
      * Set id
      *
@@ -94,17 +96,41 @@ class ClientSequence
     public function setYear($year)
     {
         $this->year = $year;
-    
+
         return $this;
     }
 
     /**
      * Get year
      *
-     * @return integer 
+     * @return integer
      */
     public function getYear()
     {
         return $this->year;
+    }
+
+    /**
+     * Set type
+     *
+     * @param integer $type
+     *
+     * @return ClientSequence
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return integer 
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }

@@ -46,6 +46,12 @@ class DataStore
             if (empty($company)) {
                 throw new HttpException(500, "Unknown host:" . $req->getHost());
             }
+            // decode json fields
+            $json_fields = ['sequencePolicy', 'caseNumberTemplate'];
+            foreach ($json_fields as $field) {
+                $company[0][$field] = json_decode($company[0][$field], true);
+            }
+
             $this->company = $company[0];
         }
 

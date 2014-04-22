@@ -43,7 +43,7 @@
             <td>
                 {% if form.case_number is defined and (is_granted(['ROLE_ADMIN']) or client.id is empty) %}
                     {{ form_errors(form.case_year) }} {{ form_errors(form.case_number) }}
-                    {{ casefield(form_widget(form.case_year), form_widget(form.case_number)) }}
+                    {{ casefield(form_widget(form.case_year), form_widget(form.case_number), client.type) }}
                 {% else %}
                     <div class="bottompad4">{% if client is defined %}{{ client|casenum }}{% endif %}</div>
                 {% endif %}

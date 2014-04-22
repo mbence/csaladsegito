@@ -32,6 +32,7 @@ services:
     jcs.seq:
         class: JCSGYK\AdminBundle\Services\ClientSequenceService
         arguments:    ['@doctrine']
+
     jcs.client_validator:
         class:      JCSGYK\AdminBundle\Validator\Constraints\ClientClassValidator
         arguments:    ['@doctrine']

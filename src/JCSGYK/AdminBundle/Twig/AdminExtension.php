@@ -155,12 +155,12 @@ class AdminExtension extends \Twig_Extension
         return $this->translator->trans($type == Client::FH ? 'Ügyfélszám' : 'Ügyiratszám');
     }
 
-    public function formatCaseNumberFields($year, $num)
+    public function formatCaseNumberFields($year, $num, $type)   // !!!!!!!!!!!
     {
         global $view;
 
         $co = $this->ds->getCompany();
-        $tpl = $co['caseNumberTemplate'];
+        $tpl = $co['caseNumberTemplate'][$type];
         if (empty($tpl)) {
             $tpl = '{num}';
         }
@@ -193,18 +193,21 @@ class AdminExtension extends \Twig_Extension
     public function formatCaseNumber($client)
     {
         $co = $this->ds->getCompany();
-        $tpl = $co['caseNumberTemplate'];
-        if (empty($tpl)) {
-            $tpl = '{num}';
-        }
 
         if ($client instanceof Client || $client instanceof DbClient) {
             $case_number = $client->getCaseNumber();
             $case_year = $client->getCaseYear();
+            $type = $client->getType();
         }
         else {
             $case_number = $client['case_number'];
             $case_year = $client['case_year'];
+            $type = $client['type'];
+        }
+
+        $tpl = $co['caseNumberTemplate'][$type];
+        if (empty($tpl)) {
+            $tpl = '{num}';
         }
 
         // replace the year and number
