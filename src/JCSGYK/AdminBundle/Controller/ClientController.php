@@ -748,7 +748,7 @@ class ClientController extends Controller
         $q = $request->query->get('q');
 
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
-        $client_type_id = $this->container->get('jcs.ds')->getClientTypeId($client_type);
+        $client_type_id = $this->container->get('jcs.ds')->getClientTypeFromSlug($client_type);
         $limit = 100;
 
         $re = [];
