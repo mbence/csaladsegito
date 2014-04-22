@@ -293,7 +293,7 @@ class ClientController extends Controller
             reset($client_types);
             $client->setType(key($client_types));
             $client->setCompanyId($company_id);
-            $client_type = $this->container->get('jcs.ds')->getSlug($client->getType());
+            $client_type = $this->container->get('jcs.ds')->getSlugFromClientType($client->getType());
         }
 
         if (!empty($client)) {
