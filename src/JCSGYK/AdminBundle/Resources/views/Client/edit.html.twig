@@ -1,7 +1,10 @@
 {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
 
-
-<form action="{{ path('client_edit', {id: client.id}) }}" id="client_edit" novalidate method="post" {{ form_enctype(form) }}>
+{% if client.id %}
+    <form action="{{ path('client_edit', {'id': client.id}) }}" id="client_edit" novalidate method="post" {{ form_enctype(form) }}>
+{% else %}
+    <form action="{{ path('client_new', {'client_type': client_type|ctmap}) }}" id="client_edit" novalidate method="post" {{ form_enctype(form) }}>
+{% endif %}
     {{ form_errors(form) }}
 
 {% include "JCSGYKAdminBundle:Client:_edit_personal_data.html.twig" %}
@@ -37,7 +40,7 @@
 {% endif %}
 
 <div class="toppad10">
-    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_client', {type:'submit', class:'save_client', title:'Ügyfél mentése', label:'mentés'}], client_type: client_type|ctmap} %}
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_client', {type:'submit', class:'save_client', title:'Ügyfél mentése', label:'mentés'}]} %}
     <div class="clear"></div>
 </div>
 

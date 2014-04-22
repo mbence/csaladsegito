@@ -2,8 +2,10 @@
     {% if buttons is not defined %}
         {% set buttons = ['close'] %}
     {% endif %}
+
+    {# TODO: must remove this! #}
     {% if client_type is not defined %}
-        {% set client_type = 'fh' %}
+        {% set client_type = 1 %}
     {% endif %}
 
     {% for button in buttons %}

@@ -264,7 +264,7 @@ class ClientController extends Controller
      *
      * @Secure(roles="ROLE_USER")
      */
-    public function editAction($id = null)
+    public function editAction($id = null, $client_type=null)
     {
         $request = $this->getRequest();
 
@@ -290,10 +290,11 @@ class ClientController extends Controller
             if ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE')) {
                 $client->setCaseAdmin($user);
             }
-            reset($client_types);
-            $client->setType(key($client_types));
+            if (empty($client_type)) {
+                throw new HttpException(400, "Bad request");
+            }
+            $client->setType($client_type);
             $client->setCompanyId($company_id);
-            $client_type = $this->container->get('jcs.ds')->getSlugFromClientType($client->getType());
         }
 
         if (!empty($client)) {
@@ -353,9 +354,7 @@ class ClientController extends Controller
                         $client->setIsArchived(false);
 
                         // set the client type if there is only 1 (otherwise the form will set this)
-                        if (count($client_types) == 1) {
-                            $client->setType(key($client_types));
-                        }
+                        $client->setType($client_type);
 
                         $em->persist($client);
                         $em->flush();
@@ -648,6 +647,7 @@ class ClientController extends Controller
                 'display_type' => count($client_types) > 1,  // only display the client type if there are more then one types of this company
                 'parents' => $parents,
                 'new_relations' => $relation_types,
+                'client_type' => $client->getType(),
             ]);
         }
         else {
@@ -741,8 +741,8 @@ class ClientController extends Controller
      */
     public function searchAction($client_type)
     {
-        if (!$client_type) {
-            throw new HttpException(500);
+        if (empty($client_type)) {
+            throw new HttpException(400, "Bad request");
         }
         $request = $this->getRequest();
         $q = $request->query->get('q');
