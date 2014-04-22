@@ -477,7 +477,6 @@ class ProblemController extends Controller
                 }
 
                 $event_message = $has_agreement ? "Megállapodás vége" : "Megállapodás kezdete";
-                $event_type = $has_agreement ? 96 : 95;
 
                 // create the auto events
                 $event = new Event();
@@ -485,7 +484,6 @@ class ProblemController extends Controller
                 $event->setProblem($problem);
                 $event->setDescription($event_message);
                 $event->setCreator($user);
-                $event->setType($event_type);
 
                 $em->persist($event);
 

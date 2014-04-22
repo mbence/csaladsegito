@@ -295,6 +295,9 @@ table.client td {
 table.client td:last-child {
     min-width: 90px;
 }
+#problem-list.client td:last-child {
+    min-width: inherit;
+}
 table.client tr:hover td, table.client tr:hover th  {
     background-color: #f5f5f5;
 }

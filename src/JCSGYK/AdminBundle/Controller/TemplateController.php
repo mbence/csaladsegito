@@ -118,7 +118,6 @@ class TemplateController extends Controller
                         $event->setProblem($problem);
                         $event->setDescription('Nyomtatvány generálás: ' . $template->getName());
                         $event->setCreator($user);
-                        $event->setType(94); // Nyomtatvány generálás
 
                         $em->persist($event);
                         $em->flush();
