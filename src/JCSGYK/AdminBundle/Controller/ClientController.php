@@ -739,12 +739,16 @@ class ClientController extends Controller
      *
      * @Secure(roles="ROLE_USER")
      */
-    public function searchAction()
+    public function searchAction($client_type)
     {
+        if (!$client_type) {
+            throw new HttpException(500);
+        }
         $request = $this->getRequest();
         $q = $request->query->get('q');
 
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $client_type_id = $this->container->get('jcs.ds')->getClientTypeFromSlug($client_type);
         $limit = 100;
 
         $re = [];
@@ -760,12 +764,14 @@ class ClientController extends Controller
             $sql = "SELECT id, type, case_year, case_number, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM client WHERE";
             // recognize a case number
             if ($this->isCase($q)) {
-                $sql .= " case_label LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2)";
+                $sql .= " case_label LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type={$client_type_id}";
+                // $sql .= " case_label LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2)";
                 $sql .= " ORDER BY case_year, LENGTH(case_number), case_number, lastname, firstname LIMIT " . $limit;
             }
             // search for ID
             elseif (is_numeric($num_ver)) {
-                $sql .= " (case_number={$db->quote($num_ver)} AND company_id={$db->quote($company_id)} AND type IN (1,2)) OR (social_security_number LIKE {$db->quote($num_ver . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2))";
+                // $sql .= " (case_number={$db->quote($num_ver)} AND company_id={$db->quote($company_id)} AND type IN (1,2)) OR (social_security_number LIKE {$db->quote($num_ver . '%')} AND company_id={$db->quote($company_id)} AND type IN (1,2))";
+                $sql .= " (case_number={$db->quote($num_ver)} AND company_id={$db->quote($company_id)} AND type={$client_type_id}) OR (social_security_number LIKE {$db->quote($num_ver . '%')} AND company_id={$db->quote($company_id)} AND type={$client_type_id})";
                 $sql .= " ORDER BY lastname, firstname LIMIT " . $limit;
             }
             else {
@@ -817,7 +823,8 @@ class ClientController extends Controller
 
                 $sql .= " MATCH (firstname, lastname, street, mother_firstname, mother_lastname) AGAINST ({$qr} IN BOOLEAN MODE)";
 
-                $xsql = ['company_id=' . $company_id, "type IN (1,2)"];
+                // $xsql = ['company_id=' . $company_id, "type IN (1,2)"];
+                $xsql = ['company_id=' . $company_id, "type={$client_type_id}"];
 
                 // if we search for street number
                 if (!empty($first)) {
