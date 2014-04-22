@@ -19,6 +19,13 @@ class DataStore
 
     private $container;
 
+    /** Map for client type slugs and ID-s */
+    private $clientTypeMap = [
+        Client::FH => 'fh',
+        Client::CW => 'cw',
+        Client::CA => 'ca'
+    ];
+
     public function __construct($container)
     {
         $this->container = $container;
@@ -330,20 +337,28 @@ class DataStore
 
     /**
      * Return page slug from constant of client's type
-     * @param integer $client_type
+     * Or the client type map if called without a parameter
+     *
      * @return mixed
      */
-    public function getSlug($client_type = null)
+    public function getSlugFromClientType($client_type = null)
     {
-        $slug = [
-            Client::FH => 'fh',
-            Client::CW => 'cw',
-            Client::CA => 'ca'
-        ];
-
         if (is_null($client_type)) {
-            return $slug;
+            return $this->clientTypeMap;
         }
-        return $slug[$client_type];
+
+        return isset($this->clientTypeMap[$client_type]) ? $this->clientTypeMap[$client_type] : false;
     }
+
+    /**
+     * Return client_type from the page slug
+     * @return mixed
+     */
+    public function getClientTypeFromSlug($slug)
+    {
+        $map = array_flip($this->clientTypeMap);
+
+        return isset($map[$slug]) ? $map[$slug] : false;
+    }
+
 }

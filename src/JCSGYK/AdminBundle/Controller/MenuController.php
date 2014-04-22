@@ -15,7 +15,7 @@ class MenuController extends Controller
 {
     public function mainAction()
     {
-        $slugs = $this->container->get('jcs.ds')->getSlug();
+        $slugs = $this->container->get('jcs.ds')->getSlugFromClientType();
         $items = [
             ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::FH]], 'label' => 'Családgondozó', 'role' => 'ROLE_FAMILY_HELP'],
             ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CW]], 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE'],
@@ -279,7 +279,7 @@ class MenuController extends Controller
                 }
             }
             elseif (!empty($route['_route']) && $m['route'] == $route['_route']) {
-                $class_list[] = 'current';                
+                $class_list[] = 'current';
             }
             if (in_array($m['role'], ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])) {
                 $class_list[] = 'adm-menu';
