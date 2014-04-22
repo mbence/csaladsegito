@@ -1,13 +1,16 @@
 services:
-#    jcs.page_header:
-#        class:        JCSGYK\AdminBundle\Services\PageHeader
-#        arguments:    []
     security.access.companyt_voter:
         class:      JCSGYK\AdminBundle\Services\CompanyVoter
         arguments:  ["@service_container"]
         public:     false
         tags:
             - { name: security.voter }
+
+    kernel.listener.request_listener:
+        class: JCSGYK\AdminBundle\Services\RequestListener
+        arguments:    ["@jcs.ds"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 
     jcs.ds:
         class:        JCSGYK\AdminBundle\Services\DataStore
@@ -34,7 +37,6 @@ services:
         arguments:    ['@doctrine']
         tags:
             - { name: validator.constraint_validator, alias: client_validator }
-
 
     kenyszi:
         class: JCSGYK\AdminBundle\Services\Kenyszi

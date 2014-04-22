@@ -2,17 +2,18 @@
 
 namespace JCSGYK\AdminBundle\Services;
 
-use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use JCSGYK\AdminBundle\Services\DataStore;
 
 class RequestListener
 {
-    private $doctrine;
+    /** DataStore */
+    private $ds;
 
-    public function __construct(Doctrine $doctrine)
+    public function __construct(DataStore $ds)
     {
-        $this->doctrine = $doctrine;
+        $this->ds = $ds;
     }
 
     /**
@@ -24,9 +25,27 @@ class RequestListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+        if (HttpKernel::MASTER_REQUEST != $event->getRequestType()) {
             // return immediately
-            //return;
+            return;
+        }
+
+        $request = $event->getRequest();
+
+        // check the client type slug
+        // and replace it  with it's numeric constants
+        if ($request->attributes->has('client_type')) {
+            $slug = $request->attributes->get('client_type');
+            $ct = $this->ds->getClientTypeFromSlug($slug);
+
+            // check for a valid response
+            if ($ct === false) {
+                // some invalid client type received, throw an exception!
+
+            }
+
+            // all is fine, replace and finish
+            $request->attributes->set('client_type', $ct);
         }
     }
 }

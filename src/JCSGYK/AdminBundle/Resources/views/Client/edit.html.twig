@@ -37,7 +37,7 @@
 {% endif %}
 
 <div class="toppad10">
-    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_client', {type:'submit', class:'save_client', title:'Ügyfél mentése', label:'mentés'}], client_type: client_type} %}
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_client', {type:'submit', class:'save_client', title:'Ügyfél mentése', label:'mentés'}], client_type: client_type|ctmap} %}
     <div class="clear"></div>
 </div>
 

@@ -7,13 +7,14 @@ use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\DbimportBundle\Entity\Client as DbClient;
 use JCSGYK\AdminBundle\Entity\Problem;
 use JCSGYK\AdminBundle\Entity\Paramgroup;
+use JCSGYK\AdminBundle\Services\DataStore;
 
 class AdminExtension extends \Twig_Extension
 {
     private $translator;
     private $ds;
 
-    public function __construct(Translator $translator, $ds)
+    public function __construct(Translator $translator, DataStore $ds)
     {
         $this->translator = $translator;
         $this->ds = $ds;
@@ -33,6 +34,7 @@ class AdminExtension extends \Twig_Extension
             'caselabel' => new \Twig_Filter_Method($this, 'formatCaseLabel'),
             'adate' => new \Twig_Filter_Method($this, 'formatAgreeDate', ['is_safe' => ['html']]),
             'ssn' => new \Twig_Filter_Method($this, 'formatSSN', ['is_safe' => ['html']]),
+            'ctmap' => new \Twig_Filter_Method($this, 'clientTypeMap'),
         ];
     }
 
@@ -52,6 +54,10 @@ class AdminExtension extends \Twig_Extension
             'get_pgroup_control' => new \Twig_Function_Method($this, 'getParamGroupControl'),
             'is_cw' => new \Twig_Function_Method($this, 'companyIsCW'),
         );
+    }
+
+    public function clientTypeMap($client_type) {
+        return $this->ds->getSlugFromClientType($client_type);
     }
 
     public function getCompanyShortName()
