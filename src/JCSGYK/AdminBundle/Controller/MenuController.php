@@ -15,10 +15,11 @@ class MenuController extends Controller
 {
     public function mainAction()
     {
+        $slugs = $this->container->get('jcs.ds')->getSlug();
         $items = [
-            ['route' => 'clients', 'options' => ['client_type' => 'fh'], 'label' => 'Családgondozó', 'role' => 'ROLE_USER'],
-            ['route' => 'clients', 'options' => ['client_type' => 'cw'], 'label' => 'Gyermekjólét', 'role' => 'ROLE_USER'],
-            ['route' => 'clients', 'options' => ['client_type' => 'ca'], 'label' => 'Étkeztetés', 'role' => 'ROLE_USER'],
+            ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::FH]], 'label' => 'Családgondozó', 'role' => 'ROLE_FAMILY_HELP'],
+            ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CW]], 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE'],
+            ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CA]], 'label' => 'Étkeztetés', 'role' => 'ROLE_CATERING'],
             ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'],
         ];
 
@@ -272,8 +273,13 @@ class MenuController extends Controller
         $user_menu = [];
         foreach ($items as $m) {
             $class_list = [];
-            if (!empty($route['_route']) && $m['route'] == $route['_route']) {
-                $class_list[] = 'current';
+            if (!empty($route['_route']) && $route['_route'] == 'clients') {
+                if (isset($m['options']) && $m['options']['client_type'] == $route['client_type']) {
+                    $class_list[] = 'current';
+                }
+            }
+            elseif (!empty($route['_route']) && $m['route'] == $route['_route']) {
+                $class_list[] = 'current';                
             }
             if (in_array($m['role'], ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])) {
                 $class_list[] = 'adm-menu';

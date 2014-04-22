@@ -167,7 +167,8 @@ class DataStore
     {
         $client_types = [
             1 => 'Családsegítő',
-            2 => 'Gyermekjólét'
+            2 => 'Gyermekjólét',
+            4 => 'Étkeztetés'
         ];
         // check the company for enabled types, and remove the unneded ones
         $co = $this->getCompany();
@@ -183,6 +184,9 @@ class DataStore
             }
             if (!$sec->isGranted('ROLE_CHILD_WELFARE')) {
                 unset($client_types[2]);
+            }
+            if (!$sec->isGranted('ROLE_CATERING')) {
+                unset($client_types[4]);
             }
         }
 
@@ -322,5 +326,24 @@ class DataStore
         }
 
         return $param;
+    }
+
+    /**
+     * Return page slug from constant of client's type
+     * @param integer $client_type
+     * @return mixed
+     */
+    public function getSlug($client_type = null)
+    {
+        $slug = [
+            Client::FH => 'fh',
+            Client::CW => 'cw',
+            Client::CA => 'ca'
+        ];
+
+        if (is_null($client_type)) {
+            return $slug;
+        }
+        return $slug[$client_type];
     }
 }

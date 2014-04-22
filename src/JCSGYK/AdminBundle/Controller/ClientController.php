@@ -29,7 +29,7 @@ class ClientController extends Controller
      */
     public function indexAction($client_type = 'fh', $client_id = null, $problem_id = null)
     {
-        return $this->render('JCSGYKAdminBundle:Client:index.html.twig', ['client_id' => $client_id, 'problem_id' => $problem_id]);
+        return $this->render('JCSGYKAdminBundle:Client:index.html.twig', ['client_type' => $client_type, 'client_id' => $client_id, 'problem_id' => $problem_id]);
     }
 
     /**
@@ -293,6 +293,7 @@ class ClientController extends Controller
             reset($client_types);
             $client->setType(key($client_types));
             $client->setCompanyId($company_id);
+            $client_type = $this->container->get('jcs.ds')->getSlug($client->getType());
         }
 
         if (!empty($client)) {
@@ -450,6 +451,7 @@ class ClientController extends Controller
                 'form' => $form->createView(),
                 'parents' => $parents,
                 'new_relations' => $relation_types,
+                'client_type' => $client_type
             ]);
         }
         else {

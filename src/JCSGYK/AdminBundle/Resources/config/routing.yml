@@ -8,13 +8,15 @@ home_stat:
 # Clients #
 clients:
     pattern:  /clients/{client_type}/{client_id}/{problem_id}
-    defaults: { _controller: JCSGYKAdminBundle:Client:index, client_type: 'fh', client_id: null, problem_id: null }
+    defaults: { _controller: JCSGYKAdminBundle:Client:index, client_id: null, problem_id: null }
     requirements:
         client_type: fh|cw|ca
         client_id: \d+
 client_search:
-    pattern:  /clients/search
+    pattern:  /clients/search/{client_type}
     defaults: { _controller: JCSGYKAdminBundle:Client:search }
+    requirements:
+        client_type: fh|cw|ca
 client_view:
     pattern:  /clients/view/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:view, id: null }
@@ -22,8 +24,10 @@ client_edit:
     pattern:  /clients/edit/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:edit, id: null }
 client_new:
-    pattern:  /clients/new
+    pattern:  /clients/new/{client_type}
     defaults: { _controller: JCSGYKAdminBundle:Client:edit }
+    requirements:
+        client_type: fh|cw|ca
 client_archive:
     pattern:  /clients/archive/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:archive, id: null }

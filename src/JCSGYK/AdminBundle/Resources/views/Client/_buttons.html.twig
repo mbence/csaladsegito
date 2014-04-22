@@ -2,6 +2,9 @@
     {% if buttons is not defined %}
         {% set buttons = ['close'] %}
     {% endif %}
+    {% if client_type is not defined %}
+        {% set client_type = 'fh' %}
+    {% endif %}
 
     {% for button in buttons %}
 
@@ -64,7 +67,7 @@
 {# Clients #}
         {# new client #}
         {% if button == 'new_client' %}
-            <a href="{{ path('client_new') }}" class="button new_client" title="{{ 'Új ügyfél létrehozása'|trans }}"><span>{{ 'új ügyfél'|trans }}</span></a>
+            <a href="{{ path('client_new', {'client_type': client_type}) }}" class="button new_client" title="{{ 'Új ügyfél létrehozása'|trans }}"><span>{{ 'új ügyfél'|trans }}</span></a>
         {% endif %}
 
         {# add utility provider #}
@@ -79,7 +82,7 @@
                     <span>{{ 'mégse'|trans }}</span>
                 </button>
             {% else %}
-                <button type="reset" href="{{ path('clients') }}" class="close greybutton" title="{{ 'Visszalépés'|trans }}">
+                <button type="reset" href="{{ path('clients', {'client_type': client_type}) }}" class="close greybutton" title="{{ 'Visszalépés'|trans }}">
                     <span>{{ 'mégse'|trans }}</span>
                 </button>
             {% endif %}

@@ -22,6 +22,8 @@ class Client
     const FH = 1;
     /** Child welfare client type */
     const CW = 2;
+    /** Catering client type */
+    const CA = 4;
     /** Parent type */
     const PARENT = 3;
 
