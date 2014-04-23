@@ -283,7 +283,7 @@ class AdminController extends Controller
         if (is_null($id) || !empty($company)) {
 
             if (!empty($company)) {
-                $form = $this->createForm(new CompanyType(), $company);
+                $form = $this->createForm(new CompanyType($this->container->get('jcs.ds'), $company), $company);
                 $original_policy = $company->getSequencePolicy();
             }
 
@@ -298,19 +298,30 @@ class AdminController extends Controller
                         $em->persist($company);
                     }
 
+                    // save sequence policy and case number template
+                    $client_types = array_flip($this->container->get('jcs.ds')->getAllClientTypes());
+                    $sp_data = [];
+                    $template_data = [];
+                    foreach ($client_types as $type) {
+                        $sp_data[$type] = $form->get('sequence_policy_'.$type)->getData();
+                        $template_data[$type] = $form->get('case_number_template_'.$type)->getData();
+                    }
+                    $company->setSequencePolicy($sp_data);
+                    $company->setCaseNumberTemplate($template_data);
+
                     $em->flush();
 
-                    if ('new' == $id) {
-                        // reset - create the sequence for this new company
-                        $this->get('jcs.seq')->reset(['id' => $company->getId(), 'sequencePolicy' => $company->getSequencePolicy()]);
-                    }
-                    else {
-                        // update the sequence for the policy change
-                        if ($original_policy != $company->getSequencePolicy()) {
-                            $year = $company->getSequencePolicy() == Company::BY_YEAR ? date('Y') : null;
-                            $this->get('jcs.seq')->setYear(['id' => $company->getId(), 'sequencePolicy' => $company->getSequencePolicy()], $year);
-                        }
-                    }
+                    // if ('new' == $id) {
+                    //     // reset - create the sequence for this new company
+                    //     $this->get('jcs.seq')->reset(['id' => $company->getId(), 'sequencePolicy' => $company->getSequencePolicy()]);
+                    // }
+                    // else {
+                    //     // update the sequence for the policy change
+                    //     if ($original_policy != $company->getSequencePolicy()) {
+                    //         $year = $company->getSequencePolicy() == Company::BY_YEAR ? date('Y') : null;
+                    //         $this->get('jcs.seq')->setYear(['id' => $company->getId(), 'sequencePolicy' => $company->getSequencePolicy()], $year);
+                    //     }
+                    // }
 
                     $this->get('session')->getFlashBag()->add('notice', 'Cég elmentve');
 

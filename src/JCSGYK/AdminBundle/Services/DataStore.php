@@ -342,6 +342,16 @@ class DataStore
     }
 
     /**
+     * Return client type map
+     *
+     * @return array
+     */
+    public function getAllClientTypes()
+    {
+        return $this->clientTypeMap;
+    }
+
+    /**
      * Return page slug from constant of client's type
      * Or the client type map if called without a parameter
      *

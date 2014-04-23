@@ -5,23 +5,46 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use JCSGYK\AdminBundle\Entity\Company;
+use JCSGYK\AdminBundle\Services\DataStore;
 
 class CompanyType extends AbstractType
 {
+    private $ds;
+    private $company;
+
+    /**
+     * Save the Datastore for parameter retrieval
+     *
+     * @param \JCSGYK\AdminBundle\Services\DataStore $ds
+     */
+    public function __construct(DataStore $ds, Company $company)
+    {
+        $this->ds = $ds;
+        $this->company = $company;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('shortname', 'text', ['label' => 'Röv.']);
         $builder->add('name', 'text', ['label' => 'Név']);
         $builder->add('host', 'text', ['label' => 'Hosztok']);
         $builder->add('types', 'text', ['label' => 'Típusok']);
-        $builder->add('sequence_policy', 'choice', [
-            'label' => 'Ügyiratszámozás',
-            'choices' => [
-                Company::CONTINUOUS => 'Folyamatos',
-                Company::BY_YEAR => 'Évente'
-            ]
-        ]);
-        $builder->add('case_number_template', 'text', ['label' => 'Üsz formátum']);
+
+        $client_types = $this->ds->getAllClientTypes();
+
+        foreach ($client_types as $key => $type) {
+            $builder->add('sequence_policy_'.$key, 'choice', [
+                'label' => strtoupper($type).' Ügyiratszámozás',
+                'mapped' => false,
+                'data' => $this->company->getSequencePolicy()[$key],
+                'choices' => [
+                    Company::CONTINUOUS => 'Folyamatos',
+                    Company::BY_YEAR => 'Évente'
+                ]
+            ]);
+            $builder->add('case_number_template_'.$key, 'text', ['label' => strtoupper($type).' Üsz formátum', 'mapped' => false, 'data' => $this->company->getCaseNumberTemplate()[$key]]);
+        }
+
         $builder->add('logo', 'text', ['label' => 'Logo']);
         $builder->add('is_active', 'checkbox', ['label' => 'Aktív']);
     }

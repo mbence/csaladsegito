@@ -53,6 +53,7 @@ class AdminExtension extends \Twig_Extension
             'co_logo' => new \Twig_Function_Method($this, 'getCompanyLogo'),
             'get_pgroup_control' => new \Twig_Function_Method($this, 'getParamGroupControl'),
             'is_cw' => new \Twig_Function_Method($this, 'companyIsCW'),
+            'getct' => new \Twig_Function_Method($this, 'getClientTypes'),
         );
     }
 
@@ -423,5 +424,13 @@ class AdminExtension extends \Twig_Extension
     public function getName()
     {
         return 'jcsgykadmin_adminextension';
+    }
+
+    /**
+     * return client type map
+     */
+    public function getClientTypes()
+    {
+        return array_flip($this->ds->getAllClientTypes());
     }
 }

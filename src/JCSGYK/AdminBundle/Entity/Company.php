@@ -248,7 +248,7 @@ class Company
      */
     public function getCaseNumberTemplate()
     {
-        return json_decode($this->caseNumberTemplate);
+        return json_decode($this->caseNumberTemplate, true);
     }
 
     /**
