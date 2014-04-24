@@ -53,6 +53,7 @@ class TaskController extends Controller
      */
     public function startAction($id)
     {
+        $ds = $this->get('jcs.ds');
         $em = $this->getDoctrine()->getManager();
         $sec = $this->get('security.context');
         $user= $sec->getToken()->getUser();
@@ -71,7 +72,8 @@ class TaskController extends Controller
 
         $client_id = $task->getClient() ? $task->getClient()->getId() : null;
         $problem_id = $task->getProblem() ? $task->getProblem()->getId() : null;
+        $client_type = $task->getClient() ? $task->getClient()->getType() : null;
 
-        return $this->redirect($this->generateUrl('clients', ['client_id' => $client_id, 'problem_id' => $problem_id]));
+        return $this->redirect($this->generateUrl('clients', ['client_id' => $client_id, 'client_type' => $ds->getSlugFromClientType($client_type), 'problem_id' => $problem_id]));
     }
 }

@@ -34,25 +34,15 @@ class UserType extends AbstractType
         // check the company for enabled client-types
         $co = $this->ds->getCompany();
 
-        $choices = [
-            'ROLE_ASSISTANCE' => 'Asszisztens',
-            'ROLE_FAMILY_HELP' => 'Családsegítő',
-            'ROLE_CHILD_WELFARE' => 'Gyermekvédelem',
-            'ROLE_CATERING' => 'Étkeztetés',
-            'ROLE_ADMIN' => 'Admin',
-        ];
-        if (!empty($co['types'])) {
-            $types = array_flip(explode(',', $co['types']));
-            if (!isset($types[1])) {
-                unset($choices['ROLE_FAMILY_HELP']);
-            }
-            if (!isset($types[2])) {
-                unset($choices['ROLE_CHILD_WELFARE']);
-            }
-            if (!isset($types[3])) {
-                unset($choices['ROLE_CATERING']);
+        $choices = $this->ds->getRoles();
+
+        $role_map = $this->ds->getRoleMap();
+        foreach ($role_map as $type => $role) {
+            if (!$this->ds->companyHas($type)) {
+                unset($choices[$role]);
             }
         }
+
         if ($this->security->isGranted('ROLE_SUPER_ADMIN')) {
             $choices['ROLE_SUPER_ADMIN'] = 'Superadmin';
         }

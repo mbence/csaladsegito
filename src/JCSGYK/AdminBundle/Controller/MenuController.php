@@ -15,13 +15,21 @@ class MenuController extends Controller
 {
     public function mainAction()
     {
-        $slugs = $this->container->get('jcs.ds')->getSlugFromClientType();
-        $items = [
-            ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::FH]], 'label' => 'Családgondozó', 'role' => 'ROLE_FAMILY_HELP'],
-            ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CW]], 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE'],
-            ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CA]], 'label' => 'Étkeztetés', 'role' => 'ROLE_CATERING'],
-            ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'],
-        ];
+        // datastore
+        $ds = $this->container->get('jcs.ds');
+        $slugs = $ds->getSlugFromClientType();
+
+        $items = [];
+        if ($ds->companyHas(Client::FH)) {
+            $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::FH]], 'label' => 'Családgondozó', 'role' => 'ROLE_FAMILY_HELP'];
+        }
+        if ($ds->companyHas(Client::CW)) {
+            $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CW]], 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE'];
+        }
+        if ($ds->companyHas(Client::CA)) {
+            $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CA]], 'label' => 'Étkeztetés', 'role' => 'ROLE_CATERING'];
+        }
+        $items[] = ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'];
 
         $menu = $this->checkMenu($items);
 
@@ -295,31 +303,6 @@ class MenuController extends Controller
         }
 
         return $user_menu;
-    }
-
-    /**
-     * TODO: Remove this, no longer needed
-     *
-     * Redirects the user based on her roles (assistance, user or admin)
-     */
-    public function loginRedirectorAction()
-    {
-        $sec = $this->get('security.context');
-
-        if ($sec->isGranted('ROLE_ADMIN')) {
-            return $this->redirect($this->generateUrl('home'), 301);
-        }
-        elseif ($sec->isGranted('ROLE_FAMILY_HELP')) {
-            return $this->redirect($this->generateUrl('home'), 301);
-        }
-        elseif ($sec->isGranted('ROLE_CHILD_WELFARE')) {
-            return $this->redirect($this->generateUrl('home'), 301);
-        }
-        elseif ($sec->isGranted('ROLE_ASSISTANCE')) {
-            return $this->redirect($this->generateUrl('clients'), 301);
-        }
-
-        return $this->redirect($this->generateUrl('home'), 301);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use JCSGYK\AdminBundle\Services\DataStore;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class RequestListener
 {
@@ -41,7 +42,7 @@ class RequestListener
             // check for a valid response
             if ($ct === false) {
                 // some invalid client type received, throw an exception!
-
+                throw new BadRequestHttpException('Invalid client type');
             }
 
             // all is fine, replace and finish
