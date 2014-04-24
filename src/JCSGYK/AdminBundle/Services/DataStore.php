@@ -145,10 +145,13 @@ class DataStore
      * Get the Paramgroup types
      * @return array
      */
-    public function getGroupTypes()
+    public function getGroupTypes($sys = false)
     {
-        return [
+        return $sys ? [
             0 => 'Rendszer',
+        ]
+            :
+        [
             1 => 'Ügyfél',
             2 => 'Probléma',
             3 => 'Esemény'

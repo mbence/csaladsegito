@@ -54,6 +54,7 @@ class MenuController extends Controller
             ['route' => 'admin_companies', 'label' => 'Cégek', 'role' => 'ROLE_SUPER_ADMIN'],
             ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_clubs', 'label' => 'Klubok', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_systemparams', 'label' => 'Rendszer paraméterek', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_paramgroups', 'label' => 'Paraméter Csoportok', 'role' => 'ROLE_SUPER_ADMIN'],
             ['route' => 'admin_params', 'label' => 'Paraméterek', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_providers', 'label' => 'Szolgáltatók', 'role' => 'ROLE_ADMIN'],
