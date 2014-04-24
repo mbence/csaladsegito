@@ -39,7 +39,7 @@ class ClientSequenceService
         $seq->setCompanyId($company['id']);
         $seq->setType($type);
 
-        if ($company['sequencePolicy'] == Company::BY_YEAR) {
+        if ($company['sequencePolicy'][$type] == Company::BY_YEAR) {
             $seq->setYear(date('Y'));
         }
         $this->em->persist($seq);

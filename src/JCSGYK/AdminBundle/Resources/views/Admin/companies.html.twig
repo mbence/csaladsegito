@@ -20,7 +20,7 @@
 <div class="adminblock" id="template-edit">
     <div class="leftpad20 fullheight nocollapse">
         {% if form %}
-            {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+            {% form_theme form 'JCSGYKAdminBundle:Form:errors.html.twig' %}
 
             <form action="{{ path('admin_companies', {'id': id}) }}" id="template_edit" novalidate method="post" {{ form_enctype(form) }}>
                 {{ form_errors(form) }}
@@ -38,7 +38,7 @@
                         <th>{{ form_label(form.host) }}:</th>
                         <td>{{ form_errors(form.host) }}{{ form_widget(form.host) }}</td>
                     </tr>
-                    <tr>
+                    <tr class="multirow">
                         <th>{{ form_label(form.types) }}:</th>
                         <td>{{ form_errors(form.types) }}{{ form_widget(form.types) }}</td>
                     </tr>

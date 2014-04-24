@@ -28,7 +28,15 @@ class CompanyType extends AbstractType
         $builder->add('shortname', 'text', ['label' => 'Röv.']);
         $builder->add('name', 'text', ['label' => 'Név']);
         $builder->add('host', 'text', ['label' => 'Hosztok']);
-        $builder->add('types', 'text', ['label' => 'Típusok']);
+
+        $builder->add('types', 'choice', [
+            'label'    => 'Típusok',
+            'choices'  => $this->ds->getClientTypeNames(),
+            'multiple' => true,
+            'expanded' => true
+        ]);
+
+        // $builder->add('types', 'text', ['label' => 'Típusok']);
 
         $client_types = $this->ds->getAllClientTypes();
 

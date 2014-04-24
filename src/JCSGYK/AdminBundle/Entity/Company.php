@@ -185,12 +185,12 @@ class Company
     /**
      * Set types
      *
-     * @param string $types
+     * @param array $types
      * @return Company
      */
-    public function setTypes($types)
+    public function setTypes(array $types)
     {
-        $this->types = $types;
+        $this->types = json_encode($types);
 
         return $this;
     }
@@ -198,11 +198,11 @@ class Company
     /**
      * Get types
      *
-     * @return string
+     * @return array
      */
     public function getTypes()
     {
-        return $this->types;
+        return json_decode($this->types, true);
     }
 
     /**
