@@ -326,13 +326,13 @@ class AdminController extends Controller
                     foreach ($client_types as $type) {
                         if ('new' == $id) {
                             // reset - create the sequence for this new company
-                        $this->get('jcs.seq')->reset(['id' => $company->getId(), 'sequencePolicy' => $company->getSequencePolicy()]);
+                            $this->get('jcs.seq')->reset(['id' => $company->getId(), $type, 'sequencePolicy' => $company->getSequencePolicy()]);
                         }
                         else {
                             // update the sequence for the policy change
-                        if ($original_policy != $company->getSequencePolicy()) {
-                            $year = $company->getSequencePolicy() == Company::BY_YEAR ? date('Y') : null;
-                            $this->get('jcs.seq')->setYear(['id' => $company->getId(), 'sequencePolicy' => $company->getSequencePolicy()], $year);
+                            if ($original_policy[$type] != $company->getSequencePolicy()[$type]) {
+                                $year = $company->getSequencePolicy()[$type] == Company::BY_YEAR ? date('Y') : null;
+                                $this->get('jcs.seq')->setYear(['id' => $company->getId(), 'sequencePolicy' => $company->getSequencePolicy()], $type, $year);
                             }
                         }
                     }
