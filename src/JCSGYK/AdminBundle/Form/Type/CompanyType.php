@@ -36,8 +36,6 @@ class CompanyType extends AbstractType
             'expanded' => true
         ]);
 
-        // $builder->add('types', 'text', ['label' => 'Típusok']);
-
         $client_types = $this->ds->getAllClientTypes();
 
         foreach ($client_types as $key => $type) {
