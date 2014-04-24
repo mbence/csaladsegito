@@ -29,6 +29,13 @@ class DataStore
         Client::CA => 'ca'
     ];
 
+    /** Map for client type names */
+    private $clientTypeNames = [
+        Client::FH => 'Családsegítő',
+        Client::CW => 'Gyermekjólét',
+        Client::CA => 'Étkeztetés'
+    ];
+
     /** Map for client types and security roles */
     private $roleMap = [
         Client::FH => 'ROLE_FAMILY_HELP',
@@ -235,11 +242,7 @@ class DataStore
      */
     public function getClientTypes()
     {
-        $client_types = [
-            Client::FH => 'Családsegítő',
-            Client::CW => 'Gyermekjólét',
-            Client::CA => 'Étkeztetés'
-        ];
+        $client_types = $this->clientTypeNames;
         // check the company for enabled types, and remove the unneded ones
         $co = $this->getCompany();
         if (!empty($co['types'])) {
@@ -405,6 +408,16 @@ class DataStore
     }
 
     /**
+     * Return client type names map
+     *
+     * @return array
+     */
+    public function getClientTypeNames()
+    {
+        return $this->clientTypeNames;
+    }
+
+    /**
      * Return page slug from constant of client's type
      * Or the client type map if called without a parameter
      *
@@ -429,5 +442,4 @@ class DataStore
 
         return isset($map[$slug]) ? $map[$slug] : false;
     }
-
 }
