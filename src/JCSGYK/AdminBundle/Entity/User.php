@@ -82,6 +82,17 @@ class User extends BaseUser
      */
     private $lunchorders;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Option", mappedBy="creator")
+     */
+    private $optioncreated;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Option", mappedBy="modifier")
+     */
+    private $optionmodified;
+
+
     public function __construct($salt = null)
     {
         parent::__construct();
@@ -98,6 +109,8 @@ class User extends BaseUser
         $this->closings = new ArrayCollection();
         $this->tasks = new ArrayCollection();
         $this->lunchorders = new ArrayCollection();
+        $this->optioncreated = new ArrayCollection();
+        $this->optionmodified = new ArrayCollection();
     }
 
     public function __toString()
