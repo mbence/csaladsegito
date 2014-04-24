@@ -2,6 +2,9 @@
 
 namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+
 use JCSGYK\AdminBundle\Entity\Relation;
 use JCSGYK\AdminBundle\Entity\Client;
 
@@ -26,6 +29,22 @@ class DataStore
         Client::CA => 'ca'
     ];
 
+    /** Map for client types and security roles */
+    private $roleMap = [
+        Client::FH => 'ROLE_FAMILY_HELP',
+        Client::CW => 'ROLE_CHILD_WELFARE',
+        Client::CA => 'ROLE_CATERING'
+    ];
+
+    /** List of all security roles */
+    private $roles = [
+        'ROLE_ASSISTANCE' => 'Asszisztens',
+        'ROLE_FAMILY_HELP' => 'Családsegítő',
+        'ROLE_CHILD_WELFARE' => 'Gyermekvédelem',
+        'ROLE_CATERING' => 'Étkeztetés',
+        'ROLE_ADMIN' => 'Admin',
+    ];
+    
     /** Map for client type names */
     private $clientTypeNames = [
         Client::FH => 'Családsegítő',
@@ -36,6 +55,34 @@ class DataStore
     public function __construct($container)
     {
         $this->container = $container;
+    }
+
+    /**
+     * Checks if the current user has access to the specified client type
+     * Throws an exception on error
+     *
+     * @param int $client_type
+     */
+    public function userRoleCheck($client_type) {
+        $sec = $this->container->get('security.context');
+
+        if (!isset($this->roleMap[$client_type])) {
+            throw new HttpException(500, "Unknown client type:" . $client_type);
+        }
+
+        if (!$sec->isGranted($this->roleMap[$client_type])) {
+            throw new AccessDeniedHttpException('Invalid client type');
+        }
+    }
+
+    public function getRoleMap()
+    {
+        return $this->roleMap;
+    }
+
+    public function getRoles()
+    {
+        return $this->roles;
     }
 
     public function getCompany()
@@ -73,14 +120,23 @@ class DataStore
     }
 
     /**
+     * Decide if a company has give type enabled
+     * @return boolean
+     */
+    public function companyHas($type)
+    {
+        $co = $this->getCompany();
+
+        return false !== strpos($co['types'], (string) $type);
+    }
+
+    /**
      * Decide if a company has Child Welfare functions
      * @return boolean
      */
     public function companyIsCW()
     {
-        $co = $this->getCompany();
-
-        return false !== strpos($co['types'], (string) Client::CW);
+        return $this->companyHas(Client::CW);
     }
 
     /**
@@ -89,9 +145,7 @@ class DataStore
      */
     public function companyIsFH()
     {
-        $co = $this->getCompany();
-
-        return false !== strpos($co['types'], (string) Client::FH);
+        return $this->companyHas(Client::FH);
     }
 
     /**
@@ -185,11 +239,6 @@ class DataStore
      */
     public function getClientTypes()
     {
-        // $client_types = [
-        //     Client::FH => 'Családsegítő',
-        //     Client::CW => 'Gyermekjólét',
-        //     Client::CA => 'Étkeztetés'
-        // ];
         $client_types = $this->clientTypeNames;
 
         // check the company for enabled types, and remove the unneded ones
@@ -201,14 +250,10 @@ class DataStore
 
         // the new client's type is depending of the users roles
         if (!$sec->isGranted('ROLE_SUPER_ADMIN') && !$sec->isGranted('ROLE_ASSISTANCE')) {
-            if (!$sec->isGranted('ROLE_FAMILY_HELP')) {
-                unset($client_types[Client::FH]);
-            }
-            if (!$sec->isGranted('ROLE_CHILD_WELFARE')) {
-                unset($client_types[Client::CW]);
-            }
-            if (!$sec->isGranted('ROLE_CATERING')) {
-                unset($client_types[Client::CA]);
+            foreach ($this->roleMap as $type => $role) {
+                if (!$sec->isGranted($role)) {
+                    unset($client_types[$type]);
+                }
             }
         }
 
