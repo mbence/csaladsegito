@@ -44,13 +44,6 @@ class DataStore
         'ROLE_CATERING' => 'Étkeztetés',
         'ROLE_ADMIN' => 'Admin',
     ];
-    
-    /** Map for client type names */
-    private $clientTypeNames = [
-        Client::FH => 'Családsegítő',
-        Client::CW => 'Gyermekjólét',
-        Client::CA => 'Étkeztetés'
-    ];
 
     public function __construct($container)
     {
@@ -152,10 +145,13 @@ class DataStore
      * Get the Paramgroup types
      * @return array
      */
-    public function getGroupTypes()
+    public function getGroupTypes($sys = false)
     {
-        return [
+        return $sys ? [
             0 => 'Rendszer',
+        ]
+            :
+        [
             1 => 'Ügyfél',
             2 => 'Probléma',
             3 => 'Esemény'
@@ -239,8 +235,11 @@ class DataStore
      */
     public function getClientTypes()
     {
-        $client_types = $this->clientTypeNames;
-
+        $client_types = [
+            Client::FH => 'Családsegítő',
+            Client::CW => 'Gyermekjólét',
+            Client::CA => 'Étkeztetés'
+        ];
         // check the company for enabled types, and remove the unneded ones
         $co = $this->getCompany();
         if (!empty($co['types'])) {
@@ -403,16 +402,6 @@ class DataStore
     public function getAllClientTypes()
     {
         return $this->clientTypeMap;
-    }
-
-    /**
-     * Return client type names
-     *
-     * @return array
-     */
-    public function getClientTypeNames()
-    {
-        return $this->clientTypeNames;
     }
 
     /**

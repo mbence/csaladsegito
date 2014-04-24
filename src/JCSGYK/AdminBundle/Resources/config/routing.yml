@@ -126,7 +126,10 @@ admin_paramgroups:
     defaults: { _controller: JCSGYKAdminBundle:Admin:paramgroups, type: 0 }
 admin_params:
     pattern:  /admin/params/{group}
-    defaults: { _controller: JCSGYKAdminBundle:Admin:params, group: 1 }
+    defaults: { _controller: JCSGYKAdminBundle:Admin:params, group: null, sys: false }
+admin_systemparams:
+    pattern:  /admin/sysparams/{group}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:params, group: null, sys: true }
 admin_providers:
     pattern:  /admin/providers/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:providers, id: null }

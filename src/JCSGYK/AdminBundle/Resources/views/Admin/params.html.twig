@@ -21,7 +21,7 @@
         <h1>&nbsp;</h1>
         {% for id, group in groups %}
             <div class="paramlist" id="paramlist-{{ group.id }}">
-                <form action="{{ path('admin_params') }}" method="POST" name="paramform-{{ group.id }}" id="paramform-{{ group.id }}" class="paramform">
+                <form action="{{ path(route) }}" method="POST" name="paramform-{{ group.id }}" id="paramform-{{ group.id }}" class="paramform">
                     <div class="paramcontainer">
                         <div class="param-legend">
                         {% if group.required %}{{ 'Megállapodás esetén kötelezően kitöltendő mező!'|trans }}{% endif %}

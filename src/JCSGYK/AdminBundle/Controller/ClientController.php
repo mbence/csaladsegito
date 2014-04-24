@@ -10,6 +10,8 @@ use JMS\SecurityExtraBundle\Annotation\Secure;
 use JMS\SecurityExtraBundle\Annotation\PreAuthorize;
 use JMS\SecurityExtraBundle\Security\Authorization\Expression\Expression;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Form\Type\ClientType;
@@ -27,8 +29,11 @@ class ClientController extends Controller
      *
      * @Secure(roles="ROLE_USER")
      */
-    public function indexAction($client_type = 'fh', $client_id = null, $problem_id = null)
+    public function indexAction($client_type = 1, $client_id = null, $problem_id = null)
     {
+        // Global security check for client type
+        $this->get('jcs.ds')->userRoleCheck($client_type);
+
         return $this->render('JCSGYKAdminBundle:Client:index.html.twig', ['client_type' => $client_type, 'client_id' => $client_id, 'problem_id' => $problem_id]);
     }
 
@@ -62,6 +67,10 @@ class ClientController extends Controller
 
             // get the client
             $client = $this->getClient($id);
+
+            // Global security check for user type
+            $this->get('jcs.ds')->userRoleCheck($client->getType());
+
             // case admin
             $ca = $client->getCaseAdmin();
             if (!empty($ca) && $ca->isEnabled()) {
@@ -150,7 +159,7 @@ class ClientController extends Controller
             return $this->render('JCSGYKAdminBundle:Dialog:visit.html.twig', ['client' => $client, 'form' => $form->createView(), 'user_counts' => $user_counts]);
         }
         else {
-            throw new HttpException(400, "Bad request");
+            throw new BadRequestHttpException('Invalid client id');
         }
     }
 
@@ -210,7 +219,7 @@ class ClientController extends Controller
         }
 
         if (empty($parent)) {
-            throw new HttpException(400, "Bad request");
+            throw new BadRequestHttpException('Invalid parent id');
         }
 
         $form = $this->createForm(new ParentType($this->container->get('jcs.ds')), $parent->getParent());
@@ -276,7 +285,6 @@ class ClientController extends Controller
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
         $sec = $this->get('security.context');
         $user= $sec->getToken()->getUser();
-        $client_types = $this->container->get('jcs.ds')->getClientTypes();
 
         if (!empty($id)) {
             // get the client data
@@ -287,17 +295,20 @@ class ClientController extends Controller
             $client = new Client();
 
             // family help and child welfare users get the case admin set automatically
-            if ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE')) {
+            if ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE') || $sec->isGranted('ROLE_CATERING')) {
                 $client->setCaseAdmin($user);
             }
             if (empty($client_type)) {
-                throw new HttpException(400, "Bad request");
+                throw new BadRequestHttpException('Invalid client type');
             }
             $client->setType($client_type);
             $client->setCompanyId($company_id);
         }
 
         if (!empty($client)) {
+            // Global security check for client type
+            $this->get('jcs.ds')->userRoleCheck($client->getType());
+
             $sec = $this->get('security.context');
             // see if this user is allowed to edit - if not we simply redirect her to the view page
             if (!empty($id) && !$client->canEdit($sec)) {
@@ -353,7 +364,7 @@ class ClientController extends Controller
                         $client->setCompanyId($company_id);
                         $client->setIsArchived(false);
 
-                        // set the client type if there is only 1 (otherwise the form will set this)
+                        // set the client type
                         $client->setType($client_type);
 
                         $em->persist($client);
@@ -437,7 +448,6 @@ class ClientController extends Controller
 
                     $this->get('session')->getFlashBag()->add('notice', 'Ügyfél elmentve');
 
-                    //return $this->redirect($this->generateUrl('client_edit', ['id' => $client->getId()]));
                     return $this->redirect($this->generateUrl('client_view', ['id' => $client->getId()]));
                 }
             }
@@ -454,7 +464,7 @@ class ClientController extends Controller
             ]);
         }
         else {
-            throw new HttpException(400, "Bad request");
+            throw new BadRequestHttpException('Invalid client id');
         }
     }
 
@@ -546,7 +556,7 @@ class ClientController extends Controller
             // get the client
             $client = $this->getClient($id);
             if (empty($client)) {
-                throw new HttpException(400, "Bad request");
+                throw new BadRequestHttpException('Invalid client id');
             }
 
             // check for any open problems, only arhivable if no problems are open
@@ -607,7 +617,7 @@ class ClientController extends Controller
             ]);
         }
         else {
-            throw new HttpException(400, "Bad request");
+            throw new BadRequestHttpException('Invalid client id');
         }
     }
 
@@ -624,6 +634,9 @@ class ClientController extends Controller
             $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
         }
         if (!empty($client)) {
+            // Global security check for client type
+            $this->get('jcs.ds')->userRoleCheck($client->getType());
+
             $sec = $this->get('security.context');
             $client_types = $this->container->get('jcs.ds')->getClientTypes();
 
@@ -651,7 +664,7 @@ class ClientController extends Controller
             ]);
         }
         else {
-            throw new HttpException(400, "Bad request");
+            throw new BadRequestHttpException('Invalid client id');
         }
     }
 
@@ -671,7 +684,7 @@ class ClientController extends Controller
             return $this->render('JCSGYKAdminBundle:Client:_problems.html.twig', ['client' => $client, 'problems' => $problems, 'can_edit' => $client->canEdit($sec)]);
         }
         else {
-            throw new HttpException(400, "Bad request");
+            throw new BadRequestHttpException('Invalid client id');
         }
     }
 
@@ -696,7 +709,7 @@ class ClientController extends Controller
             return $this->render('JCSGYKAdminBundle:Client:_parents.html.twig', ['client' => $client, 'parents' => $parents, 'new_relations' => $relation_types, 'edit' => true]);
         }
         else {
-            throw new HttpException(400, "Bad request");
+            throw new BadRequestHttpException('Invalid client id');
         }
     }
 
@@ -742,7 +755,7 @@ class ClientController extends Controller
     public function searchAction($client_type)
     {
         if (empty($client_type)) {
-            throw new HttpException(400, "Bad request");
+            throw new BadRequestHttpException('Invalid client type');
         }
         $request = $this->getRequest();
         $q = $request->query->get('q');
