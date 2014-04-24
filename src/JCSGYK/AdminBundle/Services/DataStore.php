@@ -26,6 +26,13 @@ class DataStore
         Client::CA => 'ca'
     ];
 
+    /** Map for client type names */
+    private $clientTypeNames = [
+        Client::FH => 'Családsegítő',
+        Client::CW => 'Gyermekjólét',
+        Client::CA => 'Étkeztetés'
+    ];
+
     public function __construct($container)
     {
         $this->container = $container;
@@ -178,11 +185,13 @@ class DataStore
      */
     public function getClientTypes()
     {
-        $client_types = [
-            Client::FH => 'Családsegítő',
-            Client::CW => 'Gyermekjólét',
-            Client::CA => 'Étkeztetés'
-        ];
+        // $client_types = [
+        //     Client::FH => 'Családsegítő',
+        //     Client::CW => 'Gyermekjólét',
+        //     Client::CA => 'Étkeztetés'
+        // ];
+        $client_types = $this->clientTypeNames;
+
         // check the company for enabled types, and remove the unneded ones
         $co = $this->getCompany();
         if (!empty($co['types'])) {
@@ -349,6 +358,16 @@ class DataStore
     public function getAllClientTypes()
     {
         return $this->clientTypeMap;
+    }
+
+    /**
+     * Return client type names
+     *
+     * @return array
+     */
+    public function getClientTypeNames()
+    {
+        return $this->clientTypeNames;
     }
 
     /**
