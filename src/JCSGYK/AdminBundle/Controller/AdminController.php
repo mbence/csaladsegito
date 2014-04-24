@@ -295,7 +295,7 @@ class AdminController extends Controller
         if (is_null($id) || !empty($company)) {
 
             if (!empty($company)) {
-                $form = $this->createForm(new CompanyType(), $company);
+                $form = $this->createForm(new CompanyType($this->container->get('jcs.ds'), $company), $company);
                 $original_policy = $company->getSequencePolicy();
             }
 
