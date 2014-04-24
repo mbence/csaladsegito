@@ -2,12 +2,8 @@
 
     <table class="client-edit" cellspacing="0" border="0">
         <tr>
-            {% if form.type is defined %}
-            <th class="noborder">{{ form_label(form.type) }}:</th>
-            <td class="noborder">{{ form_errors(form.type) }}{{ form_widget(form.type) }}</td>
-            {% endif %}
             <th class="noborder">{{ form_label(form.case_admin) }}:</th>
-            <td class="noborder" {% if form.type is not defined %}colspan="3"{% endif %}>{{ form_errors(form.case_admin) }}{{ form_widget(form.case_admin) }}</td>
+            <td class="noborder" colspan="3">{{ form_errors(form.case_admin) }}{{ form_widget(form.case_admin) }}</td>
         </tr>
         <tr>
             <td colspan="4" class="noborder">

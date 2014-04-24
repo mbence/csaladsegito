@@ -285,7 +285,6 @@ class ClientController extends Controller
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
         $sec = $this->get('security.context');
         $user= $sec->getToken()->getUser();
-        $client_types = $this->container->get('jcs.ds')->getClientTypes();
 
         if (!empty($id)) {
             // get the client data
@@ -296,7 +295,7 @@ class ClientController extends Controller
             $client = new Client();
 
             // family help and child welfare users get the case admin set automatically
-            if ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE')) {
+            if ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE') || $sec->isGranted('ROLE_CATERING')) {
                 $client->setCaseAdmin($user);
             }
             if (empty($client_type)) {
@@ -365,7 +364,7 @@ class ClientController extends Controller
                         $client->setCompanyId($company_id);
                         $client->setIsArchived(false);
 
-                        // set the client type if there is only 1 (otherwise the form will set this)
+                        // set the client type
                         $client->setType($client_type);
 
                         $em->persist($client);
@@ -449,7 +448,6 @@ class ClientController extends Controller
 
                     $this->get('session')->getFlashBag()->add('notice', 'Ügyfél elmentve');
 
-                    //return $this->redirect($this->generateUrl('client_edit', ['id' => $client->getId()]));
                     return $this->redirect($this->generateUrl('client_view', ['id' => $client->getId()]));
                 }
             }
