@@ -1045,6 +1045,10 @@ table.problem-list td {
     width: 100%;
     text-align: right;
 }
+#co-admin tr.inactive {
+    opacity: 0.5;
+    background-color: #eee;
+}
 
 /* parameters */
 .param-headers {

@@ -40,16 +40,17 @@ class CompanyType extends AbstractType
 
         foreach ($client_types as $key => $type) {
             $builder->add('sequence_policy_'.$key, 'choice', [
-                'label'   => strtoupper($type).' Ügyiratszámozás',
+                'label'   => 'Ügyiratszámozás',
                 'mapped'  => false,
                 'data'    => $this->company->getSequencePolicy()[$key],
+                'expanded' => true,
                 'choices' => [
                     Company::CONTINUOUS => 'Folyamatos',
                     Company::BY_YEAR    => 'Évente'
                 ]
             ]);
             $builder->add('case_number_template_'.$key, 'text', [
-                'label'  => strtoupper($type).' Üsz formátum',
+                'label'  => 'Üsz formátum',
                 'mapped' => false,
                 'data'   => $this->company->getCaseNumberTemplate()[$key]
             ]);

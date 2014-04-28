@@ -17,7 +17,25 @@ JcsSettings =
         if $("#template-edit").length
             @setupTemplates()
 
+        # companies
+        if $('#company_types').length
+            @setupCompanies()
 
+    ###
+        setup the company editor
+    ###
+    setupCompanies: ->
+        # client types
+        $("#company_types input").each ->
+            check = $(this)
+            tr = $('#co-admin-type-' + check.val())
+            if !check.is(':checked')
+                tr.addClass('inactive')
+            else
+                tr.removeClass('inactive')
+            check.off('click').on('click',  ->
+                JcsSettings.setupCompanies()
+            )
 
     ###
         setup the template editor

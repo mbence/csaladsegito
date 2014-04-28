@@ -48,7 +48,7 @@ class Company
     /**
      * @var string
      *
-     * @ORM\Column(name="types", type="string", length=16, nullable=true)
+     * @ORM\Column(name="types", type="string", length=64, nullable=true)
      */
     private $types;
 

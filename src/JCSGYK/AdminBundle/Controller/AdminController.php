@@ -118,7 +118,9 @@ class AdminController extends Controller
         $request = $this->getRequest();
 
         $em = $this->getDoctrine()->getManager();
-        $co = $this->container->get('jcs.ds')->getCompanyId();
+        $ds = $this->container->get('jcs.ds');
+        $co = $ds->getCompanyId();
+        $client_type_names = $ds->getClientTypeNames();
 
         // save the current param group
         if ($request->isMethod('POST')) {
@@ -283,6 +285,19 @@ class AdminController extends Controller
         $form_view = null;
 
         $em = $this->getDoctrine()->getManager();
+        $ds = $this->container->get('jcs.ds');
+
+        // prepare the client types data array
+        $client_types = [];
+        $client_type_names = $ds->getClientTypeNames();
+        $client_type_slugs = $ds->getAllClientTypes();
+        foreach ($client_type_names as $ct_id => $ct_name) {
+            $client_types[] = [
+                'id' => $ct_id,
+                'label' => $ct_name,
+                'slug' => $client_type_slugs[$ct_id],
+            ];
+        }
 
         if ('new' == $id) {
             // new company
@@ -295,7 +310,7 @@ class AdminController extends Controller
         if (is_null($id) || !empty($company)) {
 
             if (!empty($company)) {
-                $form = $this->createForm(new CompanyType($this->container->get('jcs.ds'), $company), $company);
+                $form = $this->createForm(new CompanyType($ds, $company), $company);
                 $original_policy = $company->getSequencePolicy();
             }
 
@@ -311,7 +326,7 @@ class AdminController extends Controller
                     }
 
                     // save sequence policy and case number template
-                    $client_types = array_flip($this->container->get('jcs.ds')->getAllClientTypes());
+                    $client_types = array_flip($ds->getAllClientTypes());
                     $sp_data = [];
                     $template_data = [];
                     foreach ($client_types as $type) {
@@ -349,7 +364,13 @@ class AdminController extends Controller
             // get all companies
             $companies = $em->getRepository('JCSGYKAdminBundle:Company')->findBy([], ['name' => 'ASC']);
 
-            return $this->render('JCSGYKAdminBundle:Admin:companies.html.twig', ['companies' => $companies, 'id' => $id, 'act' => $company, 'form' => $form_view]);
+            return $this->render('JCSGYKAdminBundle:Admin:companies.html.twig', [
+                'companies' => $companies,
+                'id' => $id,
+                'act' => $company,
+                'form' => $form_view,
+                'client_types' => $client_types,
+            ]);
         }
         else {
             throw new HttpException(400, "Bad request");

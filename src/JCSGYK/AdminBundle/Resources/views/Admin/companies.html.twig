@@ -25,7 +25,7 @@
             <form action="{{ path('admin_companies', {'id': id}) }}" id="template_edit" novalidate method="post" {{ form_enctype(form) }}>
                 {{ form_errors(form) }}
 
-                <table class="client-edit" cellspacing="0" border="0">
+                <table class="client-edit" id="co-admin" cellspacing="0" border="0">
                     <tr>
                         <th>{{ form_label(form.name) }}:</th>
                         <td>{{ form_errors(form.name) }}{{ form_widget(form.name) }}</td>
@@ -42,17 +42,22 @@
                         <th>{{ form_label(form.types) }}:</th>
                         <td>{{ form_errors(form.types) }}{{ form_widget(form.types) }}</td>
                     </tr>
-                    {% for type in getct() %}
-                        {% set sp = 'sequence_policy_' ~ type %}
-                        {% set cnt = 'case_number_template_' ~ type %}
-                    <tr>
-                        <th>{{ form_label(form[sp]) }}:</th>
-                        <td>{{ form_errors(form[sp]) }}{{ form_widget(form[sp]) }}</td>
-                    </tr>
-                    <tr>
-                        <th>{{ form_label(form[cnt]) }}:</th>
-                        <td>{{ form_errors(form[cnt]) }}{{ form_widget(form[cnt]) }}</td>
-                    </tr>
+                    {% for ct in client_types %}
+                        {% set sp = 'sequence_policy_' ~ ct['id'] %}
+                        {% set cnt = 'case_number_template_' ~ ct['id'] %}
+                        <tr id="co-admin-type-{{ ct['id'] }}"><th style="vertical-align: middle;"><strong>{{ ct['label'] }}</strong></th>
+                        <td>
+                            <table class="client-edit">
+                            <tr>
+                                <td class="noborder">{{ form_label(form[sp]) }}:</td>
+                                <td class="noborder">{{ form_errors(form[sp]) }}{{ form_widget(form[sp]) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="noborder">{{ form_label(form[cnt]) }}:</td>
+                                <td class="noborder">{{ form_errors(form[cnt]) }}{{ form_widget(form[cnt]) }}</td>
+                            </tr>
+                            </table>
+                        </td></tr>
                     {% endfor %}
                     <tr>
                         <th>{{ form_label(form.logo) }}:</th>

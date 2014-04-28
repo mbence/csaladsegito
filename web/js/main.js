@@ -752,8 +752,31 @@ JcsSettings = {
       this.setupParams();
     }
     if ($("#template-edit").length) {
-      return this.setupTemplates();
+      this.setupTemplates();
     }
+    if ($('#company_types').length) {
+      return this.setupCompanies();
+    }
+  },
+  /*
+      setup the company editor
+  */
+
+  setupCompanies: function() {
+    return $("#company_types input").each(function() {
+      var check, tr;
+
+      check = $(this);
+      tr = $('#co-admin-type-' + check.val());
+      if (!check.is(':checked')) {
+        tr.addClass('inactive');
+      } else {
+        tr.removeClass('inactive');
+      }
+      return check.off('click').on('click', function() {
+        return JcsSettings.setupCompanies();
+      });
+    });
   },
   /*
       setup the template editor
