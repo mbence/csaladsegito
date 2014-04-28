@@ -1,65 +1,36 @@
 {% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
 
 {% block settings_content %}
-<div class="adminblock" id="parameter-groups">
-    <div class="rightpad fullheight nocollapse">
-        <h1 class="client">{{ 'Paraméterek'|trans }}</h1>
-        <ul>
-        {% set oldtype = -1 %}
-        {% for id, group in groups %}
-            {% if group.type != oldtype %}
-                <div>{{ types[group.type]|trans }}</div>
-                {% set oldtype = group.type %}
-            {% endif %}
-            <li data-groupid="{{ group.id }}" {% if act == group.id %}class="current"{% endif %}>{{ group.name|trans }}</li>
-        {% endfor %}
-        </ul>
-    </div>
-</div>
-<div class="adminblock" id="parameter-lists">
-    <div class="leftpad20 fullheight nocollapse">
-        <h1>&nbsp;</h1>
-        {% for id, group in groups %}
-            <div class="paramlist" id="paramlist-{{ group.id }}">
-                <form action="{{ path(route) }}" method="POST" name="paramform-{{ group.id }}" id="paramform-{{ group.id }}" class="paramform">
-                    <div class="paramcontainer">
-                        <div class="param-legend">
-                        {% if group.required %}{{ 'Megállapodás esetén kötelezően kitöltendő mező!'|trans }}{% endif %}
-                        {% if group.control %}{{ 'Multi-select mező'|trans }}{% endif %}
-                        </div>
-                        {% for param in params if group.id == param.group %}
-                        <div class="param">
-                            <input type="hidden" name="parameter[{{ loop.index }}][id]" value="{{ param.id }}">
-                            <input class="hiddenpos" type="hidden" name="parameter[{{ loop.index }}][position]" value="{{ param.position }}">
-                            <input type="hidden" name="parameter[{{ loop.index }}][group]" value="{{ group.id }}">
-                            <span class="pos"> </span>
-                            <input type="text" value="{{ param.name }}" name="parameter[{{ loop.index }}][name]">
-                            <input type="checkbox" {% if param.isActive %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][isActive]" value="1">
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <div class="center toppad10">
-                        <button class="new-param button" type="button"><span>{{ 'új paraméter hozzáadása'|trans }}</span></button>
-                    </div>
-                    <input type="hidden" name="group" value="{{ group.id }}">
-                    <br><br>
-                    <div class="formbuttons">
-                        <button type="reset" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
-                        <button type="submit" class="paramsave button" name="paramsave" value="save"><span>{{ 'mentés'|trans }}</span></button>
-                    </div>
-                </form>
+    <h1 class="client">{{ 'Paraméterek'|trans }}</h1>
+
+    {% if not sys %}
+        {% include "JCSGYKAdminBundle:Admin:ct_tabs.html.twig" %}
+    {% endif %}
+
+    {% if not sys %}
+        <div class="admin-panes">
+        {% for ct_id, ct in client_types %}
+            <div id="admin-pane-{{ ct_id }}" class="admin-pane" data-ctid="{{ ct_id }}">
+                <br>
+                {% include "JCSGYKAdminBundle:Admin:paramedit.html.twig" with {'ct_id': ct_id} %}
+
             </div>
         {% endfor %}
-        <div id="newparam-template">
-            <div class="param newparam">
-                <input type="hidden" name="parameter[%pos%][position]" value="%pos%">
-                <input type="hidden" name="parameter[%pos%][group]" value="%grp%">
-                <span class="pos"> </span>
-                <input type="text" value="" name="parameter[%pos%][name]">
-                <input type="checkbox" checked="checked" name="parameter[%pos%][isActive]" value="1">
-            </div>
+        </div>
+    {% else %}
+        {% include "JCSGYKAdminBundle:Admin:paramedit.html.twig" %}
+    {% endif %}
+
+    {# template for new parameter form #}
+    <div id="newparam-template">
+        <div class="param newparam">
+            <input type="hidden" name="parameter[%pos%][position]" value="%pos%">
+            <input type="hidden" name="parameter[%pos%][group]" value="%grp%">
+            <span class="pos"> </span>
+            <input type="text" value="" name="parameter[%pos%][name]">
+            <input type="checkbox" checked="checked" name="parameter[%pos%][isActive]" value="1">
         </div>
     </div>
-</div>
-<div class="clear"></div>
+
+    <div class="clear"></div>
 {% endblock %}

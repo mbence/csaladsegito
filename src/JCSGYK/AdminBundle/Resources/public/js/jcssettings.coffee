@@ -10,7 +10,7 @@ JcsSettings =
                 @setHeights()
 
         # params
-        if $("#parameter-groups").length
+        if $(".parameter-groups").length
             @setupParams()
 
         # tempaltes
@@ -49,9 +49,19 @@ JcsSettings =
         setup the parameter editor
     ###
     setupParams: ->
+        # find the initial tab
+        $(".admin-ct-tabs").tabs(".admin-panes > div", {
+          "initialIndex": null
+        });
+        if $(".parameter-groups ul li.current").length
+            ct = $(".parameter-groups ul li.current").closest(".admin-pane").data("ctid")
+        else
+            ct = $(".admin-pane").first().data("ctid")
+        $("#admin-ct-tab-" + ct).click()
+
         $(".paramlist").hide()
         # group selector
-        $("#parameter-groups li").click (event) ->
+        $(".parameter-groups li").click (event) ->
             grp = $(this).data("groupid")
             if grp?
                 event.stopPropagation()
@@ -61,23 +71,24 @@ JcsSettings =
                 $(".paramlist").hide()
                 $("#paramlist-" + grp).show();
 
-                $("#parameter-groups li").removeClass("current cursor")
+                $(".parameter-groups li").removeClass("current cursor")
                 $(this).addClass("current cursor")
         # add new parameter
         $(".new-param").click ->
             pos = $(this).parent().prev().children(".param").length + 1
             group = $(this).parent().parent().children("[name=group]").val()
-            $(this).parent().prev().append($("#newparam-template").html().replace(/%pos%/g, pos).replace('%grp%', group))
+            ct = $(this).parent().parent().children("[name=clientType]").val()
+            $(this).parent().prev().append($("#newparam-template").html().replace(/%pos%/g, pos).replace('%grp%', group).replace('%ct%', ct))
             $(this).parent().prev().children().last().children(":text").focus()
             $( ".paramcontainer" ).sortable( "refresh" );
 
         # cancel button
-        $("#parameter-lists .paramform .cancel").click ->
+        $(".parameter-lists .paramform .cancel").click ->
             $(".paramcontainer .newparam").remove()
             $( ".paramcontainer" ).sortable("cancel");
 
         # form submit animation
-        $("#parameter-lists .paramform").submit ->
+        $(".parameter-lists .paramform").submit ->
             if !$(".paramsave", this).hasClass('animbutton')
                 $(".paramsave", this).addClass('animbutton')
             else
@@ -96,8 +107,8 @@ JcsSettings =
             $(ui.item).parent().children(".param").each (index) ->
                 $(".hiddenpos", this).val(index + 1)
 
-        $("#parameter-lists").show()
-        $("#parameter-groups li.current").click()
+        $(".parameter-lists").show()
+        $(".parameter-groups li.current").click()
 
     ###
         setup the user editor

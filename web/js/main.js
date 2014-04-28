@@ -748,7 +748,7 @@ JcsSettings = {
         return _this.setHeights();
       });
     }
-    if ($("#parameter-groups").length) {
+    if ($(".parameter-groups").length) {
       this.setupParams();
     }
     if ($("#template-edit").length) {
@@ -792,8 +792,19 @@ JcsSettings = {
   */
 
   setupParams: function() {
+    var ct;
+
+    $(".admin-ct-tabs").tabs(".admin-panes > div", {
+      "initialIndex": null
+    });
+    if ($(".parameter-groups ul li.current").length) {
+      ct = $(".parameter-groups ul li.current").closest(".admin-pane").data("ctid");
+    } else {
+      ct = $(".admin-pane").first().data("ctid");
+    }
+    $("#admin-ct-tab-" + ct).click();
     $(".paramlist").hide();
-    $("#parameter-groups li").click(function(event) {
+    $(".parameter-groups li").click(function(event) {
       var grp;
 
       grp = $(this).data("groupid");
@@ -804,7 +815,7 @@ JcsSettings = {
         $("#paramedit .usercontent").hide();
         $(".paramlist").hide();
         $("#paramlist-" + grp).show();
-        $("#parameter-groups li").removeClass("current cursor");
+        $(".parameter-groups li").removeClass("current cursor");
         return $(this).addClass("current cursor");
       }
     });
@@ -813,15 +824,16 @@ JcsSettings = {
 
       pos = $(this).parent().prev().children(".param").length + 1;
       group = $(this).parent().parent().children("[name=group]").val();
-      $(this).parent().prev().append($("#newparam-template").html().replace(/%pos%/g, pos).replace('%grp%', group));
+      ct = $(this).parent().parent().children("[name=clientType]").val();
+      $(this).parent().prev().append($("#newparam-template").html().replace(/%pos%/g, pos).replace('%grp%', group).replace('%ct%', ct));
       $(this).parent().prev().children().last().children(":text").focus();
       return $(".paramcontainer").sortable("refresh");
     });
-    $("#parameter-lists .paramform .cancel").click(function() {
+    $(".parameter-lists .paramform .cancel").click(function() {
       $(".paramcontainer .newparam").remove();
       return $(".paramcontainer").sortable("cancel");
     });
-    $("#parameter-lists .paramform").submit(function() {
+    $(".parameter-lists .paramform").submit(function() {
       if (!$(".paramsave", this).hasClass('animbutton')) {
         return $(".paramsave", this).addClass('animbutton');
       } else {
@@ -842,8 +854,8 @@ JcsSettings = {
         return $(".hiddenpos", this).val(index + 1);
       });
     });
-    $("#parameter-lists").show();
-    return $("#parameter-groups li.current").click();
+    $(".parameter-lists").show();
+    return $(".parameter-groups li.current").click();
   },
   /*
       setup the user editor

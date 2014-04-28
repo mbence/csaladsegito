@@ -1,0 +1,6 @@
+{# client type tabs #}
+<div class="admin-ct-tabs">
+{% for ct_id, ct in client_types %}
+    <a href="#" id="admin-ct-tab-{{ ct_id }}">{{ ct }}</a>
+{% endfor %}
+</div>

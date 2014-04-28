@@ -101,7 +101,7 @@ class DataStore
                 throw new HttpException(500, "Unknown host:" . $req->getHost());
             }
             // decode json fields
-            $json_fields = ['sequencePolicy', 'caseNumberTemplate'];
+            $json_fields = ['types', 'sequencePolicy', 'caseNumberTemplate'];
             foreach ($json_fields as $field) {
                 $company[0][$field] = json_decode($company[0][$field], true);
             }
@@ -127,7 +127,7 @@ class DataStore
     {
         $co = $this->getCompany();
 
-        return false !== strpos($co['types'], (string) $type);
+        return false !== in_array($type, $co['types']);
     }
 
     /**
@@ -410,11 +410,38 @@ class DataStore
     /**
      * Return client type names map
      *
+     * @param bool $active_only return only the active client types, set in the company record
      * @return array
      */
-    public function getClientTypeNames()
+    public function getClientTypeNames($active_only = false)
     {
-        return $this->clientTypeNames;
+        $cts = $this->clientTypeNames;
+
+        if ($active_only) {
+            $cts = $this->typeFilter($cts);
+        }
+
+        return $cts;
+    }
+
+    /**
+     * Removes the inactive client types from the input array based on the company record
+     *
+     * @param array $in like $this->clientTypeNames or clientTypeMap
+     * @return array
+     */
+    public function typeFilter(array $in)
+    {
+        $out = [];
+        $co = $this->getCompany();
+        $enabled_types = $co['types'];
+
+        foreach ($in as $k => $v) {
+            if (in_array($k, $enabled_types)) {
+                $out[$k] = $v;
+            }
+        }
+        return $out;
     }
 
     /**

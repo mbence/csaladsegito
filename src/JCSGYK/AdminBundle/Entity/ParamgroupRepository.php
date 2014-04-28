@@ -15,7 +15,7 @@ class ParamgroupRepository extends EntityRepository
     public function getAll($company_id)
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT p FROM JCSGYKAdminBundle:Paramgroup p WHERE p.companyId=0 OR p.companyId=:company ORDER BY p.type, p.position, p.name ASC')
+            ->createQuery('SELECT p FROM JCSGYKAdminBundle:Paramgroup p WHERE p.companyId=0 OR p.companyId=:company ORDER BY p.clientType, p.type, p.position, p.name ASC')
             ->setParameter('company', $company_id)
             ->getResult();
     }

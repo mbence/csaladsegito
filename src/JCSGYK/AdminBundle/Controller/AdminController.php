@@ -120,7 +120,7 @@ class AdminController extends Controller
         $em = $this->getDoctrine()->getManager();
         $ds = $this->container->get('jcs.ds');
         $co = $ds->getCompanyId();
-        $client_type_names = $ds->getClientTypeNames();
+        $client_type_names = $ds->getClientTypeNames(true);
 
         // save the current param group
         if ($request->isMethod('POST')) {
@@ -154,6 +154,7 @@ class AdminController extends Controller
                             }
                             $new_param->setPosition($param['position']);
                             $new_param->setType($param['type']);
+                            $new_param->setClientType($param['clientType']);
                             $new_param->setName($param['name']);
                             $new_param->setIsActive(isset($param['isActive']));
                             $new_param->setRequired(isset($param['required']));
@@ -168,14 +169,21 @@ class AdminController extends Controller
                 $this->get('session')->getFlashBag()->add('notice', 'paramétercsoport elmentve');
             }
 
-            return $this->redirect($this->generateUrl('admin_paramgroups', ['type' => $request->request->get('group', 0)]));
+            $group_id = $request->request->get('clientType', 0) . '-' . $request->request->get('group', 0);
+
+            return $this->redirect($this->generateUrl('admin_paramgroups', ['type' => $group_id]));
         }
 
         // get all paramgroup types
-        $types = $this->get('jcs.ds')->getGroupTypes(false);
-        $groups = $this->get('jcs.ds')->getParamgroups();
+        $types = $ds->getGroupTypes(false);
+        $groups = $ds->getParamgroups();
 
-        return $this->render('JCSGYKAdminBundle:Admin:paramgroups.html.twig', ['groups' => $groups, 'types' => $types, 'act' => $type]);
+        return $this->render('JCSGYKAdminBundle:Admin:paramgroups.html.twig', [
+            'groups' => $groups,
+            'client_types' => $client_type_names,
+            'types' => $types,
+            'act' => $type
+        ]);
     }
 
     /**
@@ -192,7 +200,9 @@ class AdminController extends Controller
         $route = $sys ? 'admin_systemparams' : 'admin_params';
 
         $em = $this->getDoctrine()->getManager();
-        $co = $this->container->get('jcs.ds')->getCompanyId();
+        $ds = $this->container->get('jcs.ds');
+        $co = $ds->getCompanyId();
+
 
         // save the current param group
         if ($request->isMethod('POST')) {
@@ -241,35 +251,24 @@ class AdminController extends Controller
                     'id' => $k,
                     'name' => $sg[0],
                     'type' => 0,
+                    'clientType' => 0,
                     'required' => $sg[1],
                     'control' => $sg[2]
                 ];
             }
         }
         else {
-            $groups = $this->get('jcs.ds')->getParamGroup();
-            foreach ($groups as $g) {
-                $all_groups[] = [
-                    'id' => $g->getId(),
-                    'name' => $g->getName(),
-                    'type' => $g->getType(),
-                    'required' => $g->getRequired(),
-                    'control' => $g->getControl()
-                ];
-            }
+            $all_groups = $ds->getParamGroup();
         }
-        // get all params
-        $params = $this->get('jcs.ds')->getAll();
-
-        // get all paramgroup types
-        $types = $this->get('jcs.ds')->getGroupTypes($sys);
 
         return $this->render('JCSGYKAdminBundle:Admin:params.html.twig', [
-            'params' => $params,
+            'sys' => $sys,
+            'params' => $ds->getAll(),
             'groups' => $all_groups,
             'act' => $group,
-            'types' => $types,
-            'route' => $route
+            'types' => $ds->getGroupTypes($sys),
+            'route' => $route,
+            'client_types' => $ds->getClientTypeNames(true),
         ]);
     }
 

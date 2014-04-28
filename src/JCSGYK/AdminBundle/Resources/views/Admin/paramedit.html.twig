@@ -1,0 +1,53 @@
+{% if ct_id is not defined %}
+    {% set ct_id = 0 %}
+{% endif %}
+
+<div class="adminblock parameter-groups">
+    <div class="rightpad fullheight nocollapse">
+        <ul>
+        {% set oldtype = -1 %}
+        {% for id, group in groups if ct_id == group.clientType %}
+            {% if group.type != oldtype %}
+                <div>{{ types[group.type]|trans }}</div>
+                {% set oldtype = group.type %}
+            {% endif %}
+            <li data-groupid="{{ group.id }}" {% if act == group.id %}class="current"{% endif %}>{{ group.name|trans }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+<div class="adminblock parameter-lists">
+    <div class="leftpad20 fullheight nocollapse">
+        {% for id, group in groups if ct_id == group.clientType %}
+            <div class="paramlist" id="paramlist-{{ group.id }}">
+                <form action="{{ path(route) }}" method="POST" name="paramform-{{ group.id }}" id="paramform-{{ group.id }}" class="paramform">
+                    <div class="paramcontainer">
+                        <div class="param-legend">
+                        {% if group.required %}{{ 'Megállapodás esetén kötelezően kitöltendő mező!'|trans }}{% endif %}
+                        {% if group.control %}{{ 'Multi-select mező'|trans }}{% endif %}
+                        </div>
+                        {% for param in params if group.id == param.group %}
+                        <div class="param">
+                            <input type="hidden" name="parameter[{{ loop.index }}][id]" value="{{ param.id }}">
+                            <input class="hiddenpos" type="hidden" name="parameter[{{ loop.index }}][position]" value="{{ param.position }}">
+                            <input type="hidden" name="parameter[{{ loop.index }}][group]" value="{{ group.id }}">
+                            <span class="pos"> </span>
+                            <input type="text" value="{{ param.name }}" name="parameter[{{ loop.index }}][name]">
+                            <input type="checkbox" {% if param.isActive %}checked="checked"{% endif %} name="parameter[{{ loop.index }}][isActive]" value="1">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="center toppad10">
+                        <button class="new-param button" type="button"><span>{{ 'új paraméter hozzáadása'|trans }}</span></button>
+                    </div>
+                    <input type="hidden" name="group" value="{{ group.id }}">
+                    <br><br>
+                    <div class="formbuttons">
+                        <button type="reset" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
+                        <button type="submit" class="paramsave button" name="paramsave" value="save"><span>{{ 'mentés'|trans }}</span></button>
+                    </div>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</div>

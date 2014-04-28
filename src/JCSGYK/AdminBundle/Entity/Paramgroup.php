@@ -31,6 +31,13 @@ class Paramgroup
     /**
      * @var integer
      *
+     * @ORM\Column(name="client_type", type="integer", nullable=true)
+     */
+    private $clientType;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="type", type="integer", nullable=true)
      */
     private $type;
@@ -240,5 +247,29 @@ class Paramgroup
     public function getControl()
     {
         return $this->control;
+    }
+
+    /**
+     * Set clientType
+     *
+     * @param integer $clientType
+     *
+     * @return Paramgroup
+     */
+    public function setClientType($clientType)
+    {
+        $this->clientType = $clientType;
+
+        return $this;
+    }
+
+    /**
+     * Get clientType
+     *
+     * @return integer 
+     */
+    public function getClientType()
+    {
+        return $this->clientType;
     }
 }

@@ -14,11 +14,13 @@ class Version20140428135848 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE `company` CHANGE COLUMN `types` `types` varchar(64) CHARACTER SET utf8 COLLATE utf8_hungarian_ci DEFAULT NULL;');
+        $this->addSql('ALTER TABLE `paramgroup` ADD COLUMN `client_type` tinyint DEFAULT 1 AFTER `company_id`;');
     }
 
     public function down(Schema $schema)
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE `company` CHANGE COLUMN `types` `types` varchar(16) CHARACTER SET utf8 COLLATE utf8_hungarian_ci DEFAULT NULL;');
+        $this->addSql('ALTER TABLE `paramgroup` DROP COLUMN `client_type`;');
     }
 }
