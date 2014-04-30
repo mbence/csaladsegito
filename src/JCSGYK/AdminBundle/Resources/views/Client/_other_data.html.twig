@@ -2,7 +2,7 @@
 <div class="client-sub togglable">{{ 'egyéb adatok'|trans }}</div>
 <div>
     <table class="client" cellspacing="0" border="0">
-        {% for paramGroup in pgroup(1) %}
+        {% for paramGroup in pgroup(1, false, client.type) %}
         <tr>
             <th>{{ paramGroup.name|trans }}:</th>
             <td>{{ param(client.getParam(paramGroup.id), paramGroup.id) }} </td>

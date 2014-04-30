@@ -99,12 +99,13 @@ class AdminExtension extends \Twig_Extension
      * Returns the array of the parameter groups
      * @param int $group Paramgroup type
      * @param boolean $first to get only the first element, set this to true
+     * @param int $client_type to get the correct groups for the client type
      *
      * @return array of Paramgroups or ID
      */
-    public function getParamGroup($group = 1, $first = false)
+    public function getParamGroup($group = 1, $first = false, $client_type = null)
     {
-        $list = $this->ds->getParamGroup($group);
+        $list = $this->ds->getParamGroup($group, false, $client_type);
 
         return !$first ? $list : reset($list);
     }
