@@ -1,0 +1,24 @@
+{# Edit Catering #}
+<div class="client-sub">{{ 'egyéb adatok'|trans }}</div>
+<table class="client-edit" cellspacing="0" border="0">
+    <tr>
+        <th>{{ form_label(form.catering.club) }}:</th>
+        <td>{{ form_errors(form.catering.club) }}{{ form_widget(form.catering.club) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.catering.menu) }}:</th>
+        <td>{{ form_errors(form.catering.menu) }}{{ form_widget(form.catering.menu) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.catering.is_single) }}:</th>
+        <td>{{ form_errors(form.catering.is_single) }}{{ form_widget(form.catering.is_single) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.catering.income) }}:</th>
+        <td>{{ form_errors(form.catering.income) }}{{ form_widget(form.catering.income) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.catering.discount) }}:</th>
+        <td>{{ form_errors(form.catering.discount) }}{{ form_widget(form.catering.discount) }}</td>
+    </tr>
+</table>

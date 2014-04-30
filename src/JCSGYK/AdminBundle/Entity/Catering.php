@@ -28,11 +28,12 @@ class Catering
     private $client;
 
     /**
-     * @var integer
+     * @var Club
      *
-     * @ORM\Column(name="club_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Club", inversedBy="clientcaterings")
+     * @ORM\JoinColumn(name="club_id", referencedColumnName="id")
      */
-    private $clubId;
+    private $club;
 
     /**
      * @var string
@@ -74,7 +75,7 @@ class Catering
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -98,7 +99,7 @@ class Catering
     /**
      * Get clubId
      *
-     * @return integer 
+     * @return integer
      */
     public function getClubId()
     {
@@ -122,7 +123,7 @@ class Catering
     /**
      * Get subscriptions
      *
-     * @return string 
+     * @return string
      */
     public function getSubscriptions()
     {
@@ -146,7 +147,7 @@ class Catering
     /**
      * Get menu
      *
-     * @return integer 
+     * @return integer
      */
     public function getMenu()
     {
@@ -170,7 +171,7 @@ class Catering
     /**
      * Get isSingle
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsSingle()
     {
@@ -194,7 +195,7 @@ class Catering
     /**
      * Get income
      *
-     * @return integer 
+     * @return integer
      */
     public function getIncome()
     {
@@ -218,7 +219,7 @@ class Catering
     /**
      * Get discount
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getDiscount()
     {
@@ -242,10 +243,34 @@ class Catering
     /**
      * Get client
      *
-     * @return \JCSGYK\AdminBundle\Entity\Client 
+     * @return \JCSGYK\AdminBundle\Entity\Client
      */
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * Set club
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Club $club
+     *
+     * @return Catering
+     */
+    public function setClub(\JCSGYK\AdminBundle\Entity\Club $club = null)
+    {
+        $this->club = $club;
+
+        return $this;
+    }
+
+    /**
+     * Get club
+     *
+     * @return \JCSGYK\AdminBundle\Entity\Club
+     */
+    public function getClub()
+    {
+        return $this->club;
     }
 }

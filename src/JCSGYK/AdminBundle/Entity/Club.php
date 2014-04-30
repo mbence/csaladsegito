@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Club
  *
  * @ORM\Table(name="club")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\ClubRepository")
  */
 class Club
 {
@@ -68,6 +68,24 @@ class Club
      * @ORM\Column(name="is_active", type="boolean", nullable=true)
      */
     private $isActive;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Catering", mappedBy="club")
+     */
+    private $clientcaterings;
+
+    public function __construct($salt = null)
+    {
+        parent::__construct();
+        // your own logic
+
+        $this->clientcaterings = new ArrayCollection();
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
 
     /**
      * Get id
@@ -216,7 +234,7 @@ class Club
     {
         return $this->coordinator;
     }
-    
+
     /**
      * Set isActive
      *
@@ -238,5 +256,39 @@ class Club
     public function getIsActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * Add clientcaterings
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Catering $clientcaterings
+     *
+     * @return Club
+     */
+    public function addClientcatering(\JCSGYK\AdminBundle\Entity\Catering $clientcaterings)
+    {
+        $this->clientcaterings[] = $clientcaterings;
+
+        return $this;
+    }
+
+    /**
+     * Remove clientcaterings
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Catering $clientcaterings
+     */
+    public function removeClientcatering(\JCSGYK\AdminBundle\Entity\Catering $clientcaterings)
+    {
+        $this->clientcaterings->removeElement($clientcaterings);
+    }
+
+    /**
+     * Get clientcaterings
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getClientcaterings()
+    {
+        return $this->clientcaterings;
     }
 }
