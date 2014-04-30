@@ -104,8 +104,6 @@ class ClientController extends Controller
                     $listed_user_ids[] = $user->getId();
                 }
             }
-            // get the dispatch paramGroup
-            $dispatch_list = $this->container->get('jcs.ds')->getGroup(8);
 
             // make the form
             $form_builder = $this->createFormBuilder()
@@ -115,18 +113,12 @@ class ClientController extends Controller
                     'expanded' => true,
                     'multiple' => false,
                 ]);
+
+            // get the dispatch paramGroup
+            $dispatch_list = $this->container->get('jcs.ds')->getGroup('signals');
             if (!empty($dispatch_list)) {
-                // get group label
-                $pgs = $this->container->get('jcs.ds')->getParamGroup(0);
-                $pg_label = '';
-                foreach ($pgs as $pg) {
-                    if ($pg->getId() == 8) {
-                        $pg_label = $pg->getName();
-                        break;
-                    }
-                }
                 $form_builder->add('dispatch', 'choice', [
-                    'label' => $pg_label,
+                    'label' => $this->container->getParameter('system_parameter_groups')['signals'][0],
                     'choices' => $dispatch_list,
                     'expanded' => false,
                     'multiple' => false,
@@ -432,7 +424,7 @@ class ClientController extends Controller
                     }
 
                     // save the parameters
-                    $pgroups = $this->container->get('jcs.ds')->getParamGroup(1);
+                    $pgroups = $this->container->get('jcs.ds')->getParamGroup(1, false, $client->getType());
                     $param_data = [];
                     foreach ($pgroups as $param) {
                         $param_data[$param->getId()] = $form->get('param_' . $param->getId())->getData();

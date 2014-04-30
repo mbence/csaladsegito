@@ -93,6 +93,7 @@ class ProblemController extends Controller
             // new problem
             $problem = new Problem();
             $problem->setIsActive(true);
+            $problem->setClient($client);
 
             // family help and child welfare users get the assignee set automatically
             if ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE')) {
@@ -143,7 +144,7 @@ class ProblemController extends Controller
                     }
 
                     // save the parameters
-                    $pgroups = $this->container->get('jcs.ds')->getParamGroup(2);
+                    $pgroups = $this->container->get('jcs.ds')->getParamGroup(2, false, $client->getType());
                     $param_data = [];
                     foreach ($pgroups as $param) {
                         $param_data[$param->getId()] = $form->get('param_' . $param->getId())->getData();
@@ -160,7 +161,13 @@ class ProblemController extends Controller
             }
             $events = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->getEventList($id);
 
-            return $this->render('JCSGYKAdminBundle:Problem:edit.html.twig', ['client' => $client, 'problem' => $problem, 'events' => $events, 'form' => $form->createView()]);
+            return $this->render('JCSGYKAdminBundle:Problem:edit.html.twig', [
+                'client' => $client,
+                'problem' => $problem,
+                'events' => $events,
+                'form' => $form->createView(),
+                'client_type' => $client->getType(),
+            ]);
         }
         else {
             throw new HttpException(400, "Bad request");

@@ -109,7 +109,7 @@ class ClientType extends AbstractType
         ]);
 
         // parametergroups
-        $pgroups = $this->ds->getParamGroup(1);
+        $pgroups = $this->ds->getParamGroup(1, false, $this->client->getType());
 
         foreach ($pgroups as $param) {
             $choices = $this->ds->getGroup($param->getId());

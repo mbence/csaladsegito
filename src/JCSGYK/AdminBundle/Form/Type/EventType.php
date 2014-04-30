@@ -13,16 +13,18 @@ class EventType extends AbstractType
 {
     private $ds;
     private $event;
+    private $client_type;
 
     /**
      * Save the Datastore for parameter retrieval
      *
      * @param \JCSGYK\AdminBundle\Services\DataStore $ds
      */
-    public function __construct(DataStore $ds, Event $event)
+    public function __construct(DataStore $ds, Event $event, $client_type)
     {
         $this->ds = $ds;
         $this->event = $event;
+        $this->client_type = $client_type;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -48,7 +50,7 @@ class EventType extends AbstractType
             'expanded' => $g7[2],
         ]);
         // parametergroups
-        $pgroups = $this->ds->getParamGroup(3);
+        $pgroups = $this->ds->getParamGroup(3, false, $this->client_type);
 
         foreach ($pgroups as $param) {
             $choices = $this->ds->getGroup($param->getId());

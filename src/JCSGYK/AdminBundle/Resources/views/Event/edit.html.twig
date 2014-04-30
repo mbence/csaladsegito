@@ -28,7 +28,7 @@
         <th>{{ form_label(form.type) }}:</th>
         <td colspan="3" class="full-widget">{{ form_errors(form.type) }}{{ form_widget(form.type) }}</td>
     </tr>
-    {% for paramGroup in pgroup(3) %}
+    {% for paramGroup in pgroup(3, false, problem.getClient.type) %}
     {% set p = 'param_' ~ paramGroup.id %}
     <tr {% if paramGroup.control %}class="multirow"{% endif %}>
         <th>{{ form_label(form[p]) }}:</th>

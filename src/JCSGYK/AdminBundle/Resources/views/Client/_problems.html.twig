@@ -11,7 +11,7 @@
             <label for="showAllProblem">összes probléma</label>
         </div>
 
-        {% set pparam = pgroup(2, true) %}
+        {% set pparam = pgroup(2, true, client.type) %}
 
         <table id="problem-list" class="client problem-list" cellspacing="0" border="0">
             <tr>

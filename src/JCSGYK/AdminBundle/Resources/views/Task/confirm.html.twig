@@ -2,7 +2,6 @@
 <div class="client-sub">{{ 'jóváhagyásra váró lezárt problémák (%db% db)'|trans({'%db%': tasks|length}) }}</div>
 <div>
     {% if tasks is defined and tasks|length %}
-        {% set pparam = pgroup(2, true) %}
 
         <table id="confirm-list" class="task-list{% if readonly %}-readonly{% endif %}" cellspacing="0" border="0">
             <tr>
@@ -10,7 +9,7 @@
                 <th>{{ 'ÜSZ'|trans }}</th>
                 <th>{{ 'Név'|trans }}</th>
                 <th>{{ 'Cím'|trans }}</th>
-                {% if pparam %}<th>{{ pparam.name|trans }}</th>{% endif %}
+                <th>{{ 'Probléma'|trans }}</th>
                 <th>{{ 'Dátum'|trans }}</th>
                 <th>{{ 'Státus'|trans }}</th>
                 <th>{{ 'Felelős'|trans }}</th>
@@ -23,6 +22,7 @@
                 <td><strong>{{ fname(task.client.firstname, task.client.lastname, task.client.title) }}</strong></td>
 
                 <td>{{ task.problem.title }}</td>
+                {% set pparam = pgroup(2, true, task.client.type) %}
                 {% if pparam %}<td>{{ param(task.problem.getParam(pparam.id), pparam.id) }}</td>{% endif %}
 
                 <td>{{ task.createdAt|fdate('osdt') }}</td>
