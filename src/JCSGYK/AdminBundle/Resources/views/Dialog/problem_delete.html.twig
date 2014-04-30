@@ -38,7 +38,7 @@
                     <th>{{ 'Állapot'|trans }}:</th>
                     <td>{{ pstatus(problem) }}</td>
                 </tr>
-                {% set pparam = pgroup(2, true) %}
+                {% set pparam = pgroup(2, true, problem.getClient.type) %}
                 {% if pparam %}
                 <tr>
                     <th>{{ pparam.name|trans }}:</th>

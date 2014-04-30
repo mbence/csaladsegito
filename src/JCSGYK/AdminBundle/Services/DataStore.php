@@ -221,13 +221,18 @@ class DataStore
      * @param boolean $all return all, or only the active groups?
      * @return array
      */
-    public function getParamGroup($type = null, $all = false)
+    public function getParamGroup($type = null, $all = false, $client_type = null)
     {
+        $this->container->get('logger')->notice('Client type: ' . $client_type);
+
         $groups = $this->getParamgroups();
 
         $re = [];
         foreach ($groups as $grp) {
-            if (($all || $grp->getIsActive()) && (is_null($type) || $grp->getType() == $type)) {
+            if (($all || $grp->getIsActive())
+                    && (is_null($type) || $grp->getType() == $type)
+                    && (is_null($client_type) || $grp->getClientType() == $client_type)
+            ) {
                 $re[] = $grp;
             }
         }
@@ -236,7 +241,7 @@ class DataStore
     }
 
     /**
-     * Get the available client types base on the company settings and user roles
+     * Get the available client types based on the company settings and user roles
      *
      * @return array
      */
@@ -246,7 +251,7 @@ class DataStore
         // check the company for enabled types, and remove the unneded ones
         $co = $this->getCompany();
         if (!empty($co['types'])) {
-            $client_types = array_intersect_key($client_types, array_flip(explode(',', $co['types'])));
+            $client_types = array_intersect_key($client_types, array_flip($co['types']));
         }
         $sec = $this->container->get('security.context');
 

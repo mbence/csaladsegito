@@ -68,7 +68,7 @@ class StatService
     private function getEvents($type)
     {
        if ($type == Stat::TYPE_INQUIRY) {
-           $inqs = $this->container->get('jcs.ds')->getGroup(1);
+           $inqs = $this->container->get('jcs.ds')->getGroup('inquiry');
            return !empty($inqs) ? $inqs : [];
        }
        elseif ($type == Stat::TYPE_FAMILY_HELP) {

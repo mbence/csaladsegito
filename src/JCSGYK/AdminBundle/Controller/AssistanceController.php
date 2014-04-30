@@ -27,7 +27,7 @@ class AssistanceController extends Controller
     */
     public function registerInquiryAction($event)
     {
-        $inquiry_events = $this->container->get('jcs.ds')->getGroup(1);
+        $inquiry_events = $this->container->get('jcs.ds')->getGroup('inquiry');
 
         if (!isset($inquiry_events[$event])) {
             throw new HttpException(400, "Bad request");

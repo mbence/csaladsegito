@@ -2,7 +2,7 @@
 <div class="client-sub">{{ 'egyéb adatok'|trans }}</div>
 <div>
     <table class="client-edit" cellspacing="0" border="0">
-        {% for paramGroup in pgroup(1) %}
+        {% for paramGroup in pgroup(1, false, client.type) %}
         {% set p = 'param_' ~ paramGroup.id %}
         <tr {% if paramGroup.control %}class="multirow"{% endif %}>
             <th>{{ form_label(form[p]) }}:</th>

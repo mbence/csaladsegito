@@ -25,7 +25,7 @@
             <th>{{ 'Állapot'|trans }}:</th>
             <td>{{ pstatus(problem) }}</td>
         </tr>
-        {% for paramGroup in pgroup(2) %}
+        {% for paramGroup in pgroup(2, false, problem.getClient.type) %}
         <tr {% if paramGroup.control %}class="multirow"{% endif %}>
             <th>{{ paramGroup.name|trans }}:</th>
             <td colspan="3">{{ param(problem.getParam(paramGroup.id), paramGroup.id) }} </td>

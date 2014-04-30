@@ -17,7 +17,7 @@ monolog:
             level: alert
         firephp:
             type:  firephp
-            level: info
+            level: notice
 
 assetic:
     use_controller: false

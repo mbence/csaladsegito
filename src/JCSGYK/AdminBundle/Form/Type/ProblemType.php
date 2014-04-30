@@ -33,12 +33,13 @@ class ProblemType extends AbstractType
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
+        $client = $this->problem->getClient();
+        
         $builder->add('title', 'text', ['label' => 'Cím', 'required' => false]);
         $builder->add('description', 'textarea', ['label' => 'Megjegyzés', 'required' => false]);
 
         // parametergroups
-        $pgroups = $this->ds->getParamGroup(2);
+        $pgroups = $this->ds->getParamGroup(2, false, $client->getType());
 
         foreach ($pgroups as $param) {
             $choices = $this->ds->getGroup($param->getId());

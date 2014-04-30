@@ -22,6 +22,13 @@ class Option
     private $id;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="company_id", type="integer", nullable=true)
+     */
+    private $companyId;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=64, nullable=false)
@@ -60,6 +67,13 @@ class Option
      * @ORM\Column(name="modified_at", type="datetime", nullable=true)
      */
     private $modifiedAt;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_active", type="boolean", nullable=true)
+     */
+    private $isActive;
 
 
     public function __construct()
@@ -220,5 +234,53 @@ class Option
     public function getModifier()
     {
         return $this->modifier;
+    }
+
+    /**
+     * Set companyId
+     *
+     * @param integer $companyId
+     *
+     * @return Option
+     */
+    public function setCompanyId($companyId)
+    {
+        $this->companyId = $companyId;
+
+        return $this;
+    }
+
+    /**
+     * Get companyId
+     *
+     * @return integer 
+     */
+    public function getCompanyId()
+    {
+        return $this->companyId;
+    }
+
+    /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     *
+     * @return Option
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean 
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
     }
 }

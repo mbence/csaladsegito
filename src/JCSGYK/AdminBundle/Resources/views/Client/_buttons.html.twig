@@ -36,7 +36,7 @@
                     <span>{{ 'mégse'|trans }}</span>
                 </button>
             {% else %}
-                <button type="reset" href="{{ path('clients') }}" class="close greybutton" title="{{ 'Visszalépés'|trans }}">
+                <button type="reset" href="{{ path('clients', {'client_type': client_type|ctmap}) }}" class="close greybutton" title="{{ 'Visszalépés'|trans }}">
                     <span>{{ 'mégse'|trans }}</span>
                 </button>
             {% endif %}
@@ -55,7 +55,7 @@
                     <span>{{ 'mégse'|trans }}</span>
                 </button>
             {% else %}
-                <button type="reset" href="{{ path('clients') }}" class="close greybutton" title="{{ 'Visszalépés'|trans }}">
+                <button type="reset" href="{{ path('clients', {'client_type': client_type|ctmap}) }}" class="close greybutton" title="{{ 'Visszalépés'|trans }}">
                     <span>{{ 'mégse'|trans }}</span>
                 </button>
             {% endif %}
