@@ -224,7 +224,7 @@ class DataStore
      */
     public function getParamGroup($type = null, $all = false, $client_type = null)
     {
-        $this->container->get('logger')->notice('Client type: ' . $client_type);
+        //$this->container->get('logger')->notice('Client type: ' . $client_type);
 
         $groups = $this->getParamgroups();
 
