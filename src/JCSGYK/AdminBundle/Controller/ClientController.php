@@ -767,7 +767,7 @@ class ClientController extends Controller
         $sql = '';
 
         // save the search string
-        $this->get('session')->set('quicksearch', $q);
+        $this->get('session')->set('quicksearch.' . $client_type, $q);
 
         $time_start = microtime(true);
         if (!empty($q)) {
