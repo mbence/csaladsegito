@@ -43,6 +43,13 @@ class Option
     private $value;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="valid_from", type="date", nullable=true)
+     */
+    private $validFrom;
+
+    /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="optioncreated")
      * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
@@ -253,7 +260,7 @@ class Option
     /**
      * Get companyId
      *
-     * @return integer 
+     * @return integer
      */
     public function getCompanyId()
     {
@@ -277,10 +284,34 @@ class Option
     /**
      * Get isActive
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * Set validFrom
+     *
+     * @param \DateTime $validFrom
+     *
+     * @return Option
+     */
+    public function setValidFrom($validFrom)
+    {
+        $this->validFrom = $validFrom;
+
+        return $this;
+    }
+
+    /**
+     * Get validFrom
+     *
+     * @return \DateTime 
+     */
+    public function getValidFrom()
+    {
+        return $this->validFrom;
     }
 }
