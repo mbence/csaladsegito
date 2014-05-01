@@ -318,6 +318,11 @@ class ClientController extends Controller
                 }
             }
 
+            // get the catering form
+//            if ($client->getType() == Client::CA) {
+//                $catering_form = $this->createForm(new CateringType($this->container->get('jcs.ds')), $client->getCatering());
+//            }
+
             $form = $this->createForm(new ClientType($this->container->get('jcs.ds'), $client), $client);
 
             $orig_year = $client->getCaseYear();
@@ -360,8 +365,7 @@ class ClientController extends Controller
                         $client->setType($client_type);
 
                         $em->persist($client);
-                        $em->flush();
-
+                        
                         // if case number given, we must copy over a few fields from that case
                         if (!empty($copy_case)) {
                             $this->copyCaseData($client);
@@ -372,6 +376,16 @@ class ClientController extends Controller
                         $client->setCaseYear($orig_year);
                         $client->setCaseNumber($orig_casenum);
                     }
+
+                    // save the catering data
+                    if ($client->getType() == Client::CA) {
+                        $catering = $client->getCatering();
+                        if (empty($catering->getClient())) {
+                            $catering->setClient($client);
+                            $em->persist($catering);
+                        }
+                    }
+                    $em->flush();
 
                     // set the visible case number
                     $client->setCaseLabel($this->container->get('jcs.twig.adminextension')->formatCaseNumber($client));

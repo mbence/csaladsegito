@@ -11,6 +11,7 @@ use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
 use JCSGYK\AdminBundle\Form\Type\AddressType;
 use JCSGYK\AdminBundle\Entity\UserRepository;
 use JCSGYK\AdminBundle\Form\Type\ParentType;
+use JCSGYK\AdminBundle\Form\Type\CateringType;
 
 class ClientType extends AbstractType
 {
@@ -154,6 +155,11 @@ class ClientType extends AbstractType
             },
             'required' => false,
         ]);
+
+        // add the catering form
+        if ($this->client->getType() == Client::CA) {
+            $builder->add('catering', new CateringType($this->ds));
+        }
     }
 
     public function getName()

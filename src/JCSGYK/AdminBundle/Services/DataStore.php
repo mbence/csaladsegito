@@ -19,6 +19,7 @@ class DataStore
 
     private $parameterList = [];
     private $groups = [];
+    private $clubs;
 
     private $container;
 
@@ -223,7 +224,7 @@ class DataStore
      */
     public function getParamGroup($type = null, $all = false, $client_type = null)
     {
-        $this->container->get('logger')->notice('Client type: ' . $client_type);
+        //$this->container->get('logger')->notice('Client type: ' . $client_type);
 
         $groups = $this->getParamgroups();
 
@@ -473,5 +474,22 @@ class DataStore
         $map = array_flip($this->clientTypeMap);
 
         return isset($map[$slug]) ? $map[$slug] : false;
+    }
+
+    public function getClubs()
+    {
+        if (empty($this->clubs)) {
+            $this->clubs = $this->container->get('doctrine')->getManager()
+                ->getRepository('JCSGYKAdminBundle:Club')
+                ->getAll($this->getCompanyId());
+        }
+//
+//        $re = [];
+//        foreach ($this->clubs as $club) {
+//            $re[$club->getId()] = $club->getName();
+//        }
+//
+//        return $re;
+        return $this->clubs;
     }
 }

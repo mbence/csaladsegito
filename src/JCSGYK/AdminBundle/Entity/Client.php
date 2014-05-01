@@ -408,8 +408,6 @@ class Client
      */
     private $parameters;
 
-
-
     /**
      * @ORM\OneToMany(targetEntity="UtilityproviderClientnumber", mappedBy="client")
      */
@@ -1976,5 +1974,63 @@ class Client
     public static function formatSSN($ssn)
     {
         return wordwrap($ssn, 3, ' ', true);
+    }
+
+    /**
+     * Set catering
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Catering $catering
+     *
+     * @return Client
+     */
+    public function setCatering(\JCSGYK\AdminBundle\Entity\Catering $catering = null)
+    {
+        $this->catering = $catering;
+
+        return $this;
+    }
+
+    /**
+     * Get catering
+     *
+     * @return \JCSGYK\AdminBundle\Entity\Catering
+     */
+    public function getCatering()
+    {
+        return $this->catering;
+    }
+
+    /**
+     * Add invoices
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Invoice $invoices
+     *
+     * @return Client
+     */
+    public function addInvoice(\JCSGYK\AdminBundle\Entity\Invoice $invoices)
+    {
+        $this->invoices[] = $invoices;
+
+        return $this;
+    }
+
+    /**
+     * Remove invoices
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Invoice $invoices
+     */
+    public function removeInvoice(\JCSGYK\AdminBundle\Entity\Invoice $invoices)
+    {
+        $this->invoices->removeElement($invoices);
+    }
+
+    /**
+     * Get invoices
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getInvoices()
+    {
+        return $this->invoices;
     }
 }

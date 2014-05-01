@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use JCSGYK\AdminBundle\Entity\Client;
 
 /**
- * ParameterRepository
+ * ClientRepository
  */
 class ClientRepository extends EntityRepository
 {

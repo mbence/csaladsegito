@@ -373,7 +373,9 @@ class AdminExtension extends \Twig_Extension
      */
     public function clientType($type)
     {
-        return $this->translator->trans($type == 1 ? 'családsegítő' : 'gyermekjólét');
+        $ctypes = $this->ds->getClientTypeNames();
+
+        return $this->translator->trans($ctypes[$type]);
     }
 
     /**
