@@ -1,0 +1,13 @@
+{% extends 'JCSGYKAdminBundle::layout.html.twig' %}
+
+{% block content %}
+    <br>
+    <div id="reports-menu">
+        <h1 class="client">{{ 'Kimutatások'|trans }}</h1>
+        {% include "JCSGYKAdminBundle:Reports:menu.html.twig" %}
+    </div>
+    <div id="reports-content">
+        {% block settings_content %}{% endblock %}
+    </div>
+
+{% endblock %}

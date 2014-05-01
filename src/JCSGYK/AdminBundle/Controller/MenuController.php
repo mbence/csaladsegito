@@ -17,6 +17,7 @@ class MenuController extends Controller
     {
         $items = [
             ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
+            ['route' => 'reports', 'label' => 'Kimutatások', 'role' => 'ROLE_ADMIN'],
             ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'],
         ];
 

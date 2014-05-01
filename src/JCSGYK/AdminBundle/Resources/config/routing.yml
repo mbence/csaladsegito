@@ -151,3 +151,7 @@ login_redirector:
 #logout:
 #    pattern:  /logout
 
+# Reports #
+reports:
+    pattern:  /reports/{report}
+    defaults: { _controller: JCSGYKAdminBundle:Reports:index, report: null }
