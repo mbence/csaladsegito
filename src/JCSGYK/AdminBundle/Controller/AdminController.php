@@ -20,6 +20,8 @@ use JCSGYK\AdminBundle\Form\Type\CompanyType;
 use JCSGYK\AdminBundle\Entity\Club;
 use JCSGYK\AdminBundle\Form\Type\ClubType;
 use JCSGYK\AdminBundle\Entity\Paramgroup;
+use JCSGYK\AdminBundle\Entity\Option;
+use JCSGYK\AdminBundle\Form\Type\CateringCostType;
 
 class AdminController extends Controller
 {
@@ -638,6 +640,75 @@ class AdminController extends Controller
             $providers = $em->getRepository('JCSGYKAdminBundle:Utilityprovider')->findBy(['companyId' => $company_id], ['name' => 'ASC']);
 
             return $this->render('JCSGYKAdminBundle:Admin:providers.html.twig', ['providers' => $providers, 'id' => $id, 'act' => $provider, 'form' => $form_view]);
+        }
+        else {
+            throw new HttpException(400, "Bad request");
+        }
+    }
+
+    /**
+     * Options table
+     *
+     * @Secure(roles="ROLE_ADMIN")
+     */
+    public function optionsAction($name, $id = null)
+    {
+        $request      = $this->getRequest();
+        $option       = null;
+        $form_view    = null;
+        $option_types = ['catering_costs' => 'JCSGYK\AdminBundle\Form\Type\CateringCostType'];
+        $type         = $option_types[$name];
+
+        $em = $this->getDoctrine()->getManager();
+
+        if ('new' == $id) {
+            // new option
+            $option = new Option;
+        }
+        elseif (!is_null($id)) {
+            $option = $em->getRepository('JCSGYKAdminBundle:Option')->find($id);
+        }
+        // print_r($option);
+
+        if (is_null($id) || !empty($option)) {
+
+            if (!empty($option)) {
+                // $option_type = str_replace(' ', '' ,ucwords((str_replace('_', ' ', $name))));
+                $form = $this->createForm(new $type(), $option);
+            }
+
+        //     // save the current club
+        //     if ($request->isMethod('POST')) {
+
+        //         $form->bind($request);
+
+        //         if ($form->isValid()) {
+
+        //             if (is_null($club->getId())) {
+        //                 // get the current company id from the datatore
+        //                 $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        //                 // save the company id too
+        //                 $club->setCompanyId($company_id);
+        //                 $em->persist($club);
+        //             }
+
+        //             $em->flush();
+
+        //             $this->get('session')->getFlashBag()->add('notice', 'Klub elmentve');
+
+        //             return $this->redirect($this->generateUrl('admin_clubs', ['id' => $club->getId()]));
+        //         }
+        //     }
+
+            if (!empty($form)) {
+                $form_view = $form->createView();
+            }
+            // get all options named with $name
+            $options = $em->getRepository('JCSGYKAdminBundle:Option')->findBy(['name' => $name], ['validFrom' => 'DESC']);
+
+            // return $this->render('JCSGYKAdminBundle:Admin:options.html.twig', ['name' => $name, 'options' => $options]);
+            return $this->render('JCSGYKAdminBundle:Admin:'.str_replace('_', '', $name).'.html.twig', ['name' => $name, 'id' => $id, 'options' => $options, 'form' => $form_view]);
+            // return $this->render('JCSGYKAdminBundle:Admin:clubs.html.twig', ['clubs' => $clubs, 'id' => $id, 'act' => $club, 'form' => $form_view]);
         }
         else {
             throw new HttpException(400, "Bad request");

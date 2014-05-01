@@ -1,0 +1,10 @@
+{% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
+
+{% block settings_content %}
+
+{% if name == 'catering_costs' %}
+    {% block cateringcosts_content %}{% endblock %}
+{% endif %}
+
+<div class="clear"></div>
+{% endblock %}
