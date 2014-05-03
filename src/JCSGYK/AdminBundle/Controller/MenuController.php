@@ -30,6 +30,11 @@ class MenuController extends Controller
             $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CA]], 'label' => 'Étkeztetés', 'role' => 'ROLE_CATERING'];
         }
         $items[] = ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'];
+        $items = [
+            ['route' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
+            ['route' => 'reports', 'label' => 'Kimutatások', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'],
+        ];
 
         $menu = $this->checkMenu($items);
 
