@@ -7,12 +7,32 @@
         {% include "JCSGYKAdminBundle:Reports:menu.html.twig" %}
     </div>
     <div id="reports-content" class="leftpad20">
-        <form action="{{ path('reports', {'report': report}) }}" id="report_download" novalidate method="post" {{ form_enctype(form) }}>
-            {{ form_errors(form) }}
-            <button type="submit" class="button download_report" title="{{ 'kimutatás letöltése'|trans }}">
-                <span>{{ 'kimutatás letöltése'|trans }}</span>
-            </button>
-        </form>
+        {% if not report %}
+            <div class="info">
+                <p>
+                    Kérjük válasszon egy kimutatást a bal oldali listából!
+                </p>
+            </div>
+        {% else %}
+            <form action="{{ path('reports', {'report': report}) }}" id="report_download" novalidate method="post" {{ form_enctype(form) }}>
+                {{ form_errors(form) }}
+                {{ form_widget(form) }}
+
+                {# some space befor the submit button, but only if we have a form #}
+                {% if form.children|length > 1 %}
+                    <div class="clear"></div>
+                    <br>
+                {% endif %}
+
+                {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: [{type:'submit', class:'save_event', title:'kimutatás letöltése', label:'kimutatás letöltése'}] } %}
+                <div class="clear"></div>
+
+                <br>
+                {% if result[0] is defined %}
+                    {{ dump(result) }}
+                {% endif %}
+            </form>
+        {% endif %}
     </div>
 
 {% endblock %}

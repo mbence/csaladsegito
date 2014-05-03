@@ -48,5 +48,13 @@ class RequestListener
             // all is fine, replace and finish
             $request->attributes->set('client_type', $ct);
         }
+
+        /* TODO: fix this...
+        // check the user, and if logged in, set the COMPANY_ID
+        if (!defined('COMPANY_ID')) {
+            define('COMPANY_ID', $this->ds->getCompanyId());
+        }
+         *
+         */
     }
 }

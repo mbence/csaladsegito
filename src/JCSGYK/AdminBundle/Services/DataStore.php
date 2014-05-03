@@ -492,4 +492,30 @@ class DataStore
 //        return $re;
         return $this->clubs;
     }
+
+    /**
+     * Finds the array of the active users of the actual company
+     *
+     * @return array
+     */
+    public function getUsers($active_only = true)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $sec = $this->container->get('security.context');
+
+        $sql = 'SELECT u FROM JCSGYKAdminBundle:User u WHERE u.companyId=:company_id';
+        if ($active_only) {
+            $sql .= ' AND u.enabled=1';
+        }
+
+        // only SUPER_ADMINs should be able to see SUPER_ADMINs
+        if (!$sec->isGranted('ROLE_SUPER_ADMIN')) {
+            $sql .= " AND u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'";
+        }
+        $sql .= ' ORDER BY u.lastname, u.firstname';
+
+        return $em->createQuery($sql)
+            ->setParameter('company_id', $this->getCompanyId())
+            ->getResult();
+    }
 }

@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use JCSGYK\AdminBundle\Entity\Client;
+use Doctrine\ORM\Query;
 
 /**
  * ClientRepository
@@ -97,5 +98,36 @@ class ClientRepository extends EntityRepository
 
             $client_params->next();
         }
+    }
+
+    /**
+     * Find clients belonging to a case Admin
+     */
+    public function getClientsByCaseAdmin($company_id, $case_admin = null, $client_type = null)
+    {
+        $sql = 'SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.companyId=:company_id';
+        if (!empty($case_admin)) {
+            $sql .= ' AND c.caseAdmin=:case_admin';
+        }
+        if (!empty($client_type)) {
+            $sql .= ' AND c.type=:client_type';
+        }
+        $sql .= ' ORDER BY c.caseLabel, c.lastname, c.firstname';
+
+        $q = $this->getEntityManager()
+            ->createQuery($sql)
+            ->setParameter('company_id', $company_id);
+
+        if (!empty($case_admin)) {
+            $q->setParameter('case_admin', $case_admin);
+        }
+        if (!empty($client_type)) {
+            $q->setParameter('client_type', $client_type);
+        }
+
+        // stop loading the Catering records
+//        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+
+        return $q->getResult();
     }
 }
