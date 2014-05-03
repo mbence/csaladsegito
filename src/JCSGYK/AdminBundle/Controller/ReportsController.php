@@ -20,10 +20,29 @@ class ReportsController extends Controller
     public function indexAction($report = null)
     {
         $request = $this->getRequest();
+
+        $form = $this->createFormBuilder([])->getForm();
+
+        // render and download reports
+        if ($request->isMethod('POST')) {
+            
+
+        }
+
+        return $this->render('JCSGYKAdminBundle:Reports:index.html.twig', [
+            'menu' => $this->getMenu(),
+            'report' => $report,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    private function getMenu()
+    {
         $menu = [
-            ['slug' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_ADMIN'],
+            ['slug' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
+            ['slug' => 'casecount', 'label' => 'Esetszámok', 'role' => 'ROLE_ADMIN'],
         ];
 
-        return $this->render('JCSGYKAdminBundle:Reports:index.html.twig', ['menu' => $menu]);
+        return $menu;
     }
 }

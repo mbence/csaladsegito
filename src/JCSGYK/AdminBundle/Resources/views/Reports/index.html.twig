@@ -2,12 +2,17 @@
 
 {% block content %}
     <br>
+    <h1 class="client">{{ 'Kimutatások'|trans }}</h1>
     <div id="reports-menu">
-        <h1 class="client">{{ 'Kimutatások'|trans }}</h1>
         {% include "JCSGYKAdminBundle:Reports:menu.html.twig" %}
     </div>
-    <div id="reports-content">
-        {% block settings_content %}{% endblock %}
+    <div id="reports-content" class="leftpad20">
+        <form action="{{ path('reports', {'report': report}) }}" id="report_download" novalidate method="post" {{ form_enctype(form) }}>
+            {{ form_errors(form) }}
+            <button type="submit" class="button download_report" title="{{ 'kimutatás letöltése'|trans }}">
+                <span>{{ 'kimutatás letöltése'|trans }}</span>
+            </button>
+        </form>
     </div>
 
 {% endblock %}

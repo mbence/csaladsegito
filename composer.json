@@ -28,7 +28,8 @@
         "jdorn/sql-formatter": "*",
         "friendsofsymfony/user-bundle": "*",
         "mbence/opentbs-bundle": "dev-master",
-        "mbence/livephp-bundle": "dev-master"
+        "mbence/livephp-bundle": "dev-master",
+        "liuggio/excelbundle": "~2.0"
     },
     "scripts": {
         "post-install-cmd": [
