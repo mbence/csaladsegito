@@ -109,7 +109,7 @@ class ReportsController extends Controller
                     'empty_value' => 'összes',
                 ]);
             }
-            // admins can selsct the users of this company
+            // admins can select the users of this company
             if($sec->isGranted('ROLE_ADMIN')) {
                 $form_builder->add('case_admin', 'entity', [
                     'label' => 'Esetgazda',
@@ -171,7 +171,15 @@ class ReportsController extends Controller
         }
 
         $clients = $em->getRepository('JCSGYKAdminBundle:Client')->getClientsByCaseAdmin($company_id, $form_data['case_admin'], $form_data['client_type']);
-        $results = [];
+        $data = [
+            'blocks' => [
+                'client' => $clients,
+            ]
+        ];
+        $template_file = __DIR__.'/../Resources/public/reports/clients.xlsx';
+        $send = $this->container->get('jcs.docx')->makeReport($template_file, $data, 'ugyfel_kimutatas.xlsx');
+        
+        /*
         foreach ($clients as $client) {
             $results[] = [
                 'id'            => $client->getId(),
@@ -183,8 +191,8 @@ class ReportsController extends Controller
                 'case_admin'    => $client->getCaseAdmin() ? $ae->formatName($client->getCaseAdmin()->getFirstName(), $client->getCaseAdmin()->getLastName()) : '',
                 'ssn'           => $client->getSocialSecurityNumber(),
             ];
-        }
+        }*/
 
-        return $results;
+        return $send;
     }
 }

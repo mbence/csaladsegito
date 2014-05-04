@@ -39,7 +39,7 @@ JcsSearch =
                     # display search results
                     $("#search-results").html(data)
                     # bind click events on the results
-                    _this.setupResults()
+                    JcsSearch.setupResults()
             ).error( (data) ->
                 nf.stop()
                 # there was some error :(
