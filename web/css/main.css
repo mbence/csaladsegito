@@ -1086,7 +1086,7 @@ table.problem-list td {
 .parameter-groups, #template-list, #settings-menu {
     width: 260px;
 }
-.parameter-groups ul li, #template-list a.tpl-list, #settings-menu a.menuitem {
+.parameter-groups ul li, #template-list a.tpl-list, #settings-menu a.menuitem, #reports-menu a.menuitem {
     text-align: right;
     border-bottom: 1px solid #CCCCCC;
     color: #3344AA;
@@ -1095,10 +1095,10 @@ table.problem-list td {
     padding: 5px 10px;
     display: block;
 }
-.parameter-groups ul li:hover, #template-list a.tpl-list:hover, #settings-menu a.menuitem:hover   {
+.parameter-groups ul li:hover, #template-list a.tpl-list:hover, #settings-menu a.menuitem:hover, #reports-menu a.menuitem:hover {
     background-color: #f5f5f5;
 }
-.parameter-groups ul li.current, #template-list a.tpl-list.current, #settings-menu a.menuitem.current {
+.parameter-groups ul li.current, #template-list a.tpl-list.current, #settings-menu a.menuitem.current, #reports-menu a.menuitem.current {
     background-color: #e6e6e6 !important;
 }
 .parameter-groups ul div {
@@ -1449,6 +1449,24 @@ table.task-list tr:hover td {
 }
 .agreement-date.expired {
     color: #993300;
+}
+/* Reports */
+#reports-menu {
+    width: 160px;
+    float: left;
+}
+#reports-content {
+    margin-left: 180px;
+    width: 30%;
+}
+#reports-content form label {
+    padding: 0 10px 0 0;
+}
+#reports-content form div#form > div {
+    border-bottom: 1px solid #DDDDDD;
+    color: #5661A2;
+    padding: 2px 3px 6px 6px;
+    white-space: nowrap;
 }
 .button, .greybutton {
     border-radius: 2px;

@@ -432,7 +432,7 @@ class Client
     private $addresses;
 
     /**
-     * @ORM\OneToOne(targetEntity="Catering", mappedBy="client")
+     * @ORM\OneToOne(targetEntity="Catering", mappedBy="client", fetch="EXTRA_LAZY")
      */
     private $catering;
 
