@@ -59,7 +59,7 @@ class Docx
         // send back the file
         $tbs->Show(OPENTBS_DOWNLOAD, $file_name);
     }
-    
+
     /**
      * Generate a file from a template, merge the fields, and send the file as a download
      *
@@ -114,7 +114,7 @@ class Docx
     {
         $re = [];
         $ae = $this->container->get('jcs.twig.adminextension');
-        
+
         // data blocks
         if (isset($data['blocks']['problem'])) {
             $re['blocks']['problem'] = [];
@@ -125,7 +125,13 @@ class Docx
         if (isset($data['blocks']['client'])) {
             $re['blocks']['client'] = [];
             foreach ($data['blocks']['client'] as $client) {
-                $re['blocks']['client'][] = $this->getClientMap($client);
+                $re['blocks']['client'][] = $this->getClientMap($client, true);
+            }
+        }
+        if (isset($data['blocks']['admin'])) {
+            $re['blocks']['admin'] = [];
+            foreach ($data['blocks']['admin'] as $admin) {
+//                $re['blocks']['admin'][] = $this->getAdminMap($admin, true);
             }
         }
 
@@ -134,7 +140,7 @@ class Docx
             $client = $data['client'];
             $re['uf'] = $this->getClientMap($data['client']);
         }
-       
+
         // debts
         if (isset($data['debts'])) {
             $re['ha'] = $this->getDebtMap($data['debts']);
@@ -145,7 +151,7 @@ class Docx
 
         // spec fields
         $re['sp'] = $this->getSpecMap();
-        
+
         // case history
         if (isset($data['history'])) {
             $re['sp']['esettortenet'] = $data['history'];
@@ -155,11 +161,11 @@ class Docx
 
         return $re;
     }
-    
+
     private function getProblemMap($problem)
     {
         $ae = $this->container->get('jcs.twig.adminextension');
-        
+
         $events = [];
         if (count($problem['events'])) {
             foreach ($problem['events'] as $event) {
@@ -182,16 +188,16 @@ class Docx
             'events' => $events
         ];
     }
-    
+
     private function getEventMap($event) {
         $ae = $this->container->get('jcs.twig.adminextension');
-        
+
         return [
             'datum' => sprintf('[%s]', $ae->formatDate($event->getEventDate(), 'sd')),
             'description' => $event->getDescription()
         ];
     }
-    
+
     private function getDebtMap($debts)
     {
         $ae = $this->container->get('jcs.twig.adminextension');
@@ -213,10 +219,10 @@ class Docx
         }
         $re['osszesnyilv'] = $ae->formatCurrency($sum_registered);
         $re['osszeskezelt'] = $ae->formatCurrency($sum_managed);
-        
+
         return $re;
     }
-    
+
     /**
      * Return date fields
      * @return array
@@ -225,11 +231,11 @@ class Docx
     {
         $ae = $this->container->get('jcs.twig.adminextension');
         return [
-            'datum' => $ae->formatDate(),
+            'datum' => $ae->formatDate(new \DateTime()),
             'ev' => date('Y'),
         ];
     }
-    
+
     /**
      * Return the usre related fields
      * @return array
@@ -242,15 +248,15 @@ class Docx
         return [
             'nev' => $ae->formatName($user->getFirstname(), $user->getLastname()),
             'email' => $user->getEmail(),
-        ];        
+        ];
     }
-    
+
     /**
      * Return the Client related fields
      * @param \JCSGYK\AdminBundle\Entity\Client $client
      * @return array
      */
-    private function getClientMap(Client $client) 
+    private function getClientMap(Client $client, $with_problems = false)
     {
         $em = $this->container->get('doctrine')->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
@@ -311,22 +317,37 @@ class Docx
             'megbizott' => $ae->formatName($client->getGuardianFirstname(), $client->getGuardianLastname()),
             'megbizottcsaladineve' => $client->getGuardianLastname(),
             'megbizottutoneve' => $client->getGuardianFirstname(),
-            
+            // is archived?
+            'archiv' => $client->getIsArchived() ? 'archivált' : 'aktív',
             // esetgazda
             'esetgazda' => !empty($client->getCaseAdmin()) ? $ae->formatName($client->getCaseAdmin()->getFirstName(), $client->getCaseAdmin()->getLastName()) : '',
         ];
-        
+
         // utility provider ids
         $ups = $em->getRepository("JCSGYKAdminBundle:Utilityprovider")->findAll();
         foreach ($ups as $up) {
             $re[$up->getTemplateKey() . 'id'] = '';
         }
-        
+
         $client_provider_ids = $client->getUtilityprovidernumbers();
         foreach ($client_provider_ids as $pid) {
             $re[$pid->getUtilityprovider()->getTemplatekey() . 'id'] = $pid->getValue();
         }
-        
+
+        if ($with_problems) {
+            $problems = $client->getProblems();
+            $pl = [];
+            foreach ($problems as $problem) {
+                $param = $problem->getParams();
+                $param = $ae->getParam(reset($param));
+                $status = $problem->getIsActive() ? '' : 'lezárt';
+                $assignee = !empty($problem->getAssignee()) ? $ae->formatName($problem->getAssignee()->getFirstName(), $problem->getAssignee()->getLastName()) : '';
+
+                $pl[] = ['p' => sprintf("%s - %s (%s) %s \n", $problem->getTitle(), $param, $status, $assignee)];
+            }
+            $re['problems'] = $pl;
+        }
+
         return $re;
     }
 }

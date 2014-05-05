@@ -96,38 +96,60 @@ class ReportsController extends Controller
 //        $em = $this->getDoctrine();
 
         $form_builder = $this->createFormBuilder();
+        //$form_builder->setData([]);
 
         if ('clients' == $report) {
-            //$form_builder->setData([]);
-
             // client types (if relevant)
             if (count($client_type_list) > 1) {
-                $form_builder->add('client_type', 'choice', [
-                    'label' => 'Ügyfél típus',
-                    'choices' => $client_type_list,
-                    'required' => false,
-                    'empty_value' => 'összes',
-                ]);
+                $this->getClientTypeSelect($form_builder, $client_type_list);
             }
             // admins can select the users of this company
             if($sec->isGranted('ROLE_ADMIN')) {
-                $form_builder->add('case_admin', 'entity', [
-                    'label' => 'Esetgazda',
-                    'class' => 'JCSGYKAdminBundle:User',
-                    'choices' => $ds->getUsers(),
-                    'required' => false,
-                    'empty_value' => 'összes',
-               ]);
+                $this->getCaseAdminSelect($form_builder, $ds, false, 'nincs');
+            }
+        }
+        elseif ('casecounts' == $report) {
+            // client types (if relevant)
+            if (count($client_type_list) > 1) {
+                $this->getClientTypeSelect($form_builder, $client_type_list);
+            }
+            // admins can select the users of this company
+            if($sec->isGranted('ROLE_ADMIN')) {
+                $this->getCaseAdminSelect($form_builder, $ds, false, 'mind');
             }
         }
 
         return $form_builder->getForm();
     }
 
+    private function getClientTypeSelect(&$form_builder, $client_type_list)
+    {
+        $form_builder->add('client_type', 'choice', [
+            'label' => 'Ügyfél típus',
+            'choices' => $client_type_list,
+            'required' => false,
+            'empty_value' => 'összes',
+        ]);
+    }
+
+    private function getCaseAdminSelect(&$form_builder, $ds, $required = true, $empty_value = '')
+    {
+        $form_builder->add('case_admin', 'entity', [
+            'label' => 'Esetgazda',
+            'class' => 'JCSGYKAdminBundle:User',
+            'choices' => $ds->getUsers(),
+            'required' => $required,
+            'empty_value' => $empty_value,
+       ]);
+    }
+
     private function getReport($report, $form_data)
     {
         if ('clients' == $report) {
             return $this->getClientReport($form_data);
+        }
+        elseif ('casecounts' == $report) {
+            return $this->getCasecountsReport($form_data);
         }
 
         return false;
@@ -137,7 +159,7 @@ class ReportsController extends Controller
     {
         $menu = [
             ['slug' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
-            ['slug' => 'casecount', 'label' => 'Esetszámok', 'role' => 'ROLE_ADMIN'],
+            ['slug' => 'casecounts', 'label' => 'Esetszámok', 'role' => 'ROLE_USER'],
         ];
 
         return $menu;
@@ -171,27 +193,58 @@ class ReportsController extends Controller
         }
 
         $clients = $em->getRepository('JCSGYKAdminBundle:Client')->getClientsByCaseAdmin($company_id, $form_data['case_admin'], $form_data['client_type']);
+
         $data = [
             'blocks' => [
                 'client' => $clients,
             ]
         ];
         $template_file = __DIR__.'/../Resources/public/reports/clients.xlsx';
-        $send = $this->container->get('jcs.docx')->makeReport($template_file, $data, 'ugyfel_kimutatas.xlsx');
-        
-        /*
-        foreach ($clients as $client) {
-            $results[] = [
-                'id'            => $client->getId(),
-                'case_number'   => $client->getCaseLabel(),
-                'name'          => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
-                'birth_place'   => $client->getBirthPlace(),
-                'birth_date'    => $client->getBirthDate() ? $client->getBirthDate()->format('Y-m-d') : '',
-                'address'       => $ae->formatAddress($client->getZipCode(), $client->getCity(), $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber()),
-                'case_admin'    => $client->getCaseAdmin() ? $ae->formatName($client->getCaseAdmin()->getFirstName(), $client->getCaseAdmin()->getLastName()) : '',
-                'ssn'           => $client->getSocialSecurityNumber(),
-            ];
-        }*/
+        $output_name = 'ugyfel_kimutatas_' . date('Ymd') . '.xlsx';
+        $send = $this->container->get('jcs.docx')->makeReport($template_file, $data, $output_name);
+
+        return $send;
+    }
+
+    private function getCasecountsReport($form_data)
+    {
+        $form_fields = [
+            'case_admin' => null,
+            'client_type' => null,
+        ];
+        // make sure we have all required fields
+        $form_data = array_merge($form_fields, $form_data);
+
+        // check for user roles and set the params accordingly
+        $em = $this->getDoctrine();
+        $sec = $this->container->get('security.context');
+        $ds = $this->container->get('jcs.ds');
+        $ae = $this->container->get('jcs.twig.adminextension');
+        $client_type_list = $ds->getClientTypes();
+        $client_type_keys = array_keys($client_type_list);
+        $company_id = $ds->getCompanyId();
+
+        // non admins can only see their own clients
+        if(!$sec->isGranted('ROLE_ADMIN')) {
+            $form_data['case_admin'] = $sec->getToken()->getUser()->getId();
+        }
+        // make sure the client type is correct
+        if (count($client_type_keys) < 2 && !in_array($form_data['client_type'], $client_type_keys)) {
+            $form_data['client_type'] = reset($client_type_keys);
+        }
+
+        $counts = $em->getRepository('JCSGYKAdminBundle:Client')->getCaseCounts($company_id, $form_data['case_admin'], $form_data['client_type']);
+
+        var_dump($counts);
+
+        $data = [
+            'blocks' => [
+                'admin' => $counts,
+            ]
+        ];
+        $template_file = __DIR__.'/../Resources/public/reports/casecounts.xlsx';
+        $output_name = 'esetszam_kimutatas_' . date('Ymd') . '.xlsx';
+        $send = $this->container->get('jcs.docx')->makeReport($template_file, $data, $output_name);
 
         return $send;
     }

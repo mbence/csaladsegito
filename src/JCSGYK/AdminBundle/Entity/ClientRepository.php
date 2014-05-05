@@ -5,6 +5,7 @@ namespace JCSGYK\AdminBundle\Entity;
 use Doctrine\ORM\EntityRepository;
 use JCSGYK\AdminBundle\Entity\Client;
 use Doctrine\ORM\Query;
+use JCSGYK\AdminBundle\Entity\User;
 
 /**
  * ClientRepository
@@ -103,11 +104,16 @@ class ClientRepository extends EntityRepository
     /**
      * Find clients belonging to a case Admin
      */
-    public function getClientsByCaseAdmin($company_id, $case_admin = null, $client_type = null)
+    public function getClientsByCaseAdmin($company_id, $case_admin = false, $client_type = null)
     {
         $sql = 'SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.companyId=:company_id';
-        if (!empty($case_admin)) {
-            $sql .= ' AND c.caseAdmin=:case_admin';
+        if (false !== $case_admin) {
+            if (is_null($case_admin)) {
+                $sql .= ' AND c.caseAdmin IS NULL';
+            }
+            else {
+                $sql .= ' AND c.caseAdmin=:case_admin';
+            }
         }
         if (!empty($client_type)) {
             $sql .= ' AND c.type=:client_type';
@@ -130,4 +136,30 @@ class ClientRepository extends EntityRepository
 
         return $q->getResult();
     }
+
+    public function getCaseCounts($company_id, $case_admin = null, $client_type = null)
+    {
+        if ($case_admin instanceof User) {
+            $case_admin = $case_admin->getId();
+        }
+        $where = ['company_id = :company_id'];
+        $params['company_id'] = $company_id;
+
+        if (!is_null($case_admin)) {
+            $where[] = 'case_admin = :case_admin';
+            $params['case_admin'] =$case_admin;
+        }
+        if (!is_null($client_type)) {
+            $where[] = 'type = :client_type';
+            $params['client_type'] =$client_type;
+        }
+
+        $where = implode(' AND ', $where);
+        $sql = "SELECT case_admin, COUNT(*) AS total, COUNT(CASE WHEN is_archived = 0 THEN 1 END) AS active, COUNT(CASE WHEN is_archived = 1 THEN 1 END) AS archived FROM client WHERE {$where} GROUP BY case_admin";
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, $params)->fetchAll();
+    }
+/*
+ *
+ */
 }
