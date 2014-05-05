@@ -3,7 +3,8 @@
 {% block settings_content %}
 
 {% if name == 'catering_costs' %}
-    {% block cateringcosts_content %}{% endblock %}
+    {% include "JCSGYKAdminBundle:Admin:cateringcosts.html.twig" with {options: options} %}
+    {# {% block cateringcosts_content %}{% endblock %} #}
 {% endif %}
 
 <div class="clear"></div>

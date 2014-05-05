@@ -21,6 +21,10 @@ JcsSettings =
         if $('#company_types').length
             @setupCompanies()
 
+        # table editor
+        if $('#catering-costs-table').length
+            @initTableEditor()
+
     ###
         setup the company editor
     ###
@@ -138,3 +142,38 @@ JcsSettings =
         $("#useredit #editform").submit ->
             if !$("#useredit .formbuttons .usersave").hasClass('animbutton')
                 $("#useredit .formbuttons .usersave").addClass('animbutton')
+
+    ###
+        Init Handsontable jQuery based table editor
+    ###
+    initTableEditor: ->
+        tableData = JSON.parse($("#options_value").val())
+        $("#catering-costs-table").handsontable({
+            data: tableData,
+            colHeaders: ['-tól', '-ig', 'díj', 'egyedülálló'],
+            minSpareRows: 1,
+            currentRowClassName: 'currentRow',
+            currentColClassName: 'currentCol',
+            # columns: [
+            #     {
+            #         data: "from",
+            #         type: "numeric"
+            #     },
+            #     {
+            #         data: "to",
+            #         type: "numeric"
+            #     },
+            #     {
+            #         data: "cost",
+            #         type: "numeric"
+            #     },
+            #     {
+            #         data: "single",
+            #         type: "checkbox"
+            #     }
+            # ],
+            afterChange: (changes, source) ->
+                if changes != null
+                    $("#options_value").val(JSON.stringify(tableData))
+                    console.log($("#options_value").val())
+        })

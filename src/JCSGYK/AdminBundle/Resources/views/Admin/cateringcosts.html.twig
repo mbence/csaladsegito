@@ -1,6 +1,6 @@
-{% extends 'JCSGYKAdminBundle:Admin:options.html.twig' %}
+{# {% extends 'JCSGYKAdminBundle:Admin:options.html.twig' %} #}
 
-{% block cateringcosts_content %}
+{# {% block cateringcosts_content %} #}
 
 <div class="template-top">
     <div class="floatright right">
@@ -24,6 +24,7 @@
 
             <form action="{{ path('admin_cateringcosts', {'id': id}) }}" id="template_edit" novalidate method="post" {{ form_enctype(form) }}>
                 {{ form_errors(form) }}
+                {{ form_widget(form.value) }}
 
                 <table class="client-edit" id="co-admin" cellspacing="0" border="0">
                     <tr>
@@ -37,21 +38,7 @@
                     <tr>
                         <th></th>
                         <td>
-                            <table>
-                                <thead>
-                                    <th>Jövedelem alsó határa</th>
-                                    <th>Jövedelem felső határa</th>
-                                    <th>Térítési díj/nap</th>
-                                    <th>Egyedülálló-e???</th>
-                                </thead>
-                                <tbody>
-                                    {% for row in form.value %}
-                                    <tr>
-                                        <td>{{ form_widget(row) }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                            <div id="catering-costs-table"></div>
                         </td>
                     </tr>
                 </table>
@@ -75,4 +62,4 @@
     </div>
 </div>
 <div class="clear"></div>
-{% endblock %}
+{# {% endblock %} #}

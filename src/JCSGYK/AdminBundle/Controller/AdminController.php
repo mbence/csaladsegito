@@ -21,7 +21,7 @@ use JCSGYK\AdminBundle\Entity\Club;
 use JCSGYK\AdminBundle\Form\Type\ClubType;
 use JCSGYK\AdminBundle\Entity\Paramgroup;
 use JCSGYK\AdminBundle\Entity\Option;
-use JCSGYK\AdminBundle\Form\Type\CateringCostType;
+use JCSGYK\AdminBundle\Form\Type\OptionType;
 
 class AdminController extends Controller
 {
@@ -653,52 +653,56 @@ class AdminController extends Controller
      */
     public function optionsAction($name, $id = null)
     {
-        $request      = $this->getRequest();
-        $option       = null;
-        $form_view    = null;
-        $option_types = ['catering_costs' => 'JCSGYK\AdminBundle\Form\Type\CateringCostType'];
-        $type         = $option_types[$name];
-
-        $em = $this->getDoctrine()->getManager();
+        $request   = $this->getRequest();
+        $option    = null;
+        $form_view = null;
+        $em        = $this->getDoctrine()->getManager();
+        $sec       = $this->get('security.context');
+        $user      = $sec->getToken()->getUser();
 
         if ('new' == $id) {
             // new option
             $option = new Option;
+            $option->setValue('[[null,null,null,null]]');
         }
         elseif (!is_null($id)) {
             $option = $em->getRepository('JCSGYKAdminBundle:Option')->find($id);
         }
-        // print_r($option);
 
         if (is_null($id) || !empty($option)) {
 
             if (!empty($option)) {
-                // $option_type = str_replace(' ', '' ,ucwords((str_replace('_', ' ', $name))));
-                $form = $this->createForm(new $type(), $option);
+                $form = $this->createForm(new OptionType(), $option);
             }
 
-        //     // save the current club
-        //     if ($request->isMethod('POST')) {
+            // save the current option
+            if ($request->isMethod('POST')) {
 
-        //         $form->bind($request);
+                $form->bind($request);
 
-        //         if ($form->isValid()) {
+                if ($form->isValid()) {
+                    // set modifier user
+                    $option->setModifier($user);
 
-        //             if (is_null($club->getId())) {
-        //                 // get the current company id from the datatore
-        //                 $company_id = $this->container->get('jcs.ds')->getCompanyId();
-        //                 // save the company id too
-        //                 $club->setCompanyId($company_id);
-        //                 $em->persist($club);
-        //             }
+                    if (is_null($option->getId())) {
+                        // set option name
+                        $option->setName('catering_costs');
+                        // set the creator
+                        $option->setCreator($user);
+                        // get the current company id from the datatore
+                        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+                        // save the company id too
+                        $option->setCompanyId($company_id);
+                        $em->persist($option);
+                    }
 
-        //             $em->flush();
+                    $em->flush();
 
-        //             $this->get('session')->getFlashBag()->add('notice', 'Klub elmentve');
+                    $this->get('session')->getFlashBag()->add('notice', 'Opciók elmentve');
 
-        //             return $this->redirect($this->generateUrl('admin_clubs', ['id' => $club->getId()]));
-        //         }
-        //     }
+                    return $this->redirect($this->generateUrl('admin_cateringcosts', ['id' => $option->getId()]));
+                }
+            }
 
             if (!empty($form)) {
                 $form_view = $form->createView();
@@ -706,9 +710,7 @@ class AdminController extends Controller
             // get all options named with $name
             $options = $em->getRepository('JCSGYKAdminBundle:Option')->findBy(['name' => $name], ['validFrom' => 'DESC']);
 
-            // return $this->render('JCSGYKAdminBundle:Admin:options.html.twig', ['name' => $name, 'options' => $options]);
-            return $this->render('JCSGYKAdminBundle:Admin:'.str_replace('_', '', $name).'.html.twig', ['name' => $name, 'id' => $id, 'options' => $options, 'form' => $form_view]);
-            // return $this->render('JCSGYKAdminBundle:Admin:clubs.html.twig', ['clubs' => $clubs, 'id' => $id, 'act' => $club, 'form' => $form_view]);
+            return $this->render('JCSGYKAdminBundle:Admin:options.html.twig', ['name' => $name, 'id' => $id, 'options' => $options, 'form' => $form_view]);
         }
         else {
             throw new HttpException(400, "Bad request");

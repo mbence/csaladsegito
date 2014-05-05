@@ -132,7 +132,8 @@ class Option
      */
     public function setValue($value)
     {
-        $this->value = json_encode($value);
+        // $this->value = json_encode($value);
+        $this->value = $value;
 
         return $this;
     }
@@ -144,7 +145,9 @@ class Option
      */
     public function getValue()
     {
-        return json_decode($this->value, true);
+        // return json_decode($this->value, true);
+
+        return $this->value;
     }
 
     /**
