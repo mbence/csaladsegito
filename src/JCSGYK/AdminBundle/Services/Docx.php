@@ -128,11 +128,8 @@ class Docx
                 $re['blocks']['client'][] = $this->getClientMap($client, true);
             }
         }
-        if (isset($data['blocks']['admin'])) {
-            $re['blocks']['admin'] = [];
-            foreach ($data['blocks']['admin'] as $admin) {
-//                $re['blocks']['admin'][] = $this->getAdminMap($admin, true);
-            }
+        if (isset($data['blocks']['casecount'])) {
+            $re['blocks']['casecount'] = $data['blocks']['casecount'];
         }
 
         // Client

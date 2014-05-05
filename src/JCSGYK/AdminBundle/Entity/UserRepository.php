@@ -12,8 +12,6 @@ class UserRepository extends EntityRepository
 {
     public function findActive()
     {
-        //var_dump($this);
-
         $query = $this->getEntityManager()
             ->createQuery('SELECT u FROM JCSGYKAdminBundle:User u WHERE u.enabled = 1 ORDER BY u.lastname, u.firstname');
         try {
@@ -21,5 +19,13 @@ class UserRepository extends EntityRepository
         } catch (\Doctrine\ORM\NoResultException $e) {
             return null;
         }
+    }
+
+    public function getUsers($company_id)
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT u FROM JCSGYKAdminBundle:User u WHERE u.company_id = :company_id ORDER BY u.lastname, u.firstname')
+            ->setParameter('company_id', $company_id)
+            ->getResult();
     }
 }

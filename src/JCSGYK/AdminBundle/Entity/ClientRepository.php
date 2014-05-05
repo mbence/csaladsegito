@@ -142,11 +142,11 @@ class ClientRepository extends EntityRepository
         if ($case_admin instanceof User) {
             $case_admin = $case_admin->getId();
         }
-        $where = ['company_id = :company_id'];
+        $where = ['c.company_id = :company_id'];
         $params['company_id'] = $company_id;
 
         if (!is_null($case_admin)) {
-            $where[] = 'case_admin = :case_admin';
+            $where[] = 'c.case_admin = :case_admin';
             $params['case_admin'] =$case_admin;
         }
         if (!is_null($client_type)) {
@@ -155,7 +155,7 @@ class ClientRepository extends EntityRepository
         }
 
         $where = implode(' AND ', $where);
-        $sql = "SELECT case_admin, COUNT(*) AS total, COUNT(CASE WHEN is_archived = 0 THEN 1 END) AS active, COUNT(CASE WHEN is_archived = 1 THEN 1 END) AS archived FROM client WHERE {$where} GROUP BY case_admin";
+        $sql = "SELECT u.firstname, u.lastname, u.enabled, COUNT(*) AS total, COUNT(CASE WHEN c.is_archived = 0 THEN 1 END) AS active, COUNT(CASE WHEN c.is_archived = 1 THEN 1 END) AS archived FROM client c, admin_user u WHERE case_admin = u.id AND {$where} GROUP BY case_admin ORDER BY u.lastname, u.firstname";
 
         return $this->getEntityManager()->getConnection()->executeQuery($sql, $params)->fetchAll();
     }

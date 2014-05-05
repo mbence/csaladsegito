@@ -235,11 +235,9 @@ class ReportsController extends Controller
 
         $counts = $em->getRepository('JCSGYKAdminBundle:Client')->getCaseCounts($company_id, $form_data['case_admin'], $form_data['client_type']);
 
-        var_dump($counts);
-
         $data = [
             'blocks' => [
-                'admin' => $counts,
+                'casecount' => $counts,
             ]
         ];
         $template_file = __DIR__.'/../Resources/public/reports/casecounts.xlsx';
