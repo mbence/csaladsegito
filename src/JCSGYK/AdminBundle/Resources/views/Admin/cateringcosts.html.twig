@@ -11,7 +11,7 @@
 <div class="adminblock" id="template-list">
     <div class="rightpad fullheight nocollapse">
         {% for o in options %}
-            <a href="{{ path('admin_cateringcosts', {'id': o.id}) }}" class="tpl-list{# {% if act and act.id == o.id %} current{% endif %} #}">
+            <a href="{{ path('admin_cateringcosts', {'id': o.id}) }}" class="tpl-list{% if id == o.id %} current{% endif %}">
                 {{ o.validFrom|date('Y-m-d') }} &nbsp;&nbsp;&nbsp; {{ o.isActive|check }}
             </a>
         {% endfor %}

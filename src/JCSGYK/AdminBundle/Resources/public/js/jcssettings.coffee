@@ -154,26 +154,21 @@ JcsSettings =
             minSpareRows: 1,
             currentRowClassName: 'currentRow',
             currentColClassName: 'currentCol',
-            # columns: [
-            #     {
-            #         data: "from",
-            #         type: "numeric"
-            #     },
-            #     {
-            #         data: "to",
-            #         type: "numeric"
-            #     },
-            #     {
-            #         data: "cost",
-            #         type: "numeric"
-            #     },
-            #     {
-            #         data: "single",
-            #         type: "checkbox"
-            #     }
-            # ],
+            columns: [
+                {
+                    type: "numeric"
+                },
+                {
+                    type: "numeric"
+                },
+                {
+                    type: "numeric"
+                },
+                {
+                    type: "checkbox"
+                }
+            ],
             afterChange: (changes, source) ->
                 if changes != null
                     $("#options_value").val(JSON.stringify(tableData))
-                    console.log($("#options_value").val())
         })

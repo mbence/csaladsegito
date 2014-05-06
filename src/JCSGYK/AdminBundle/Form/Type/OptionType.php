@@ -9,10 +9,9 @@ class OptionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('valid_from', 'date', ['label' => 'Érvényes kezdete']);
+        $builder->add('valid_from', 'date', ['label' => 'Érvényesség kezdete']);
         $builder->add('name', 'hidden');
         $builder->add('value', 'hidden');
-
         $builder->add('is_active', 'checkbox', ['label' => 'Aktív']);
     }
 

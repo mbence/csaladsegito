@@ -687,6 +687,8 @@ class AdminController extends Controller
                 if ($form->isValid()) {
                     // set modifier user
                     $option->setModifier($user);
+                    // set modified at
+                    $option->setModifiedAt(new \DateTime());
 
                     if (is_null($option->getId())) {
                         // set the creator
