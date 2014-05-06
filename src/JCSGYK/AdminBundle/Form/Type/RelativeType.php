@@ -10,18 +10,22 @@ use JCSGYK\AdminBundle\Services\DataStore;
 /**
  * A subset of the ClientType with only the personal data
  */
-class ParentType extends AbstractType
+class RelativeType extends AbstractType
 {
     protected $ds;
+    protected $relation_type;
+    protected $client_type;
 
     /**
      * Save the Datastore for parameter retrieval
      *
      * @param \JCSGYK\AdminBundle\Services\DataStore $ds
      */
-    public function __construct(DataStore $ds)
+    public function __construct(DataStore $ds, $relation_type, $client_type)
     {
         $this->ds = $ds;
+        $this->relation_type = $relation_type;
+        $this->client_type = $client_type;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -32,8 +36,13 @@ class ParentType extends AbstractType
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $builder->add('relation_type', 'choice', [
+            'label'     => 'Típus',
+            'choices'   => $this->ds->getRelationTypes($this->client_type),
+            'mapped'    => false,
+            'data'      => $this->relation_type,
+        ]);
         $builder->add('id', 'hidden');
-        $builder->add('type', 'hidden', ['mapped' => false]);
         $builder->add('title', 'text', ['label' => 'Titulus', 'required' => false]);
         $builder->add('firstname', 'text', ['label' => 'Keresztnév']);
         $builder->add('lastname', 'text', ['label' => 'Vezetéknév']);
@@ -45,7 +54,8 @@ class ParentType extends AbstractType
             'label' => 'Születési idő',
             'widget' => 'choice',
             'format' => 'yMMdd',
-            'required' => false
+            'required' => false,
+            'years' => range(1920, date('Y'))
         ]);
         $builder->add('birth_place', 'text', ['label' => 'Születési hely', 'required' => false]);
         $builder->add('birth_title', 'text', ['label' => 'Titulus', 'required' => false]);

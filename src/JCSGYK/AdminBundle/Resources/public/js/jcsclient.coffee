@@ -24,7 +24,6 @@ JcsClient =
             client_url = false
         $("#clientblock .clientcontent").data("url", client_url)
 
-
         @initButtonRow()
         @initForm()
         @setDelProvider()
@@ -116,7 +115,7 @@ JcsClient =
             )
         false
 
-    reloadParents: ->
+    reloadRelatives: ->
         # get the url
         url = $("#clientblock #parent_container").data("url")
         if url
@@ -204,7 +203,7 @@ JcsClient =
         JcsModal.load()
         $("#archive_type").focus()
 
-    initParent: ->
+    initRelatives: ->
         JcsModal.setCloseButton()
 
         # form submit
@@ -218,9 +217,9 @@ JcsClient =
                     AjaxBag.showNotice(JcsModal.find(".result").data("result-notice"))
                     JcsModal.close()
                     # refresh the parent block
-                    JcsClient.reloadParents()
+                    JcsClient.reloadRelatives()
                 else
-                    JcsClient.initParent()
+                    JcsClient.initRelatives()
 
             ).error( (data) =>
                 # there was some error :(
@@ -293,7 +292,7 @@ JcsClient =
                     if $(this).hasClass('archive_client')
                         JcsClient.initArchive()
                     if $(this).hasClass('edit_parent')
-                        JcsClient.initParent()
+                        JcsClient.initRelatives()
                     # hide the submenu
                     if $(this).parent().hasClass('sub-vertical')
                         $(this).parent().hide()

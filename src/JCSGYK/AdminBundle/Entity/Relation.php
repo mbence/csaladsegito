@@ -18,6 +18,8 @@ class Relation
     const MOTHER = 1;
     const FATHER = 2;
     const GUARDIAN = 3;
+    const RELATIVE = 4;
+    const DOCTOR = 5;
 
     /**
      * @var integer

@@ -2,6 +2,10 @@
 
     <table class="client-edit" cellspacing="0" border="0">
         <tr>
+            <th>{{ form_label(form.relation_type) }}:</th>
+            <td colspan="3">{{ form_errors(form.relation_type) }}{{ form_widget(form.relation_type) }}</td>
+        </tr>
+        <tr>
             <th class="high">{{ 'Név'|trans }}:</th>
             <td colspan="3">
                 <table class="client-edit-inner" cellspacing="0" border="0">
