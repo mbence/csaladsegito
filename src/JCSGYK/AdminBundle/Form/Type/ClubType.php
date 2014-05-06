@@ -32,7 +32,18 @@ class ClubType extends AbstractType
             'choices' => $this->ds->getCaseAdmins(Client::CA),
             'required' => false,
         ]);
-        $builder->add('foodtypes', 'text', ['label' => 'Menü fajták']);
+
+        $lunch_types = $this->ds->getGroup('lunch_types');
+        if (empty($lunch_types)) {
+            $lunch_types = [];
+        }
+
+        $builder->add('lunch_types', 'choice', [
+            'label' => 'Ebéd típusok',
+            'choices' => $lunch_types,
+            'multiple'  => true,
+            'expanded'  => true,
+        ]);
         $builder->add('is_active', 'checkbox', ['label' => 'Aktív']);
     }
 

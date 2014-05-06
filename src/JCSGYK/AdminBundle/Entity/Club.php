@@ -59,9 +59,9 @@ class Club
     /**
      * @var string
      *
-     * @ORM\Column(name="foodtypes", type="text", nullable=true)
+     * @ORM\Column(name="lunch_types", type="text", nullable=true)
      */
-    private $foodtypes;
+    private $lunchTypes;
 
     /**
      * @var boolean
@@ -188,29 +188,6 @@ class Club
     }
 
     /**
-     * Set foodtypes
-     *
-     * @param string $foodtypes
-     * @return Club
-     */
-    public function setFoodtypes($foodtypes)
-    {
-        $this->foodtypes = $foodtypes;
-
-        return $this;
-    }
-
-    /**
-     * Get foodtypes
-     *
-     * @return string
-     */
-    public function getFoodtypes()
-    {
-        return $this->foodtypes;
-    }
-
-    /**
      * Set coordinator
      *
      * @param \JCSGYK\AdminBundle\Entity\User $coordinator
@@ -288,5 +265,29 @@ class Club
     public function getClientcaterings()
     {
         return $this->clientcaterings;
+    }
+
+    /**
+     * Set lunchTypes
+     *
+     * @param string $lunchTypes
+     *
+     * @return Club
+     */
+    public function setLunchTypes($lunchTypes)
+    {
+        $this->lunchTypes = json_encode($lunchTypes);
+
+        return $this;
+    }
+
+    /**
+     * Get lunchTypes
+     *
+     * @return string
+     */
+    public function getLunchTypes()
+    {
+        return json_decode($this->lunchTypes, true);
     }
 }
