@@ -6,12 +6,18 @@
 {% else %}
     {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
 
-    <form action="{{ path('parent_edit', {'id': parent.childId, 'type': parent.type}) }}" id="parent_form" method="post" {{ form_enctype(form) }}>
-        <h1 class="client">{{ rel_types(parent.type) }} szerkesztése</h1>
+    {% if relative.id is defined and relative.id %}
+        {% set relation_id = relative.id %}
+    {% else %}
+        {% set relation_id = 'new' %}
+    {% endif %}
+
+    <form action="{{ path('relative_edit', {'id': relative.childId, 'relation_id': relation_id}) }}" id="parent_form" method="post" {{ form_enctype(form) }}>
+        <h1 class="client">Hozzátartozó szerkesztése</h1>
         {{ form_errors(form) }}
 
-        {% include "JCSGYKAdminBundle:Client:_edit_parent.html.twig" %}
-        {% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" with {client: parent.parent} %}
+        {% include "JCSGYKAdminBundle:Client:_edit_relative.html.twig" %}
+        {% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" with {client: relative.parent} %}
 
         <div class="toppad10">
             {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_parent', title:'Szülő mentése', label:'mentés'}] } %}

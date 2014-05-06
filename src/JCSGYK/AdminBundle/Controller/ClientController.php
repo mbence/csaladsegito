@@ -20,7 +20,7 @@ use JCSGYK\AdminBundle\Form\Type\ArchiveType;
 use JCSGYK\AdminBundle\Entity\Task;
 use JCSGYK\AdminBundle\Entity\Stat;
 use JCSGYK\AdminBundle\Entity\Relation;
-use JCSGYK\AdminBundle\Form\Type\ParentType;
+use JCSGYK\AdminBundle\Form\Type\RelativeType;
 
 class ClientController extends Controller
 {
@@ -173,30 +173,34 @@ class ClientController extends Controller
         $this->get('jcs.stat')->save(Stat::TYPE_FAMILY_HELP, 1, $assignee->getId());
     }
 
-    public function parentEditAction($id, $type)
+    public function relativeEditAction($id, $relation_id)
     {
         $request = $this->getRequest();
         $user= $this->get('security.context')->getToken()->getUser();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
         $client = $this->getClient($id);
-        $parent = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id, $type);
+        if ($relation_id != 'new') {
+            $relation = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id, $relation_id);
+        }
 
-        if (empty($parent[0])) {
-            $parent = new Relation();
-            $parent->setType($type);
-            $parent->setChildId($id);
+        if (empty($relation[0])) {
+            $relation = new Relation();
+            $relation->setChildId($id);
             $new_client = new Client($this->container->get('jcs.ds'));
             $new_client->setCompanyId($company_id);
             $new_client->setType(Client::PARENT);
             $new_client->setCreator($user);
             $new_client->setIsArchived(false);
+            /*
             // set gender
             if (Relation::MOTHER == $type) {
                 $new_client->setGender(2);
             } elseif (Relation::FATHER == $type) {
                 $new_client->setGender(1);
             }
+             */
+
             // set case admin and numbers
             $new_client->setCaseYear($client->getCaseYear());
             $new_client->setCaseNumber($client->getCaseNumber());
@@ -204,17 +208,17 @@ class ClientController extends Controller
             // set the visible case number
             $new_client->setCaseLabel($this->container->get('jcs.twig.adminextension')->formatCaseNumber($client));
 
-            $parent->setParent($new_client);
+            $relation->setParent($new_client);
         }
         else {
-            $parent = $parent[0];
+            $relation = $relation[0];
         }
 
-        if (empty($parent)) {
-            throw new BadRequestHttpException('Invalid parent id');
+        if (empty($relation)) {
+            throw new BadRequestHttpException('Invalid relative id');
         }
 
-        $form = $this->createForm(new ParentType($this->container->get('jcs.ds')), $parent->getParent());
+        $form = $this->createForm(new RelativeType($this->container->get('jcs.ds'), $relation->getType(), $client->getType()), $relation->getParent());
 
         // save
         if ($request->isMethod('POST')) {
@@ -222,19 +226,20 @@ class ClientController extends Controller
 
             if ($form->isValid()) {
                 $em = $this->getDoctrine()->getManager();
-
+                // save relation type
+                $relation->setType($form->get('relation_type')->getData());
                 // set modifier user
-                $parent->getParent()->setModifier($user);
-                $parent->getParent()->setModifiedAt(new \DateTime());
+                $relation->getParent()->setModifier($user);
+                $relation->getParent()->setModifiedAt(new \DateTime());
 
-                if (is_null($parent->getId())) {
-                    $em->persist($parent->getParent());
-                    $em->persist($parent);
+                if (is_null($relation->getId())) {
+                    $em->persist($relation->getParent());
+                    $em->persist($relation);
                 }
                 // if its a mother, we must update any related client record too
-                if ($parent->getId() && $parent->getType() == Relation::MOTHER) {
+                if ($relation->getId() && $relation->getType() == Relation::MOTHER) {
                     // get the related clients
-                    $mother = $parent->getParent();
+                    $mother = $relation->getParent();
                     $siblings = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getChildren($mother);
                     // update the mothers name fields
                     foreach ($siblings as $sibling_rel) {
@@ -247,16 +252,16 @@ class ClientController extends Controller
 
                 $em->flush();
 
-                $this->get('session')->getFlashBag()->add('notice', 'Szülő elmentve');
+                $this->get('session')->getFlashBag()->add('notice', 'Hozzátartozó elmentve');
 
-                return $this->render('JCSGYKAdminBundle:Dialog:parent.html.twig', [
+                return $this->render('JCSGYKAdminBundle:Dialog:relative.html.twig', [
                     'success' => true
                 ]);
             }
         }
-        return $this->render('JCSGYKAdminBundle:Dialog:parent.html.twig', [
+        return $this->render('JCSGYKAdminBundle:Dialog:relative.html.twig', [
             'form' => $form->createView(),
-            'parent' => $parent,
+            'relative' => $relation,
         ]);
     }
 
@@ -307,14 +312,14 @@ class ClientController extends Controller
                 return $this->redirect($this->generateUrl('client_view', ['id' => $id]));
             }
 
-            // get the parents for CHILD WELFARE
-            $parents = [];
+            // get the relatives for CHILD WELFARE or CATERING
+            $relatives = [];
             $relation_types = [];
-            if ($client->getId() && $client->getType() == Client::CW) {
-                $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
-                $relation_types = $this->container->get('jcs.ds')->getRelationTypes();
-                foreach ($parents as $parent) {
-                    unset($relation_types[$parent->getType()]);
+            if ($client->getId() && in_array($client->getType(), [Client::CW, Client::CA])) {
+                $relatives = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
+                $relation_types = $this->container->get('jcs.ds')->getRelationTypes($client->getType());
+                foreach ($relatives as $relative) {
+                    unset($relation_types[$relative->getType()]);
                 }
             }
 
@@ -365,7 +370,7 @@ class ClientController extends Controller
                         $client->setType($client_type);
 
                         $em->persist($client);
-                        
+
                         // if case number given, we must copy over a few fields from that case
                         if (!empty($copy_case)) {
                             $this->copyCaseData($client);
@@ -432,9 +437,16 @@ class ClientController extends Controller
                     $mother = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($client->getId(), Relation::MOTHER);
                     if (!empty($mother[0])) {
                         $mother = $mother[0]->getParent();
+                        // if the birthname is set, then we use that, otherwise the name
+                        if ($mother->getBirthFirstname() || $mother->getBirthLastname()) {
+                            $client->setMotherFirstname($mother->getBirthFirstname());
+                            $client->setMotherLastname($mother->getBirthLastname());
+                        }
+                        else {
+                            $client->setMotherFirstname($mother->getFirstname());
+                            $client->setMotherLastname($mother->getLastname());
+                        }
                         $client->setMotherTitle($mother->getTitle());
-                        $client->setMotherFirstname($mother->getBirthFirstname());
-                        $client->setMotherLastname($mother->getBirthLastname());
                     }
 
                     // save the parameters
@@ -447,8 +459,9 @@ class ClientController extends Controller
 
                     $em->flush();
 
-                    if (empty($id)) {
+                    if (empty($id) && in_array($client->getType(), [Client::FH, Client::CW])) {
                         // create a new visit task for the new client
+                        // only for family help or child welfare clients
                         $this->saveVisitTask($client, $client->getCaseAdmin(), $user);
                     }
 
@@ -464,7 +477,7 @@ class ClientController extends Controller
                 'client' => $client,
                 'problems' => $problems,
                 'form' => $form->createView(),
-                'parents' => $parents,
+                'relatives' => $relatives,
                 'new_relations' => $relation_types,
                 'client_type' => $client_type
             ]);
@@ -514,22 +527,22 @@ class ClientController extends Controller
                 // copy over the relations
                 $rels = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($sibling->getId());
                 foreach ($rels as $rel) {
-                    $parent = new Relation();
-                    $parent->setType($rel->getType());
-                    $parent->setChildId($client->getId());
+                    $relative = new Relation();
+                    $relative->setType($rel->getType());
+                    $relative->setChildId($client->getId());
                     if ($rel->getType() == Relation::MOTHER) {
                         // we only link to the mother,
-                        $parent->setParent($rel->getParent());
+                        $relative->setParent($rel->getParent());
                     }
                     else {
                         // but clone the other relations
                         $old_parent = $rel->getParent();
                         $new_parent = clone $old_parent;
                         $em->persist($new_parent);
-                        $parent->setParent($new_parent);
+                        $relative->setParent($new_parent);
                     }
 
-                    $em->persist($parent);
+                    $em->persist($relative);
                 }
                 $em->flush();
 
@@ -646,15 +659,15 @@ class ClientController extends Controller
             $sec = $this->get('security.context');
             $client_types = $this->container->get('jcs.ds')->getClientTypes();
 
-            // get the parents only for CHILD WELFARE
-            $parents = [];
+            // get the relatives only for CHILD WELFARE or CATERING
+            $relatives = [];
             $relation_types = [];
-            if ($client->getType() == Client::CW) {
-                $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
+            if (in_array($client->getType(), [Client::CW, Client::CA])) {
+                $relatives = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
                 $relation_types = $this->container->get('jcs.ds')->getRelationTypes();
-                foreach ($parents as $parent) {
-                    if (isset($relation_types[$parent->getType()])) {
-                        unset($relation_types[$parent->getType()]);
+                foreach ($relatives as $relative) {
+                    if (isset($relation_types[$relative->getType()])) {
+                        unset($relation_types[$relative->getType()]);
                     }
                 }
             }
@@ -664,7 +677,7 @@ class ClientController extends Controller
                 'problems' => $problems,
                 'can_edit' => $client->canEdit($sec),
                 'display_type' => count($client_types) > 1,  // only display the client type if there are more then one types of this company
-                'parents' => $parents,
+                'relatives' => $relatives,
                 'new_relations' => $relation_types,
                 'client_type' => $client->getType(),
             ]);
@@ -695,24 +708,29 @@ class ClientController extends Controller
     }
 
     /**
-     * Get only the parent list of the client.
-     * Used with the refreshParents JS action
+     * Get only the list of relatives for the client.
+     * Used with the reloadRelatives JS action
      *
      * @Secure(roles="ROLE_USER")
      */
-    public function parentsAction($id)
+    public function relativesAction($id)
     {
         if (!empty($id)) {
             $client = $this->getClient($id);
-            $parents = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
+            $relatives = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
             $relation_types = $this->container->get('jcs.ds')->getRelationTypes();
-            foreach ($parents as $parent) {
-                if (isset($relation_types[$parent->getType()])) {
-                    unset($relation_types[$parent->getType()]);
+            foreach ($relatives as $relative) {
+                if (isset($relation_types[$relative->getType()])) {
+                    unset($relation_types[$relative->getType()]);
                 }
             }
 
-            return $this->render('JCSGYKAdminBundle:Client:_parents.html.twig', ['client' => $client, 'parents' => $parents, 'new_relations' => $relation_types, 'edit' => true]);
+            return $this->render('JCSGYKAdminBundle:Client:_relatives.html.twig', [
+                'client' => $client,
+                'relatives' => $relatives,
+                'new_relations' => $relation_types,
+                'edit' => true
+            ]);
         }
         else {
             throw new BadRequestHttpException('Invalid client id');

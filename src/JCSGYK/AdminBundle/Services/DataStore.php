@@ -370,14 +370,34 @@ class DataStore
     /**
      * Return the parent types
      * @return array
+     *
+     * TODO: fix this, coz its ugly
      */
-    public function getRelationTypes()
+    public function getRelationTypes($client_type = null)
     {
-        return [
-            Relation::MOTHER => 'Anya',
-            Relation::FATHER => 'Apa',
-            Relation::GUARDIAN => 'Gyám'
-        ];
+        // different relations for different types
+        if (Client::CW == $client_type) {
+            return [
+                Relation::MOTHER => 'Anya',
+                Relation::FATHER => 'Apa',
+                Relation::GUARDIAN => 'Gyám',
+            ];
+        }
+        elseif (Client::CA == $client_type) {
+            return [
+                Relation::RELATIVE => 'Hozzátartozó',
+                Relation::DOCTOR => 'Orvos',
+            ];
+        }
+        else {
+            return [
+                Relation::MOTHER => 'Anya',
+                Relation::FATHER => 'Apa',
+                Relation::GUARDIAN => 'Gyám',
+                Relation::RELATIVE => 'Hozzátartozó',
+                Relation::DOCTOR => 'Orvos',
+            ];
+        }
     }
 
     /**
