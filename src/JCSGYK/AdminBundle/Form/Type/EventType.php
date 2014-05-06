@@ -7,7 +7,6 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use JCSGYK\AdminBundle\Entity\Event;
 use JCSGYK\AdminBundle\Services\DataStore;
-use JCSGYK\AdminBundle\Entity\UserRepository;
 
 class EventType extends AbstractType
 {

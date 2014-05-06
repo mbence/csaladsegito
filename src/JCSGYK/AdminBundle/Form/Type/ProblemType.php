@@ -7,7 +7,6 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use JCSGYK\AdminBundle\Entity\Problem;
 use JCSGYK\AdminBundle\Services\DataStore;
-use JCSGYK\AdminBundle\Entity\UserRepository;
 
 class ProblemType extends AbstractType
 {
@@ -34,7 +33,7 @@ class ProblemType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $client = $this->problem->getClient();
-        
+
         $builder->add('title', 'text', ['label' => 'Cím', 'required' => false]);
         $builder->add('description', 'textarea', ['label' => 'Megjegyzés', 'required' => false]);
 
@@ -69,12 +68,7 @@ class ProblemType extends AbstractType
         $builder->add('assignee', 'entity', [
             'label' => 'Felelős',
             'class' => 'JCSGYKAdminBundle:User',
-            'query_builder' => function(UserRepository $er) {
-                return $er->createQueryBuilder('u')
-                    ->where('u.enabled=1')
-                    ->andWhere("u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'")
-                    ->orderBy('u.lastname', 'ASC', 'u.firstname', 'ASC');
-            },
+            'choices' => $this->ds->getCaseAdmins($client->getType()),
             'required' => false,
         ]);
 

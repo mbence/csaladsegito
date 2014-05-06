@@ -21,7 +21,7 @@ class MenuController extends Controller
 
         $items = [];
         if ($ds->companyHas(Client::FH)) {
-            $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::FH]], 'label' => 'Családgondozó', 'role' => 'ROLE_FAMILY_HELP'];
+            $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::FH]], 'label' => 'Családsegítő', 'role' => 'ROLE_FAMILY_HELP'];
         }
         if ($ds->companyHas(Client::CW)) {
             $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CW]], 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE'];

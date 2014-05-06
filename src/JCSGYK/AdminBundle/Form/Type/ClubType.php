@@ -4,11 +4,23 @@ namespace JCSGYK\AdminBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use JCSGYK\AdminBundle\Entity\Club;
-use JCSGYK\AdminBundle\Entity\UserRepository;
+use JCSGYK\AdminBundle\Entity\Client;
+use JCSGYK\AdminBundle\Services\DataStore;
 
 class ClubType extends AbstractType
 {
+    private $ds;
+
+    /**
+     * Save the Datastore for parameter retrieval
+     *
+     * @param \JCSGYK\AdminBundle\Services\DataStore $ds
+     */
+    public function __construct(DataStore $ds)
+    {
+        $this->ds = $ds;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('name', 'text', ['label' => 'Név']);
@@ -17,15 +29,21 @@ class ClubType extends AbstractType
         $builder->add('coordinator', 'entity', [
             'label' => 'Koordinátor',
             'class' => 'JCSGYKAdminBundle:User',
-            'query_builder' => function(UserRepository $er) {
-                return $er->createQueryBuilder('u')
-                    ->where('u.enabled=1')
-                    ->andWhere("u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'")
-                    ->orderBy('u.lastname', 'ASC', 'u.firstname', 'ASC');
-            },
+            'choices' => $this->ds->getCaseAdmins(Client::CA),
             'required' => false,
         ]);
-        $builder->add('foodtypes', 'text', ['label' => 'Menü fajták']);
+
+        $lunch_types = $this->ds->getGroup('lunch_types');
+        if (empty($lunch_types)) {
+            $lunch_types = [];
+        }
+
+        $builder->add('lunch_types', 'choice', [
+            'label' => 'Ebéd típusok',
+            'choices' => $lunch_types,
+            'multiple'  => true,
+            'expanded'  => true,
+        ]);
         $builder->add('is_active', 'checkbox', ['label' => 'Aktív']);
     }
 

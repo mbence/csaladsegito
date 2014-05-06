@@ -42,9 +42,14 @@ class CateringType extends AbstractType
             'required' => true,
         ]);
 
+        $lunch_types = $this->ds->getGroup('lunch_types');
+        if (empty($lunch_types)) {
+            $lunch_types = [];
+        }
+        
         $builder->add('menu', 'choice', [
             'label' => 'Ebéd',
-            'choices'   => $this->ds->getGroup('lunch_types'),
+            'choices'   => $lunch_types,
         ]);
 
         $builder->add('is_single', 'checkbox', ['label' => 'Egyedülálló']);

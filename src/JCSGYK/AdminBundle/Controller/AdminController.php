@@ -390,6 +390,7 @@ class AdminController extends Controller
         $form_view = null;
 
         $em = $this->getDoctrine()->getManager();
+        $ds = $this->container->get('jcs.ds');
 
         if ('new' == $id) {
             // new club
@@ -402,7 +403,7 @@ class AdminController extends Controller
         if (is_null($id) || !empty($club)) {
 
             if (!empty($club)) {
-                $form = $this->createForm(new ClubType(), $club);
+                $form = $this->createForm(new ClubType($ds), $club);
             }
 
             // save the current club
@@ -414,7 +415,7 @@ class AdminController extends Controller
 
                     if (is_null($club->getId())) {
                         // get the current company id from the datatore
-                        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+                        $company_id = $ds->getCompanyId();
                         // save the company id too
                         $club->setCompanyId($company_id);
                         $em->persist($club);
