@@ -10,7 +10,6 @@ parameters:
         events: ["Esemény", 0, 0]
         signals: ["Jelzések", 0, 0]
         lunch_types: ["Ebéd Típusok", 0, 0]
-        lunch_costs: ["Díjtáblázat", 0, 0]
 
     task_status:
         1: "új"
