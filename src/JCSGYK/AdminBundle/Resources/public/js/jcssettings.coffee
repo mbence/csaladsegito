@@ -147,6 +147,30 @@ JcsSettings =
         Init Handsontable jQuery based table editor
     ###
     initTableEditor: ->
+        numericValidator: (value, callback) ->
+            setTimeout( ->
+                if /^[0-9]{1,10}$/.test(value)
+                    callback(true)
+                else
+                    callback(false)
+            , 1000)
+            
+        # load a language
+        numeral.language('hu', {
+            delimiters: {
+                thousands: ' ',
+                decimal: ','
+            },
+            abbreviations: {
+                thousand: 'e',
+                million: 'm',
+                billion: 'b',
+                trillion: 't'
+            },
+            currency: {
+                symbol: 'Ft'
+            }
+        })
         tableData = JSON.parse($("#options_value").val())
         $("#catering-costs-table").handsontable({
             data: tableData,
@@ -156,13 +180,21 @@ JcsSettings =
             currentColClassName: 'currentCol',
             columns: [
                 {
-                    type: "numeric"
+                    type: "numeric",
+                    format: '0 0[,]00 $',
+                    language: 'hu'
+                    validator: @numericValidator,
+                    allowInvalid: false
                 },
                 {
-                    type: "numeric"
+                    type: "numeric",
+                    format: '0 0[,]00 $',
+                    language: 'hu'
                 },
                 {
-                    type: "numeric"
+                    type: "numeric",
+                    format: '0 0[,]00 $',
+                    language: 'hu'
                 },
                 {
                     type: "checkbox"
@@ -170,5 +202,20 @@ JcsSettings =
             ],
             afterChange: (changes, source) ->
                 if changes != null
-                    $("#options_value").val(JSON.stringify(tableData))
+                    for row in tableData
+                        irow = tableData.indexOf(row)
+                        empty = true
+                        for col in row
+                            if empty
+                                empty = (col==null) ? true : false
+                            # console.log(i.indexOf(null))
+                        if empty
+                            strippedData = tableData
+                            strippedData.splice(irow,1)
+                        else
+                            strippedData = tableData
+                        # console.log(empty)
+                    # console.log(tableData)
+
+                    $("#options_value").val(JSON.stringify(strippedData))
         })

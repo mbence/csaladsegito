@@ -15483,6 +15483,32 @@ JcsSettings = {
    */
   initTableEditor: function() {
     var tableData;
+    ({
+      numericValidator: function(value, callback) {
+        return setTimeout(function() {
+          if (/^[0-9]{1,10}$/.test(value)) {
+            return callback(true);
+          } else {
+            return callback(false);
+          }
+        }, 1000);
+      }
+    });
+    numeral.language('hu', {
+      delimiters: {
+        thousands: ' ',
+        decimal: ','
+      },
+      abbreviations: {
+        thousand: 'e',
+        million: 'm',
+        billion: 'b',
+        trillion: 't'
+      },
+      currency: {
+        symbol: 'Ft'
+      }
+    });
     tableData = JSON.parse($("#options_value").val());
     return $("#catering-costs-table").handsontable({
       data: tableData,
@@ -15492,18 +15518,46 @@ JcsSettings = {
       currentColClassName: 'currentCol',
       columns: [
         {
-          type: "numeric"
+          type: "numeric",
+          format: '0 0[,]00 $',
+          language: 'hu',
+          validator: this.numericValidator,
+          allowInvalid: false
         }, {
-          type: "numeric"
+          type: "numeric",
+          format: '0 0[,]00 $',
+          language: 'hu'
         }, {
-          type: "numeric"
+          type: "numeric",
+          format: '0 0[,]00 $',
+          language: 'hu'
         }, {
           type: "checkbox"
         }
       ],
       afterChange: function(changes, source) {
+        var col, empty, irow, row, strippedData, _i, _j, _len, _len1, _ref;
         if (changes !== null) {
-          return $("#options_value").val(JSON.stringify(tableData));
+          for (_i = 0, _len = tableData.length; _i < _len; _i++) {
+            row = tableData[_i];
+            irow = tableData.indexOf(row);
+            empty = true;
+            for (_j = 0, _len1 = row.length; _j < _len1; _j++) {
+              col = row[_j];
+              if (empty) {
+                empty = (_ref = col === null) != null ? _ref : {
+                  "true": false
+                };
+              }
+            }
+            if (empty) {
+              strippedData = tableData;
+              strippedData.splice(irow, 1);
+            } else {
+              strippedData = tableData;
+            }
+          }
+          return $("#options_value").val(JSON.stringify(strippedData));
         }
       }
     });

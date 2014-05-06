@@ -668,6 +668,7 @@ class AdminController extends Controller
             // ez így nem jó, de nem tudom hogyan kellene átadni NEW esetén
             //
             $option->setValue('[[null,null,null,null]]');
+            $option->setValidFrom(new \DateTime());
         }
         elseif (!is_null($id)) {
             $option = $em->getRepository('JCSGYKAdminBundle:Option')->find($id);
