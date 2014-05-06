@@ -24,6 +24,7 @@
 
             <form action="{{ path('admin_cateringcosts', {'id': id}) }}" id="template_edit" novalidate method="post" {{ form_enctype(form) }}>
                 {{ form_errors(form) }}
+                {{ form_widget(form.name) }}
                 {{ form_widget(form.value) }}
 
                 <table class="client-edit" id="co-admin" cellspacing="0" border="0">

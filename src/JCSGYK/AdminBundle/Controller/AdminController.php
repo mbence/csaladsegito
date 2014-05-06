@@ -663,6 +663,10 @@ class AdminController extends Controller
         if ('new' == $id) {
             // new option
             $option = new Option;
+            $option->setName($name);
+            //
+            // ez így nem jó, de nem tudom hogyan kellene átadni NEW esetén
+            //
             $option->setValue('[[null,null,null,null]]');
         }
         elseif (!is_null($id)) {
@@ -685,8 +689,6 @@ class AdminController extends Controller
                     $option->setModifier($user);
 
                     if (is_null($option->getId())) {
-                        // set option name
-                        $option->setName('catering_costs');
                         // set the creator
                         $option->setCreator($user);
                         // get the current company id from the datatore
@@ -700,7 +702,7 @@ class AdminController extends Controller
 
                     $this->get('session')->getFlashBag()->add('notice', 'Opciók elmentve');
 
-                    return $this->redirect($this->generateUrl('admin_cateringcosts', ['id' => $option->getId()]));
+                    return $this->redirect($this->generateUrl('admin_options', ['name' => $option->getName(), 'id' => $option->getId()]));
                 }
             }
 
