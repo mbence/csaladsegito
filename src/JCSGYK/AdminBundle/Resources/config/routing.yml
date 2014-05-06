@@ -132,10 +132,10 @@ admin_systemparams:
     defaults: { _controller: JCSGYKAdminBundle:Admin:params, group: null, sys: true }
 admin_cateringcosts:
     pattern:  /admin/options/cateringcosts/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Admin:options, name: 'catering_costs', id: null }
+    defaults: { _controller: JCSGYKAdminBundle:Admin:options, name: 'cateringcosts', id: null }
 admin_options:
     pattern:  /admin/options/{name}/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Admin:options, name: 'catering_costs', id: new }
+    defaults: { _controller: JCSGYKAdminBundle:Admin:options, name: 'cateringcosts', id: null }
 admin_providers:
     pattern:  /admin/providers/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:providers, id: null }
