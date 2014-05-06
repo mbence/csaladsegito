@@ -115,7 +115,7 @@ class User extends BaseUser
 
     public function __toString()
     {
-        return $this->getLastname() . ' ' . $this->getFirstname();
+        return $this->getLastname() . ' ' . $this->getFirstname() . ($this->enabled ? '' : ' (inaktív)');
     }
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)

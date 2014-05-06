@@ -3,6 +3,7 @@
 namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Club
@@ -76,9 +77,6 @@ class Club
 
     public function __construct($salt = null)
     {
-        parent::__construct();
-        // your own logic
-
         $this->clientcaterings = new ArrayCollection();
     }
 

@@ -9,7 +9,6 @@ use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Services\DataStore;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
 use JCSGYK\AdminBundle\Form\Type\AddressType;
-use JCSGYK\AdminBundle\Entity\UserRepository;
 use JCSGYK\AdminBundle\Form\Type\ParentType;
 use JCSGYK\AdminBundle\Form\Type\CateringType;
 
@@ -147,12 +146,7 @@ class ClientType extends AbstractType
         $builder->add('case_admin', 'entity', [
             'label' => 'Esetgazda',
             'class' => 'JCSGYKAdminBundle:User',
-            'query_builder' => function(UserRepository $er) {
-                return $er->createQueryBuilder('u')
-                    ->where('u.enabled=1')
-                    ->andWhere("u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'")
-                    ->orderBy('u.lastname', 'ASC', 'u.firstname', 'ASC');
-            },
+            'choices' => $this->ds->getCaseAdmins($this->client->getType()),
             'required' => false,
         ]);
 

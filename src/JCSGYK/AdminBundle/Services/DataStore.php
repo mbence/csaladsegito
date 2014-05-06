@@ -494,18 +494,23 @@ class DataStore
     }
 
     /**
-     * Finds the array of the active users of the actual company
+     * Returns a list of the active users of the company, optionally filtered by the client type (based on role)
      *
+     * @param int $client_type
      * @return array
      */
-    public function getUsers($active_only = true)
+    public function getCaseAdmins($client_type = null, $active = true)
     {
         $em = $this->container->get('doctrine')->getManager();
         $sec = $this->container->get('security.context');
 
         $sql = 'SELECT u FROM JCSGYKAdminBundle:User u WHERE u.companyId=:company_id';
-        if ($active_only) {
+        if ($active) {
             $sql .= ' AND u.enabled=1';
+        }
+        if (!empty($client_type) && !empty($this->roleMap[$client_type])) {
+            $role = $this->roleMap[$client_type];
+            $sql .= " AND (u.roles LIKE '%{$role}%' OR u.roles LIKE '%ROLE_ADMIN%')";
         }
 
         // only SUPER_ADMINs should be able to see SUPER_ADMINs
@@ -514,8 +519,48 @@ class DataStore
         }
         $sql .= ' ORDER BY u.lastname, u.firstname';
 
-        return $em->createQuery($sql)
+        $users = $em->createQuery($sql)
             ->setParameter('company_id', $this->getCompanyId())
             ->getResult();
+
+        $re = [];
+//
+//    $roles = [
+//        'ROLE_ASSISTANCE' => 'Asszisztens',
+//        'ROLE_FAMILY_HELP' => 'Családsegítő',
+//        'ROLE_CHILD_WELFARE' => 'Gyermekvédelem',
+//        'ROLE_CATERING' => 'Étkeztetés',
+//        'ROLE_ADMIN' => 'Admin',
+//    ];
+
+        // set the initial order of the user arrays
+        foreach ($this->roles as $role) {
+            $re[$role] = [];
+        }
+
+        foreach ($users as $user) {
+            $user_roles = $user->getRoles();
+
+            // admin users should only appear in the admin lists
+            if (in_array('ROLE_ADMIN', $user_roles)) {
+                $user_roles = ['ROLE_ADMIN'];
+            }
+            // if $client_type is set, we should display multi-roled users in that group
+            if (!empty($client_type)) {
+                if (isset($this->roleMap[$client_type]) && in_array($this->roleMap[$client_type], $user_roles)) {
+                    $user_roles = [$this->roleMap[$client_type]];
+                }
+            }
+
+            // add each user to the corresponding role group but only once
+            foreach ($user_roles as $role) {
+                if (isset($this->roles[$role])) {
+                    $re[$this->roles[$role]][] = $user;
+                }
+                break;
+            }
+        }
+
+        return $re;
     }
 }
