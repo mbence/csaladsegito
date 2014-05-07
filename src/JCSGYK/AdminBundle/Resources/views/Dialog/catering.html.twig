@@ -1,0 +1,33 @@
+{# Client catering #}
+
+{# if all went well, we just need to close the popup #}
+{% if success is defined and success %}
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% else %}
+    <h1 class="client center">{{ 'Étkeztetés'|trans }}</h1>
+
+    <form id="catering_form" class="templateform" action="{{ path('client_catering_edit', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
+        {{ form_errors(form) }}
+
+        <table class="client" cellspacing="0" border="0">
+        <tr>
+            <th>{{ 'Név'|trans }}:</th>
+            <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
+        </tr>
+        <tr>
+            <th>{{ client.type|caselabel }}:</th>
+            <td>{{ client|casenum }}</td>
+        </tr>
+    </table>
+
+ {% include "JCSGYKAdminBundle:Catering:_edit_catering.html.twig" %}
+
+    <div class="toppad10 center">
+        <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
+        <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
+    </div>
+
+    {{ form_widget(form._token) }}
+    </form>
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% endif %}

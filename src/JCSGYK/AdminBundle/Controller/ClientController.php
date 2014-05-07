@@ -21,6 +21,8 @@ use JCSGYK\AdminBundle\Entity\Task;
 use JCSGYK\AdminBundle\Entity\Stat;
 use JCSGYK\AdminBundle\Entity\Relation;
 use JCSGYK\AdminBundle\Form\Type\RelativeType;
+use JCSGYK\AdminBundle\Entity\Catering;
+use JCSGYK\AdminBundle\Form\Type\CateringType;
 
 class ClientController extends Controller
 {
@@ -153,6 +155,89 @@ class ClientController extends Controller
             }
 
             return $this->render('JCSGYKAdminBundle:Dialog:visit.html.twig', ['client' => $client, 'form' => $form->createView(), 'user_counts' => $user_counts]);
+        }
+        else {
+            throw new BadRequestHttpException('Invalid client id');
+        }
+    }
+
+    /**
+     * Get only the catering data of the client.
+     * Used with the refreshCatering JS function
+     *
+     * @Secure(roles="ROLE_USER")
+     */
+    public function cateringAction($id)
+    {
+        if (!empty($id)) {
+            $client = $this->getClient($id);
+        }
+
+        if (!empty($client)) {
+
+            $ds = $this->container->get('jcs.ds');
+
+            // Global security check for user type
+            $ds->userRoleCheck($client->getType());
+
+            $sec = $this->get('security.context');
+
+            return $this->render('JCSGYKAdminBundle:Catering:_catering.html.twig', [
+                'client' => $client,
+                'catering' => $client->getCatering(),
+            ]);
+        }
+        else {
+            throw new BadRequestHttpException('Invalid client id');
+        }
+    }
+
+    /**
+     * Edit catering fields
+     *
+     * @Secure(roles="ROLE_USER")
+     */
+    public function cateringEditAction($id = null)
+    {
+        $request = $this->getRequest();
+
+        if (!empty($id)) {
+            $em = $this->getDoctrine()->getManager();
+            $company_id = $this->container->get('jcs.ds')->getCompanyId();
+            $ae = $this->container->get('jcs.twig.adminextension');
+            $ds = $this->container->get('jcs.ds');
+            $sec = $this->get('security.context');
+            $user= $sec->getToken()->getUser();
+
+            // get the client
+            $client = $this->getClient($id);
+
+            // Global security check for user type
+            $ds->userRoleCheck($client->getType());
+
+            $form = $this->createForm(new CateringType($ds), $client->getCatering());
+
+            // save the catering data
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    $data = $form->getData();
+
+                    $em->flush();
+
+                    $this->get('session')->getFlashBag()->add('notice', 'Étkeztetés elmentve');
+
+                    return $this->render('JCSGYKAdminBundle:Dialog:catering.html.twig', [
+                        'success' => true,
+                    ]);
+                }
+            }
+
+            return $this->render('JCSGYKAdminBundle:Dialog:catering.html.twig', [
+                'client' => $client,
+                'form' => $form->createView(),
+            ]);
         }
         else {
             throw new BadRequestHttpException('Invalid client id');
@@ -386,13 +471,11 @@ class ClientController extends Controller
                         $client->setCaseNumber($orig_casenum);
                     }
 
-                    // save the catering data
-                    if ($client->getType() == Client::CA) {
-                        $catering = $client->getCatering();
-                        if (empty($catering->getClient())) {
-                            $catering->setClient($client);
-                            $em->persist($catering);
-                        }
+                    // create a catering record for such clients
+                    if ($client->getType() == Client::CA && empty($client->getCatering())) {
+                        $catering = new Catering();
+                        $catering->setClient($client);
+                        $em->persist($catering);
                     }
                     $em->flush();
 

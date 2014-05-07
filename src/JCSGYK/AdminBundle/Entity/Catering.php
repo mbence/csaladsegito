@@ -64,9 +64,9 @@ class Catering
     private $income;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="discount", type="boolean", nullable=true)
+     * @ORM\Column(name="discount", type="integer", nullable=true)
      */
     private $discount;
 
@@ -205,7 +205,7 @@ class Catering
     /**
      * Set discount
      *
-     * @param boolean $discount
+     * @param integer $discount
      *
      * @return Catering
      */
@@ -219,7 +219,7 @@ class Catering
     /**
      * Get discount
      *
-     * @return boolean
+     * @return integer
      */
     public function getDiscount()
     {

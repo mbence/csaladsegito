@@ -13,7 +13,16 @@
 
 {# catering block #}
 {% if client.type == 4 %}
-    {% include "JCSGYKAdminBundle:Catering:_edit_catering.html.twig" %}
+    {% if client.id %}
+    <div class="catering_container" data-url="{{ path('client_catering', {id: client.id}) }}">
+        {% include "JCSGYKAdminBundle:Catering:_catering.html.twig" with {'catering': client.catering} %}
+    </div>
+    {% else %}
+        <div class="client-sub">{{ 'Étkeztetés'|trans }}</div>
+        <div class="noinfo">
+            Az étkeztetési adatokat, az ügyfél létrehozása után tudja megadni.
+        </div>
+    {% endif %}
 {% endif %}
 
 {% if client.type == 2 or client.type == 4 %} {# (is_granted('ROLE_FAMILY_HELP') or is_granted('ROLE_CHILD_WELFARE')) and  #}
@@ -22,7 +31,7 @@
         {% include "JCSGYKAdminBundle:Client:_relatives.html.twig" with {'edit': true} %}
     </div>
     {% else %}
-        <div class="client-sub togglable">{{ 'Hozzátartozók adatai'|trans }}</div>
+        <div class="client-sub">{{ 'Hozzátartozók adatai'|trans }}</div>
         <div class="noinfo">
             A hozzátartozók adatait, az ügyfél létrehozása után tudja megadni.
         </div>

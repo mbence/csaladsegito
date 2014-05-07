@@ -151,9 +151,9 @@ class ClientType extends AbstractType
         ]);
 
         // add the catering form
-        if ($this->client->getType() == Client::CA) {
-            $builder->add('catering', new CateringType($this->ds));
-        }
+//        if ($this->client->getType() == Client::CA) {
+//            $builder->add('catering', new CateringType($this->ds));
+//        }
     }
 
     public function getName()

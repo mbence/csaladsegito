@@ -149,10 +149,10 @@ class MenuController extends Controller
         $items = [
             // edit catering data
             [
-                'url'   => $this->generateUrl('client_catering', ['id' => $client->getId()]),
+                'url'   => $this->generateUrl('client_catering_edit', ['id' => $client->getId()]),
                 'label' => 'szerkesztés',
                 'title' => 'Étkezési adatok szerkesztése',
-                'class' => 'greybutton',
+                'class' => 'greybutton edit_catering',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
                 'requirement' => $client->canEdit($sec)

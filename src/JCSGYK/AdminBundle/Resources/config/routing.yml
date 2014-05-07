@@ -45,6 +45,9 @@ client_relatives:
     defaults: { _controller: JCSGYKAdminBundle:Client:relatives }
 
 # Catering #
+client_catering_edit:
+    pattern:  /clients/catering/edit/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:cateringEdit }
 client_catering:
     pattern:  /clients/catering/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:catering }
@@ -53,7 +56,7 @@ client_orders:
     defaults: { _controller: JCSGYKAdminBundle:Client:orders }
 client_invoices:
     pattern:  /clients/invoices/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Client:invoices }    
+    defaults: { _controller: JCSGYKAdminBundle:Client:invoices }
 
 # Relatives #
 relative_edit:

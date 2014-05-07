@@ -14,7 +14,9 @@
 
 {# catering block #}
 {% if client.type == 4 %}
+<div class="catering_container" data-url="{{ path('client_catering', {id: client.id}) }}">
     {% include "JCSGYKAdminBundle:Catering:_catering.html.twig" with {'catering': client.catering} %}
+</div>
 {% endif %}
 
 <div class="problem_container" data-url="{{ path('client_problems', {id: client.id}) }}">

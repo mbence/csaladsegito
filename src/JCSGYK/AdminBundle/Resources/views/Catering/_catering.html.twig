@@ -8,7 +8,7 @@
         <table class="client" cellspacing="0" border="0">
             <tr>
                 <th>{{ 'Klub'|trans }}:</th>
-                <td>{{ catering.club.name }}</td>
+                <td>{% if catering.club %}{{ catering.club.name }}{% endif %}</td>
             </tr>
             <tr>
                 <th>{{ 'Ebéd'|trans }}:</th>

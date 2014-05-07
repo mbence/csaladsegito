@@ -3,6 +3,7 @@
 ###
 JcsClient =
     init: ->
+        JcsCatering.init()
         # init toggles
         JcsMenu.submenu()
         JcsToggle.init("clientblock")
