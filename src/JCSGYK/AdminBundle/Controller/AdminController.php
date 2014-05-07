@@ -687,37 +687,28 @@ class AdminController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-                    $value = $this->processValue($option);
-                    
-                    if ($value !== false) {
+                    $this->processValue($option);
 
-                        // set processed value
-                        $option->setValue($value);
+                    // set modifier user
+                    $option->setModifier($user);
+                    // set modified at
+                    $option->setModifiedAt(new \DateTime());
 
-                        // set modifier user
-                        $option->setModifier($user);
-                        // set modified at
-                        $option->setModifiedAt(new \DateTime());
-
-                        if (is_null($option->getId())) {
-                            // set the creator
-                            $option->setCreator($user);
-                            // get the current company id from the datatore
-                            $company_id = $this->container->get('jcs.ds')->getCompanyId();
-                            // save the company id too
-                            $option->setCompanyId($company_id);
-                            $em->persist($option);
-                        }
-
-                        $em->flush();
-
-                        $this->get('session')->getFlashBag()->add('notice', 'Opciók elmentve');
-
-                        return $this->redirect($this->generateUrl('admin_options', ['name' => $option->getName(), 'id' => $option->getId()]));
+                    if (is_null($option->getId())) {
+                        // set the creator
+                        $option->setCreator($user);
+                        // get the current company id from the datatore
+                        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+                        // save the company id too
+                        $option->setCompanyId($company_id);
+                        $em->persist($option);
                     }
-                    else {
-                        $this->get('session')->getFlashBag()->add('error', 'Hiba az opciók mentésekor');
-                    }
+
+                    $em->flush();
+
+                    $this->get('session')->getFlashBag()->add('notice', 'Opciók elmentve');
+
+                    return $this->redirect($this->generateUrl('admin_options', ['name' => $option->getName(), 'id' => $option->getId()]));
                 }
             }
 
@@ -737,33 +728,24 @@ class AdminController extends Controller
     /**
      * process option value
      */
-    private function processValue(Option $option)
+    private function processValue(Option &$option)
     {
-        $value = $option->getValue();
-
         if ($option->getName('cateringcosts')) {
-            $value = json_decode($value);
+            $value = json_decode($option->getValue());
 
             if ($value != null && is_array($value)) {
+                $empty_rows = [];
 
-                foreach ($value as $rkey => $row) {
-                    $empty = true;
-
-                    foreach ($row as $col) {
-                        if ($empty) {
-                            $empty = ($col == null && $col == false) ? true : false;
-                        }
-                    }
-                    if ($empty) {
-                        unset($value[$rkey]);
+                foreach ($value as $key => $row) {
+                    if (empty(trim(implode('', $row)))) {
+                        $empty_rows[] = $key;
                     }
                 }
-                $value = json_encode($value);
-            }
-            else {
-                return false;
+                foreach ($empty_rows as $key) {
+                    unset($value[$key]);
+                }
+                $option->setValue(json_encode(array_values($value)));
             }
         }
-        return $value;
     }
 }

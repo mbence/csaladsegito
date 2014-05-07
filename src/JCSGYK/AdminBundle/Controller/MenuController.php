@@ -59,6 +59,8 @@ class MenuController extends Controller
             ['route' => 'admin_paramgroups', 'label' => 'Paraméter Csoportok', 'role' => 'ROLE_SUPER_ADMIN'],
             ['route' => 'admin_params', 'label' => 'Paraméterek', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_cateringcosts', 'label' => 'Díjtáblázat', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_lunchtypes', 'label' => 'Ebédtípusok', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_holidays', 'label' => 'Munkaszüneti napok', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_providers', 'label' => 'Szolgáltatók', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_templates', 'label' => 'Nyomtatványok', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],

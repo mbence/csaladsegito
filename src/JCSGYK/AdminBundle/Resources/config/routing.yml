@@ -133,9 +133,15 @@ admin_systemparams:
 admin_cateringcosts:
     pattern:  /admin/options/cateringcosts/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:options, name: 'cateringcosts', id: null }
+admin_lunchtypes:
+    pattern:  /admin/options/lunchtypes/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:options, name: 'lunchtypes', id: null }
+admin_holidays:
+    pattern:  /admin/options/holidays/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:options, name: 'holidays', id: null }
 admin_options:
     pattern:  /admin/options/{name}/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Admin:options, name: 'cateringcosts', id: null }
+    defaults: { _controller: JCSGYKAdminBundle:Admin:options, id: null }
 admin_providers:
     pattern:  /admin/providers/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:providers, id: null }
