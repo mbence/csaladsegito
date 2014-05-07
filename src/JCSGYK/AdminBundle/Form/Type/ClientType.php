@@ -149,11 +149,6 @@ class ClientType extends AbstractType
             'choices' => $this->ds->getCaseAdmins($this->client->getType()),
             'required' => false,
         ]);
-
-        // add the catering form
-        if ($this->client->getType() == Client::CA) {
-            $builder->add('catering', new CateringType($this->ds));
-        }
     }
 
     public function getName()

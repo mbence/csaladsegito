@@ -6,15 +6,18 @@
 <div class="archived">Archivált adatlap, csak olvasható!</div>
 {% endif %}
 {% include "JCSGYKAdminBundle:Client:_personal_data.html.twig" %}
+
+{# catering block #}
+{% if client.type == 4 %}
+<div class="catering_container" data-url="{{ path('client_catering', {id: client.id}) }}">
+    {% include "JCSGYKAdminBundle:Catering:_catering.html.twig" with {'catering': client.catering} %}
+</div>
+{% endif %}
+
 {% if client.type == 2 or client.type == 4 %} {# if (is_granted('ROLE_FAMILY_HELP') or is_granted('ROLE_CHILD_WELFARE')) and #}
 <div id="parent_container" data-url="{{ path('client_relatives', {'id': client.id}) }}">
     {% include "JCSGYKAdminBundle:Client:_relatives.html.twig" %}
 </div>
-{% endif %}
-
-{# catering block #}
-{% if client.type == 4 %}
-    {% include "JCSGYKAdminBundle:Catering:_catering.html.twig" with {'catering': client.catering} %}
 {% endif %}
 
 <div class="problem_container" data-url="{{ path('client_problems', {id: client.id}) }}">

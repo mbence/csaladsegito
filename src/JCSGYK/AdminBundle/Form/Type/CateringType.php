@@ -46,15 +46,15 @@ class CateringType extends AbstractType
         if (empty($lunch_types)) {
             $lunch_types = [];
         }
-        
+
         $builder->add('menu', 'choice', [
             'label' => 'Ebéd',
             'choices'   => $lunch_types,
         ]);
 
         $builder->add('is_single', 'checkbox', ['label' => 'Egyedülálló']);
-        $builder->add('income', 'text', ['label' => 'Jövedelem', 'required' => false]);
-        $builder->add('discount', 'text', ['label' => 'Mérséklés', 'required' => false]);
+        $builder->add('income', 'text', ['label' => 'Jövedelem (Ft)', 'required' => false]);
+        $builder->add('discount', 'text', ['label' => 'Mérséklés (Ft)', 'required' => false]);
     }
 
     public function getName()

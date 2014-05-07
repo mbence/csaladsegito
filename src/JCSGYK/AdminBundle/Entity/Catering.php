@@ -64,9 +64,9 @@ class Catering
     private $income;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="discount", type="boolean", nullable=true)
+     * @ORM\Column(name="discount", type="integer", nullable=true)
      */
     private $discount;
 
@@ -115,7 +115,7 @@ class Catering
      */
     public function setSubscriptions($subscriptions)
     {
-        $this->subscriptions = $subscriptions;
+        $this->subscriptions = json_encode($subscriptions);
 
         return $this;
     }
@@ -127,7 +127,7 @@ class Catering
      */
     public function getSubscriptions()
     {
-        return $this->subscriptions;
+        return json_decode($this->subscriptions, true);
     }
 
     /**
@@ -205,7 +205,7 @@ class Catering
     /**
      * Set discount
      *
-     * @param boolean $discount
+     * @param integer $discount
      *
      * @return Catering
      */
@@ -219,7 +219,7 @@ class Catering
     /**
      * Get discount
      *
-     * @return boolean
+     * @return integer
      */
     public function getDiscount()
     {
