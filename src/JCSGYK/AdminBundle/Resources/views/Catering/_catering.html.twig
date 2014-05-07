@@ -8,24 +8,23 @@
         <table class="client" cellspacing="0" border="0">
             <tr>
                 <th>{{ 'Klub'|trans }}:</th>
-                <td>{% if catering.club %}{{ catering.club.name }}{% endif %}</td>
+                <td colspan="3">{% if catering.club %}{{ catering.club.name }}{% endif %}</td>
             </tr>
             <tr>
                 <th>{{ 'Ebéd'|trans }}:</th>
-                <td>{{ param(catering.menu) }}</td>
-            </tr>
-            <tr>
-                <th>{{ 'Egyedülálló'|trans }}:</th>
-                <td>{{ catering.isSingle|check }}</td>
+                <td colspan="3">{{ param(catering.menu) }}</td>
             </tr>
             <tr>
                 <th>{{ 'Jövedelem'|trans }}:</th>
-                <td>{{ catering.income }}</td>
+                <td>{{ catering.income|fcurr }}</td>
+                <td colspan="2">{% if catering.isSingle %}({{ 'egyedülálló'|trans }}){% endif %}</td>
             </tr>
+            {% if catering.discount %}
             <tr>
                 <th>{{ 'Mérséklés'|trans }}:</th>
-                <td>{{ catering.discount }}</td>
+                <td colspan="3">{{ catering.discount|fcurr }}</td>
             </tr>
+            {% endif %}
         </table>
     </div>
 </div>
