@@ -79,7 +79,13 @@
             <td colspan="3">{{ locationAddress }}</td>
         </tr>
         {% endif %}
-    </table><br>
+    </table>
+    {% if relative.note is defined and relative.note %}
+        <div class="client-comment">
+            {{ relative.note|nl2br }}
+        </div>
+    {% endif %}
+    <br>
     {% endfor %}
     {% if edit is defined and edit %}
     <div class="button-row">
@@ -88,3 +94,4 @@
     <div class="clear"></div>
     {% endif %}
 </div>
+<br>

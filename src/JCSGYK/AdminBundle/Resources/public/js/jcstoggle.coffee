@@ -3,7 +3,16 @@
 ###
 JcsToggle =
     init: (block) ->
-        $("#" + block + " .togglable").prepend("<span></span>").on "click", (event) ->
+        # init toggles
+        toggles = JcsOpt.get("toggles_" + block)
+        n = 0
+        $("#" + block + " .togglable").prepend("<span></span>").each ->
+            if toggles[n] == 0
+                $(this).next().hide()
+                $("span", this).addClass("collapsed")
+            n++
+
+        $("#" + block + " .togglable").on "click", (event) ->
             if $(this).next().is(":visible")
                 if event.isTrigger?
                     $(this).next().hide()
@@ -17,14 +26,6 @@ JcsToggle =
                     $(this).next().slideDown(200, 'linear')
                 $("span", this).removeClass("collapsed")
             JcsToggle.saveToggles(block)
-
-        # init toggles
-        toggles = JcsOpt.get("toggles_" + block)
-        n = 0
-        $("#" + block + " .togglable").each ->
-            if toggles[n] == 0
-                $(this).click()
-            n++
 
     saveToggles: (block) ->
         tg_status = []

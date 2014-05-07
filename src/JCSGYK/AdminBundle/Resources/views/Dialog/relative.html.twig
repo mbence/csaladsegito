@@ -18,6 +18,8 @@
 
         {% include "JCSGYKAdminBundle:Client:_edit_relative.html.twig" %}
         {% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" with {client: relative.parent} %}
+        {% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: relative.parent} %}
+
 
         <div class="toppad10">
             {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_parent', title:'Szülő mentése', label:'mentés'}] } %}

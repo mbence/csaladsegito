@@ -140,6 +140,28 @@ class MenuController extends Controller
         return $this->subMenu($items);
     }
 
+    public function cateringAction(Client $client)
+    {
+        $sec = $this->get('security.context');
+        // true if only assistance roles are present
+        $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE') && !$sec->isGranted('ROLE_CATERING');
+
+        $items = [
+            // edit catering data
+            [
+                'url'   => $this->generateUrl('client_history', ['id' => $client->getId()]),
+                'label' => 'szerkesztés',
+                'title' => 'Étkezési adatok szerkesztése',
+                'class' => 'button',
+                'more'  => false,
+                'role'  => 'ROLE_CATERING',
+                'requirement' => $client->canEdit($sec)
+            ]
+        ];
+
+        return $this->subMenu($items, false);
+    }
+
     public function problemAction(Problem $problem)
     {
         $sec = $this->get('security.context');
@@ -248,7 +270,7 @@ class MenuController extends Controller
         return $this->subMenu($items);
     }
 
-    protected function subMenu($items)
+    protected function subMenu($items, $back_button = true)
     {
         $sec = $this->get('security.context');
         $menu = [];
@@ -265,7 +287,11 @@ class MenuController extends Controller
             }
         };
 
-        return $this->render('JCSGYKAdminBundle:Elements:submenu.html.twig', ['menu' => $menu, 'more' => $more]);
+        return $this->render('JCSGYKAdminBundle:Elements:submenu.html.twig', [
+            'menu' => $menu,
+            'more' => $more,
+            'back_button' => $back_button,
+        ]);
     }
 
     /**

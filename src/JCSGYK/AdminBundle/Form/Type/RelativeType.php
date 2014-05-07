@@ -92,6 +92,8 @@ class RelativeType extends AbstractType
         $builder->add('location_street_type', 'text', ['label' => 'Közt.jell.', 'required' => false]);
         $builder->add('location_street_number', 'text', ['label' => 'Házsz.', 'required' => false]);
         $builder->add('location_flat_number', 'text', ['label' => 'Ajtó', 'required' => false]);
+
+        $builder->add('note', 'textarea', ['label' => 'Megjegyzés', 'required' => false]);
     }
 
     public function getName()

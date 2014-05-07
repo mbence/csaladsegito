@@ -34,7 +34,11 @@ class ClientController extends Controller
         // Global security check for client type
         $this->get('jcs.ds')->userRoleCheck($client_type);
 
-        return $this->render('JCSGYKAdminBundle:Client:index.html.twig', ['client_type' => $client_type, 'client_id' => $client_id, 'problem_id' => $problem_id]);
+        return $this->render('JCSGYKAdminBundle:Client:index.html.twig', [
+            'client_type' => $client_type,
+            'client_id' => $client_id,
+            'problem_id' => $problem_id
+        ]);
     }
 
     /**
