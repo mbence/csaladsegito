@@ -4,7 +4,14 @@
 
 {% if name == 'cateringcosts' %}
     {% include "JCSGYKAdminBundle:Admin:cateringcosts.html.twig" with {options: options} %}
-    {# {% block cateringcosts_content %}{% endblock %} #}
+{% endif %}
+
+{% if name == 'lunchtypes' %}
+    {% include "JCSGYKAdminBundle:Admin:lunchtypes.html.twig" with {options: options} %}
+{% endif %}
+
+{% if name == 'holidays' %}
+    {% include "JCSGYKAdminBundle:Admin:holidays.html.twig" with {options: options} %}
 {% endif %}
 
 <div class="clear"></div>
