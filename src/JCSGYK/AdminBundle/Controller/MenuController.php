@@ -58,9 +58,8 @@ class MenuController extends Controller
             ['route' => 'admin_systemparams', 'label' => 'Rendszer paraméterek', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_paramgroups', 'label' => 'Paraméter Csoportok', 'role' => 'ROLE_SUPER_ADMIN'],
             ['route' => 'admin_params', 'label' => 'Paraméterek', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_cateringcosts', 'label' => 'Díjtáblázat', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_lunchtypes', 'label' => 'Ebédtípusok', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_holidays', 'label' => 'Munkaszüneti napok', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_options', 'options' => ['name' => 'cateringcosts'], 'label' => 'Díjtáblázat', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_options', 'options' => ['name' => 'holidays'], 'label' => 'Munkaszüneti napok', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_providers', 'label' => 'Szolgáltatók', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_templates', 'label' => 'Nyomtatványok', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
@@ -286,13 +285,18 @@ class MenuController extends Controller
         $user_menu = [];
         foreach ($items as $m) {
             $class_list = [];
-            if (!empty($route['_route']) && $route['_route'] == 'clients') {
-                if (isset($m['options']) && $m['options']['client_type'] == $route['client_type']) {
+            if (!empty($route['_route'])) {
+                if (isset($m['options'])) {
+                    if ($route['_route'] == 'clients' && $m['options']['client_type'] == $route['client_type']) {
+                        $class_list[] = 'current';
+                    }
+                    elseif ($route['_route'] == 'admin_options' && $m['options']['name'] == $route['name']) {
+                        $class_list[] = 'current';
+                    }
+                }
+                elseif ($m['route'] == $route['_route']) {
                     $class_list[] = 'current';
                 }
-            }
-            elseif (!empty($route['_route']) && $m['route'] == $route['_route']) {
-                $class_list[] = 'current';
             }
             if (in_array($m['role'], ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])) {
                 $class_list[] = 'adm-menu';
