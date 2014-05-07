@@ -16192,7 +16192,7 @@ JcsCatering = {
     return $("#archive_type").focus();
   },
   initButtonRow: function() {
-    $(".edit_catering").off('click').on("click", function(event) {
+    $(".edit_catering").add(".catering_orders").add(".catering_invoices").off('click').on("click", function(event) {
       var _this = this;
 
       event.stopPropagation();
@@ -16201,9 +16201,7 @@ JcsCatering = {
         $.get($(this).attr("href"), function(data) {
           $(_this).removeClass('animbutton');
           JcsModal.setContent(data);
-          if ($(_this).hasClass('edit_catering')) {
-            JcsCatering.initCatering();
-          }
+          JcsCatering.initCatering();
           if ($(_this).parent().hasClass('sub-vertical')) {
             return $(_this).parent().hide();
           }

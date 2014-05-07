@@ -228,13 +228,13 @@ class ClientController extends Controller
 
                     $this->get('session')->getFlashBag()->add('notice', 'Étkeztetés elmentve');
 
-                    return $this->render('JCSGYKAdminBundle:Dialog:catering.html.twig', [
+                    return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
                         'success' => true,
                     ]);
                 }
             }
 
-            return $this->render('JCSGYKAdminBundle:Dialog:catering.html.twig', [
+            return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
                 'client' => $client,
                 'form' => $form->createView(),
             ]);
@@ -243,6 +243,49 @@ class ClientController extends Controller
             throw new BadRequestHttpException('Invalid client id');
         }
     }
+
+    /**
+     * Shows the catering calendar to order or remove days
+     *
+     * @param int $id Client id
+     */
+    public function ordersAction($id)
+    {
+        if (!empty($id)) {
+            $client = $this->getClient($id);
+        }
+
+        if (!empty($client)) {
+            return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
+                'client' => $client,
+            ]);
+        }
+        else {
+            throw new BadRequestHttpException('Invalid client id');
+        }
+    }
+
+    /**
+     * List of invoices of the Client
+     *
+     * @param int $id Client id
+     */
+    public function invoicesAction($id)
+    {
+        if (!empty($id)) {
+            $client = $this->getClient($id);
+        }
+
+        if (!empty($client)) {
+            return $this->render('JCSGYKAdminBundle:Catering:invoices_dialog.html.twig', [
+                'client' => $client,
+            ]);
+        }
+        else {
+            throw new BadRequestHttpException('Invalid client id');
+        }
+    }
+
 
     private function saveVisitTask($client, $assignee, $user, $dispatch = null)
     {

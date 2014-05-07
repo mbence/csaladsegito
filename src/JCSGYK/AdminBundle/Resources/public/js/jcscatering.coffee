@@ -53,7 +53,10 @@ JcsCatering =
 
     initButtonRow: ->
         # archive
-        $(".edit_catering").off('click').on "click", (event) ->
+        $(".edit_catering")
+                .add(".catering_orders")
+                .add(".catering_invoices")
+                .off('click').on "click", (event) ->
 
             event.stopPropagation()
 
@@ -64,8 +67,8 @@ JcsCatering =
                     $(this).removeClass('animbutton')
                     JcsModal.setContent(data)
 
-                    if $(this).hasClass('edit_catering')
-                        JcsCatering.initCatering()
+                    JcsCatering.initCatering()
+
                     # hide the submenu
                     if $(this).parent().hasClass('sub-vertical')
                         $(this).parent().hide()

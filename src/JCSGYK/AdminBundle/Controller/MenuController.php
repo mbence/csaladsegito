@@ -161,7 +161,7 @@ class MenuController extends Controller
                 'url'   => $this->generateUrl('client_orders', ['id' => $client->getId()]),
                 'label' => 'lemondás',
                 'title' => 'Utánrendelés, lemondás',
-                'class' => 'greybutton',
+                'class' => 'greybutton catering_orders',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
                 'requirement' => $client->canEdit($sec)
@@ -170,7 +170,7 @@ class MenuController extends Controller
                 'url'   => $this->generateUrl('client_invoices', ['id' => $client->getId()]),
                 'label' => 'befizetés',
                 'title' => 'Számlák és befizetések',
-                'class' => 'greybutton',
+                'class' => 'greybutton catering_invoices',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
                 'requirement' => $client->canEdit($sec)
