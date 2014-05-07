@@ -1,6 +1,8 @@
 
 <div class="button-row">
-    <div class="close greybutton" title="{{ 'Vissza'|trans }}"><span class="icon"></span></div>
+    {% if not back_button is defined or back_button %}
+        <div class="close greybutton" title="{{ 'Vissza'|trans }}"><span class="icon"></span></div>
+    {% endif %}
     {% if menu is defined and menu|length %}
         {% for item in menu %}
             {% spaceless %}

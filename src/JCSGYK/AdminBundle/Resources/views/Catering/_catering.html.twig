@@ -1,28 +1,32 @@
 {# Catering Fileds #}
 {% if catering %}
 <div class="client-sub first-sub togglable">{{ 'étkeztetés'|trans }}</div>
-<div>
-    <table class="client" cellspacing="0" border="0">
-        <tr>
-            <th>{{ 'Klub'|trans }}:</th>
-            <td>{{ catering.club.name }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'Ebéd'|trans }}:</th>
-            <td>{{ param(catering.menu) }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'Egyedülálló'|trans }}:</th>
-            <td>{{ catering.isSingle|check }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'Jövedelem'|trans }}:</th>
-            <td>{{ catering.income }}</td>
-        </tr>
-        <tr>
-            <th>{{ 'Mérséklés'|trans }}:</th>
-            <td>{{ catering.discount }}</td>
-        </tr>
-    </table>
+<div class="toppad">
+    {% render(controller('JCSGYKAdminBundle:Menu:catering', { 'client': client })) %}
+    <div class="clear"></div>
+    <div>
+        <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Klub'|trans }}:</th>
+                <td>{{ catering.club.name }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Ebéd'|trans }}:</th>
+                <td>{{ param(catering.menu) }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Egyedülálló'|trans }}:</th>
+                <td>{{ catering.isSingle|check }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Jövedelem'|trans }}:</th>
+                <td>{{ catering.income }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Mérséklés'|trans }}:</th>
+                <td>{{ catering.discount }}</td>
+            </tr>
+        </table>
+    </div>
 </div>
 {% endif %}
