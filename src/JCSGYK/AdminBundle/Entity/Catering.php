@@ -115,7 +115,7 @@ class Catering
      */
     public function setSubscriptions($subscriptions)
     {
-        $this->subscriptions = $subscriptions;
+        $this->subscriptions = json_encode($subscriptions);
 
         return $this;
     }
@@ -127,7 +127,7 @@ class Catering
      */
     public function getSubscriptions()
     {
-        return $this->subscriptions;
+        return json_decode($this->subscriptions, true);
     }
 
     /**

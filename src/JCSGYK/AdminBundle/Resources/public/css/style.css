@@ -966,3 +966,17 @@ table.task-list tr:hover td {
     padding: 2px 3px 6px 6px;
     white-space: nowrap;
 }
+
+/* Caternig */
+.day-of-week {
+    float: left;
+    width: 12%;
+    text-align: center;
+    color: #5661A2;
+    padding: 4px;
+    margin: 0 2px 0 0;
+    font-size: 13px;
+}
+.weekend {
+    background-color: #f5f5f5;
+}
