@@ -22,7 +22,7 @@ JcsSettings =
             @setupCompanies()
 
         # table editor
-        if $('#catering-costs-table').length
+        if $('#handsontable').length
             @initTableEditor()
 
     ###
@@ -144,10 +144,9 @@ JcsSettings =
                 $("#useredit .formbuttons .usersave").addClass('animbutton')
 
     ###
-        Init Handsontable jQuery based table editor
+        Register "hu" language for Handsontable editor
     ###
-    initTableEditor: ->
-        # load a language
+    registerLanguage: ->
         numeral.language('hu', {
             delimiters: {
                 thousands: ' ',
@@ -163,34 +162,33 @@ JcsSettings =
                 symbol: 'Ft'
             }
         })
+
+    ###
+        Handsontable default settings
+    ###
+    tableDefaults: {
+        data: [],
+        colHeaders: [],
+        minSpareRows: 1,
+        currentRowClassName: "currentRow",
+        currentColClassName: "currentCol",
+        columns: [],
+        afterChange: ->
+    }
+
+    ###
+        Init Handsontable jQuery based table editor
+    ###
+    initTableEditor: ->
+        # load language settings
+        @registerLanguage()
+
         tableData = JSON.parse($("#options_value").val())
-        $("#catering-costs-table").handsontable({
-            data: tableData,
-            colHeaders: ['-tól', '-ig', 'díj', 'egyedülálló'],
-            minSpareRows: 1,
-            currentRowClassName: 'currentRow',
-            currentColClassName: 'currentCol',
-            columns: [
-                {
-                    type: "numeric",
-                    format: '0 0[,]00 $',
-                    language: 'hu'
-                },
-                {
-                    type: "numeric",
-                    format: '0 0[,]00 $',
-                    language: 'hu'
-                },
-                {
-                    type: "numeric",
-                    format: '0 0[,]00 $',
-                    language: 'hu'
-                },
-                {
-                    type: "checkbox"
-                }
-            ],
-            afterChange: (changes, source) ->
-                if changes != null
-                    $("#options_value").val(JSON.stringify(tableData))
-        })
+        options = $.extend(true,{},@tableDefaults,tableDefaultOptions)
+        afterChange = (changes, source) ->
+            if changes != null
+                $("#options_value").val(JSON.stringify(tableData))
+        options.data = tableData
+        options.afterChange = afterChange
+
+        $("#handsontable").handsontable(options)

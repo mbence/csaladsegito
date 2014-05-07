@@ -654,6 +654,64 @@ class AdminController extends Controller
      */
     public function optionsAction($name, $id = null)
     {
+        $option_types = ['cateringcosts','holidays'];
+        $options_default_value = [
+            'cateringcosts' => [
+                'valid_from' => '',
+                'data' => [[null,null,null,null]],
+                'format' => [
+                    'colWidths' => [65,90,50,80],
+                    'colHeaders' => ['-tól', '-ig', 'díj', 'egyedülálló'],
+                    'columns' => [
+                        [
+                            'type'     => 'numeric',
+                            'format'   => '0 0[,]00 $',
+                            'language' => 'hu'
+                        ],
+                        [
+                            'type'     => 'numeric',
+                            'format'   => '0 0[,]00 $',
+                            'language' => 'hu'
+                        ],
+                        [
+                            'type'     => 'numeric',
+                            'format'   => '0 0[,]00 $',
+                            'language' => 'hu'
+                        ],
+                        [
+                            'type'     => 'checkbox'
+                        ]
+                    ]
+                ]
+            ],
+            'holidays' => [
+                'valid_from' => date('Y-01-01'),
+                'data' => [[null,null,null]],
+                'format' => [
+                    'colWidths' => [95, 105, 90],
+                    'colHeaders' => ['Dátum', 'Típus', 'Megnevezés'],
+                    'columns' => [
+                        [
+                            'type'     => 'date',
+                            'format'   => 'yy-mm-dd'
+                        ],
+                        [
+                            'type'     => 'dropdown',
+                            'source'   => ['munkaszünet','pihenőnap','munkanap']
+                        ],
+                        [
+                            'type'     => 'text'
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        if (empty($name) || !in_array($name, $option_types)) {
+            throw new HttpException(400, "Bad request");
+            exit();
+        }
+
         $request   = $this->getRequest();
         $option    = null;
         $form_view = null;
@@ -668,8 +726,8 @@ class AdminController extends Controller
             //
             // ez így nem jó, de nem tudom hogyan kellene átadni NEW esetén
             //
-            $option->setValue('[[null,null,null,null]]');
-            $option->setValidFrom(new \DateTime());
+            $option->setValue(json_encode($options_default_value[$name]['data']));
+            $option->setValidFrom(new \DateTime($options_default_value[$name]['valid_from']));
         }
         elseif (!is_null($id)) {
             $option = $em->getRepository('JCSGYKAdminBundle:Option')->find($id);
@@ -718,7 +776,7 @@ class AdminController extends Controller
             // get all options named with $name
             $options = $em->getRepository('JCSGYKAdminBundle:Option')->findBy(['name' => $name], ['validFrom' => 'DESC']);
 
-            return $this->render('JCSGYKAdminBundle:Admin:options.html.twig', ['name' => $name, 'id' => $id, 'options' => $options, 'form' => $form_view]);
+            return $this->render('JCSGYKAdminBundle:Admin:options.html.twig', ['name' => $name, 'id' => $id, 'options' => $options, 'form' => $form_view, 'table_defaults' => json_encode($options_default_value[$name]['format'])]);
         }
         else {
             throw new HttpException(400, "Bad request");
