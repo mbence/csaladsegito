@@ -149,10 +149,28 @@ class MenuController extends Controller
         $items = [
             // edit catering data
             [
-                'url'   => $this->generateUrl('client_history', ['id' => $client->getId()]),
+                'url'   => $this->generateUrl('client_catering', ['id' => $client->getId()]),
                 'label' => 'szerkesztés',
                 'title' => 'Étkezési adatok szerkesztése',
-                'class' => 'button',
+                'class' => 'greybutton',
+                'more'  => false,
+                'role'  => 'ROLE_CATERING',
+                'requirement' => $client->canEdit($sec)
+            ],
+            [
+                'url'   => $this->generateUrl('client_orders', ['id' => $client->getId()]),
+                'label' => 'lemondás',
+                'title' => 'Utánrendelés, lemondás',
+                'class' => 'greybutton',
+                'more'  => false,
+                'role'  => 'ROLE_CATERING',
+                'requirement' => $client->canEdit($sec)
+            ],
+            [
+                'url'   => $this->generateUrl('client_invoices', ['id' => $client->getId()]),
+                'label' => 'befizetés',
+                'title' => 'Számlák és befizetések',
+                'class' => 'greybutton',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
                 'requirement' => $client->canEdit($sec)
@@ -316,7 +334,7 @@ class MenuController extends Controller
                     if ($route['_route'] == 'clients' && $m['options']['client_type'] == $route['client_type']) {
                         $class_list[] = 'current';
                     }
-                    elseif ($route['_route'] == 'admin_options' && $m['options']['name'] == $route['name']) {
+                    elseif ($route['_route'] == 'admin_options' && isset($m['options']['name']) && $m['options']['name'] == $route['name']) {
                         $class_list[] = 'current';
                     }
                 }
