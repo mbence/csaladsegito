@@ -52,6 +52,7 @@ class CateringType extends AbstractType
             'choices'   => $lunch_types,
         ]);
 
+        $builder->add('subscriptions', 'hidden');
         $builder->add('is_single', 'checkbox', ['label' => 'Egyedülálló']);
         $builder->add('income', 'text', ['label' => 'Jövedelem (Ft)', 'required' => false]);
         $builder->add('discount', 'text', ['label' => 'Mérséklés (Ft)', 'required' => false]);
@@ -59,6 +60,6 @@ class CateringType extends AbstractType
 
     public function getName()
     {
-        return 'problem';
+        return 'catering';
     }
 }

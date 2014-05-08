@@ -222,8 +222,8 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-                    $data = $form->getData();
-
+                    
+                    // save
                     $em->flush();
 
                     $this->get('session')->getFlashBag()->add('notice', 'Étkeztetés elmentve');

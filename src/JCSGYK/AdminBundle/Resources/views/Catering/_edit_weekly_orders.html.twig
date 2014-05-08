@@ -5,7 +5,7 @@
     {% for index, day in week %}
         <div class="day-of-week {% if index > 4 %} weekend{% endif %}">
             <label>{{ day }}<br>
-                <input type="checkbox" name="order_{{ index }}" {% if client.catering.subscriptions[index] is defined and client.catering.subscriptions[index] %}checked="checked"{% endif %}>
+                <input type="checkbox" value="1" name="catering[subscriptions][{{ index }}]" {% if client.catering.subscriptions[index] is defined and client.catering.subscriptions[index] %}checked="checked"{% endif %}>
             </label>
         </div>
     {% endfor %}

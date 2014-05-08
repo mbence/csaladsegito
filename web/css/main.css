@@ -2235,14 +2235,16 @@ footer#colophon .credits a:hover {
     z-index: 10000;
 }
 .flashbag div, .ajaxbag div {
-    padding: 3px 15px;
+    padding: 5px 20px 5px 15px;
     border-radius: 3px;
+    border: 1px solid #ccc;
     position: absolute;
     z-index: 1000;
     left: 50%;
     font-size: 15px;
     font-weight: bold;
     box-shadow: 0 1px 1px 1px rgba(0,0,0,0.1);
+    cursor: pointer;
 }
 .ajaxbag div {
     display: none;
@@ -2251,14 +2253,28 @@ footer#colophon .credits a:hover {
     top: 0px;
 }
 .flashbag div.flash-notice, .ajaxbag div.ajax-notice {
-    color: #fff;
-    background-color: #6cee2b;
-    top: 3px;
-    text-shadow: 0 0 2px #4c9d43;
+    color: #57a957;
+    background-color: #fffffe;
+    top: 10px;
+    /*text-shadow: 0 0 2px #4c9d43;*/
 }
 .ajaxbag div.ajax-error {
     background-color: #e62033;
 }
+.ajaxbag div:after {
+    display: block;
+    position: absolute;
+    content: 'x';
+    right: 4px;
+    top: 2px;
+    color: #888;
+    font-size: 11px;
+    line-height: 8px;
+}
+.ajaxbag div:hover:after {
+    color: #000;
+}
+
 /* ajax bgs */
 .ajax-loading3 {
     background: url('../images/ajax-loader3.gif') no-repeat 395px 10px;
