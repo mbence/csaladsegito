@@ -9,9 +9,15 @@
 
 AjaxBag =
     init: ->
-        $(".flashbag div").css('marginLeft', ->
-            return -1 *( $(this).outerWidth() / 2)
-        ).delay(4000).fadeOut(3000)
+        $(".flashbag div")
+            .css 'marginLeft', ->
+                return -1 *( $(this).outerWidth() / 2)
+            .delay(4000).fadeOut(3000)
+            .on "click", ->
+                $(this).stop().clearQueue().hide()
+
+        $(".ajaxbag div").on "click", ->
+            $(this).stop().clearQueue().hide()
 
     # centers and displays the ajax loader div
     showLoader: ->

@@ -36,9 +36,9 @@ class DailyOrder
     private $date;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="status", type="boolean", nullable=true)
+     * @ORM\Column(name="status", type="integer", nullable=true)
      */
     private $status;
 
@@ -132,7 +132,7 @@ class DailyOrder
     /**
      * Set status
      *
-     * @param boolean $status
+     * @param integer $status
      *
      * @return DailyOrder
      */
@@ -146,7 +146,7 @@ class DailyOrder
     /**
      * Get status
      *
-     * @return boolean
+     * @return integer
      */
     public function getStatus()
     {

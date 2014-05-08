@@ -72,9 +72,9 @@ class Invoice
     private $payments;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="status", type="boolean", nullable=true)
+     * @ORM\Column(name="status", type="integer", nullable=true)
      */
     private $status;
 
@@ -97,7 +97,7 @@ class Invoice
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -121,7 +121,7 @@ class Invoice
     /**
      * Get companyId
      *
-     * @return integer 
+     * @return integer
      */
     public function getCompanyId()
     {
@@ -145,7 +145,7 @@ class Invoice
     /**
      * Get date
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDate()
     {
@@ -169,7 +169,7 @@ class Invoice
     /**
      * Get items
      *
-     * @return string 
+     * @return string
      */
     public function getItems()
     {
@@ -193,7 +193,7 @@ class Invoice
     /**
      * Get amount
      *
-     * @return integer 
+     * @return integer
      */
     public function getAmount()
     {
@@ -217,7 +217,7 @@ class Invoice
     /**
      * Get balance
      *
-     * @return integer 
+     * @return integer
      */
     public function getBalance()
     {
@@ -241,7 +241,7 @@ class Invoice
     /**
      * Get payments
      *
-     * @return string 
+     * @return string
      */
     public function getPayments()
     {
@@ -251,7 +251,7 @@ class Invoice
     /**
      * Set status
      *
-     * @param boolean $status
+     * @param integer $status
      *
      * @return Invoice
      */
@@ -265,7 +265,7 @@ class Invoice
     /**
      * Get status
      *
-     * @return boolean 
+     * @return integer
      */
     public function getStatus()
     {
@@ -289,7 +289,7 @@ class Invoice
     /**
      * Get createdBy
      *
-     * @return integer 
+     * @return integer
      */
     public function getCreatedBy()
     {
@@ -313,7 +313,7 @@ class Invoice
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -337,7 +337,7 @@ class Invoice
     /**
      * Get client
      *
-     * @return \JCSGYK\AdminBundle\Entity\Client 
+     * @return \JCSGYK\AdminBundle\Entity\Client
      */
     public function getClient()
     {

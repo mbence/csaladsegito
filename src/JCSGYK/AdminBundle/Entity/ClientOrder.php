@@ -56,9 +56,9 @@ class ClientOrder
     private $changes;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="status", type="boolean", nullable=true)
+     * @ORM\Column(name="status", type="integer", nullable=true)
      */
     private $status;
 
@@ -191,7 +191,7 @@ class ClientOrder
     /**
      * Set status
      *
-     * @param boolean $status
+     * @param integer $status
      *
      * @return ClientOrder
      */
@@ -205,7 +205,7 @@ class ClientOrder
     /**
      * Get status
      *
-     * @return boolean
+     * @return integer
      */
     public function getStatus()
     {

@@ -21,6 +21,12 @@ JcsCatering =
 
     initCatering: ->
         JcsModal.setCloseButton()
+        # day selectors
+        $(".day-selectors > a").on "click", ->
+            days = $(this).data("days")
+            for day, index in days
+                $("#catering_form input[name='catering[subscriptions][" + index + "]']").prop("checked", day)
+            false
 
         # form submit
         $("#catering_form").submit ->

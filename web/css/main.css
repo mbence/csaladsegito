@@ -3107,6 +3107,15 @@ table.task-list tr:hover td {
 .weekend {
     background-color: #f5f5f5;
 }
+.day-selectors a {
+    color: #34A;
+    font-size: 13px;
+    padding: 0 10px;
+}
+.day-selectors a:hover {
+    /*text-decoration: underline;*/
+    background-color: #eee;
+}
 .button, .greybutton {
     border-radius: 2px;
     border: 1px solid transparent;

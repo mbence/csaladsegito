@@ -15269,9 +15269,14 @@ var AjaxBag;
 
 AjaxBag = {
   init: function() {
-    return $(".flashbag div").css('marginLeft', function() {
+    $(".flashbag div").css('marginLeft', function() {
       return -1 * ($(this).outerWidth() / 2);
-    }).delay(4000).fadeOut(3000);
+    }).delay(4000).fadeOut(3000).on("click", function() {
+      return $(this).stop().clearQueue().hide();
+    });
+    return $(".ajaxbag div").on("click", function() {
+      return $(this).stop().clearQueue().hide();
+    });
   },
   showLoader: function() {
     return $(".ajaxbag .ajax-loader").css('marginLeft', -1 * ($(".ajaxbag .ajax-loader").outerWidth() / 2)).show();
@@ -16185,6 +16190,15 @@ JcsCatering = {
   },
   initCatering: function() {
     JcsModal.setCloseButton();
+    $(".day-selectors > a").on("click", function() {
+      var day, days, index, _i, _len;
+      days = $(this).data("days");
+      for (index = _i = 0, _len = days.length; _i < _len; index = ++_i) {
+        day = days[index];
+        $("#catering_form input[name='catering[subscriptions][" + index + "]']").prop("checked", day);
+      }
+      return false;
+    });
     $("#catering_form").submit(function() {
       $(".save-catering").addClass('animbutton');
       $.post($(this).attr("action"), $(this).serialize(), function(data) {
