@@ -3116,6 +3116,20 @@ table.task-list tr:hover td {
     /*text-decoration: underline;*/
     background-color: #eee;
 }
+#catering_is_active {
+    color: #34A;
+    font-size: 13px;
+    margin: 10px 0 0 0;
+}
+#catering_form .disabled {
+    opacity: 0.4;
+}
+.catering-inactive {
+    margin: 10px;
+    text-align: center;
+    color: #d04a37;
+}
+
 .button, .greybutton {
     border-radius: 2px;
     border: 1px solid transparent;

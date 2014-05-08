@@ -27,6 +27,12 @@ JcsCatering =
             for day, index in days
                 $("#catering_form input[name='catering[subscriptions][" + index + "]']").prop("checked", day)
             false
+        # active - inactive radio
+        $("input[name='catering[is_active]']").on "change", ->
+            if "1" == $("input[name='catering[is_active]']:checked").val()
+                $("#catering-fields").removeClass("disabled")
+            else
+                $("#catering-fields").addClass("disabled")
 
         # form submit
         $("#catering_form").submit ->

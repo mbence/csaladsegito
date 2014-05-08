@@ -35,6 +35,7 @@ class AdminExtension extends \Twig_Extension
             'adate' => new \Twig_Filter_Method($this, 'formatAgreeDate', ['is_safe' => ['html']]),
             'ssn' => new \Twig_Filter_Method($this, 'formatSSN', ['is_safe' => ['html']]),
             'ctmap' => new \Twig_Filter_Method($this, 'clientTypeMap'),
+            'cat_days' => new \Twig_Filter_Method($this, 'cateringDays'),
         ];
     }
 
@@ -435,5 +436,21 @@ class AdminExtension extends \Twig_Extension
     public function getClientTypes()
     {
         return array_flip($this->ds->getAllClientTypes());
+    }
+
+    public function cateringDays(Client $client)
+    {
+//        $week = ['H', 'K', 'SZE', 'CS', 'P', 'SZO', 'V'];
+        $week = ['hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat', 'vasárnap'];
+
+        $subscriptions = $client->getCatering()->getSubscriptions();
+        $re = [];
+        foreach ($week as $index => $day) {
+            if (!empty($subscriptions[$index])) {
+                $re[] = $day;
+            }
+        }
+
+        return implode(', ', $re);
     }
 }

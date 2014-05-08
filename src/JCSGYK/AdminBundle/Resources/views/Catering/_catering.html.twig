@@ -4,28 +4,40 @@
 <div class="toppad">
     {% render(controller('JCSGYKAdminBundle:Menu:catering', { 'client': client })) %}
     <div class="clear"></div>
-    <div>
-        <table class="client" cellspacing="0" border="0">
-            <tr>
-                <th>{{ 'Klub'|trans }}:</th>
-                <td colspan="3">{% if catering.club %}{{ catering.club.name }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>{{ 'Ebéd'|trans }}:</th>
-                <td colspan="3">{{ param(catering.menu) }}</td>
-            </tr>
-            <tr>
-                <th>{{ 'Jövedelem'|trans }}:</th>
-                <td>{{ catering.income|fcurr }}</td>
-                <td colspan="2">{% if catering.isSingle %}({{ 'egyedülálló'|trans }}){% endif %}</td>
-            </tr>
-            {% if catering.discount %}
-            <tr>
-                <th>{{ 'Mérséklés'|trans }}:</th>
-                <td colspan="3">{{ catering.discount|fcurr }}</td>
-            </tr>
-            {% endif %}
-        </table>
-    </div>
+    {% if catering.isActive %}
+        <div>
+            <table class="client" cellspacing="0" border="0">
+                <tr>
+                    <th>{{ 'Heti rendelések'|trans }}:</th>
+                    <td colspan="3">
+                        {{ client|cat_days }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>{{ 'Klub'|trans }}:</th>
+                    <td colspan="3">{% if catering.club %}{{ catering.club.name }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'Ebéd'|trans }}:</th>
+                    <td colspan="3">{{ param(catering.menu) }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'Jövedelem'|trans }}:</th>
+                    <td>{{ catering.income|fcurr }}</td>
+                    <td colspan="2">{% if catering.isSingle %}({{ 'egyedülálló'|trans }}){% endif %}</td>
+                </tr>
+                {% if catering.discount %}
+                <tr>
+                    <th>{{ 'Mérséklés'|trans }}:</th>
+                    <td colspan="3">{{ catering.discount|fcurr }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+    {% else %}
+        <div class="catering-inactive">
+            Inaktív ügyfél
+        </div>
+    {% endif %}
 </div>
 {% endif %}

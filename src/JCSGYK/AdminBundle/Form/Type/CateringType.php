@@ -56,6 +56,11 @@ class CateringType extends AbstractType
         $builder->add('is_single', 'checkbox', ['label' => 'Egyedülálló']);
         $builder->add('income', 'text', ['label' => 'Jövedelem (Ft)', 'required' => false]);
         $builder->add('discount', 'text', ['label' => 'Mérséklés (Ft)', 'required' => false]);
+        $builder->add('is_active', 'choice', [
+            'label' => '',
+            'choices' => [1 => 'Aktív', 0 => 'Inaktív'],
+            'expanded' => true
+        ]);
     }
 
     public function getName()

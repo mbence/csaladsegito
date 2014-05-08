@@ -16199,6 +16199,13 @@ JcsCatering = {
       }
       return false;
     });
+    $("input[name='catering[is_active]']").on("change", function() {
+      if ("1" === $("input[name='catering[is_active]']:checked").val()) {
+        return $("#catering-fields").removeClass("disabled");
+      } else {
+        return $("#catering-fields").addClass("disabled");
+      }
+    });
     $("#catering_form").submit(function() {
       $(".save-catering").addClass('animbutton');
       $.post($(this).attr("action"), $(this).serialize(), function(data) {
