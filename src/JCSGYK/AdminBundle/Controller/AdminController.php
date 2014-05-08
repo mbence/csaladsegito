@@ -733,7 +733,7 @@ class AdminController extends Controller
             $option = $em->getRepository('JCSGYKAdminBundle:Option')->find($id);
         }
 
-        if (is_null($id) || !empty($option)) {
+        if ((is_null($id) || !empty($option)) && $name == $option->getName() ) {
 
             if (!empty($option)) {
                 $form = $this->createForm(new OptionType(), $option);
