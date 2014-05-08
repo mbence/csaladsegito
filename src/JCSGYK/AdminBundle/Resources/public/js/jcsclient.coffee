@@ -368,3 +368,13 @@ JcsClient =
 
             false
         )
+    
+    ###
+        Init and setup ordering table
+    ###
+    initMultiDatesPicker: ->
+        $("#ordering-calendar").find(".month-wrapper").each (i,e) ->
+            if i==0
+                $(this).show()
+        $("#ordering-calendar").on "click", "td", ->
+            $(this).toggleClass("selected")

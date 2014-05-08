@@ -258,6 +258,7 @@ class ClientController extends Controller
         if (!empty($client)) {
             return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
                 'client' => $client,
+                'months' => $this->container->get('jcs.ds')->getDaysOfMonths(new \DateTime('first day of this month'),3)
             ]);
         }
         else {

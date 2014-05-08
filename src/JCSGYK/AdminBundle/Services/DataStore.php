@@ -53,6 +53,13 @@ class DataStore
         'ROLE_ADMIN' => 'Admin',
     ];
 
+    /** Holidays type */
+    private $holidayTypeMap = [
+        'munkaszünet',
+        'munkanap',
+        'pihenőnap'
+    ];
+
     public function __construct($container)
     {
         $this->container = $container;
@@ -582,5 +589,56 @@ class DataStore
         }
 
         return $re;
+    }
+
+    /**
+     * Return holiday day types
+     * @return array
+     */
+    public function getHolidayTypeMap()
+    {
+        return $this->holidayTypeMap;
+    }
+
+    /**
+     * Get days of multiple month
+     * @return array
+     */
+    public function getDaysOfMonths($date,$month_number=3)
+    {
+        $months = [];
+        for ($i = 1; $i <= $month_number; $i++) {
+            $months[strftime('%Y. %B',$date->getTimestamp())] = $this->getDaysOfMonth($date);
+            $date->modify('first day of next month');
+        }
+        return $months;
+    }
+
+    /**
+     * Get days of one month
+     * @return array
+     */
+    public function getDaysOfMonth($date)
+    {
+        $month     = [];
+        $day_count = $date->format('t');
+        $first_day = $date->format('N');
+        $date->modify('+'.($day_count-1).' days');
+        $last_day  = $date->format('N');
+        $week      = $date->format('W');
+
+        for ($i = 1; $i < $first_day; $i++) {
+            $month[$week][] = null;
+        }
+        for ($i = 1; $i <= $day_count; $i++) {
+            if (count($month[$week]) % 7 == 0) {
+                $week++;
+            }
+            $month[$week][] = $i;
+        }
+        for ($i = 7; $i > $last_day; $i--) {
+            $month[$week][] = null;
+        }
+        return $month;
     }
 }

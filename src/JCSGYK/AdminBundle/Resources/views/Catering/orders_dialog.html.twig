@@ -21,11 +21,41 @@
     </table>
 
 {# {% include "JCSGYKAdminBundle:Catering:_edit_catering.html.twig" %}#}
+    <div id="ordering-calendar">
+        {% for index,month in months %}
+        <div class="month-wrapper" style="display:none;">
+            <p>{{ index }}</p>
+            <table class="order-datepicker">
+                <thead>
+                    <tr>
+                        <th>{{ 'Hétfő'|trans }}</th>
+                        <th>{{ 'Kedd'|trans }}</th>
+                        <th>{{ 'Szerda'|trans }}</th>
+                        <th>{{ 'Csütörtök'|trans }}</th>
+                        <th>{{ 'Péntek'|trans }}</th>
+                        <th>{{ 'Szombat'|trans }}</th>
+                        <th>{{ 'Vasárnap'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for week in month %}
+                    <tr>
+                        {% for day in week %}
+                        <td{% if day is null %} class="empty"{% endif %}>{{ day }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
 
     <div class="toppad10 center">
         <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
         <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
     </div>
+    <script type="text/javascript">JcsClient.initMultiDatesPicker();</script>
 {#
     {{ form_widget(form._token) }}
     </form>#}

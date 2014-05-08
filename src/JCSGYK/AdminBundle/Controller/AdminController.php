@@ -697,7 +697,7 @@ class AdminController extends Controller
                         ],
                         [
                             'type'     => 'dropdown',
-                            'source'   => ['munkaszünet','pihenőnap','munkanap']
+                            'source'   => $this->container->get('jcs.ds')->getHolidayTypeMap()
                         ],
                         [
                             'type'     => 'text'

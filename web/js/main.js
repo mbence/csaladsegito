@@ -16156,6 +16156,20 @@ JcsClient = {
       }
       return false;
     });
+  },
+
+  /*
+      Init and setup ordering table
+   */
+  initMultiDatesPicker: function() {
+    $("#ordering-calendar").find(".month-wrapper").each(function(i, e) {
+      if (i === 0) {
+        return $(this).show();
+      }
+    });
+    return $("#ordering-calendar").on("click", "td", function() {
+      return $(this).toggleClass("selected");
+    });
   }
 };
 

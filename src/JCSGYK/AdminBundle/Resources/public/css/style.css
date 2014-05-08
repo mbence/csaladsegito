@@ -1018,3 +1018,37 @@ table.task-list tr:hover td {
     text-align: center;
     color: #d04a37;
 }
+
+/* Ordering */
+#ordering-calendar table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 0;
+}
+#ordering-calendar table th, #ordering-calendar table td {
+    width: 56px;
+    height: 26px;
+    font-size: 12px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 20px 5px 20px 5px;
+    border: 1px solid #b3c8d9;
+}
+#ordering-calendar table td {
+    background-color: #d7dce0;
+    cursor: pointer;
+}
+#ordering-calendar table td:hover {
+    cursor: pointer;
+    background-color: #a3c0d9;
+}
+#ordering-calendar table td.selected {
+    cursor: pointer;
+    background-color: #8db4a0;
+}
+#ordering-calendar table td.empty {
+    background-color: #41688a;
+}
+#ordering-calendar table td.empty:hover {
+    cursor: default;
+}
