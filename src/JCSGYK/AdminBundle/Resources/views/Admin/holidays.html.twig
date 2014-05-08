@@ -39,7 +39,7 @@
                     <tr>
                         <th></th>
                         <td>
-                            <div id="catering-costs-table"></div>
+                            <div id="handsontable"></div>
                         </td>
                     </tr>
                 </table>
@@ -63,4 +63,7 @@
     </div>
 </div>
 <div class="clear"></div>
+<script type="text/javascript">
+var tableDefaultOptions = {{ table_defaults|raw }};
+</script>
 {# {% endblock %} #}
