@@ -78,11 +78,6 @@ class User extends BaseUser
     private $closings;
 
     /**
-     * @ORM\OneToMany(targetEntity="LunchOrder", mappedBy="creator")
-     */
-    private $lunchorders;
-
-    /**
      * @ORM\OneToMany(targetEntity="Option", mappedBy="creator")
      */
     private $optioncreated;
@@ -108,7 +103,6 @@ class User extends BaseUser
         $this->clubCoordinator = new ArrayCollection();
         $this->closings = new ArrayCollection();
         $this->tasks = new ArrayCollection();
-        $this->lunchorders = new ArrayCollection();
         $this->optioncreated = new ArrayCollection();
         $this->optionmodified = new ArrayCollection();
     }
