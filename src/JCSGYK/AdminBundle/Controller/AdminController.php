@@ -660,7 +660,7 @@ class AdminController extends Controller
                 'valid_from' => '',
                 'data' => [[null,null,null,null]],
                 'format' => [
-                    'colWidths' => [65,90,50,80],
+                    'colWidths' => [100,100,100,100],
                     'colHeaders' => ['-tól', '-ig', 'díj', 'egyedülálló'],
                     'columns' => [
                         [
@@ -688,7 +688,7 @@ class AdminController extends Controller
                 'valid_from' => date('Y-01-01'),
                 'data' => [[null,null,null]],
                 'format' => [
-                    'colWidths' => [95, 105, 90],
+                    'colWidths' => [95, 105, 219],
                     'colHeaders' => ['Dátum', 'Típus', 'Megnevezés'],
                     'columns' => [
                         [
