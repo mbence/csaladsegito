@@ -137,7 +137,7 @@ class ReportsController extends Controller
         $form_builder->add('case_admin', 'entity', [
             'label' => 'Esetgazda',
             'class' => 'JCSGYKAdminBundle:User',
-            'choices' => $ds->getUsers(),
+            'choices' => $ds->getCaseAdmins(null, false),
             'required' => $required,
             'empty_value' => $empty_value,
        ]);
