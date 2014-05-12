@@ -15,9 +15,14 @@ class Invoice
     /**
      * Invocie status constants
      */
-    const OPEN = 1;
-    const CLOSED = 2;
-    const CANCELLED = 3;
+    /** Just created the record, witing for the transfer to EcoSTAT */
+    const READY_TO_SEND = 1;
+    /** Invoice is sent, and printed, open for payments */
+    const OPEN = 2;
+    /** All payments are done, closed */
+    const CLOSED = 3;
+    /** Invoice cancelled */
+    const CANCELLED = -1;
 
     /**
      * @var integer
@@ -63,6 +68,20 @@ class Invoice
      * @ORM\Column(name="items", type="text", nullable=true)
      */
     private $items;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="days", type="text", nullable=true)
+     */
+    private $days;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="changes", type="text", nullable=true)
+     */
+    private $changes;
 
     /**
      * @var integer
@@ -374,10 +393,58 @@ class Invoice
     /**
      * Get creator
      *
-     * @return \JCSGYK\AdminBundle\Entity\User 
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
     public function getCreator()
     {
         return $this->creator;
+    }
+
+    /**
+     * Set days
+     *
+     * @param string $days
+     *
+     * @return Invoice
+     */
+    public function setDays($days)
+    {
+        $this->days = $days;
+
+        return $this;
+    }
+
+    /**
+     * Get days
+     *
+     * @return string 
+     */
+    public function getDays()
+    {
+        return $this->days;
+    }
+
+    /**
+     * Set changes
+     *
+     * @param string $changes
+     *
+     * @return Invoice
+     */
+    public function setChanges($changes)
+    {
+        $this->changes = $changes;
+
+        return $this;
+    }
+
+    /**
+     * Get changes
+     *
+     * @return string 
+     */
+    public function getChanges()
+    {
+        return $this->changes;
     }
 }

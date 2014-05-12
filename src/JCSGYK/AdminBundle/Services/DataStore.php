@@ -643,20 +643,22 @@ class DataStore
     }
 
     /**
-     * Finds the catering cost table for the given date
+     * Finds the actual option record for a given name
      *
+     * @param string $name
      * @param string $date in ISO format
-     * @return array of catering costs or empty array on failure
+     * @return array of values or empty array on failure
      */
-    public function getCateringCosts($date = null) {
+    public function getOption($name, $date = null) {
         if (is_null($date)) {
             $date = date('Y-m-d');
         }
         $em = $this->container->get('doctrine')->getManager();
         $company_id = $this->getCompanyId();
 
-        $table = $em->createQuery("SELECT o FROM JCSGYKAdminBundle:Option o WHERE o.companyId = :company_id AND o.name = 'cateringcosts' AND o.isActive = 1 AND o.validFrom < :now ORDER BY o.validFrom DESC")
+        $table = $em->createQuery("SELECT o FROM JCSGYKAdminBundle:Option o WHERE o.companyId = :company_id AND o.name = :name AND o.isActive = 1 AND o.validFrom < :now ORDER BY o.validFrom DESC")
             ->setParameter('company_id', $this->getCompanyId())
+            ->setParameter('name', $name)
             ->setParameter('now', $date)
             ->setMaxResults(1)
             ->getResult();
@@ -665,6 +667,28 @@ class DataStore
 
         if (!empty($table[0])) {
             $re = json_decode($table[0]->getValue(), true);
+        }
+
+        return $re;
+    }
+
+    /**
+     * Returns an array of the holidays in the give range
+     *
+     * TODO: check if the range spans to more then one option record (year)
+     *
+     * @param string $start_date
+     * @param string $end_date
+     * @return array
+     */
+    public function getHolidays($start_date, $end_date)
+    {
+        $holidays = $this->getOption('holidays', $start_date);
+        $re = [];
+        foreach ($holidays as $day) {
+            if ($day[0] >= $start_date && $day[0] <= $end_date) {
+                $re[$day[0]] = $day[1];
+            }
         }
 
         return $re;
