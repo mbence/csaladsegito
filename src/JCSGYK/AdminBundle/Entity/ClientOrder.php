@@ -12,6 +12,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ClientOrder
 {
+    /** status constants */
+    const OPEN = 1;
+    const CLOSED = 2;
+
+    /** change constants */
+    const CANCEL = -1;
+    const REORDER = 1;
+
     /**
      * @var integer
      *
@@ -37,23 +45,16 @@ class ClientOrder
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="date", nullable=true)
+     * @ORM\Column(name="date", type="date", nullable=false)
      */
     private $date;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(name="orders", type="text", nullable=true)
+     * @ORM\Column(name="change", type="integer", nullable=true)
      */
-    private $orders;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="changes", type="text", nullable=true)
-     */
-    private $changes;
+    private $change;
 
     /**
      * @var integer
@@ -141,51 +142,27 @@ class ClientOrder
     }
 
     /**
-     * Set orders
+     * Set change
      *
-     * @param string $orders
+     * @param integer $change
      *
      * @return ClientOrder
      */
-    public function setOrders($orders)
+    public function setChange($change)
     {
-        $this->orders = $orders;
+        $this->change = $change;
 
         return $this;
     }
 
     /**
-     * Get orders
+     * Get change
      *
-     * @return string
+     * @return integer
      */
-    public function getOrders()
+    public function getChange()
     {
-        return $this->orders;
-    }
-
-    /**
-     * Set changes
-     *
-     * @param string $changes
-     *
-     * @return ClientOrder
-     */
-    public function setChanges($changes)
-    {
-        $this->changes = $changes;
-
-        return $this;
-    }
-
-    /**
-     * Get changes
-     *
-     * @return string
-     */
-    public function getChanges()
-    {
-        return $this->changes;
+        return $this->change;
     }
 
     /**

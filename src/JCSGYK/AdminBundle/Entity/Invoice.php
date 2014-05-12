@@ -13,6 +13,18 @@ use Doctrine\ORM\Mapping as ORM;
 class Invoice
 {
     /**
+     * Invocie status constants
+     */
+    /** Just created the record, witing for the transfer to EcoSTAT */
+    const READY_TO_SEND = 1;
+    /** Invoice is sent, and printed, open for payments */
+    const OPEN = 2;
+    /** All payments are done, closed */
+    const CLOSED = 3;
+    /** Invoice cancelled */
+    const CANCELLED = -1;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
@@ -39,9 +51,16 @@ class Invoice
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="date", nullable=true)
+     * @ORM\Column(name="start_date", type="date", nullable=false)
      */
-    private $date;
+    private $startDate;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="end_date", type="date", nullable=false)
+     */
+    private $endDate;
 
     /**
      * @var string
@@ -49,6 +68,20 @@ class Invoice
      * @ORM\Column(name="items", type="text", nullable=true)
      */
     private $items;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="days", type="text", nullable=true)
+     */
+    private $days;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="changes", type="text", nullable=true)
+     */
+    private $changes;
 
     /**
      * @var integer
@@ -79,11 +112,10 @@ class Invoice
     private $status;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="created_by", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
-    private $createdBy;
+    private $creator;
 
     /**
      * @var \DateTime
@@ -126,30 +158,6 @@ class Invoice
     public function getCompanyId()
     {
         return $this->companyId;
-    }
-
-    /**
-     * Set date
-     *
-     * @param \DateTime $date
-     *
-     * @return Invoice
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    /**
-     * Get date
-     *
-     * @return \DateTime
-     */
-    public function getDate()
-    {
-        return $this->date;
     }
 
     /**
@@ -273,30 +281,6 @@ class Invoice
     }
 
     /**
-     * Set createdBy
-     *
-     * @param integer $createdBy
-     *
-     * @return Invoice
-     */
-    public function setCreatedBy($createdBy)
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    /**
-     * Get createdBy
-     *
-     * @return integer
-     */
-    public function getCreatedBy()
-    {
-        return $this->createdBy;
-    }
-
-    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
@@ -342,5 +326,125 @@ class Invoice
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * Set startDate
+     *
+     * @param \DateTime $startDate
+     *
+     * @return Invoice
+     */
+    public function setStartDate($startDate)
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    /**
+     * Get startDate
+     *
+     * @return \DateTime
+     */
+    public function getStartDate()
+    {
+        return $this->startDate;
+    }
+
+    /**
+     * Set endDate
+     *
+     * @param \DateTime $endDate
+     *
+     * @return Invoice
+     */
+    public function setEndDate($endDate)
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * Get endDate
+     *
+     * @return \DateTime
+     */
+    public function getEndDate()
+    {
+        return $this->endDate;
+    }
+
+    /**
+     * Set creator
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $creator
+     *
+     * @return Invoice
+     */
+    public function setCreator(\JCSGYK\AdminBundle\Entity\User $creator = null)
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
+
+    /**
+     * Get creator
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User
+     */
+    public function getCreator()
+    {
+        return $this->creator;
+    }
+
+    /**
+     * Set days
+     *
+     * @param string $days
+     *
+     * @return Invoice
+     */
+    public function setDays($days)
+    {
+        $this->days = $days;
+
+        return $this;
+    }
+
+    /**
+     * Get days
+     *
+     * @return string 
+     */
+    public function getDays()
+    {
+        return $this->days;
+    }
+
+    /**
+     * Set changes
+     *
+     * @param string $changes
+     *
+     * @return Invoice
+     */
+    public function setChanges($changes)
+    {
+        $this->changes = $changes;
+
+        return $this;
+    }
+
+    /**
+     * Get changes
+     *
+     * @return string 
+     */
+    public function getChanges()
+    {
+        return $this->changes;
     }
 }
