@@ -13,6 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Invoice
 {
     /**
+     * Invocie status constants
+     */
+    const OPEN = 1;
+    const CLOSED = 2;
+    const CANCELLED = 3;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
@@ -86,11 +93,10 @@ class Invoice
     private $status;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="created_by", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
-    private $createdBy;
+    private $creator;
 
     /**
      * @var \DateTime
@@ -256,30 +262,6 @@ class Invoice
     }
 
     /**
-     * Set createdBy
-     *
-     * @param integer $createdBy
-     *
-     * @return Invoice
-     */
-    public function setCreatedBy($createdBy)
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    /**
-     * Get createdBy
-     *
-     * @return integer
-     */
-    public function getCreatedBy()
-    {
-        return $this->createdBy;
-    }
-
-    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
@@ -344,7 +326,7 @@ class Invoice
     /**
      * Get startDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getStartDate()
     {
@@ -368,10 +350,34 @@ class Invoice
     /**
      * Get endDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * Set creator
+     *
+     * @param \JCSGYK\AdminBundle\Entity\User $creator
+     *
+     * @return Invoice
+     */
+    public function setCreator(\JCSGYK\AdminBundle\Entity\User $creator = null)
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
+
+    /**
+     * Get creator
+     *
+     * @return \JCSGYK\AdminBundle\Entity\User 
+     */
+    public function getCreator()
+    {
+        return $this->creator;
     }
 }

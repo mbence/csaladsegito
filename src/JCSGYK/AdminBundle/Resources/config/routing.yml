@@ -165,6 +165,9 @@ admin_companies:
 admin_clubs:
     pattern:  /admin/clubs/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:clubs, id: null }
+admin_invoices:
+    pattern:  /admin/invoices
+    defaults: { _controller: JCSGYKAdminBundle:Admin:invoices }
 
 login_redirector:
     pattern:   /loginredirector

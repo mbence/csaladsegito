@@ -641,4 +641,32 @@ class DataStore
         }
         return $month;
     }
+
+    /**
+     * Finds the catering cost table for the given date
+     *
+     * @param string $date in ISO format
+     * @return array of catering costs or empty array on failure
+     */
+    public function getCateringCosts($date = null) {
+        if (is_null($date)) {
+            $date = date('Y-m-d');
+        }
+        $em = $this->container->get('doctrine')->getManager();
+        $company_id = $this->getCompanyId();
+
+        $table = $em->createQuery("SELECT o FROM JCSGYKAdminBundle:Option o WHERE o.companyId = :company_id AND o.name = 'cateringcosts' AND o.isActive = 1 AND o.validFrom < :now ORDER BY o.validFrom DESC")
+            ->setParameter('company_id', $this->getCompanyId())
+            ->setParameter('now', $date)
+            ->setMaxResults(1)
+            ->getResult();
+
+        $re = [];
+
+        if (!empty($table[0])) {
+            $re = json_decode($table[0]->getValue(), true);
+        }
+
+        return $re;
+    }
 }

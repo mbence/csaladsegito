@@ -442,6 +442,20 @@ class AdminController extends Controller
         }
     }
 
+    public function invoicesAction()
+    {
+        $invocie_service = $this->container->get('jcs.invoice');
+        $em = $this->getDoctrine()->getManager();
+
+        $client = $em->getRepository('JCSGYKAdminBundle:Client')->find(110277);
+        $start = new \DateTime('2014-05-01');
+        $end = new \DateTime('2014-05-31');
+
+        $invocie_service->create($client, $start, $end);
+
+        return $this->render('JCSGYKAdminBundle:Admin:invoice.html.twig', []);
+    }
+
     /**
      * System update action
      *
