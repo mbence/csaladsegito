@@ -602,43 +602,60 @@ class DataStore
 
     /**
      * Get days of multiple month
+     * @param DateTime $date
+     * @param int $month_number
      * @return array
      */
-    public function getDaysOfMonths($date,$month_number=3)
+    public function getDaysOfMonths($date, $month_number=3)
     {
         $months = [];
         for ($i = 1; $i <= $month_number; $i++) {
-            $months[strftime('%Y. %B',$date->getTimestamp())] = $this->getDaysOfMonth($date);
+            $months[$date->getTimestamp()] = $this->getDaysOfMonth($date);
             $date->modify('first day of next month');
         }
+
         return $months;
     }
 
     /**
      * Get days of one month
+     * @param DateTime $date
      * @return array
      */
     public function getDaysOfMonth($date)
     {
         $month     = [];
+        $week      = $date->format('W');
         $day_count = $date->format('t');
         $first_day = $date->format('N');
-        $date->modify('+'.($day_count-1).' days');
+        $today     = $date->format('j');
+        $date->modify('+' . ($day_count-1) . ' days');
         $last_day  = $date->format('N');
-        $week      = $date->format('W');
 
         for ($i = 1; $i < $first_day; $i++) {
-            $month[$week][] = null;
+            $month[$week][] = [
+                'day'     => null,
+                'weekend' => ($i > 5) ? true : false
+            ];
         }
         for ($i = 1; $i <= $day_count; $i++) {
             if (count($month[$week]) % 7 == 0) {
                 $week++;
+                $month[$week] = [];
             }
-            $month[$week][] = $i;
+            $month[$week][] = [
+                'day'     => $i,
+                'weekend' => (count($month[$week]) % 7 == 5 || count($month[$week]) % 7 == 6) ? true : false,
+                'modifiable' => ($i < ($today+2)) ? false : true
+            ];
         }
         for ($i = 7; $i > $last_day; $i--) {
-            $month[$week][] = null;
+            $month[$week][] = [
+                'day'     => null,
+                'weekend' => ($i > 5) ? true : false
+            ];
         }
+
         return $month;
     }
 }

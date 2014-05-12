@@ -4,7 +4,7 @@
 {% if success is defined and success %}
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
-    <h1 class="client center">{{ 'Étkeztetés'|trans }}</h1>
+    <h1 class="client center">{{ 'Étkeztetés'|trans }} <span class="title-date"></span></h1>
 {#
     <form id="catering_form" class="templateform" action="{{ path('client_catering_edit', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
         {{ form_errors(form) }}
@@ -21,32 +21,42 @@
     </table>
 
 {# {% include "JCSGYKAdminBundle:Catering:_edit_catering.html.twig" %}#}
+    <nav class="calendar-nav clearfix">
+        <ul>
+            <li class="prev" data-direction="prev" data-next="-1">Előző hónap</li>
+            <li class="next" data-direction="next" data-next="1">Következő hónap</li>
+        </ul>
+    </nav>
     <div id="ordering-calendar">
-        {% for index,month in months %}
-        <div class="month-wrapper" style="display:none;">
-            <p>{{ index }}</p>
-            <table class="order-datepicker">
-                <thead>
-                    <tr>
-                        <th>{{ 'Hétfő'|trans }}</th>
-                        <th>{{ 'Kedd'|trans }}</th>
-                        <th>{{ 'Szerda'|trans }}</th>
-                        <th>{{ 'Csütörtök'|trans }}</th>
-                        <th>{{ 'Péntek'|trans }}</th>
-                        <th>{{ 'Szombat'|trans }}</th>
-                        <th>{{ 'Vasárnap'|trans }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for week in month %}
-                    <tr>
-                        {% for day in week %}
-                        <td{% if day is null %} class="empty"{% endif %}>{{ day }}</td>
+        {% for timestamp,month in months %}
+        <div class="month-wrapper" data-date="{{ timestamp|date('Y. F') }}">
+            <div class="datepicker clearfix">
+                    <ul class="table-header">
+                        <li class="week-header"></li>
+                        <li>{{ 'Hétfő'|trans }}</li>
+                        <li>{{ 'Kedd'|trans }}</li>
+                        <li>{{ 'Szerda'|trans }}</li>
+                        <li>{{ 'Csütörtök'|trans }}</li>
+                        <li>{{ 'Péntek'|trans }}</li>
+                        <li class="weekend">{{ 'Szombat'|trans }}</li>
+                        <li class="weekend">{{ 'Vasárnap'|trans }}</li>
+                    </ul>
+                    {% for weeknumber,week in month %}
+                    <ul class="table-body">
+                        <li class="week-header">{{ weeknumber }}. {{ 'hét'|trans }}</li>
+                        {% for index,day in week %}
+                        <li class="{% if day.weekend %}weekend{% else %}weekday{% endif %}{% if day.day is null %} empty{% endif %}{% if day.day is not null %} days{% endif %}">
+                        {% if day.day is not null %}
+                            <span class="day">{% if day.day == 1 %}{{ timestamp|date('F') }} {% endif %}{{ day.day }}.</span>
+                            <span class="dayinfo" data-info="INFO"></span>
+                            <span class="menu"><input type="checkbox" name="clientorder[orders][{{ day.day }}]" value="1"{% if day.modifiable is defined and day.modifiable == false %}disabled="disabled"{% endif %}>Menü</span>
+                            <span class="status"></span>
+                        {% endif %}
+                        </li>
                         {% endfor %}
-                    </tr>
+                    </ul>
                     {% endfor %}
-                </tbody>
-            </table>
+            </div>
         </div>
         {% endfor %}
     </div>
@@ -55,7 +65,6 @@
         <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
         <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
     </div>
-    <script type="text/javascript">JcsClient.initMultiDatesPicker();</script>
 {#
     {{ form_widget(form._token) }}
     </form>#}

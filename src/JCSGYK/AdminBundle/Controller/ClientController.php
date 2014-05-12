@@ -23,6 +23,8 @@ use JCSGYK\AdminBundle\Entity\Relation;
 use JCSGYK\AdminBundle\Form\Type\RelativeType;
 use JCSGYK\AdminBundle\Entity\Catering;
 use JCSGYK\AdminBundle\Form\Type\CateringType;
+use JCSGYK\AdminBundle\Entity\ClientOrder;
+use JCSGYK\AdminBundle\Entity\ClientOrderType;
 
 class ClientController extends Controller
 {
@@ -252,10 +254,18 @@ class ClientController extends Controller
     public function ordersAction($id)
     {
         if (!empty($id)) {
+            $em = $this->getDoctrine()->getManager();
             $client = $this->getClient($id);
         }
 
         if (!empty($client)) {
+
+            // $client_orders = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:ClientOrder')->findOneBy(['id' => $id, 'is_current' => 1, 'status' => 1]);
+            // $form = $this->createForm(new ClientOrderType(), $client->getCatering());
+
+            // $months = $this->container->get('jcs.ds')->getDaysOfMonths(new \DateTime('first day of this month'),3);
+            // $orders = $this->processOrders($months, $client->getCatering());
+
             return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
                 'client' => $client,
                 'months' => $this->container->get('jcs.ds')->getDaysOfMonths(new \DateTime('first day of this month'),3)
@@ -264,6 +274,20 @@ class ClientController extends Controller
         else {
             throw new BadRequestHttpException('Invalid client id');
         }
+    }
+
+    /**
+     * Merge client orders table data with cataring template and holidays
+     *
+     * @param array $months
+     * @param array $catering
+     * @return array $oders
+     */
+    private function processOrders($months, $catering)
+    {
+        $orders = $months;
+
+        return $orders;
     }
 
     /**

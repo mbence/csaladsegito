@@ -16156,20 +16156,6 @@ JcsClient = {
       }
       return false;
     });
-  },
-
-  /*
-      Init and setup ordering table
-   */
-  initMultiDatesPicker: function() {
-    $("#ordering-calendar").find(".month-wrapper").each(function(i, e) {
-      if (i === 0) {
-        return $(this).show();
-      }
-    });
-    return $("#ordering-calendar").on("click", "td", function() {
-      return $(this).toggleClass("selected");
-    });
   }
 };
 
@@ -16204,6 +16190,7 @@ JcsCatering = {
   },
   initCatering: function() {
     JcsModal.setCloseButton();
+    JcsCatering.initMultiDatesPicker();
     $(".day-selectors > a").on("click", function() {
       var day, days, index, _i, _len;
       days = $(this).data("days");
@@ -16267,6 +16254,45 @@ JcsCatering = {
       return false;
     });
     return JcsModal.init();
+  },
+
+  /*
+      Init and setup ordering table
+   */
+  initMultiDatesPicker: function() {
+    this.calendarNavigation();
+    this.setupDatePickering();
+    $(".month-wrapper:first").addClass("active");
+    return $(".title-date").text(" - " + $(".month-wrapper:first").data("date"));
+  },
+  calendarNavigation: function() {
+    return $(".calendar-nav li").click(function() {
+      var direction, next_element;
+      direction = $(this).data("direction");
+      next_element = $(this).data("next");
+      if (next_element !== -1 && $(".month-wrapper:eq(" + next_element + ")").length) {
+        $(".month-wrapper").removeClass("active");
+        $(".month-wrapper:eq(" + next_element + ")").addClass("active");
+        $(".title-date").text(" - " + $(".month-wrapper:eq(" + next_element + ")").data("date"));
+        return $(".calendar-nav li").each(function() {
+          if (direction === "prev") {
+            return $(this).data().next--;
+          } else if (direction === "next") {
+            return $(this).data().next++;
+          }
+        });
+      }
+    });
+  },
+  setupDatePickering: function() {
+    return $("#ordering-calendar").on("click", "li.days", function() {
+      $(this).toggleClass("selected");
+      if ($(this).find("input").get(0).checked) {
+        return $(this).find("input").removeAttr("checked");
+      } else {
+        return $(this).find("input").attr("checked", "checked");
+      }
+    });
   }
 };
 

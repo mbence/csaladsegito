@@ -21,6 +21,7 @@ JcsCatering =
 
     initCatering: ->
         JcsModal.setCloseButton()
+        JcsCatering.initMultiDatesPicker()
         # day selectors
         $(".day-selectors > a").on "click", ->
             days = $(this).data("days")
@@ -94,3 +95,35 @@ JcsCatering =
 
         # modal dialog
         JcsModal.init()
+    
+    ###
+        Init and setup ordering table
+    ###
+    initMultiDatesPicker: ->
+        @calendarNavigation()
+        @setupDatePickering()
+        $(".month-wrapper:first").addClass("active")
+        $(".title-date").text(" - " + $(".month-wrapper:first").data("date"))
+
+    calendarNavigation: ->
+        $(".calendar-nav li").click ->
+            direction    = $(this).data("direction")
+            next_element = $(this).data("next")
+            # console.log(direction + ": " + next_element)
+            if next_element != -1 and $(".month-wrapper:eq(" + next_element + ")").length
+                $(".month-wrapper").removeClass("active")
+                $(".month-wrapper:eq(" + next_element + ")").addClass("active")
+                $(".title-date").text(" - " + $(".month-wrapper:eq(" + next_element + ")").data("date"))
+                $(".calendar-nav li").each ->
+                    if direction == "prev"
+                        $(this).data().next--
+                    else if direction == "next"
+                        $(this).data().next++
+
+    setupDatePickering: ->
+        $("#ordering-calendar").on "click", "li.days", ->
+            $(this).toggleClass("selected")
+            if $(this).find("input").get(0).checked
+                $(this).find("input").removeAttr("checked")
+            else
+                $(this).find("input").attr("checked","checked")

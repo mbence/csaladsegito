@@ -1,0 +1,94 @@
+.clearfix:after {
+  content: ".";
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}
+/* Ordering */
+.calendar-nav {
+  padding: 10px;
+}
+.calendar-nav ul li {
+  width: 150px;
+  text-align: center;
+  font-size: 12px;
+  display: block;
+  padding: 10px;
+  background-color: #b17b51;
+}
+.calendar-nav ul li.prev {
+  float: left;
+}
+.calendar-nav ul li.next {
+  float: right;
+}
+.calendar-nav ul li:hover {
+  background-color: #96613c;
+  color: #fff;
+  cursor: pointer;
+}
+#ordering-calendar .month-wrapper {
+  display: none;
+}
+#ordering-calendar .month-wrapper.active {
+  display: block;
+}
+#ordering-calendar .month-wrapper .datepicker {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+#ordering-calendar .month-wrapper .datepicker ul.table-header li {
+  font-weight: bold;
+  height: 36px;
+  line-height: 36px;
+  text-align: center;
+  border-top: 1px solid #b3c8d9;
+}
+#ordering-calendar .month-wrapper .datepicker ul.table-body li.selected {
+  background-color: #8db4a0;
+}
+#ordering-calendar .month-wrapper .datepicker ul.table-body li.empty {
+  background-color: #41688a;
+}
+#ordering-calendar .month-wrapper .datepicker ul.table-body li.empty:hover {
+  cursor: default;
+}
+#ordering-calendar .month-wrapper .datepicker ul.table-body li.days:hover {
+  cursor: pointer;
+  background-color: #a3c0d9;
+}
+#ordering-calendar .month-wrapper .datepicker ul.table-body li .day {
+  margin-bottom: 5px;
+  border-bottom: 1px solid gray;
+}
+#ordering-calendar .month-wrapper .datepicker ul.table-body li .status {
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+}
+#ordering-calendar .month-wrapper .datepicker ul li {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  font-size: 12px;
+  padding: 3px;
+  border-bottom: 1px solid #b3c8d9;
+  border-left: 1px solid #b3c8d9;
+  background-color: #d7dce0;
+  float: left;
+}
+#ordering-calendar .month-wrapper .datepicker ul li:last-child {
+  border-right: 1px solid #b3c8d9;
+}
+#ordering-calendar .month-wrapper .datepicker ul li.week-header {
+  line-height: 60px;
+  text-align: center;
+  width: 40px;
+}
+#ordering-calendar .month-wrapper .datepicker ul li.weekend {
+  background-color: #6491bf;
+}
+#ordering-calendar .month-wrapper .datepicker ul li .day {
+  display: block;
+}
