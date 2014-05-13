@@ -52,9 +52,9 @@ class ClientOrder
     /**
      * @var integer
      *
-     * @ORM\Column(name="change", type="integer", nullable=true)
+     * @ORM\Column(name="order", type="integer", nullable=true)
      */
-    private $change;
+    private $order;
 
     /**
      * @var integer
@@ -82,6 +82,11 @@ class ClientOrder
      * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
     private $creator;
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTime());
+    }
 
     /**
      * Get id
@@ -139,30 +144,6 @@ class ClientOrder
     public function getDate()
     {
         return $this->date;
-    }
-
-    /**
-     * Set change
-     *
-     * @param integer $change
-     *
-     * @return ClientOrder
-     */
-    public function setChange($change)
-    {
-        $this->change = $change;
-
-        return $this;
-    }
-
-    /**
-     * Get change
-     *
-     * @return integer
-     */
-    public function getChange()
-    {
-        return $this->change;
     }
 
     /**
@@ -283,5 +264,29 @@ class ClientOrder
     public function getCreator()
     {
         return $this->creator;
+    }
+
+    /**
+     * Set order
+     *
+     * @param integer $order
+     *
+     * @return ClientOrder
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+    /**
+     * Get order
+     *
+     * @return integer
+     */
+    public function getOrder()
+    {
+        return $this->order;
     }
 }
