@@ -32,10 +32,10 @@ class InvoiceService
     public function create(Client $client, \DateTime $start_date, \DateTime $end_date)
     {
         if (empty($client)) {
-            throw new HttpException('invalid Client', 500);
+            throw new HttpException(500, 'Invalid Client');
         }
         if ($start_date > $end_date) {
-            throw new HttpException('invalid Start / End dates', 500);
+            throw new HttpException(500, 'Invalid Start / End dates');
         }
 
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
@@ -54,6 +54,12 @@ class InvoiceService
         // find and check the open order-change records
         $changes = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getChanges($client->getId(), $end_date);
         $changed_days = $this->getChangedDays($changes);
+
+        // if we have no data, we create no invoice
+        if (empty($days) && empty($changed_days)) {
+            return false;
+        }
+
         $discount = $this->calulateCosts($catering, $changed_days);
 
         // items on the invoice
@@ -125,6 +131,9 @@ class InvoiceService
     private function getMonthlySubs(Catering $catering, \DateTime $start_date, \DateTime $end_date)
     {
         $subs = $catering->getSubscriptions();
+        if (empty($subs)) {
+            $subs = [];
+        }
         // food on every way of the week?
         $all_days = count($subs) == 7;
         // get the holidays

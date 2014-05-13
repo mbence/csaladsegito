@@ -7,6 +7,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 use JCSGYK\AdminBundle\Entity\Relation;
 use JCSGYK\AdminBundle\Entity\Client;
+use JCSGYK\AdminBundle\Entity\MonthlyClosing;
 
 /**
  * Service for Data Store
@@ -60,6 +61,12 @@ class DataStore
         'pihenőnap'
     ];
 
+    private $closingStatuses = [
+        MonthlyClosing::RUNNING     => 'Fut',
+        MonthlyClosing::SUCCESS     => 'Siker',
+        MonthlyClosing::ERROR       => 'Hiba',
+    ];
+
     public function __construct($container)
     {
         $this->container = $container;
@@ -86,6 +93,11 @@ class DataStore
     public function getRoleMap()
     {
         return $this->roleMap;
+    }
+
+    public function getClosingStatus($status)
+    {
+        return isset($this->closingStatuses[$status]) ? $this->closingStatuses[$status] : false;
     }
 
     public function getRoles()

@@ -62,7 +62,7 @@ class MenuController extends Controller
             ['route' => 'admin_options', 'options' => ['name' => 'holidays'], 'label' => 'Munkaszüneti napok', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_providers', 'label' => 'Szolgáltatók', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_templates', 'label' => 'Nyomtatványok', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_invoices', 'label' => 'Számlázás', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_closings', 'label' => 'Havi zárások', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
         ];
 

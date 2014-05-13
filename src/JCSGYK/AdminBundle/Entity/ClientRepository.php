@@ -159,7 +159,17 @@ class ClientRepository extends EntityRepository
 
         return $this->getEntityManager()->getConnection()->executeQuery($sql, $params)->fetchAll();
     }
-/*
- *
- */
+
+
+    /**
+     * returns all clients who have an active catering record
+     */
+    public function getForClosing($company_id)
+    {
+        return $this->getEntityManager()
+            ->createQuery("SELECT c, a FROM JCSGYKAdminBundle:Client c JOIN c.catering a WHERE c.companyId = :company_id AND c.type = :client_type AND a.isActive = 1")
+            ->setParameter('company_id', $company_id)
+            ->setParameter('client_type', Client::CA)
+            ->getResult();
+    }
 }

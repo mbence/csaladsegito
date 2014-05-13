@@ -36,6 +36,7 @@ class AdminExtension extends \Twig_Extension
             'ssn' => new \Twig_Filter_Method($this, 'formatSSN', ['is_safe' => ['html']]),
             'ctmap' => new \Twig_Filter_Method($this, 'clientTypeMap'),
             'cat_days' => new \Twig_Filter_Method($this, 'cateringDays'),
+            'closing_status' => new \Twig_Filter_Method($this, 'closingStatus'),
         ];
     }
 
@@ -56,6 +57,12 @@ class AdminExtension extends \Twig_Extension
             'is_cw' => new \Twig_Function_Method($this, 'companyIsCW'),
             'getct' => new \Twig_Function_Method($this, 'getClientTypes'),
         );
+    }
+
+
+    public function closingStatus($status)
+    {
+        return $this->ds->getClosingStatus($status);
     }
 
     public function clientTypeMap($client_type) {

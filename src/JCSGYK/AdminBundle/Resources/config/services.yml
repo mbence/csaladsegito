@@ -28,6 +28,10 @@ services:
         class:        JCSGYK\AdminBundle\Services\InvoiceService
         arguments:    ["@service_container"]
 
+    jcs.closing:
+        class:        JCSGYK\AdminBundle\Services\ClosingService
+        arguments:    ["@service_container"]
+
     jcs.twig.adminextension:
         class:        JCSGYK\AdminBundle\Twig\AdminExtension
         arguments:    ["@translator", "@jcs.ds"]

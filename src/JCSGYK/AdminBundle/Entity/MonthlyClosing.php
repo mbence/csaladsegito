@@ -12,6 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class MonthlyClosing
 {
+    /** Status constants */
+    const RUNNING  = 1;
+    const SUCCESS   = 2;
+    const ERROR     = -1;
+
     /**
      * @var integer
      *
@@ -31,14 +36,21 @@ class MonthlyClosing
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="date", nullable=true)
+     * @ORM\Column(name="start_date", type="date", nullable=false)
      */
-    private $date;
+    private $startDate;
 
     /**
-     * @var boolean
+     * @var \DateTime
      *
-     * @ORM\Column(name="status", type="boolean", nullable=true)
+     * @ORM\Column(name="end_date", type="date", nullable=false)
+     */
+    private $endDate;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="status", type="integer", nullable=true)
      */
     private $status;
 
@@ -61,6 +73,11 @@ class MonthlyClosing
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTime());
+    }
 
     /**
      * Get id
@@ -99,7 +116,7 @@ class MonthlyClosing
     /**
      * Set status
      *
-     * @param boolean $status
+     * @param integer $status
      *
      * @return MonthlyClosing
      */
@@ -113,7 +130,7 @@ class MonthlyClosing
     /**
      * Get status
      *
-     * @return boolean
+     * @return integer
      */
     public function getStatus()
     {
@@ -144,31 +161,6 @@ class MonthlyClosing
         return $this->summary;
     }
 
-
-    /**
-     * Set date
-     *
-     * @param \DateTime $date
-     *
-     * @return MonthlyClosing
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    /**
-     * Get date
-     *
-     * @return \DateTime
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
-
     /**
      * Set createdAt
      *
@@ -194,26 +186,74 @@ class MonthlyClosing
     }
 
     /**
-     * Set createdBy
+     * Set creator
      *
-     * @param \JCSGYK\AdminBundle\Entity\User $createdBy
+     * @param \JCSGYK\AdminBundle\Entity\User $creator
      *
      * @return MonthlyClosing
      */
-    public function setCreatedBy(\JCSGYK\AdminBundle\Entity\User $createdBy = null)
+    public function setCreator(\JCSGYK\AdminBundle\Entity\User $creator = null)
     {
-        $this->createdBy = $createdBy;
+        $this->creator = $creator;
 
         return $this;
     }
 
     /**
-     * Get createdBy
+     * Get creator
      *
      * @return \JCSGYK\AdminBundle\Entity\User
      */
-    public function getCreatedBy()
+    public function getCreator()
     {
-        return $this->createdBy;
+        return $this->creator;
+    }
+
+    /**
+     * Set startDate
+     *
+     * @param \DateTime $startDate
+     *
+     * @return MonthlyClosing
+     */
+    public function setStartDate($startDate)
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    /**
+     * Get startDate
+     *
+     * @return \DateTime
+     */
+    public function getStartDate()
+    {
+        return $this->startDate;
+    }
+
+    /**
+     * Set endDate
+     *
+     * @param \DateTime $endDate
+     *
+     * @return MonthlyClosing
+     */
+    public function setEndDate($endDate)
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * Get endDate
+     *
+     * @return \DateTime
+     */
+    public function getEndDate()
+    {
+        return $this->endDate;
     }
 }

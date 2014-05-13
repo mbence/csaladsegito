@@ -22,6 +22,7 @@ use JCSGYK\AdminBundle\Form\Type\ClubType;
 use JCSGYK\AdminBundle\Entity\Paramgroup;
 use JCSGYK\AdminBundle\Entity\Option;
 use JCSGYK\AdminBundle\Form\Type\OptionType;
+use JCSGYK\AdminBundle\Entity\MonthlyClosing;
 
 class AdminController extends Controller
 {
@@ -391,13 +392,18 @@ class AdminController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $ds = $this->container->get('jcs.ds');
+        // get the current company id from the datatore
+        $company_id = $ds->getCompanyId();
 
         if ('new' == $id) {
             // new club
             $club = new Club;
         }
         elseif (!is_null($id)) {
-            $club = $em->getRepository('JCSGYKAdminBundle:Club')->find($id);
+            $club = $em->getRepository('JCSGYKAdminBundle:Club')->findBy(['id' => $id, 'companyId' => $company_id]);
+            if (!empty($club[0])) {
+                $club = $club[0];
+            }
         }
 
         if (is_null($id) || !empty($club)) {
@@ -414,8 +420,6 @@ class AdminController extends Controller
                 if ($form->isValid()) {
 
                     if (is_null($club->getId())) {
-                        // get the current company id from the datatore
-                        $company_id = $ds->getCompanyId();
                         // save the company id too
                         $club->setCompanyId($company_id);
                         $em->persist($club);
@@ -433,27 +437,57 @@ class AdminController extends Controller
                 $form_view = $form->createView();
             }
             // get all clubs
-            $clubs = $em->getRepository('JCSGYKAdminBundle:Club')->findBy([], ['name' => 'ASC']);
+            $clubs = $em->getRepository('JCSGYKAdminBundle:Club')->findBy(['companyId' => $company_id], ['name' => 'ASC']);
 
-            return $this->render('JCSGYKAdminBundle:Admin:clubs.html.twig', ['clubs' => $clubs, 'id' => $id, 'act' => $club, 'form' => $form_view]);
+            return $this->render('JCSGYKAdminBundle:Admin:clubs.html.twig', [
+                'clubs' => $clubs,
+                'id' => $id,
+                'act' => $club,
+                'form' => $form_view
+            ]);
         }
         else {
             throw new HttpException(400, "Bad request");
         }
     }
 
-    public function invoicesAction()
+    public function closingsAction($id = null)
     {
-        $invocie_service = $this->container->get('jcs.invoice');
+        $request = $this->getRequest();
+        $closing = null;
+        $form_view = null;
+
         $em = $this->getDoctrine()->getManager();
+        $ds = $this->container->get('jcs.ds');
+        // get the current company id from the datatore
+        $company_id = $ds->getCompanyId();
 
-        $client = $em->getRepository('JCSGYKAdminBundle:Client')->find(110277);
-        $start = new \DateTime('2014-05-01');
-        $end = new \DateTime('2014-05-31');
+        if (!is_null($id)) {
+            // TODO: check company id
+            $closing = $em->getRepository('JCSGYKAdminBundle:MonthlyClosing')->findBy(['id' => $id, 'companyId' => $company_id]);
+            if (!empty($closing[0])) {
+                $closing = $closing[0];
+            }
+        }
 
-        $invocie_service->create($client, $start, $end);
+        $closing_service = $this->container->get('jcs.closing');
 
-        return $this->render('JCSGYKAdminBundle:Admin:invoice.html.twig', []);
+        // manual run
+        if ($request->isMethod('POST') && 'manual' == $request->request->get('run')) {
+            $closing = $closing_service->run();
+            if (!empty($closing)) {
+                $id = $closing->getId();
+            }
+
+            $this->get('session')->getFlashBag()->add('notice', 'Havi zárás elindítva');
+
+//            return $this->redirect($this->generateUrl('admin_closings', ['id' => $id]));
+        }
+
+        return $this->render('JCSGYKAdminBundle:Admin:closings.html.twig', [
+            'closings' => $closing_service->getList(),
+            'act' => $closing,
+        ]);
     }
 
     /**

@@ -75,7 +75,7 @@ class Club
      */
     private $clientcaterings;
 
-    public function __construct($salt = null)
+    public function __construct()
     {
         $this->clientcaterings = new ArrayCollection();
     }

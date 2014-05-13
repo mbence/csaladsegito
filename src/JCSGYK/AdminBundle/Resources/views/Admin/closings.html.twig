@@ -1,0 +1,65 @@
+{% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
+
+{% block settings_content %}
+
+<div class="template-top">
+    <div class="floatright right">
+        <form action="{{ path('admin_closings') }}" novalidate method="post">
+            <div class="formbuttons">
+                <button type="submit" class="button" name="run" value="manual" onclick="return(confirm('Biztos benne?'));"><span>{{ 'kézi futtatás'|trans }}</span></button>
+            </div>
+        </form>
+    </div>
+    <h1 class="client">{{ 'Havi zárások'|trans }}</h1>
+</div>
+<div class="adminblock" id="template-list">
+    <div class="rightpad fullheight nocollapse">
+        {% for closing in closings %}
+            <a href="{{ path('admin_closings', {'id': closing.id}) }}" class="tpl-list{% if act and act.id == closing.id %} current{% endif %}">
+                {{ closing.startDate|fdate('sd') }} - {{ closing.endDate|fdate('sd') }}: <strong>{{ closing.status|closing_status }}</strong>
+            </a>
+        {% endfor %}
+    </div>
+</div>
+<div class="adminblock" id="closing-details">
+    <div class="leftpad20 fullheight nocollapse">
+        {% if act %}
+        <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Dátum'|trans }}:</th>
+                <td>{{ act.startDate|fdate }} - {{ act.endDate|fdate }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Státusz'|trans }}:</th>
+                <td>{{ act.status|closing_status }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Részletek'|trans }}:</th>
+                <td>{{ act.summary|nl2br }}</td>
+            </tr>
+        </table>
+        <br>
+        <div class="client-sub"> </div>
+        <div>
+            <table class="client" cellspacing="0" border="0">
+                <tr>
+                    <th>{{ 'Létrehozta'|trans }}:</th>
+                    <td>{{ fname(act.creator.firstname, act.creator.lastname) }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'Időpont'|trans }}:</th>
+                    <td>{{ act.createdAt|fdate('dt') }}</td>
+                </tr>
+            </table>
+        </div>
+        {% else %}
+            <div class="info">
+                <p>
+                    {{ 'A havi zárások részletes adataihoz kattintson a bal oldai listában a megfelelő sorra!'|trans }}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<div class="clear"></div>
+{% endblock %}
