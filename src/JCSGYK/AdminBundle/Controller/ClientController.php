@@ -309,8 +309,8 @@ class ClientController extends Controller
         $menu               = $catering->getMenu();
         $days_of_months     = $this->container->get('jcs.ds')->getDaysOfMonths($month_first_day,3);
         $monthly_subs       = $this->container->get('jcs.invoice')->getMonthlySubs($catering, $month_first_day, $last_day_of_period);
-        $changes            = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getChanges($client->getId(), $last_day_of_period);
-        $changed_days       = $this->container->get('jcs.invoice')->getChangedDays($changes);
+        $changes            = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getOrders($client->getId(), $last_day_of_period);
+        $changed_days       = $this->container->get('jcs.invoice')->getOrderDays($changes);
         $days               = [];
 
         foreach ($days_of_months as $key => $month) {
@@ -327,11 +327,12 @@ class ClientController extends Controller
                     $class[] = 'empty';
                 }
                 if (isset($changed_days[$date])) {
-                    $new_day['order'] = $changed_days[$date];
-                    $class[] = ($changed_days[$date] == ClientOrder::REORDER ) ? 'reorder' : 'cancel';
+                    $new_day['order'] = ($changed_days[$date] == 1) ? 2 : -1;
+                    $class[] = ($changed_days[$date] == 1 ) ? 'reorder' : 'cancel';
                 }
                 elseif (isset($monthly_subs[$date])) {
                     $new_day['order'] = $monthly_subs[$date];
+                    $class[] = 'order';
                 }
                 elseif (! is_null($day['day'])) {
                     $new_day['order'] = 0;

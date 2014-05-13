@@ -114,7 +114,7 @@ class InvoiceService
      * @param array of ClientOrder $changes
      * @return int
      */
-    private function getOrderDays($changes)
+    public function getOrderDays($changes)
     {
         $changed_days = [];
         foreach ($changes as $order) {
@@ -133,7 +133,7 @@ class InvoiceService
      * @param \DateTime $end_date
      * @return int
      */
-    private function getMonthlySubs(Catering $catering, \DateTime $start_date, \DateTime $end_date)
+    public function getMonthlySubs(Catering $catering, \DateTime $start_date, \DateTime $end_date)
     {
         $subs = $catering->getSubscriptions();
         if (empty($subs)) {
