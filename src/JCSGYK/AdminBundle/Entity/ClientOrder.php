@@ -18,9 +18,7 @@ class ClientOrder
 
     /** change constants */
     const CANCEL = -1;
-    // change reorder value to 2 instead of 1
-    // value 1 is the normal order in the form
-    const REORDER = 2;
+    const ORDER = 1;
 
     /**
      * @var integer
@@ -47,16 +45,16 @@ class ClientOrder
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="date", nullable=false)
+     * @ORM\Column(name="`date`", type="date", nullable=false)
      */
     private $date;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="change", type="integer", nullable=true)
+     * @ORM\Column(name="`order`", type="integer", nullable=true)
      */
-    private $change;
+    private $order;
 
     /**
      * @var integer
@@ -84,6 +82,11 @@ class ClientOrder
      * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
      */
     private $creator;
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTime());
+    }
 
     /**
      * Get id
@@ -141,30 +144,6 @@ class ClientOrder
     public function getDate()
     {
         return $this->date;
-    }
-
-    /**
-     * Set change
-     *
-     * @param integer $change
-     *
-     * @return ClientOrder
-     */
-    public function setChange($change)
-    {
-        $this->change = $change;
-
-        return $this;
-    }
-
-    /**
-     * Get change
-     *
-     * @return integer
-     */
-    public function getChange()
-    {
-        return $this->change;
     }
 
     /**
@@ -285,5 +264,29 @@ class ClientOrder
     public function getCreator()
     {
         return $this->creator;
+    }
+
+    /**
+     * Set order
+     *
+     * @param integer $order
+     *
+     * @return ClientOrder
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+    /**
+     * Get order
+     *
+     * @return integer
+     */
+    public function getOrder()
+    {
+        return $this->order;
     }
 }

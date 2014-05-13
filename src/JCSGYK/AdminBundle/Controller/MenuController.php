@@ -54,15 +54,11 @@ class MenuController extends Controller
         $items = [
             ['route' => 'admin_companies', 'label' => 'Cégek', 'role' => 'ROLE_SUPER_ADMIN'],
             ['route' => 'admin_users', 'label' => 'Felhasználók', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_clubs', 'label' => 'Klubok', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_systemparams', 'label' => 'Rendszer paraméterek', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_paramgroups', 'label' => 'Paraméter Csoportok', 'role' => 'ROLE_SUPER_ADMIN'],
             ['route' => 'admin_params', 'label' => 'Paraméterek', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_options', 'options' => ['name' => 'cateringcosts'], 'label' => 'Díjtáblázat', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_options', 'options' => ['name' => 'holidays'], 'label' => 'Munkaszüneti napok', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_providers', 'label' => 'Szolgáltatók', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_templates', 'label' => 'Nyomtatványok', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_closings', 'label' => 'Havi zárások', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
         ];
 
@@ -74,7 +70,20 @@ class MenuController extends Controller
         $menu = $this->checkMenu($items);
 
         return $this->render('JCSGYKAdminBundle:Settings:menu.html.twig', ['menu' => $menu]);
+    }
 
+    public function cateringSettingsAction()
+    {
+        $items = [
+            ['route' => 'admin_clubs', 'label' => 'Klubok', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_options', 'options' => ['name' => 'cateringcosts'], 'label' => 'Díjtáblázat', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_options', 'options' => ['name' => 'holidays'], 'label' => 'Munkaszüneti napok', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_closings', 'label' => 'Havi zárások', 'role' => 'ROLE_ADMIN'],
+        ];
+
+        $menu = $this->checkMenu($items);
+
+        return $this->render('JCSGYKAdminBundle:Settings:menu.html.twig', ['menu' => $menu]);
     }
 
     public function clientAction(Client $client)
