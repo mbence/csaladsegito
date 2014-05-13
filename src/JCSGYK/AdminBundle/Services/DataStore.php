@@ -56,9 +56,9 @@ class DataStore
 
     /** Holidays type */
     private $holidayTypeMap = [
-        'munkaszünet',
-        'munkanap',
-        'pihenőnap'
+        1 => 'munkaszünet',
+        2 => 'munkanap',
+        3 => 'pihenőnap'
     ];
 
     private $closingStatuses = [

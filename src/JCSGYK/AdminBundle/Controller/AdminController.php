@@ -745,7 +745,7 @@ class AdminController extends Controller
                         ],
                         [
                             'type'     => 'dropdown',
-                            'source'   => $this->container->get('jcs.ds')->getHolidayTypeMap()
+                            'source'   => array_values($this->container->get('jcs.ds')->getHolidayTypeMap())
                         ],
                         [
                             'type'     => 'text'
@@ -779,6 +779,7 @@ class AdminController extends Controller
         }
         elseif (!is_null($id)) {
             $option = $em->getRepository('JCSGYKAdminBundle:Option')->find($id);
+            $this->processValue($option, false);
         }
 
         if (is_null($id) || (!empty($option) && $name == $option->getName())) {
@@ -793,7 +794,7 @@ class AdminController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-                    $this->processValue($option);
+                    $this->processValue($option, true);
 
                     // set modifier user
                     $option->setModifier($user);
@@ -824,7 +825,14 @@ class AdminController extends Controller
             // get all options named with $name
             $options = $em->getRepository('JCSGYKAdminBundle:Option')->findBy(['name' => $name], ['validFrom' => 'DESC']);
 
-            return $this->render('JCSGYKAdminBundle:Admin:options.html.twig', ['name' => $name, 'id' => $id, 'options' => $options, 'form' => $form_view, 'table_defaults' => json_encode($options_default_value[$name]['format'])]);
+            return $this->render('JCSGYKAdminBundle:Admin:options.html.twig', [
+                    'name'           => $name,
+                    'id'             => $id,
+                    'options'        => $options,
+                    'form'           => $form_view,
+                    'table_defaults' => json_encode($options_default_value[$name]['format'])
+                ]
+            );
         }
         else {
             throw new HttpException(400, "Bad request");
@@ -832,26 +840,55 @@ class AdminController extends Controller
     }
 
     /**
-     * process option value
+     * Process option value, trim white spacec and empty lines
+     * If option name is holidays, does a holiday name mapping or reverse mapping because of handsontable
+     *
+     * @param Option $option
+     * @param boolean $reverse
      */
-    private function processValue(Option &$option)
+    private function processValue(Option &$option, $reverse)
     {
-        if ($option->getName('cateringcosts')) {
+        // run only if form was submitted
+        if ($reverse) {
+            if ($option->getName('cateringcosts') || $option->getName('holidays')) {
+                $value = json_decode($option->getValue());
+
+                if ($value != null && is_array($value)) {
+                    $empty_rows = [];
+
+                    foreach ($value as $key => $row) {
+                        if (empty(trim(implode('', $row)))) {
+                            $empty_rows[] = $key;
+                        }
+                    }
+                    foreach ($empty_rows as $key) {
+                        unset($value[$key]);
+                    }
+                    $option->setValue(json_encode(array_values($value)));
+                }
+            }
+            if ($option->getName('holidays')) {
+                $value         = json_decode($option->getValue());
+                $holiday_types = array_flip($this->container->get('jcs.ds')->getHolidayTypeMap());
+
+                foreach ($value as $row) {
+                    $new_row     = $row;
+                    $new_row[1]  = $holiday_types[$row[1]];
+                    $new_value[] = $new_row;
+                }
+                $option->setValue(json_encode($new_value));
+            }
+        }
+        else {
+            $holiday_types = $this->container->get('jcs.ds')->getHolidayTypeMap();
             $value = json_decode($option->getValue());
 
-            if ($value != null && is_array($value)) {
-                $empty_rows = [];
-
-                foreach ($value as $key => $row) {
-                    if (empty(trim(implode('', $row)))) {
-                        $empty_rows[] = $key;
-                    }
-                }
-                foreach ($empty_rows as $key) {
-                    unset($value[$key]);
-                }
-                $option->setValue(json_encode(array_values($value)));
+            foreach ($value as $row) {
+                $new_row     = $row;
+                $new_row[1]  = $holiday_types[$row[1]];
+                $new_value[] = $new_row;
             }
+            $option->setValue(json_encode($new_value));
         }
     }
 }
