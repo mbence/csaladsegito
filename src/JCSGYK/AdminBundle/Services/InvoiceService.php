@@ -120,7 +120,7 @@ class InvoiceService
     }
 
     /**
-     * Returns a list of days: key is ISO date format, when food was ordered, value is 1 or 0
+     * Returns a list of days: key is ISO date format, when food was ordered, value is 1 or -1 at cancels
      * Holidays are also taken into account
      *
      * @param \JCSGYK\AdminBundle\Entity\Catering $catering
