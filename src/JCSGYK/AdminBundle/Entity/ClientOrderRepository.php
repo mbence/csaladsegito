@@ -13,7 +13,7 @@ class ClientOrderRepository extends EntityRepository
     /**
      * Finds the changes for the client
      * @param int $client_id
-     * @param string $end_date date ISO string: end of the invoice period
+     * @param DateTime $end_date end of the invoice period
      * @param int $status optional
      * @return array of JCSGYK\AdminBundle\Entity\ClientOrder
      */

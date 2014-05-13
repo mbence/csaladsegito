@@ -18,7 +18,9 @@ class ClientOrder
 
     /** change constants */
     const CANCEL = -1;
-    const REORDER = 1;
+    // change reorder value to 2 instead of 1
+    // value 1 is the normal order in the form
+    const REORDER = 2;
 
     /**
      * @var integer

@@ -620,10 +620,13 @@ class DataStore
      */
     public function getDaysOfMonths($date, $month_number=3)
     {
-        $months = [];
+        // why is $date reference and not copy???
+        $new_date = clone $date;
+        $months   = [];
+
         for ($i = 1; $i <= $month_number; $i++) {
-            $months[$date->getTimestamp()] = $this->getDaysOfMonth($date);
-            $date->modify('first day of next month');
+            $months[$new_date->format('Y-m')] = $this->getDaysOfMonth($new_date);
+            $new_date->modify('first day of next month');
         }
 
         return $months;
@@ -640,30 +643,33 @@ class DataStore
         $week      = $date->format('W');
         $day_count = $date->format('t');
         $first_day = $date->format('N');
-        $today     = $date->format('j');
-        $date->modify('+' . ($day_count-1) . ' days');
-        $last_day  = $date->format('N');
+        $today     = date('j');
+        $new_date  = clone $date;
+        $new_date->modify('+' . ($day_count-1) . ' days');
+        $last_day  = $new_date->format('N');
 
         for ($i = 1; $i < $first_day; $i++) {
-            $month[$week][] = [
+            $month[] = [
                 'day'     => null,
+                'week'    => $week,
                 'weekend' => ($i > 5) ? true : false
             ];
         }
         for ($i = 1; $i <= $day_count; $i++) {
-            if (count($month[$week]) % 7 == 0) {
+            if (count($month) % 7 == 0) {
                 $week++;
-                $month[$week] = [];
             }
-            $month[$week][] = [
+            $month[] = [
                 'day'     => $i,
-                'weekend' => (count($month[$week]) % 7 == 5 || count($month[$week]) % 7 == 6) ? true : false,
+                'week'    => $week,
+                'weekend' => (count($month) % 7 == 5 || count($month) % 7 == 6) ? true : false,
                 'modifiable' => ($i < ($today+2)) ? false : true
             ];
         }
         for ($i = 7; $i > $last_day; $i--) {
-            $month[$week][] = [
+            $month[] = [
                 'day'     => null,
+                'week'    => $week,
                 'weekend' => ($i > 5) ? true : false
             ];
         }

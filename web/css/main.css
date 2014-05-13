@@ -3170,6 +3170,7 @@ table.task-list tr:hover td {
   margin-bottom: 15px;
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-header li {
+  font-size: 12px;
   font-weight: bold;
   height: 36px;
   line-height: 36px;
@@ -3185,11 +3186,15 @@ table.task-list tr:hover td {
 #ordering-calendar .month-wrapper .datepicker ul.table-body li.empty:hover {
   cursor: default;
 }
-#ordering-calendar .month-wrapper .datepicker ul.table-body li.days:hover {
+#ordering-calendar .month-wrapper .datepicker ul.table-body li.day:hover {
   cursor: pointer;
   background-color: #a3c0d9;
 }
+#ordering-calendar .month-wrapper .datepicker ul.table-body li.week-header {
+  font-size: 12px;
+}
 #ordering-calendar .month-wrapper .datepicker ul.table-body li .day {
+  font-size: 12px;
   margin-bottom: 5px;
   border-bottom: 1px solid gray;
 }
@@ -3202,7 +3207,7 @@ table.task-list tr:hover td {
   position: relative;
   width: 60px;
   height: 60px;
-  font-size: 12px;
+  font-size: 10px;
   padding: 3px;
   border-bottom: 1px solid #b3c8d9;
   border-left: 1px solid #b3c8d9;

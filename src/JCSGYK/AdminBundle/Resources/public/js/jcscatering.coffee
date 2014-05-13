@@ -121,9 +121,10 @@ JcsCatering =
                         $(this).data().next++
 
     setupDatePickering: ->
-        $("#ordering-calendar").on "click", "li.days", ->
-            $(this).toggleClass("selected")
-            if $(this).find("input").get(0).checked
-                $(this).find("input").removeAttr("checked")
-            else
-                $(this).find("input").attr("checked","checked")
+        $("#ordering-calendar").on "click", "li.day", ->
+            if $(this).hasClass("modifiable")
+                $(this).toggleClass("selected")
+                if $(this).find("input").get(0).checked
+                    $(this).find("input").removeAttr("checked")
+                else
+                    $(this).find("input").attr("checked","checked")

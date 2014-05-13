@@ -5,10 +5,10 @@
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
     <h1 class="client center">{{ 'Étkeztetés'|trans }} <span class="title-date"></span></h1>
-{#
-    <form id="catering_form" class="templateform" action="{{ path('client_catering_edit', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
-        {{ form_errors(form) }}
-#}
+
+    {# <form id="orders_form" class="templateform" action="{{ path('client_orders', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}> #}
+        {# {{ form_errors(form) }} #}
+
         <table class="client" cellspacing="0" border="0">
         <tr>
             <th>{{ 'Név'|trans }}:</th>
@@ -20,53 +20,14 @@
         </tr>
     </table>
 
-{# {% include "JCSGYKAdminBundle:Catering:_edit_catering.html.twig" %}#}
-    <nav class="calendar-nav clearfix">
-        <ul>
-            <li class="prev" data-direction="prev" data-next="-1">Előző hónap</li>
-            <li class="next" data-direction="next" data-next="1">Következő hónap</li>
-        </ul>
-    </nav>
-    <div id="ordering-calendar">
-        {% for timestamp,month in months %}
-        <div class="month-wrapper" data-date="{{ timestamp|date('Y. F') }}">
-            <div class="datepicker clearfix">
-                    <ul class="table-header">
-                        <li class="week-header"></li>
-                        <li>{{ 'Hétfő'|trans }}</li>
-                        <li>{{ 'Kedd'|trans }}</li>
-                        <li>{{ 'Szerda'|trans }}</li>
-                        <li>{{ 'Csütörtök'|trans }}</li>
-                        <li>{{ 'Péntek'|trans }}</li>
-                        <li class="weekend">{{ 'Szombat'|trans }}</li>
-                        <li class="weekend">{{ 'Vasárnap'|trans }}</li>
-                    </ul>
-                    {% for weeknumber,week in month %}
-                    <ul class="table-body">
-                        <li class="week-header">{{ weeknumber }}. {{ 'hét'|trans }}</li>
-                        {% for index,day in week %}
-                        <li class="{% if day.weekend %}weekend{% else %}weekday{% endif %}{% if day.day is null %} empty{% endif %}{% if day.day is not null %} days{% endif %}">
-                        {% if day.day is not null %}
-                            <span class="day">{% if day.day == 1 %}{{ timestamp|date('F') }} {% endif %}{{ day.day }}.</span>
-                            <span class="dayinfo" data-info="INFO"></span>
-                            <span class="menu"><input type="checkbox" name="clientorder[orders][{{ day.day }}]" value="1"{% if day.modifiable is defined and day.modifiable == false %}disabled="disabled"{% endif %}>Menü</span>
-                            <span class="status"></span>
-                        {% endif %}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% endfor %}
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+    {% include "JCSGYKAdminBundle:Catering:_edit_orders.html.twig" %}
 
     <div class="toppad10 center">
         <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
         <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
     </div>
-{#
-    {{ form_widget(form._token) }}
-    </form>#}
+
+    {# {{ form_widget(form._token) }} #}
+    {# </form> #}
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% endif %}

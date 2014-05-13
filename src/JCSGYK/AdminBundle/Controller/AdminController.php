@@ -868,7 +868,7 @@ class AdminController extends Controller
      */
     private function processValue(Option &$option)
     {
-        if ($option->getName('cateringcosts') || $option->getName('holidays')) {
+        if ($option->getName() == 'cateringcosts' || $option->getName() == 'holidays') {
             $value = json_decode($option->getValue());
 
             if ($value != null && is_array($value)) {
@@ -885,7 +885,7 @@ class AdminController extends Controller
                 $option->setValue(json_encode(array_values($value)));
             }
         }
-        if ($option->getName('holidays')) {
+        if ($option->getName() == 'holidays') {
             $value         = json_decode($option->getValue());
             $holiday_types = array_flip($this->container->get('jcs.ds')->getHolidayTypeMap());
 

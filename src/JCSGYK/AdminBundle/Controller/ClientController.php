@@ -24,7 +24,8 @@ use JCSGYK\AdminBundle\Form\Type\RelativeType;
 use JCSGYK\AdminBundle\Entity\Catering;
 use JCSGYK\AdminBundle\Form\Type\CateringType;
 use JCSGYK\AdminBundle\Entity\ClientOrder;
-use JCSGYK\AdminBundle\Entity\ClientOrderType;
+use JCSGYK\AdminBundle\Form\Type\ClientOrderType;
+use JCSGYK\AdminBundle\Entity\Invoice;
 
 class ClientController extends Controller
 {
@@ -253,6 +254,8 @@ class ClientController extends Controller
      */
     public function ordersAction($id)
     {
+        $request = $this->getRequest();
+
         if (!empty($id)) {
             $em = $this->getDoctrine()->getManager();
             $client = $this->getClient($id);
@@ -260,15 +263,30 @@ class ClientController extends Controller
 
         if (!empty($client)) {
 
-            // $client_orders = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:ClientOrder')->findOneBy(['id' => $id, 'is_current' => 1, 'status' => 1]);
-            // $form = $this->createForm(new ClientOrderType(), $client->getCatering());
+            $orders = $this->prepareOrders($client);
 
-            // $months = $this->container->get('jcs.ds')->getDaysOfMonths(new \DateTime('first day of this month'),3);
-            // $orders = $this->processOrders($months, $client->getCatering());
+            // $form = $this->createForm(new ClientOrderType(), $orders);
+
+            // save the ordering data
+            if ($request->isMethod('POST')) {
+                // $form->bind($request);
+
+                // if ($form->isValid()) {
+
+                    // save
+                    // $em->flush();
+
+                    $this->get('session')->getFlashBag()->add('notice', 'Rendelés elmentve');
+
+                    return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
+                        'success' => true,
+                    ]);
+                // }
+            }
 
             return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
                 'client' => $client,
-                'months' => $this->container->get('jcs.ds')->getDaysOfMonths(new \DateTime('first day of this month'),3)
+                'orders' => $orders
             ]);
         }
         else {
@@ -279,15 +297,60 @@ class ClientController extends Controller
     /**
      * Merge client orders table data with cataring template and holidays
      *
-     * @param array $months
-     * @param array $catering
+     * @param Client $client
      * @return array $oders
      */
-    private function processOrders($months, $catering)
+    private function prepareOrders(Client $client)
     {
-        $orders = $months;
+        $month_first_day    = new \DateTime('first day of this month');
+        $month_last_day     = new \DateTime('last day of this month');
+        $last_day_of_period = new \DateTime('last day of this month + 2 months');
+        $catering           = $client->getCatering();
+        $menu               = $catering->getMenu();
+        $days_of_months     = $this->container->get('jcs.ds')->getDaysOfMonths($month_first_day,3);
+        $monthly_subs       = $this->container->get('jcs.invoice')->getMonthlySubs($catering, $month_first_day, $last_day_of_period);
+        $changes            = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getChanges($client->getId(), $last_day_of_period);
+        $changed_days       = $this->container->get('jcs.invoice')->getChangedDays($changes);
+        $days               = [];
 
-        return $orders;
+        foreach ($days_of_months as $key => $month) {
+            foreach ($month as $day) {
+                $new_day = $day;
+                $date    = $key . '-' . str_pad($day['day'], 2, '0', STR_PAD_LEFT);
+                $class   = [];
+
+                if (! is_null($day['day'])) {
+                    $new_day['menu'] = $menu;
+                    $class[] = 'day';
+                }
+                else {
+                    $class[] = 'empty';
+                }
+                if (isset($changed_days[$date])) {
+                    $new_day['order'] = $changed_days[$date];
+                    $class[] = ($changed_days[$date] == ClientOrder::REORDER ) ? 'reorder' : 'cancel';
+                }
+                elseif (isset($monthly_subs[$date])) {
+                    $new_day['order'] = $monthly_subs[$date];
+                }
+                elseif (! is_null($day['day'])) {
+                    $new_day['order'] = 0;
+                }
+                if (isset($day['modifiable']) && $day['modifiable']) {
+                    $class[] = 'modifiable';
+                }
+                if ($day['weekend']) {
+                    $class[] = 'weekend';
+                }
+                else {
+                    $class[] = 'weekday';
+                }
+                $new_day['class'] = implode(' ', $class);
+                $days[$key][$day['week']][] = $new_day;
+            }
+        }
+
+        return $days;
     }
 
     /**

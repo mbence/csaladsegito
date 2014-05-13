@@ -107,13 +107,15 @@ class InvoiceService
      *
      * @param \JCSGYK\AdminBundle\Entity\Catering $catering
      * @param array of ClientOrder $changes
-     * @return int
+     * @return array
      */
-    private function getChangedDays($changes)
+    public function getChangedDays($changes)
     {
         $changed_days = [];
         foreach ($changes as $order) {
-            $changed_days[$order->getDate()->format('Y-m-d')] = $order->getChange() == ClientOrder::REORDER ? 1 : -1;
+            // change reorder value to 2 instead of 1
+            // value 1 is the normal order in the form
+            $changed_days[$order->getDate()->format('Y-m-d')] = $order->getChange() == ClientOrder::REORDER ? 2 : -1;
         }
 
         return $changed_days;
@@ -126,9 +128,9 @@ class InvoiceService
      * @param \JCSGYK\AdminBundle\Entity\Catering $catering
      * @param \DateTime $start_date
      * @param \DateTime $end_date
-     * @return int
+     * @return array
      */
-    private function getMonthlySubs(Catering $catering, \DateTime $start_date, \DateTime $end_date)
+    public function getMonthlySubs(Catering $catering, \DateTime $start_date, \DateTime $end_date)
     {
         $subs = $catering->getSubscriptions();
         if (empty($subs)) {

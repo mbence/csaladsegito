@@ -16285,12 +16285,14 @@ JcsCatering = {
     });
   },
   setupDatePickering: function() {
-    return $("#ordering-calendar").on("click", "li.days", function() {
-      $(this).toggleClass("selected");
-      if ($(this).find("input").get(0).checked) {
-        return $(this).find("input").removeAttr("checked");
-      } else {
-        return $(this).find("input").attr("checked", "checked");
+    return $("#ordering-calendar").on("click", "li.day", function() {
+      if ($(this).hasClass("modifiable")) {
+        $(this).toggleClass("selected");
+        if ($(this).find("input").get(0).checked) {
+          return $(this).find("input").removeAttr("checked");
+        } else {
+          return $(this).find("input").attr("checked", "checked");
+        }
       }
     });
   }

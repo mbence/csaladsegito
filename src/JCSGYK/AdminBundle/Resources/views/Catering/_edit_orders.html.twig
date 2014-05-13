@@ -1,0 +1,40 @@
+{# Edit Orders #}
+<nav class="calendar-nav clearfix">
+    <ul>
+        <li class="prev" data-direction="prev" data-next="-1">{{ 'Előző hónap'|trans }}</li>
+        <li class="next" data-direction="next" data-next="1">{{ 'Következő hónap'|trans }}</li>
+    </ul>
+</nav>
+<div id="ordering-calendar">
+    {% for timestamp,month in orders %}
+    <div class="month-wrapper" data-date="{{ timestamp }}">
+        <div class="datepicker clearfix">
+                <ul class="table-header">
+                    <li class="week-header"></li>
+                    <li>{{ 'Hétfő'|trans }}</li>
+                    <li>{{ 'Kedd'|trans }}</li>
+                    <li>{{ 'Szerda'|trans }}</li>
+                    <li>{{ 'Csütörtök'|trans }}</li>
+                    <li>{{ 'Péntek'|trans }}</li>
+                    <li class="weekend">{{ 'Szombat'|trans }}</li>
+                    <li class="weekend">{{ 'Vasárnap'|trans }}</li>
+                </ul>
+                {% for weeknumber,week in month %}
+                <ul class="table-body">
+                    <li class="week-header">{{ weeknumber }}. {{ 'hét'|trans }}</li>
+                    {% for index,day in week %}
+                    <li class="{{ day.class }}">
+                    {% if day.day is not null %}
+                        <span class="day">{% if day.day == 1 %}{{ timestamp|date('F') }} {% endif %}{{ day.day }}.</span>
+                        <span class="dayinfo" data-info="INFO"></span>
+                        <span class="menu"><input type="checkbox" name="clientorder[orders][{{ day.day }}]" value="1"{% if day.modifiable is defined and day.modifiable == false %} disabled="disabled"{% endif %}{% if day.order > 0 %} checked="checked"{% endif %}>{{ param(day.menu) }}</span>
+                        <span class="status">{% if day.order == 2 %}{{ 'Utánrendelve'|trans }}{% elseif day.order == -1 %}{{ 'Lemondva'|trans }}{% endif %}</span>
+                    {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
