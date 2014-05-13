@@ -41,6 +41,7 @@ class InvoiceService
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
         $em = $this->container->get('doctrine')->getManager();
         $user = $this->container->get('security.context')->getToken()->getUser();
+        $orders_repo = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder');
 
         //$logger = $this->container->get('logger');
 
@@ -49,18 +50,22 @@ class InvoiceService
 
         // list of days: key is ISO date format, when food was ordered, value is 1 or 0
         $days = $this->getMonthlySubs($catering, $start_date, $end_date);
-        $costs = $this->calulateCosts($catering, $days);
+        // save each day in clientOrder
+        $this->saveDays($client, $days);
 
-        // find and check the open order-change records
-        $changes = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getChanges($client->getId(), $end_date);
-        $changed_days = $this->getChangedDays($changes);
+        // get all open orders for the given month and before
+        $orders = $orders_repo->getOrders($client->getId(), $end_date);
+        $days = $this->getOrderDays($orders);
+
+        // get the cancels from the previous months
+        $costs = $this->calulateCosts($catering, $orders);
+        // TODO: calculate the costs and the discounts separately!
+        $discount = 0;
 
         // if we have no data, we create no invoice
-        if (empty($days) && empty($changed_days)) {
+        if (empty($days)) {
             return false;
         }
-
-        $discount = $this->calulateCosts($catering, $changed_days);
 
         // items on the invoice
         $items = [
@@ -81,8 +86,8 @@ class InvoiceService
         $invoice->setStartDate($start_date);
         $invoice->setEndDate($end_date);
         $invoice->setItems(json_encode($items));
-        $invoice->setDays(json_encode($days));
-        $invoice->setChanges(json_encode($changed_days));
+//        $invoice->setDays(json_encode($days));
+//        $invoice->setChanges(json_encode($changed_days));
         $invoice->setBalance(0);
         $invoice->setStatus(Invoice::READY_TO_SEND);
         $invoice->setAmount($sum);
@@ -93,7 +98,7 @@ class InvoiceService
         $em->persist($invoice);
 
         // close the used cancel records
-        foreach ($changes as $order) {
+        foreach ($orders as $order) {
             $order->setStatus(ClientOrder::CLOSED);
         }
 
@@ -109,11 +114,11 @@ class InvoiceService
      * @param array of ClientOrder $changes
      * @return int
      */
-    private function getChangedDays($changes)
+    private function getOrderDays($changes)
     {
         $changed_days = [];
         foreach ($changes as $order) {
-            $changed_days[$order->getDate()->format('Y-m-d')] = $order->getChange() == ClientOrder::REORDER ? 1 : -1;
+            $changed_days[$order->getDate()->format('Y-m-d')] = $order->getOrder() == ClientOrder::ORDER ? 1 : -1;
         }
 
         return $changed_days;
@@ -183,7 +188,7 @@ class InvoiceService
             // check the cost for the day
             $daily_cost = $this->getCostForADay($catering, $table);
             if (!is_null($daily_cost)) {
-                $dir = $status == ClientOrder::REORDER ? 1 : -1;
+                $dir = $status == ClientOrder::ORDER ? 1 : -1;
                 $cost += $daily_cost * $dir;
             }
             else {
@@ -214,5 +219,62 @@ class InvoiceService
         }
 
         return null;
+    }
+
+    /**
+     * Save a list of days to ClientOrder
+     * @param \JCSGYK\AdminBundle\Entity\Client $client
+     * @param array $days
+     */
+    public function saveDays(Client $client, $days)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $sec = $this->container->get('security.context');
+        $user = $sec->getToken()->getUser();
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+
+        foreach ($days as $ISO_date => $sub) {
+            // only deal with orders at the moment
+            if ($sub == 1) {
+                $date = new \DateTime($ISO_date);
+                // check if we have any records for that day
+                // if we find a record, then we skip this day
+                $old = $em->createQuery("SELECT count(o) as c FROM JCSGYKAdminBundle:ClientOrder o WHERE o.companyId = :company_id AND o.client = :client_id AND o.date = :date")
+                    ->setParameter('company_id', $company_id)
+                    ->setParameter('client_id', $client->getId())
+                    ->setParameter('date', $date)
+                    ->getSingleResult();
+
+                if (empty($old['c'])) {
+                    // no record for this day, lets create one!
+                    $order = new ClientOrder();
+                    $order->setCompanyId($company_id);
+                    $order->setClient($client);
+                    $order->setDate($date);
+                    $order->setOrder(ClientOrder::ORDER);
+                    $order->setStatus(ClientOrder::OPEN);
+                    $order->setIsCurrent(true);
+                    $order->setCreator($user);
+
+                    $em->persist($order);
+                }
+            }
+        }
+
+        $em->flush();
+    }
+
+    /**
+     * Exports the unsent invoices to EcoStat
+     */
+    public function export()
+    {
+        // find the unsent invocies
+
+        // create the data arrays
+
+        // export to files
+
+        // send the files
     }
 }
