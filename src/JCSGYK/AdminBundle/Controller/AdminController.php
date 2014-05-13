@@ -779,7 +779,7 @@ class AdminController extends Controller
         }
         elseif (!is_null($id)) {
             $option = $em->getRepository('JCSGYKAdminBundle:Option')->find($id);
-            $this->processValue($option, false);
+            $this->prepareValue($option);
         }
 
         if (is_null($id) || (!empty($option) && $name == $option->getName())) {
@@ -792,10 +792,13 @@ class AdminController extends Controller
             if ($request->isMethod('POST')) {
 
                 $form->bind($request);
+                $error = $this->processValue($option);
+
+                if (! empty($error)) {
+                    $form->get('value')->addError(new \Symfony\Component\Form\FormError($error));
+                }
 
                 if ($form->isValid()) {
-                    $this->processValue($option, true);
-
                     // set modifier user
                     $option->setModifier($user);
                     // set modified at
@@ -840,51 +843,57 @@ class AdminController extends Controller
     }
 
     /**
-     * Process option value, trim white spacec and empty lines
-     * If option name is holidays, does a holiday name mapping or reverse mapping because of handsontable
+     * Prepare value by holiday type map
      *
      * @param Option $option
-     * @param boolean $reverse
      */
-    private function processValue(Option &$option, $reverse)
+    private function prepareValue(Option &$option)
     {
-        // run only if form was submitted
-        if ($reverse) {
-            if ($option->getName('cateringcosts') || $option->getName('holidays')) {
-                $value = json_decode($option->getValue());
+        $holiday_types = $this->container->get('jcs.ds')->getHolidayTypeMap();
+        $value = json_decode($option->getValue());
 
-                if ($value != null && is_array($value)) {
-                    $empty_rows = [];
+        foreach ($value as $row) {
+            $new_row     = $row;
+            $new_row[1]  = $holiday_types[$row[1]];
+            $new_value[] = $new_row;
+        }
+        $option->setValue(json_encode($new_value));
+    }
 
-                    foreach ($value as $key => $row) {
-                        if (empty(trim(implode('', $row)))) {
-                            $empty_rows[] = $key;
-                        }
+    /**
+     * Process option value, trim white spacec and empty lines
+     * If option name is holidays, does a holiday name mapping
+     *
+     * @param Option $option
+     */
+    private function processValue(Option &$option)
+    {
+        if ($option->getName('cateringcosts') || $option->getName('holidays')) {
+            $value = json_decode($option->getValue());
+
+            if ($value != null && is_array($value)) {
+                $empty_rows = [];
+
+                foreach ($value as $key => $row) {
+                    if (empty(trim(implode('', $row)))) {
+                        $empty_rows[] = $key;
                     }
-                    foreach ($empty_rows as $key) {
-                        unset($value[$key]);
-                    }
-                    $option->setValue(json_encode(array_values($value)));
                 }
-            }
-            if ($option->getName('holidays')) {
-                $value         = json_decode($option->getValue());
-                $holiday_types = array_flip($this->container->get('jcs.ds')->getHolidayTypeMap());
-
-                foreach ($value as $row) {
-                    $new_row     = $row;
-                    $new_row[1]  = $holiday_types[$row[1]];
-                    $new_value[] = $new_row;
+                foreach ($empty_rows as $key) {
+                    unset($value[$key]);
                 }
-                $option->setValue(json_encode($new_value));
+                $option->setValue(json_encode(array_values($value)));
             }
         }
-        else {
-            $holiday_types = $this->container->get('jcs.ds')->getHolidayTypeMap();
-            $value = json_decode($option->getValue());
+        if ($option->getName('holidays')) {
+            $value         = json_decode($option->getValue());
+            $holiday_types = array_flip($this->container->get('jcs.ds')->getHolidayTypeMap());
 
             foreach ($value as $row) {
                 $new_row     = $row;
+                if (empty($row[1]) || ! isset($holiday_types[$row[1]])) {
+                    return 'Ismeretlen munkaszüneti nap típus!';
+                }
                 $new_row[1]  = $holiday_types[$row[1]];
                 $new_value[] = $new_row;
             }
