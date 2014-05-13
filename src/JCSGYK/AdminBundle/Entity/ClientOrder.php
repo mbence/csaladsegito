@@ -18,7 +18,7 @@ class ClientOrder
 
     /** change constants */
     const CANCEL = -1;
-    const REORDER = 1;
+    const ORDER = 1;
 
     /**
      * @var integer
