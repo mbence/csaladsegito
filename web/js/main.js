@@ -16326,6 +16326,7 @@ JcsCatering = {
           $(this).data("new_order", "cancel");
           $(this).find(".menu").text("Lemondva");
           $(this).removeClass("order").addClass("cancel");
+          $(this).find("input").removeAttr("checked");
         } else if (order === "order" && new_order !== void 0) {
           $(this).removeData("new_order");
           $(this).find(".menu").text($(this).data("menu"));
@@ -16336,7 +16337,8 @@ JcsCatering = {
           $(this).data("new_order", "cancel");
           $(this).find(".menu").text("Lemondva");
           $(this).find(".status").empty();
-          return $(this).removeClass("reorder").addClass("cancel");
+          $(this).removeClass("reorder").addClass("cancel");
+          return $(this).find("input").removeAttr("checked");
         } else if (order === "reorder" && new_order !== void 0) {
           $(this).removeData("new_order");
           $(this).find(".menu").text($(this).data("menu"));

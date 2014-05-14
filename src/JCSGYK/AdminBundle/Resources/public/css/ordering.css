@@ -78,6 +78,9 @@
   bottom: 3px;
   left: 3px;
 }
+#ordering-calendar .month-wrapper .datepicker ul.table-body li input:hover {
+  cursor: pointer;
+}
 #ordering-calendar .month-wrapper .datepicker ul li {
   position: relative;
   width: 60px;
