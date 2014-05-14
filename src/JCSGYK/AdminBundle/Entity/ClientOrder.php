@@ -57,18 +57,18 @@ class ClientOrder
     private $order;
 
     /**
-     * @var integer
+     * @var boolean
      *
-     * @ORM\Column(name="status", type="integer", nullable=true)
+     * @ORM\Column(name="cancel", type="boolean", nullable=true)
      */
-    private $status;
+    private $cancel;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_current", type="boolean", nullable=true)
+     * @ORM\Column(name="closed", type="boolean", nullable=true)
      */
-    private $isCurrent;
+    private $closed;
 
     /**
      * @var \DateTime
@@ -144,54 +144,6 @@ class ClientOrder
     public function getDate()
     {
         return $this->date;
-    }
-
-    /**
-     * Set status
-     *
-     * @param integer $status
-     *
-     * @return ClientOrder
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    /**
-     * Get status
-     *
-     * @return integer
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * Set isCurrent
-     *
-     * @param boolean $isCurrent
-     *
-     * @return ClientOrder
-     */
-    public function setIsCurrent($isCurrent)
-    {
-        $this->isCurrent = $isCurrent;
-
-        return $this;
-    }
-
-    /**
-     * Get isCurrent
-     *
-     * @return boolean
-     */
-    public function getIsCurrent()
-    {
-        return $this->isCurrent;
     }
 
     /**
@@ -288,5 +240,53 @@ class ClientOrder
     public function getOrder()
     {
         return $this->order;
+    }
+
+    /**
+     * Set cancel
+     *
+     * @param boolean $cancel
+     *
+     * @return ClientOrder
+     */
+    public function setCancel($cancel)
+    {
+        $this->cancel = $cancel;
+
+        return $this;
+    }
+
+    /**
+     * Get cancel
+     *
+     * @return boolean
+     */
+    public function getCancel()
+    {
+        return $this->cancel;
+    }
+
+    /**
+     * Set closed
+     *
+     * @param boolean $closed
+     *
+     * @return ClientOrder
+     */
+    public function setClosed($closed)
+    {
+        $this->closed = $closed;
+
+        return $this;
+    }
+
+    /**
+     * Get closed
+     *
+     * @return boolean
+     */
+    public function getClosed()
+    {
+        return $this->closed;
     }
 }
