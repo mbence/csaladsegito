@@ -151,7 +151,7 @@ class InvoiceService
         $week = array_replace([0, 0, 0, 0, 0, 0, 0], array_map('intval', $subs));
 
         // calculate the required days based on the weekly subscription
-        $act_date = $start_date;
+        $act_date = clone $start_date;
         // loop through the month
         while ($act_date <= $end_date) {
             // get the day of week of the week (0 - monday, 6 - sunday)
