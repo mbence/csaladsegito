@@ -345,13 +345,13 @@ class ClientController extends Controller
                     $new_day['holiday'] = (empty($holidays[$date]['desc'])) ? $holyday_type_map[$holidays[$date]['type']] : $holidays[$date]['desc'];
                 }
                 if (isset($changed_days[$date])) {
-                    $new_day['changed'] = ($changed_days[$date] == ClientOrder::ORDER) ? 1 : -1;
-                    $new_day['order'] = ($changed_days[$date] == ClientOrder::ORDER) ? 'reorder' : 'cancel';
+                    $new_day['changed'] = ($changed_days[$date] == 1) ? 1 : -1;
+                    $new_day['order'] = ($changed_days[$date] == 1) ? 'reorder' : 'cancel';
                     $class[] = ($changed_days[$date] == 1 ) ? 'reorder' : 'cancel';
                 }
                 elseif (isset($monthly_subs[$date])) {
                     $new_day['ordered'] = $monthly_subs[$date];
-                    $new_day['order'] = ($monthly_subs[$date] == ClientOrder::ORDER) ? 'order' : 'none';
+                    $new_day['order'] = ($monthly_subs[$date] == 1) ? 'order' : 'none';
                     $class[] = 'order';
                 }
                 else {
