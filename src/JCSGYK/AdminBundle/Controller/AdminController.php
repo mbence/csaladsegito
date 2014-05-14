@@ -776,6 +776,7 @@ class AdminController extends Controller
             //
             $option->setValue(json_encode($options_default_value[$name]['data']));
             $option->setValidFrom(new \DateTime($options_default_value[$name]['valid_from']));
+            $option->setIsActive(true);
         }
         elseif (!is_null($id)) {
             $option = $em->getRepository('JCSGYKAdminBundle:Option')->find($id);
