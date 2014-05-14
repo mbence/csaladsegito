@@ -643,7 +643,8 @@ class DataStore
         $week      = $date->format('W');
         $day_count = $date->format('t');
         $first_day = $date->format('N');
-        $today     = date('j');
+        $aftertomorow = (new \DateTime(' tomorrow + 1 days'))->getTimestamp();
+        $actual_month = $date->format('Y-m-');
         $new_date  = clone $date;
         $new_date->modify('+' . ($day_count-1) . ' days');
         $last_day  = $new_date->format('N');
@@ -663,7 +664,7 @@ class DataStore
                 'day'     => $i,
                 'week'    => $week,
                 'weekend' => (count($month) % 7 == 5 || count($month) % 7 == 6) ? true : false,
-                'modifiable' => ($i < ($today+2)) ? false : true
+                'modifiable' => (strtotime($actual_month . $i) < $aftertomorow) ? false : true
             ];
         }
         for ($i = 7; $i > $last_day; $i--) {
@@ -702,6 +703,28 @@ class DataStore
 
         if (!empty($table[0])) {
             $re = json_decode($table[0]->getValue(), true);
+        }
+
+        return $re;
+    }
+
+    /**
+     * Returns an array of the holidays and details in the give range
+     *
+     * TODO: check if the range spans to more then one option record (year)
+     *
+     * @param string $start_date
+     * @param string $end_date
+     * @return array
+     */
+    public function getHolidaysDetails($start_date, $end_date)
+    {
+        $holidays = $this->getOption('holidays', $start_date);
+        $re = [];
+        foreach ($holidays as $day) {
+            if ($day[0] >= $start_date && $day[0] <= $end_date) {
+                $re[$day[0]] = ['type' => $day[1], 'desc' => $day[2]];
+            }
         }
 
         return $re;

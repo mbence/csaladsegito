@@ -263,11 +263,11 @@ class ClientController extends Controller
 
         if (!empty($client)) {
 
-            $prep_orders = $this->prepareOrders($client);
+            $orders = $this->prepareOrders($client);
 
             return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
                 'client' => $client,
-                'orders' => $prep_orders
+                'orders' => $orders
             ]);
         }
         else {
@@ -286,28 +286,18 @@ class ClientController extends Controller
 
             $em = $this->getDoctrine()->getManager();
             $client = $this->getClient($id);
-            // $prep_orders = $this->prepareOrders($client);
-
-            // $last_day_of_period = new \DateTime('last day of this month + 2 months');
-            // $orders = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getOrders($client->getId(), $last_day_of_period);
-
-            // $form = $this->createForm(new ClientOrderType(), $orders);
 
             // save the ordering data
             if ($request->isMethod('POST')) {
-                // $form->bind($request);
 
-                // if ($form->isValid()) {
+                // save
+                // $em->flush();
 
-                    // save
-                    // $em->flush();
+                $this->get('session')->getFlashBag()->add('notice', 'Rendelés elmentve');
 
-                    $this->get('session')->getFlashBag()->add('notice', 'Rendelés elmentve');
-
-                    return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
-                        'success' => true,
-                    ]);
-                // }
+                return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
+                    'success' => true,
+                ]);
             }
 
             return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
@@ -324,20 +314,21 @@ class ClientController extends Controller
      * Merge client orders table data with cataring template and holidays
      *
      * @param Client $client
-     * @return array $oders
+     * @return array
      */
     private function prepareOrders(Client $client)
     {
-        $month_first_day    = new \DateTime('first day of this month');
-        $month_last_day     = new \DateTime('last day of this month');
-        $last_day_of_period = new \DateTime('last day of this month + 2 months');
-        $catering           = $client->getCatering();
-        $menu               = $catering->getMenu();
-        $days_of_months     = $this->container->get('jcs.ds')->getDaysOfMonths($month_first_day,3);
-        $monthly_subs       = $this->container->get('jcs.invoice')->getMonthlySubs($catering, $month_first_day, $last_day_of_period);
-        $changes            = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getOrders($client->getId(), $last_day_of_period);
-        $changed_days       = $this->container->get('jcs.invoice')->getOrderDays($changes);
-        $days               = [];
+        $first_day_of_period = new \DateTime('first day of this month - 2 month');
+        $last_day_of_period  = new \DateTime('last day of this month + 2 months');
+        $catering            = $client->getCatering();
+        $menu                = $catering->getMenu();
+        $days_of_months      = $this->container->get('jcs.ds')->getDaysOfMonths($first_day_of_period,5);
+        $monthly_subs        = $this->container->get('jcs.invoice')->getMonthlySubs($catering, $first_day_of_period, $last_day_of_period);
+        $changes             = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getOrders($client->getId(), $last_day_of_period);
+        $changed_days        = $this->container->get('jcs.invoice')->getOrderDays($changes);
+        $holidays            = $this->container->get('jcs.ds')->getHolidaysDetails($first_day_of_period->format('Y-m-d'), $last_day_of_period->format('Y-m-d'));
+        $holyday_type_map    = $this->container->get('jcs.ds')->getHolidayTypeMap();
+        $days                = [];
 
         foreach ($days_of_months as $key => $month) {
             foreach ($month as $day) {
@@ -352,16 +343,16 @@ class ClientController extends Controller
                 else {
                     $class[] = 'empty';
                 }
+                if (isset($holidays[$date])) {
+                    $new_day['holiday'] = (empty($holidays[$date]['desc'])) ? $holyday_type_map[$holidays[$date]['type']] : $holidays[$date]['desc'];
+                }
                 if (isset($changed_days[$date])) {
-                    $new_day['order'] = ($changed_days[$date] == 1) ? 2 : -1;
+                    $new_day['changes'] = ($changed_days[$date] == ClientOrder::ORDER) ? 1 : -1;
                     $class[] = ($changed_days[$date] == 1 ) ? 'reorder' : 'cancel';
                 }
                 elseif (isset($monthly_subs[$date])) {
                     $new_day['order'] = $monthly_subs[$date];
                     $class[] = 'order';
-                }
-                elseif (! is_null($day['day'])) {
-                    $new_day['order'] = 0;
                 }
                 if (isset($day['modifiable']) && $day['modifiable']) {
                     $class[] = 'modifiable';
