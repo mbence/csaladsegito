@@ -101,9 +101,14 @@ JcsCatering =
     ###
     initMultiDatesPicker: ->
         @calendarNavigation()
-        @setupDatePickering()
+        @setupDatePicker()
         $(".month-wrapper:eq(2)").addClass("active")
         $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"))
+        $("li.day").each ->
+            if $(this).data("order") == "order" || $(this).data("order") == "reorder"
+                $(this).find("input").attr("checked","checked")
+            if $(this).data("modifiable") == 0
+                $(this).find("input").attr("disabled","disabled")
 
     calendarNavigation: ->
         $(".calendar-nav li").click ->
@@ -120,11 +125,59 @@ JcsCatering =
                     else if direction == "next"
                         $(this).data().next++
 
-    setupDatePickering: ->
+    setupDatePicker: ->
         $("#ordering-calendar").on "click", "li.day", ->
-            if $(this).hasClass("modifiable")
-                $(this).toggleClass("selected")
-                if $(this).find("input").get(0).checked
-                    $(this).find("input").removeAttr("checked")
-                else
+            if $(this).data("modifiable")
+                order = $(this).data("order")
+                new_order = $(this).data("new_order")
+
+                if order == "cancel" && new_order == undefined
+                    $(this).data("new_order", "reorder")
+                    $(this).find(".menu").text($(this).data("menu"))
+                    $(this).find(".status").text("Utánrendelve")
+                    $(this).removeClass("cancel").addClass("reorder")
                     $(this).find("input").attr("checked","checked")
+                else if order == "cancel" && new_order != undefined
+                    $(this).removeData("new_order")
+                    $(this).find(".menu").text("Lemondva")
+                    $(this).find(".status").empty()
+                    $(this).removeClass("reorder").addClass("cancel")
+                    $(this).find("input").removeAttr("checked")
+
+                if order == "none" && new_order == undefined
+                    $(this).data("new_order", "reorder")
+                    $(this).find(".status").text("Utánrendelve")
+                    $(this).addClass("reorder")
+                    $(this).find("input").attr("checked","checked")
+                else if order == "none" && new_order != undefined
+                    $(this).removeData("new_order")
+                    $(this).find(".status").empty()
+                    $(this).removeClass("reorder")
+                    $(this).find("input").removeAttr("checked")
+
+                if order == "order" && new_order == undefined
+                    $(this).data("new_order", "cancel")
+                    $(this).find(".menu").text("Lemondva")
+                    $(this).removeClass("order").addClass("cancel")
+                else if order == "order" && new_order != undefined
+                    $(this).removeData("new_order")
+                    $(this).find(".menu").text($(this).data("menu"))
+                    $(this).removeClass("cancel").addClass("order")
+                    $(this).find("input").attr("checked","checked")
+
+                if order == "reorder" && new_order == undefined
+                    $(this).data("new_order", "cancel")
+                    $(this).find(".menu").text("Lemondva")
+                    $(this).find(".status").empty()
+                    $(this).removeClass("reorder").addClass("cancel")
+                else if order == "reorder" && new_order != undefined
+                    $(this).removeData("new_order")
+                    $(this).find(".menu").text($(this).data("menu"))
+                    $(this).find(".status").text("Utánrendelve")
+                    $(this).removeClass("cancel").addClass("reorder")
+                    $(this).find("input").attr("checked","checked")
+        
+        $("#ordering-calendar").on "click", "li.day input", (event) ->
+            $(this).parents("li.day").trigger("click")
+            event.stopPropagation()
+

@@ -3188,10 +3188,16 @@ table.task-list tr:hover td {
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li.day:hover {
   cursor: pointer;
-  background-color: #a3c0d9;
+  border-color: #891c21;
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li.week-header {
   font-size: 12px;
+}
+#ordering-calendar .month-wrapper .datepicker ul.table-body li.reorder {
+  background-color: #d0c192;
+}
+#ordering-calendar .month-wrapper .datepicker ul.table-body li.cancel {
+  background-color: #bdc880;
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li .day {
   font-size: 12px;

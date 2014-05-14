@@ -254,8 +254,6 @@ class ClientController extends Controller
      */
     public function ordersAction($id)
     {
-        $request = $this->getRequest();
-
         if (!empty($id)) {
             $em = $this->getDoctrine()->getManager();
             $client = $this->getClient($id);
@@ -330,10 +328,10 @@ class ClientController extends Controller
         $holyday_type_map    = $this->container->get('jcs.ds')->getHolidayTypeMap();
         $days                = [];
 
-        foreach ($days_of_months as $key => $month) {
+        foreach ($days_of_months as $actual_month => $month) {
             foreach ($month as $day) {
                 $new_day = $day;
-                $date    = $key . '-' . str_pad($day['day'], 2, '0', STR_PAD_LEFT);
+                $date    = $actual_month . '-' . str_pad($day['day'], 2, '0', STR_PAD_LEFT);
                 $class   = [];
 
                 if (! is_null($day['day'])) {
@@ -347,12 +345,17 @@ class ClientController extends Controller
                     $new_day['holiday'] = (empty($holidays[$date]['desc'])) ? $holyday_type_map[$holidays[$date]['type']] : $holidays[$date]['desc'];
                 }
                 if (isset($changed_days[$date])) {
-                    $new_day['changes'] = ($changed_days[$date] == ClientOrder::ORDER) ? 1 : -1;
+                    $new_day['changed'] = ($changed_days[$date] == ClientOrder::ORDER) ? 1 : -1;
+                    $new_day['order'] = ($changed_days[$date] == ClientOrder::ORDER) ? 'reorder' : 'cancel';
                     $class[] = ($changed_days[$date] == 1 ) ? 'reorder' : 'cancel';
                 }
                 elseif (isset($monthly_subs[$date])) {
-                    $new_day['order'] = $monthly_subs[$date];
+                    $new_day['ordered'] = $monthly_subs[$date];
+                    $new_day['order'] = ($monthly_subs[$date] == ClientOrder::ORDER) ? 'order' : 'none';
                     $class[] = 'order';
+                }
+                else {
+                    $new_day['order'] = 'none';
                 }
                 if (isset($day['modifiable']) && $day['modifiable']) {
                     $class[] = 'modifiable';
@@ -364,7 +367,7 @@ class ClientController extends Controller
                     $class[] = 'weekday';
                 }
                 $new_day['class'] = implode(' ', $class);
-                $days[$key][$day['week']][] = $new_day;
+                $days[$actual_month][$day['week']][] = $new_day;
             }
         }
 

@@ -7,7 +7,7 @@
 </nav>
 <div id="ordering-calendar">
     {% for timestamp,month in orders %}
-    <div class="month-wrapper" data-date="{{ timestamp }}">
+    <div class="month-wrapper" data-date="{{ timestamp|date('Y. F') }}">
         <div class="datepicker clearfix">
                 <ul class="table-header">
                     <li class="week-header"></li>
@@ -23,12 +23,13 @@
                 <ul class="table-body">
                     <li class="week-header">{{ weeknumber }}. {{ 'hét'|trans }}</li>
                     {% for index,day in week %}
-                    <li class="{{ day.class }}">
+                    <li class="{{ day.class }}"{% if day.day is not null %} data-menu="{{ param(day.menu) }}" data-order="{{ day.order }}" data-modifiable="{{ day.modifiable }}"{% endif %}>
                     {% if day.day is not null %}
                         <span class="day">{% if day.day == 1 %}{{ timestamp|date('F') }} {% endif %}{{ day.day }}.</span>
                         <span class="dayinfo" data-info="INFO"></span>
-                        <span class="menu"><input type="checkbox" name="clientorder[orders][{{ timestamp|date('m') }}][{{ day.day }}]" value="1"{% if day.modifiable is defined and day.modifiable == false %} disabled="disabled"{% endif %}{% if day.order is defined or (day.changes is defined and day.changes == 1) %} checked="checked"{% endif %}>{{ param(day.menu) }}</span>
-                        <span class="status">{% if day.changes is defined and day.changes == 1 %}{{ 'Utánrendelve'|trans }}{% elseif day.changes is defined and day.changes == -1 %}{{ 'Lemondva'|trans }}{% endif %}</span>
+                        <input type="checkbox" name="clientorder[orders][{{ timestamp|date('m') }}][{{ day.day }}]" value="1">
+                        <span class="menu">{% if day.order == 'cancel' %}{{ 'Lemondva'|trans }}{% else %}{{ param(day.menu) }}{% endif %}</span>
+                        <span class="status">{% if day.changed is defined and day.changed == 1 %}{{ 'Utánrendelve'|trans }}{% endif %}</span>
                     {% endif %}
                     </li>
                     {% endfor %}

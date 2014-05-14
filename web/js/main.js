@@ -16261,9 +16261,17 @@ JcsCatering = {
    */
   initMultiDatesPicker: function() {
     this.calendarNavigation();
-    this.setupDatePickering();
+    this.setupDatePicker();
     $(".month-wrapper:eq(2)").addClass("active");
-    return $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"));
+    $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"));
+    return $("li.day").each(function() {
+      if ($(this).data("order") === "order" || $(this).data("order") === "reorder") {
+        $(this).find("input").attr("checked", "checked");
+      }
+      if ($(this).data("modifiable") === 0) {
+        return $(this).find("input").attr("disabled", "disabled");
+      }
+    });
   },
   calendarNavigation: function() {
     return $(".calendar-nav li").click(function() {
@@ -16284,16 +16292,63 @@ JcsCatering = {
       }
     });
   },
-  setupDatePickering: function() {
-    return $("#ordering-calendar").on("click", "li.day", function() {
-      if ($(this).hasClass("modifiable")) {
-        $(this).toggleClass("selected");
-        if ($(this).find("input").get(0).checked) {
-          return $(this).find("input").removeAttr("checked");
-        } else {
+  setupDatePicker: function() {
+    $("#ordering-calendar").on("click", "li.day", function() {
+      var new_order, order;
+      if ($(this).data("modifiable")) {
+        order = $(this).data("order");
+        new_order = $(this).data("new_order");
+        if (order === "cancel" && new_order === void 0) {
+          $(this).data("new_order", "reorder");
+          $(this).find(".menu").text($(this).data("menu"));
+          $(this).find(".status").text("Utánrendelve");
+          $(this).removeClass("cancel").addClass("reorder");
+          $(this).find("input").attr("checked", "checked");
+        } else if (order === "cancel" && new_order !== void 0) {
+          $(this).removeData("new_order");
+          $(this).find(".menu").text("Lemondva");
+          $(this).find(".status").empty();
+          $(this).removeClass("reorder").addClass("cancel");
+          $(this).find("input").removeAttr("checked");
+        }
+        if (order === "none" && new_order === void 0) {
+          $(this).data("new_order", "reorder");
+          $(this).find(".status").text("Utánrendelve");
+          $(this).addClass("reorder");
+          $(this).find("input").attr("checked", "checked");
+        } else if (order === "none" && new_order !== void 0) {
+          $(this).removeData("new_order");
+          $(this).find(".status").empty();
+          $(this).removeClass("reorder");
+          $(this).find("input").removeAttr("checked");
+        }
+        if (order === "order" && new_order === void 0) {
+          $(this).data("new_order", "cancel");
+          $(this).find(".menu").text("Lemondva");
+          $(this).removeClass("order").addClass("cancel");
+        } else if (order === "order" && new_order !== void 0) {
+          $(this).removeData("new_order");
+          $(this).find(".menu").text($(this).data("menu"));
+          $(this).removeClass("cancel").addClass("order");
+          $(this).find("input").attr("checked", "checked");
+        }
+        if (order === "reorder" && new_order === void 0) {
+          $(this).data("new_order", "cancel");
+          $(this).find(".menu").text("Lemondva");
+          $(this).find(".status").empty();
+          return $(this).removeClass("reorder").addClass("cancel");
+        } else if (order === "reorder" && new_order !== void 0) {
+          $(this).removeData("new_order");
+          $(this).find(".menu").text($(this).data("menu"));
+          $(this).find(".status").text("Utánrendelve");
+          $(this).removeClass("cancel").addClass("reorder");
           return $(this).find("input").attr("checked", "checked");
         }
       }
+    });
+    return $("#ordering-calendar").on("click", "li.day input", function(event) {
+      $(this).parents("li.day").trigger("click");
+      return event.stopPropagation();
     });
   }
 };
