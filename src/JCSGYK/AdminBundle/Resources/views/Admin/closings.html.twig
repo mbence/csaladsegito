@@ -5,9 +5,10 @@
 <div class="template-top">
     <div class="floatright right">
         <form action="{{ path('admin_closings') }}" novalidate method="post">
-            <div class="formbuttons">
-                <button type="submit" class="button" name="run" value="manual" onclick="return(confirm('Biztos benne?'));"><span>{{ 'kézi futtatás'|trans }}</span></button>
-            </div>
+            {{ form_errors(form) }}
+            {{ form_widget(form.period) }}
+            <button type="submit" class="button" name="run" value="manual" onclick="return(confirm('Biztos benne?'));"><span>{{ 'kézi futtatás'|trans }}</span></button>
+            {{ form_widget(form._token) }}
         </form>
     </div>
     <h1 class="client">{{ 'Havi zárások'|trans }}</h1>

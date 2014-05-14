@@ -48,36 +48,32 @@ class InvoiceService
         // check the clients catering settings
         $catering = $client->getCatering();
 
-        // list of days: key is ISO date format, when food was ordered, value is 1 or 0
-        $days = $this->getMonthlySubs($catering, $start_date, $end_date);
-        // save each day in clientOrder
-        $this->saveDays($client, $days);
+        // save new order days in clientOrder
+        $this->saveDays($client, $start_date, $end_date);
 
         // get all open orders for the given month and before
         $orders = $orders_repo->getOrders($client->getId(), $end_date);
-        $days = $this->getOrderDays($orders);
-
-        // get the cancels from the previous months
-        $costs = $this->calulateCosts($catering, $orders);
-        // TODO: calculate the costs and the discounts separately!
-        $discount = 0;
-
         // if we have no data, we create no invoice
-        if (empty($days)) {
+        if (empty($orders)) {
             return false;
         }
 
+        $days = $this->getOrderDays($orders);
+
+        // calculate the costs
+        $costs = $this->calulateCosts($catering, $orders);
+
         // items on the invoice
         $items = [
-            ['name' => 'Ebéd rendelés', 'value' => $costs],
+            ['name' => 'Ebéd rendelés', 'value' => $costs['costs']],
         ];
         // if we have a discount
-        if ($discount) {
-            $items[] = ['name' => 'Jóváírások', 'value' => $discount];
+        if ($costs['discounts']) {
+            $items[] = ['name' => 'Jóváírások', 'value' => $costs['discounts']];
         }
 
         // sum up (discount is negative!)
-        $sum = $costs + $discount;
+        $sum = $costs['costs'] + $costs['discounts'];
 
         // create the new invoice
         $invoice = new Invoice();
@@ -86,8 +82,7 @@ class InvoiceService
         $invoice->setStartDate($start_date);
         $invoice->setEndDate($end_date);
         $invoice->setItems(json_encode($items));
-//        $invoice->setDays(json_encode($days));
-//        $invoice->setChanges(json_encode($changed_days));
+        $invoice->setDays(json_encode($days));
         $invoice->setBalance(0);
         $invoice->setStatus(Invoice::READY_TO_SEND);
         $invoice->setAmount($sum);
@@ -99,7 +94,7 @@ class InvoiceService
 
         // close the used cancel records
         foreach ($orders as $order) {
-            $order->setStatus(ClientOrder::CLOSED);
+            $order->setClosed(true);
         }
 
         $em->flush();
@@ -114,11 +109,20 @@ class InvoiceService
      * @param array of ClientOrder $changes
      * @return int
      */
-    public function getOrderDays($changes)
+    public function getOrderDays($orders)
     {
         $changed_days = [];
-        foreach ($changes as $order) {
-            $changed_days[$order->getDate()->format('Y-m-d')] = $order->getOrder() == ClientOrder::ORDER ? 1 : -1;
+        foreach ($orders as $order) {
+            $o = 0;
+            // check if ordered
+            if ($order->getOrder() == true) {
+                $o = 1;
+                if ($order->getCancel() == true) {
+                    $o = -1;
+                }
+
+                $changed_days[$order->getDate()->format('Y-m-d')] = $o;
+            }
         }
 
         return $changed_days;
@@ -159,9 +163,11 @@ class InvoiceService
             $act_iso_date = $act_date->format('Y-m-d');
             // check for subscription
             // also check for holidays
-            // if he orders for every days of the week, then he gets lunch even on holidays
             // otherwise he won't get food on holidays and resting days, but gets foon on saturdays if its a workday
-            if ($all_days || (!empty($week[$day_of_week]) && empty($holidays[$act_iso_date])) || (!empty($holidays[$act_iso_date]) && $holidays[$act_iso_date] == 2)) {
+            if ($all_days             // if he orders for every days of the week, then he gets lunch even on holidays
+                    || (!empty($week[$day_of_week]) && empty($holidays[$act_iso_date])) // of if her ordered for a particular day, and it is not a holiday
+                    || (count($subs) > 0 && !empty($holidays[$act_iso_date]) && $holidays[$act_iso_date] == 2))  // or if he ordered anything for the week, and the day is an extra workday
+            {
                 $days[$act_date->format('Y-m-d')] = 1;
             }
             // go to the next day
@@ -172,31 +178,43 @@ class InvoiceService
     }
 
     /**
-     * Calculates the cost for the client
+     * Calculates the costs and discounts for the client
      *
      * @param \JCSGYK\AdminBundle\Services\Catering $catering
-     * @param array $days (cancels have -1 value)
+     * @param array $orders (cancels have -1 value)
      */
-    private function calulateCosts(Catering $catering, array $days)
+    private function calulateCosts(Catering $catering, array $orders)
     {
-        $cost = 0;
+        $costs = 0;
+        $discounts = 0;
 
-        foreach ($days as $date => $status) {
+        foreach ($orders as $order) {
+            $date = $order->getDate()->format('Y-m-d');
             // get the actual catering costs table
             // this runs a query for every day. Maybe not necessary...
-            $table = $this->container->get('jcs.ds')->getOption('cateringcosts',$date);
+            $table = $this->container->get('jcs.ds')->getOption('cateringcosts', $date);
             // check the cost for the day
             $daily_cost = $this->getCostForADay($catering, $table);
             if (!is_null($daily_cost)) {
-                $dir = $status == ClientOrder::ORDER ? 1 : -1;
-                $cost += $daily_cost * $dir;
+                // if he has ordered for this day
+                if ($order->getOrder()) {
+                    if ($order->getCancel()) {
+                        // if ordered but later cancelled, we add it only to the discounts
+                        $discounts -= $daily_cost;
+                    }
+                    else {
+                        // if ordered but no cancel
+                        $costs += $daily_cost;
+                    }
+                }
+                // we dont deal with records at all, where there was no order
             }
             else {
                 // no match in the catering cost tables, now what?
             }
         }
 
-        return $cost;
+        return ['costs' => $costs, 'discounts' => $discounts];
     }
 
     /**
@@ -226,34 +244,53 @@ class InvoiceService
      * @param \JCSGYK\AdminBundle\Entity\Client $client
      * @param array $days
      */
-    public function saveDays(Client $client, $days)
+    public function saveDays(Client $client, $start_date, $end_date)
     {
         $em = $this->container->get('doctrine')->getManager();
         $sec = $this->container->get('security.context');
         $user = $sec->getToken()->getUser();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $orders_repo = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder');
+
+        // list of days: key is ISO date format, when food was ordered, value is 1 or 0
+        // based on order template
+        $days = $this->getMonthlySubs($client->getCatering(), $start_date, $end_date);
+
+        // find the already created open records for this time period
+        $os = $orders_repo->getOrdersForPeriod($client->getId(), $start_date, $end_date);
+        $orders = [];
+        if (!empty($os)) {
+            // map to date string
+            foreach ($os as $o) {
+                $orders[$o->getDate()->format('Y-m-d')] = $o;
+            }
+        }
+        unset($os);
 
         foreach ($days as $ISO_date => $sub) {
             // only deal with orders at the moment
             if ($sub == 1) {
                 $date = new \DateTime($ISO_date);
                 // check if we have any records for that day
-                // if we find a record, then we skip this day
-                $old = $em->createQuery("SELECT count(o) as c FROM JCSGYKAdminBundle:ClientOrder o WHERE o.companyId = :company_id AND o.client = :client_id AND o.date = :date")
-                    ->setParameter('company_id', $company_id)
-                    ->setParameter('client_id', $client->getId())
-                    ->setParameter('date', $date)
-                    ->getSingleResult();
+                if (!empty($orders[$ISO_date])) {
+                    $order = $orders[$ISO_date];
 
-                if (empty($old['c'])) {
+                    if ($order->getClosed() == false // make sure, that we only modify open records!
+                        && $order->getCancel() == false // and we also skip records, that are already cancelled
+                    ) {
+                        $order->setOrder(true);
+                    }
+                }
+                // or if no record exists, we create a new one
+                else {
                     // no record for this day, lets create one!
                     $order = new ClientOrder();
                     $order->setCompanyId($company_id);
                     $order->setClient($client);
                     $order->setDate($date);
-                    $order->setOrder(ClientOrder::ORDER);
-                    $order->setStatus(ClientOrder::OPEN);
-                    $order->setIsCurrent(true);
+                    $order->setOrder(true);
+                    $order->setCancel(false);
+                    $order->setClosed(false);
                     $order->setCreator($user);
 
                     $em->persist($order);

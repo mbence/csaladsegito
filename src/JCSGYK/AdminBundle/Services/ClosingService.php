@@ -28,13 +28,18 @@ class ClosingService
         $em = $this->container->get('doctrine')->getManager();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
-        return $em->createQuery("SELECT c FROM JCSGYKAdminBundle:MonthlyClosing c WHERE c.companyId = :company_id ORDER BY c.startDate DESC, c.createdAt DESC")
+        return $em->createQuery("SELECT c FROM JCSGYKAdminBundle:MonthlyClosing c WHERE c.companyId = :company_id ORDER BY c.createdAt DESC")
             ->setParameter('company_id', $company_id)
             ->setMaxResults(20)
             ->getResult();
     }
 
-    public function run()
+    /**
+     * Start the monthly closing process
+     * @param int $period 1 = normal run (next month), 0 = actual month
+     * @return \JCSGYK\AdminBundle\Entity\MonthlyClosing
+     */
+    public function run($period = 1)
     {
         $em = $this->container->get('doctrine')->getManager();
         $sec = $this->container->get('security.context');
@@ -44,8 +49,14 @@ class ClosingService
 
         // set the start / end dates
         // start date is next months first day
-        $start = (new \DateTime())->modify('first day of next month');
-        $end = (new \DateTime())->modify('last day of next month');
+        if (1 == $period) {
+            $start = new \DateTime('first day of next month');
+            $end = new \DateTime('last day of next month');
+        }
+        else {
+            $start = new \DateTime('first day of this month');
+            $end = new \DateTime('last day of this month');
+        }
         $created_at = new \DateTime();
 
         $summary .= "Havi zárás \n";
@@ -68,6 +79,8 @@ class ClosingService
         // find all clients that have active subscriptions
         $clients = $em->getRepository('JCSGYKAdminBundle:Client')->getForClosing($company_id);
         $summary .= sprintf("%s: %s ügyfél lekérdezve\n", date('H:i:s'), count($clients));
+        $closing->setSummary($summary);
+        $em->flush();
 
         // create the invoices
         $invoices = [];
@@ -78,15 +91,22 @@ class ClosingService
                 $invoices[] = $invoice;
             }
         }
-        $summary .= sprintf("%s: %s db számla kiállítva \n", date('H:i:s'), count($invoices));
+        if (empty($invoices)) {
+            $summary .= sprintf("%s: Nincsen új megrendelés \n", date('H:i:s'));
+        }
+        else {
+            $summary .= sprintf("%s: %s db számla kiállítva \n", date('H:i:s'), count($invoices));
 
-        // create the EcoSTAT files
-        $summary .= sprintf("%s: EcoStat fájlok létrehozva \n", date('H:i:s'));
+            // create the EcoSTAT files
+            $summary .= sprintf("%s: EcoStat fájlok létrehozva \n", date('H:i:s'));
 
-        // Send the EcoSTAT files to bookkeeping
+            // Send the EcoSTAT files to bookkeeping
+
+        }
 
         // update the closing record
         $summary .= sprintf("%s: Befejezve\n", date('H:i:s'));
+
         $closing->setSummary($summary);
         $closing->setStatus(MonthlyClosing::SUCCESS);
         $em->flush();

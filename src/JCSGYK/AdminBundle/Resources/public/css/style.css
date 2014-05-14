@@ -1018,3 +1018,6 @@ table.task-list tr:hover td {
     text-align: center;
     color: #d04a37;
 }
+#form_period {
+    vertical-align: super;
+}

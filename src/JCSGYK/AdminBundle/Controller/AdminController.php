@@ -463,30 +463,44 @@ class AdminController extends Controller
         $company_id = $ds->getCompanyId();
 
         if (!is_null($id)) {
-            // TODO: check company id
             $closing = $em->getRepository('JCSGYKAdminBundle:MonthlyClosing')->findBy(['id' => $id, 'companyId' => $company_id]);
             if (!empty($closing[0])) {
                 $closing = $closing[0];
             }
         }
 
+        $form = $this->createFormBuilder()
+            ->add('period', 'choice', [
+                'choices' => ['aktuális hónap', 'következő hónap'],
+                'data' => 1,
+            ])
+            ->getForm();
+
         $closing_service = $this->container->get('jcs.closing');
 
         // manual run
-        if ($request->isMethod('POST') && 'manual' == $request->request->get('run')) {
-            $closing = $closing_service->run();
-            if (!empty($closing)) {
-                $id = $closing->getId();
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isValid() && 'manual' == $request->request->get('run')) {
+
+                $data = $form->getData();
+
+                $closing = $closing_service->run($data['period']);
+
+                if (!empty($closing)) {
+                    $id = $closing->getId();
+                }
+
+                $this->get('session')->getFlashBag()->add('notice', 'Havi zárás elindítva');
+
+    //            return $this->redirect($this->generateUrl('admin_closings', ['id' => $id]));
             }
-
-            $this->get('session')->getFlashBag()->add('notice', 'Havi zárás elindítva');
-
-//            return $this->redirect($this->generateUrl('admin_closings', ['id' => $id]));
         }
 
         return $this->render('JCSGYKAdminBundle:Admin:closings.html.twig', [
             'closings' => $closing_service->getList(),
             'act' => $closing,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -850,15 +864,17 @@ class AdminController extends Controller
      */
     private function prepareValue(Option &$option)
     {
-        $holiday_types = $this->container->get('jcs.ds')->getHolidayTypeMap();
-        $value = json_decode($option->getValue());
+        if ($option->getName() == 'holidays') {
+            $holiday_types = $this->container->get('jcs.ds')->getHolidayTypeMap();
+            $value = json_decode($option->getValue());
 
-        foreach ($value as $row) {
-            $new_row     = $row;
-            $new_row[1]  = $holiday_types[$row[1]];
-            $new_value[] = $new_row;
+            foreach ($value as $row) {
+                $new_row     = $row;
+                $new_row[1]  = $holiday_types[$row[1]];
+                $new_value[] = $new_row;
+            }
+            $option->setValue(json_encode($new_value));
         }
-        $option->setValue(json_encode($new_value));
     }
 
     /**

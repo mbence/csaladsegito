@@ -12,14 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ClientOrder
 {
-    /** status constants */
-    const OPEN = 1;
-    const CLOSED = 2;
-
-    /** change constants */
-    const CANCEL = -1;
-    const ORDER = 1;
-
     /**
      * @var integer
      *
