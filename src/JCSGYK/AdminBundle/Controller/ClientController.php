@@ -263,7 +263,33 @@ class ClientController extends Controller
 
         if (!empty($client)) {
 
-            $orders = $this->prepareOrders($client);
+            $prep_orders = $this->prepareOrders($client);
+
+            return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
+                'client' => $client,
+                'orders' => $prep_orders
+            ]);
+        }
+        else {
+            throw new BadRequestHttpException('Invalid client id');
+        }
+    }
+
+    /**
+     * Save client orders
+     */
+    public function ordersEditAction($id=null)
+    {
+        $request = $this->getRequest();
+
+        if (!empty($id)) {
+
+            $em = $this->getDoctrine()->getManager();
+            $client = $this->getClient($id);
+            // $prep_orders = $this->prepareOrders($client);
+
+            // $last_day_of_period = new \DateTime('last day of this month + 2 months');
+            // $orders = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getOrders($client->getId(), $last_day_of_period);
 
             // $form = $this->createForm(new ClientOrderType(), $orders);
 
@@ -286,7 +312,7 @@ class ClientController extends Controller
 
             return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
                 'client' => $client,
-                'orders' => $orders
+                'orders' => $prep_orders
             ]);
         }
         else {

@@ -6,7 +6,7 @@
 {% else %}
     <h1 class="client center">{{ 'Étkeztetés'|trans }} <span class="title-date"></span></h1>
 
-    {# <form id="orders_form" class="templateform" action="{{ path('client_orders', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}> #}
+    <form id="catering_form" class="templateform" action="{{ path('client_orders', {'id': client.id}) }}" method="post" novalidate {# {{ form_enctype(form) }} #}>
         {# {{ form_errors(form) }} #}
 
         <table class="client" cellspacing="0" border="0">
@@ -28,6 +28,6 @@
     </div>
 
     {# {{ form_widget(form._token) }} #}
-    {# </form> #}
+    </form>
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% endif %}

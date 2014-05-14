@@ -51,6 +51,9 @@ client_catering_edit:
 client_catering:
     pattern:  /clients/catering/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:catering }
+client_orders_edit:
+    pattern:  /clients/orders/edit/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:ordersEdit }
 client_orders:
     pattern:  /clients/orders/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:orders }
