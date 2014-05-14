@@ -50,11 +50,13 @@ class ClosingService
         // set the start / end dates
         // start date is next months first day
         if (1 == $period) {
+            // next month
             $start = new \DateTime('first day of next month');
             $end = new \DateTime('last day of next month');
         }
         else {
-            $start = new \DateTime('first day of this month');
+            // actual month
+            $start = new \DateTime('+2 day');
             $end = new \DateTime('last day of this month');
         }
         $created_at = new \DateTime();
