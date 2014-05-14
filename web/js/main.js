@@ -16262,8 +16262,8 @@ JcsCatering = {
   initMultiDatesPicker: function() {
     this.calendarNavigation();
     this.setupDatePickering();
-    $(".month-wrapper:first").addClass("active");
-    return $(".title-date").text(" - " + $(".month-wrapper:first").data("date"));
+    $(".month-wrapper:eq(2)").addClass("active");
+    return $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"));
   },
   calendarNavigation: function() {
     return $(".calendar-nav li").click(function() {
