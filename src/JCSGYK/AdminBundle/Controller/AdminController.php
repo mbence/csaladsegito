@@ -882,22 +882,35 @@ class AdminController extends Controller
                 foreach ($empty_rows as $key) {
                     unset($value[$key]);
                 }
-                $option->setValue(json_encode(array_values($value)));
+
+                if (empty($value)) {
+                    return 'Üres táblázat!';
+                }
+                else {
+                    $option->setValue(json_encode(array_values($value)));
+                }
             }
         }
         if ($option->getName() == 'holidays') {
             $value         = json_decode($option->getValue());
             $holiday_types = array_flip($this->container->get('jcs.ds')->getHolidayTypeMap());
+            $error         = false;
 
             foreach ($value as $row) {
                 $new_row     = $row;
                 if (empty($row[1]) || ! isset($holiday_types[$row[1]])) {
-                    return 'Ismeretlen munkaszüneti nap típus!';
+                    $error = true;
+                    break;
                 }
                 $new_row[1]  = $holiday_types[$row[1]];
                 $new_value[] = $new_row;
             }
-            $option->setValue(json_encode($new_value));
+
+            if ($error) {
+                return 'Ismeretlen munkaszüneti nap típus!';
+            } else {
+                $option->setValue(json_encode($new_value));
+            }
         }
     }
 }
