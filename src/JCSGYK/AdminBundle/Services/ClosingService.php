@@ -18,10 +18,19 @@ class ClosingService
     /** data array for the exports */
     private $files = [];
 
+    /** format of export files */
+    private $exportFormat;
+
+    /** list of client ids, who are already in the customer file */
+    private $clients_added = [];
+
     /** Constructor */
     public function __construct($container)
     {
         $this->container = $container;
+
+        // TODO: make this company dependent!
+        $this->setExportFormat();
     }
 
     /**
@@ -111,8 +120,7 @@ class ClosingService
             $summary .= sprintf("%s: EcoStat fájlok létrehozva \n", date('H:i:s'));
 
             // Send the EcoSTAT files to bookkeeping
-
-
+            $this->writeFiles();
         }
 
         // update the closing record
@@ -181,8 +189,11 @@ class ClosingService
         $vat = 0.27;
         // deadline is the 5th day of next month
         $deadline = clone $invoice->getEndDate();
-        $deadline->modify('first day of next month + 5 days')->format('Ymd');
+        $deadline = $deadline->modify('first day of next month')->format('Ymd');
+
         $comment = sprintf('%s. havi étkeztetés', $invoice->getEndDate()->format('n'));
+
+        $net_amount = round($invoice->getAmount() * (1 - $vat));
 
         $data = [
             'szlaatf.txt' => [
@@ -193,22 +204,28 @@ class ClosingService
                 'TELJDAT'       => $deadline,
                 'FIZHATIDO'     => $deadline,
                 'MEGJ'          => $comment,
-                'NETTO3'        => $invoice->getAmount(),
-                'AFA3'          => $invoice->getAmount() * $vat,
-                'VEGOSSZEG'     => $invoice->getAmount() * (1 + $vat),
+                'NETTO3'        => $net_amount,
+                'AFA3'          => $invoice->getAmount() - $net_amount,
+                'VEGOSSZEG'     => $invoice->getAmount(),
             ],
-            'szlaatt.txt' => [],
-            'vevo.txt' => [
+            'szlaatt.txt'   => [],
+            'vevo.txt'      => [],
+        ];
+
+        if (!in_array($client->getId(), $this->clients_added)) {
+            $data['vevo.txt'] = [
                 'PARTNERKOD'    => $invoice->getClient()->getId(),
                 'PARTNERNEV'    => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
                 'IRANYITOSZAM'  => $invoice->getClient()->getZipCode(),
                 'VAROS'         => $city,
-                'CIM'           => $ae->formatAddress($client->getZipCode(), $client->getCity(), $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber()),
+                'CIM'           => $ae->formatAddress('', '', $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber()),
                 'TELEFONSZAM'   => $client->getPhone(),
                 'FAXSZAM'       => $client->getFax(),
                 'VAROS2'        => $city2,
-            ],
-        ];
+            ];
+            $this->clients_added[] = $client->getId();
+        }
+
         $items = json_decode($invoice->getItems(), true);
         if (!empty($items)) {
             foreach ($items as $item) {
@@ -222,12 +239,72 @@ class ClosingService
             }
         }
 
-        $res = $this->addLine($data);
+        $res = $this->addExportLine($data);
 
         return $res;
     }
 
-    private function addLine($data)
+    private function addExportLine($data)
+    {
+        $result = 0;
+        // walk through the files
+        foreach ($this->exportFormat as $file => $fields) {
+            // some files can have more then 1 lines (like items)
+            if ('szlaatt.txt' == $file) {
+                foreach ($data[$file] as $item) {
+                    $result = $this->addline($file, $item);
+                }
+            }
+            else {
+                $result = $this->addline($file, $data[$file]);
+            }
+        }
+
+        return $result;
+    }
+
+    private function addLine($file, $data)
+    {
+        $result = 0;
+        // loop through the fields
+        foreach ($this->exportFormat[$file] as $field) {
+            $line = '';
+            $value = '';
+            // check input data
+            if (isset($data[$field[0]])) {
+                $value = $data[$field[0]];
+            }
+            else {
+                $value = $field[3];
+            }
+            // format the numeric values
+            if (!empty($field[2])) {
+                $value = number_format($value, $field[2], '.', '');
+            }
+            // pad to the required length
+            $value = $this->mb_str_pad($value, $field[1], " ", STR_PAD_RIGHT);
+
+            // add to the file contents
+            if (!isset($this->files[$file])) {
+                $this->files[$file] = '';
+            }
+            $this->files[$file] .= $value;
+
+            $result = 1;
+        }
+
+        // new line at the end
+        $this->files[$file] .= "\n";
+
+        return $result;
+    }
+
+    private function mb_str_pad ($input, $pad_length, $pad_string, $pad_style, $encoding = "UTF-8")
+    {
+       return str_pad($input, strlen($input) - mb_strlen($input,$encoding) + $pad_length, $pad_string, $pad_style);
+    }
+
+    private function setExportFormat()
     {
         /*
         A CT-EcoSTAT Pénzügyi rendszer számlákat text file-ból, valamint dbf állományból tud átvenni.
@@ -243,7 +320,7 @@ class ClosingService
         */
 
         // pretty dirty temporary data for JSZSZGYK
-        $params = [
+        $this->exportFormat = [
             'szlaatf.txt' => [
                 //      Field name		Width	Dec	Default
                 //      ==========		=====	===	====
@@ -324,6 +401,19 @@ class ClosingService
                 */
             ],
         ];
+    }
 
+    private function writeFiles()
+    {
+        $res = 0;
+        $folder = $this->container->get('kernel')->getRootDir() . '/../web/files/';
+        foreach ($this->files as $file => $contents) {
+            $filename = $folder . $file;
+            file_put_contents($filename, $contents);
+            $res ++;
+        }
+
+        return $res;
     }
 }
+
