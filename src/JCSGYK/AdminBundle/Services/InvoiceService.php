@@ -61,19 +61,13 @@ class InvoiceService
         $days = $this->getOrderDays($orders);
 
         // calculate the costs
-        $costs = $this->calulateCosts($catering, $orders);
-
-        // items on the invoice
-        $items = [
-            ['name' => 'Ebéd rendelés', 'value' => $costs['costs']],
-        ];
-        // if we have a discount
-        if ($costs['discounts']) {
-            $items[] = ['name' => 'Jóváírások', 'value' => $costs['discounts']];
-        }
+        $items = $this->calulateItems($catering, $orders);
 
         // sum up (discount is negative!)
-        $sum = $costs['costs'] + $costs['discounts'];
+        $sum = 0;
+        foreach ($items as $item) {
+            $sum += $item['value'];
+        }
 
         // create the new invoice
         $invoice = new Invoice();
@@ -183,10 +177,9 @@ class InvoiceService
      * @param \JCSGYK\AdminBundle\Services\Catering $catering
      * @param array $orders (cancels have -1 value)
      */
-    private function calulateCosts(Catering $catering, array $orders)
+    private function calulateItems(Catering $catering, array $orders)
     {
-        $costs = 0;
-        $discounts = 0;
+        $items = [];
 
         foreach ($orders as $order) {
             $date = $order->getDate()->format('Y-m-d');
@@ -200,11 +193,19 @@ class InvoiceService
                 if ($order->getOrder()) {
                     if ($order->getCancel()) {
                         // if ordered but later cancelled, we add it only to the discounts
-                        $discounts -= $daily_cost;
+                        $daily_cost *= -1;
+                    }
+                    if (!isset($items[$daily_cost])) {
+                        $items[$daily_cost] = [
+                            'name' => $daily_cost > 0 ? 'Ebéd rendelés' : 'Jóváírás',
+                            'quantity' => 1,
+                            'unit_price' => $daily_cost,
+                            'value' => $daily_cost,
+                        ];
                     }
                     else {
-                        // if ordered but no cancel
-                        $costs += $daily_cost;
+                        $items[$daily_cost]['quantity']++;
+                        $items[$daily_cost]['value'] += $daily_cost;
                     }
                 }
                 // we dont deal with records at all, where there was no order
@@ -214,7 +215,7 @@ class InvoiceService
             }
         }
 
-        return ['costs' => $costs, 'discounts' => $discounts];
+        return $items;
     }
 
     /**
@@ -258,7 +259,7 @@ class InvoiceService
 
         // find the already created open records for this time period
         $orders = $orders_repo->getOrdersForPeriod($client->getId(), $start_date, $end_date);
- 
+
         foreach ($days as $ISO_date => $sub) {
             // only deal with orders at the moment
             if ($sub == 1) {
@@ -294,16 +295,21 @@ class InvoiceService
     }
 
     /**
-     * Exports the unsent invoices to EcoStat
+     * Returns the invoices of the company
+     * @param int $company_id
+     * @param int $limit
+     * @param int $offset
+     * @param int $status
+     * @return array of JCSGYK\AdminBundle\Entity\Invoice
      */
-    public function export()
+    public function getInvoices($company_id, $limit = 100, $offset = 0, $status = Invoice::READY_TO_SEND)
     {
-        // find the unsent invocies
-
-        // create the data arrays
-
-        // export to files
-
-        // send the files
+        $em = $this->container->get('doctrine')->getManager();
+        return $em->createQuery("SELECT i, c FROM JCSGYKAdminBundle:Invoice i JOIN i.client c WHERE i.companyId = :company_id AND i.status = :status")
+            ->setParameter('company_id', $company_id)
+            ->setParameter('status', $status)
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getResult();
     }
 }

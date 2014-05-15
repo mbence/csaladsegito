@@ -16348,7 +16348,7 @@ JcsCatering = {
         }
       }
     });
-    return $("#ordering-calendar").on("click", "li.day input", function(event) {
+    return $("#ordering-calendar").on("click", "li.day input[type=checkbox]", function(event) {
       $(this).parents("li.day").trigger("click");
       return event.stopPropagation();
     });
