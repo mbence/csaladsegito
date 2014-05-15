@@ -117,11 +117,10 @@ class InvoiceService
             // check if ordered
             if ($order->getOrder() == true) {
                 $o = 1;
-            }
-            if ($order->getCancel() == true) {
-                $o = -1;
-            }
-            if ($o != 0) {
+                if ($order->getCancel() == true) {
+                    $o = -1;
+                }
+
                 $changed_days[$order->getDate()->format('Y-m-d')] = $o;
             }
         }
