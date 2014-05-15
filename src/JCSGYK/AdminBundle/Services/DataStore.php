@@ -605,6 +605,7 @@ class DataStore
 
     /**
      * Return holiday day types
+     *
      * @return array
      */
     public function getHolidayTypeMap()
@@ -613,8 +614,28 @@ class DataStore
     }
 
     /**
+     * Get all day of period
+     *
+     * @param \DateTime $start_date
+     * @param \DateTime $end_date
+     * @return array
+     */
+    public function getDaysOfPeriod(\DateTime $start_date, \DateTime $end_date)
+    {
+        $days = [];
+        $actual_date = clone $start_date;
+        while ($actual_date <= $end_date) {
+            $days[] = $actual_date->format('Y-m-d');
+            $actual_date->modify('+1 day');
+        }
+
+        return $days;
+    }
+
+    /**
      * Get days of multiple month
-     * @param DateTime $date
+     *
+     * @param \DateTime $date
      * @param int $month_number
      * @return array
      */
@@ -634,20 +655,21 @@ class DataStore
 
     /**
      * Get days of one month
-     * @param DateTime $date
+     *
+     * @param \DateTime $date
      * @return array
      */
     public function getDaysOfMonth($date)
     {
-        $month     = [];
-        $week      = $date->format('W');
-        $day_count = $date->format('t');
-        $first_day = $date->format('N');
-        $aftertomorow = (new \DateTime(' tomorrow + 1 days'))->getTimestamp();
+        $month        = [];
+        $week         = $date->format('W');
+        $day_count    = $date->format('t');
+        $first_day    = $date->format('N');
+        $aftertomorow = (new \DateTime('tomorrow + 1 days'))->getTimestamp();
         $actual_month = $date->format('Y-m-');
-        $new_date  = clone $date;
+        $new_date     = clone $date;
         $new_date->modify('+' . ($day_count-1) . ' days');
-        $last_day  = $new_date->format('N');
+        $last_day     = $new_date->format('N');
 
         for ($i = 1; $i < $first_day; $i++) {
             $month[] = [

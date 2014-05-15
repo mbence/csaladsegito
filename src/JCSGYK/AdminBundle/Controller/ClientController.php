@@ -282,30 +282,162 @@ class ClientController extends Controller
 
         if (!empty($id)) {
 
-            $em = $this->getDoctrine()->getManager();
+            // $em = $this->getDoctrine()->getManager();
             $client = $this->getClient($id);
 
             // save the ordering data
             if ($request->isMethod('POST')) {
 
-                // save
-                // $em->flush();
+                $orders     = $request->request->get('orders');
+                $new_orders = [];
 
-                $this->get('session')->getFlashBag()->add('notice', 'Rendelés elmentve');
+                if (!empty($orders)) {
+                    $new_orders = $this->processOrders($client, $orders);
+                }
+
+                if (empty($new_orders)) {
+                    // if there are no changes, close the window and say bye-bye
+                    $this->get('session')->getFlashBag()->add('notice', 'Nem volt változás a rendelésben.');
+                }
+                else {
+
+                    $em         = $this->getDoctrine()->getManager();
+                    $sec        = $this->get('security.context');
+                    $user       = $sec->getToken()->getUser();
+                    $company_id = $this->container->get('jcs.ds')->getCompanyId();
+
+                    foreach ($new_orders as $date => $order) {
+                        switch ($order['type']) {
+                            case 'new':
+                                $new_order = new ClientOrder();
+                                $new_order->setCompanyId($company_id);
+                                $new_order->setClient($client);
+                                $new_order->setDate(new \DateTime($date));
+                                $new_order->setCreator($user);
+                                $new_order->setClosed(false);
+                                if ($order['value'] == 1) {
+                                    $new_order->setOrder(true);
+                                    $new_order->setCancel(false);
+                                }
+                                elseif ($order['value'] == -1) {
+                                    $new_order->setOrder(false);
+                                    $new_order->setCancel(true);
+                                }
+                                $em->persist($new_order);
+                                
+                                break;
+                            
+                            case 'update':
+                                $last_order = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->findOneBy(['date' => new \DateTime($date), 'companyId' => $company_id, 'client' => $client]);
+
+                                // ha közben "eltűnne" a rekord, mi történjen?
+
+                                if ($order['value'] == 1) {
+                                    $last_order->setOrder(true);
+                                    $last_order->setCancel(false);
+                                    $last_order->setClosed(false);
+
+                                    $em->persist($last_order);
+                                }
+                                elseif ($order['value'] == -1) {
+                                    $last_order->setOrder(false);
+                                    $last_order->setCancel(true);
+                                    $last_order->setClosed(false);
+                                    
+                                    $em->persist($last_order);
+                                }
+                                elseif ($order['value'] == 0) {
+                                    $em->remove($last_order);
+                                }
+
+                                break;
+                        }
+
+                        // save
+                        $em->flush();
+                    }
+
+                    $this->get('session')->getFlashBag()->add('notice', 'Rendelés elmentve');
+                }
 
                 return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
                     'success' => true,
+                    // 'orders'  => $error
                 ]);
             }
 
+            $orders = $this->prepareOrders($client);
+
             return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
                 'client' => $client,
-                'orders' => $prep_orders
+                'orders' => $orders
             ]);
         }
         else {
             throw new BadRequestHttpException('Invalid client id');
         }
+    }
+
+    /**
+     * Merge client orders' changes with current client orders
+     */
+    private function processOrders(Client $client, $orders)
+    {
+        $first_day_of_period = new \DateTime('tomorrow + 1 days');
+        $last_day_of_period  = new \DateTime('last day of this month + 2 months');
+        $catering            = $client->getCatering();
+        $days_of_months      = $this->container->get('jcs.ds')->getDaysOfPeriod($first_day_of_period, $last_day_of_period);
+        $monthly_subs        = $this->container->get('jcs.invoice')->getMonthlySubs($catering, $first_day_of_period, $last_day_of_period);
+        $changes             = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getOrdersForPeriod($client->getId(), $first_day_of_period, $last_day_of_period);
+        $changed_days        = $this->container->get('jcs.invoice')->getOrderDays($changes);
+        $new_orders          = [];
+
+        // return $days_of_months;
+
+        foreach ($days_of_months as $day) {
+            if (isset($changed_days[$day]) && isset($orders[$day]) && $orders[$day] != $changed_days[$day] && !isset($monthly_subs[$day])) {
+                // ha van erre a napra rekord létrehozva, a naptárban is ki van pipálva, de a két érték nem egyezik (-1 és 1) és a rendelési sablon erre a napra nincs kipipálva
+                // utánrendelés erre a napra
+                $new_orders[$day] = ['type' => 'update', 'value' => 1];
+            }
+            elseif (isset($changed_days[$day]) && isset($orders[$day]) && $orders[$day] == $changed_days[$day] && isset($monthly_subs[$day])) {
+                // ha van erre a napra rekord létrehozva, a naptárban is ki van pipálva, de a két érték nem egyezik (-1 és 1) és a rendelési sablon erre a napra nincs kipipálva
+                // rekord nullázása?????
+                $new_orders[$day] = ['type' => 'update', 'value' => 0];
+            }
+            elseif (isset($changed_days[$day]) && $changed_days[$day] == 1 && !isset($orders[$day]) && isset($monthly_subs[$day])) {
+                // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva, de a rendelési sablon erre a napra ki van pipálva
+                // lemondás erre a napra
+                $new_orders[$day] = ['type' => 'update', 'value' => -1];
+            }
+            elseif (isset($changed_days[$day]) && $changed_days[$day] == 1 && !isset($orders[$day]) && !isset($monthly_subs[$day])) {
+                // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva, és a rendelési sablon nincs erre a napra kipipálva
+                // rekord nullázása???
+                $new_orders[$day] = ['type' => 'update', 'value' => 0];
+            }
+            elseif (isset($changed_days[$day]) && $changed_days[$day] == -1 && !isset($orders[$day]) && !isset($monthly_subs[$day])) {
+                // ha van erre a napra rekord létrehozva lemondással, a naptárban nincs kipipálva, és a rendelési sablon nincs erre a napra kipipálva
+                // rekord nullázása????
+                $new_orders[$day] = ['type' => 'update', 'value' => 0];
+            }
+            elseif (isset($changed_days[$day]) && $changed_days[$day] == -1 && isset($orders[$day]) && isset($monthly_subs[$day])) {
+                // ha van erre a napra rekord létrehozva lemondással, a naptárban ki van kipipálva, és a rendelési sablon erre a napra ki van pipálva
+                // rekord nullázása????
+                $new_orders[$day] = ['type' => 'update', 'value' => 0];
+            }
+            elseif (!isset($changed_days[$day]) && isset($orders[$day]) && !isset($monthly_subs[$day])) {
+                // ha nincs erre a napra rekord létrehozva, de a naptárban ki van pipálva és rendelési sablon erre a napra nincs kipipálva
+                // utánrendelés erre a napra
+                $new_orders[$day] = ['type' => 'new', 'value' => 1];
+            }
+            elseif (!isset($changed_days[$day]) && !isset($orders[$day]) && isset($monthly_subs[$day])) {
+                // ha nincs erre a napra rekord létrehozva, a naptárban nincs kipipálva és rendelési sablon erre a napra ki van kipipálva
+                // lemondás erre a napra
+                $new_orders[$day] = ['type' => 'new', 'value' => -1];
+            }
+        }
+
+        return $new_orders;
     }
 
     /**

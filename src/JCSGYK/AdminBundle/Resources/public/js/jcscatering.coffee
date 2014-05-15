@@ -179,7 +179,7 @@ JcsCatering =
                     $(this).removeClass("cancel").addClass("reorder")
                     $(this).find("input").attr("checked","checked")
         
-        $("#ordering-calendar").on "click", "li.day input", (event) ->
+        $("#ordering-calendar").on "click", "li.day input[type=checkbox]", (event) ->
             $(this).parents("li.day").trigger("click")
             event.stopPropagation()
 

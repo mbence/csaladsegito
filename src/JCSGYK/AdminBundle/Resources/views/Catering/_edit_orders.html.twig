@@ -27,7 +27,7 @@
                     {% if day.day is not null %}
                         <span class="day">{% if day.day == 1 %}{{ timestamp|date('F') }} {% endif %}{{ day.day }}.</span>
                         <span class="dayinfo" data-info="INFO"></span>
-                        <input type="checkbox" name="clientorder[orders][{{ timestamp|date('m') }}][{{ day.day }}]" value="1">
+                        <input type="checkbox" name="orders[{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}]" value="1">
                         <span class="menu">{% if day.order == 'cancel' %}{{ 'Lemondva'|trans }}{% else %}{{ param(day.menu) }}{% endif %}</span>
                         <span class="status">{% if day.changed is defined and day.changed == 1 %}{{ 'Utánrendelve'|trans }}{% endif %}</span>
                     {% endif %}
