@@ -258,16 +258,8 @@ class InvoiceService
         $days = $this->getMonthlySubs($client->getCatering(), $start_date, $end_date);
 
         // find the already created open records for this time period
-        $os = $orders_repo->getOrdersForPeriod($client->getId(), $start_date, $end_date);
-        $orders = [];
-        if (!empty($os)) {
-            // map to date string
-            foreach ($os as $o) {
-                $orders[$o->getDate()->format('Y-m-d')] = $o;
-            }
-        }
-        unset($os);
-
+        $orders = $orders_repo->getOrdersForPeriod($client->getId(), $start_date, $end_date);
+ 
         foreach ($days as $ISO_date => $sub) {
             // only deal with orders at the moment
             if ($sub == 1) {

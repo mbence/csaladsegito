@@ -37,11 +37,21 @@ class ClientOrderRepository extends EntityRepository
      */
     public function getOrdersForPeriod($client_id, $start_date, $end_date)
     {
-        return $this->getEntityManager()
+        $orders = [];
+        $os = $this->getEntityManager()
             ->createQuery("SELECT o FROM JCSGYKAdminBundle:ClientOrder o WHERE o.client = :client_id AND o.date >= :start_date AND o.date <= :end_date ORDER BY o.date, o.createdAt")
             ->setParameter('client_id', $client_id)
             ->setParameter('start_date', $start_date)
             ->setParameter('end_date', $end_date)
             ->getResult();
+
+        if (!empty($os)) {
+            // map to date string
+            foreach ($os as $o) {
+                $orders[$o->getDate()->format('Y-m-d')] = $o;
+            }
+        }
+
+        return $orders;
     }
 }
