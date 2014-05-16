@@ -24,6 +24,9 @@ class ClosingService
     /** list of client ids, who are already in the customer file */
     private $clients_added = [];
 
+    /** where to store tmp files */
+    private $tmp_folder;
+
     /** Constructor */
     public function __construct($container)
     {
@@ -31,6 +34,7 @@ class ClosingService
 
         // TODO: make this company dependent!
         $this->setExportFormat();
+        $this->tmp_folder = $this->container->get('kernel')->getRootDir() . '/cache/tmp/' . uniqid() . '/';
     }
 
     /**
@@ -119,8 +123,28 @@ class ClosingService
         if (!empty($exp)) {
             $summary .= sprintf("%s: EcoStat fájlok létrehozva \n", date('H:i:s'));
 
+            // close the output files
+            $this->closeFiles();
+            // compress the output files
+            $zip = $this->zipFiles();
+            $zip_file_contents = file_get_contents($zip);
+            $this->deleteFiles($zip);
+
+            // save the zip file in the monthlyClosing record
+
+            $closing->setFiles($zip_file_contents);
+            $closing->setSummary($summary);
+            $em->flush();
+
             // Send the EcoSTAT files to bookkeeping
-            $this->writeFiles();
+            //$this->writeFiles();
+            $mail_ok = $this->sendMails($start, $end, basename($zip), $zip_file_contents);
+            if ($mail_ok) {
+                $summary .= sprintf("%s: Email sikeresen kiküldve \n", date('H:i:s'));
+            }
+            else {
+                $summary .= sprintf("%s: Email hiba! \n", date('H:i:s'));
+            }
         }
 
         // update the closing record
@@ -129,6 +153,8 @@ class ClosingService
         $closing->setSummary($summary);
         $closing->setStatus(MonthlyClosing::SUCCESS);
         $em->flush();
+
+
 
         return $closing;
     }
@@ -155,9 +181,6 @@ class ClosingService
             // process the invoce
             foreach ($invoices as $invoice) {
                 $result += $this->exportInvoice($invoice);
-
-                // set the invoice status to open (data exported to EcoSTAT)
-                //$invoice->setStatus(Invoice::OPEN);
             }
             $em->flush();
 
@@ -241,6 +264,11 @@ class ClosingService
 
         $res = $this->addExportLine($data);
 
+        if ($res) {
+            // set the invoice status to open (data exported to EcoSTAT)
+            $invoice->setStatus(Invoice::OPEN);
+        }
+
         return $res;
     }
 
@@ -266,9 +294,10 @@ class ClosingService
     private function addLine($file, $data)
     {
         $result = 0;
+        $line = '';
+
         // loop through the fields
         foreach ($this->exportFormat[$file] as $field) {
-            $line = '';
             $value = '';
             // check input data
             if (isset($data[$field[0]])) {
@@ -285,20 +314,95 @@ class ClosingService
             $value = $this->mb_str_pad($value, $field[1], " ", STR_PAD_RIGHT);
 
             // add to the file contents
-            if (!isset($this->files[$file])) {
-                $this->files[$file] = '';
-            }
-            $this->files[$file] .= $value;
+            $line .= $value;
 
             $result = 1;
         }
 
         // new line at the end
-        $this->files[$file] .= "\n";
+        $line .= "\n";
+
+        // write it out!
+        $this->writeFile($file, $line);
 
         return $result;
     }
 
+    private function writeFile($file, $line) {
+        // create the tmp dir if needed
+        if (!is_dir($this->tmp_folder)) {
+            mkdir($this->tmp_folder, 0700, true);
+        }
+        // create and open the file
+        if (empty($this->files[$file])) {
+            $handle = fopen($this->tmp_folder . $file, "w+");
+            if (false === $handle) {
+                throw new HttpException(500, 'File write error');
+            }
+            $this->files[$file] = $handle;
+        }
+
+        // write the contents
+        return fwrite($this->files[$file], $line);
+    }
+
+    /**
+     * Close the tmp files
+     */
+    private function closeFiles()
+    {
+        foreach ($this->files as $file => $handle) {
+            fclose($handle);
+        }
+    }
+
+    /**
+     * Compress the files in $this->files
+     * @return zip  file name
+     * @throws HttpException
+     */
+    private function zipFiles()
+    {
+        $zip = new \ZipArchive();
+        $zipfilename = $this->tmp_folder . 'etkeztetes_import_' . date('Ymd') . '.zip';
+
+        if ($zip->open($zipfilename, \ZipArchive::CREATE) === false) {
+            throw new HttpException(500, 'Zip file write error');
+        }
+        else {
+            foreach ($this->files as $file => $handle) {
+                $realfile = $this->tmp_folder . $file;
+                $zip->addFile($realfile, $file);
+            }
+            $zip->close();
+        }
+
+        return $zipfilename;
+    }
+
+    /**
+     * Deletes the tmp files (from $this->files and the zip)
+     * @param string $zip
+     */
+    private function deleteFiles($zip)
+    {
+        foreach ($this->files as $file => $handle) {
+            $f = $this->tmp_folder . $file;
+            if (file_exists($f)) {
+                unlink($f);
+            }
+        }
+
+        if (file_exists($zip)) {
+            unlink($zip);
+        }
+
+        rmdir($this->tmp_folder);
+    }
+
+    /**
+     * multibyte str_pad
+     */
     private function mb_str_pad ($input, $pad_length, $pad_string, $pad_style, $encoding = "UTF-8")
     {
        return str_pad($input, strlen($input) - mb_strlen($input,$encoding) + $pad_length, $pad_string, $pad_style);
@@ -403,17 +507,38 @@ class ClosingService
         ];
     }
 
-    private function writeFiles()
+    /**
+     * Send the generated files to bookkeeping
+     */
+    private function sendMails(\DateTime $start_date, \DateTime $end_date, $zip, &$zip_file_contents)
     {
-        $res = 0;
-        $folder = $this->container->get('kernel')->getRootDir() . '/../web/files/';
-        foreach ($this->files as $file => $contents) {
-            $filename = $folder . $file;
-            file_put_contents($filename, $contents);
-            $res ++;
-        }
+        if (!empty($zip)) {
 
-        return $res;
+            $ae = $this->container->get('jcs.twig.adminextension');
+
+            $subject = sprintf('Havi számla import: %s - %s', $ae->formatDate($start_date), $ae->formatDate($end_date));
+            $mailer_from = 'mxbence@gmail.com';
+            $mailer_from_name = 'Nyilvántartó';
+            $mailer_to = 'mxbence@gmail.com';
+            $mailer_to_name = 'Mészáros Bence';
+
+            $message = \Swift_Message::newInstance()
+            ->setSubject($subject)
+            ->setFrom([$mailer_from => $mailer_from_name])
+            ->setTo([$mailer_to => $mailer_to_name])
+            ->setBody("Tisztelt Könyvelés!\n\n Mellékelve küldjük a számlák beolvasásához szükséges fájlokat.\n", 'text/plain');
+
+            // add attachment
+            $attachment = \Swift_Attachment::newInstance($zip_file_contents, $zip, 'application/zip');
+            $message->attach($attachment);
+
+            $res = $this->container->get('mailer')->send($message);
+
+            return $res;
+        }
+        else {
+            return false;
+        }
     }
 }
 

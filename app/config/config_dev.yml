@@ -32,8 +32,10 @@ assetic:
             apply_to: "\.coffee$"
             bare: true
 
-#swiftmailer:
-#    delivery_address: me@example.com
+# Swiftmailer Configuration
+swiftmailer:
+    disable_delivery:  false
+    delivery_address:  mxbence@gmail.com
 
 live_php:
     dirs: [., ../src, ../web]

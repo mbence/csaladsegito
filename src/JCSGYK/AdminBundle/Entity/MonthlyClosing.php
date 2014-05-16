@@ -74,6 +74,14 @@ class MonthlyClosing
      */
     private $createdAt;
 
+    /**
+     * @var blob
+     *
+     * @ORM\Column(name="files", type="blob", nullable=true)
+     */
+    private $files;
+
+
     public function __construct()
     {
         $this->setCreatedAt(new \DateTime());
@@ -255,5 +263,29 @@ class MonthlyClosing
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * Set files
+     *
+     * @param string $files
+     *
+     * @return MonthlyClosing
+     */
+    public function setFiles($files)
+    {
+        $this->files = $files;
+
+        return $this;
+    }
+
+    /**
+     * Get files
+     *
+     * @return string 
+     */
+    public function getFiles()
+    {
+        return $this->files;
     }
 }

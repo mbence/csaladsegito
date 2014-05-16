@@ -493,7 +493,7 @@ class AdminController extends Controller
 
                 $this->get('session')->getFlashBag()->add('notice', 'Havi zárás elindítva');
 
-    //            return $this->redirect($this->generateUrl('admin_closings', ['id' => $id]));
+                return $this->redirect($this->generateUrl('admin_closings', ['id' => $id]));
             }
         }
 
