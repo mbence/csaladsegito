@@ -63,6 +63,13 @@ class ClientOrder
     private $closed;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="billed_state", type="boolean", nullable=true)
+     */
+    private $billedState;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -280,5 +287,29 @@ class ClientOrder
     public function getClosed()
     {
         return $this->closed;
+    }
+
+    /**
+     * Set billedState
+     *
+     * @param boolean $billedState
+     *
+     * @return ClientOrder
+     */
+    public function setBilledState($billedState)
+    {
+        $this->billedState = $billedState;
+
+        return $this;
+    }
+
+    /**
+     * Get billedState
+     *
+     * @return boolean
+     */
+    public function getBilledState()
+    {
+        return $this->billedState;
     }
 }

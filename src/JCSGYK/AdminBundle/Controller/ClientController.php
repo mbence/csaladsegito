@@ -358,11 +358,17 @@ class ClientController extends Controller
                                     
                                     // $em->persist($last_order);
                                 }
-                                elseif ($order['value'] == 0) {
-                                    $last_order->setOrder(false);
-                                    $last_order->setCancel(false);
-                                    $last_order->setClosed(false);
-                                }
+                                // elseif ($order['value'] == 0) {
+                                //     $last_order->setOrder(false);
+                                //     $last_order->setCancel(false);
+                                //     $last_order->setClosed(false);
+                                // }
+
+                                break;
+
+                            case 'remove':
+                                $last_order = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->findOneBy(['date' => new \DateTime($date), 'companyId' => $company_id, 'client' => $client]);
+                                $em->remove($last_order);
 
                                 break;
                         }
@@ -409,7 +415,8 @@ class ClientController extends Controller
         // return $changed_days;
 
         foreach ($days_of_months as $day) {
-            $changed_day = false;
+            $changed_day = 0;
+            $closed      = false;
             if (isset($changed_days[$day])) {
                 if ($changed_days[$day]->getOrder()) {
                     $changed_day = 1;
@@ -417,64 +424,54 @@ class ClientController extends Controller
                 if ($changed_days[$day]->getCancel()) {
                     $changed_day = -1;
                 }
-                if (!$changed_days[$day]->getOrder() && !$changed_days[$day]->getCancel()) {
-                    $changed_day = 0;
-                }
+                // if (!$changed_days[$day]->getOrder() && !$changed_days[$day]->getCancel()) {
+                //     $changed_day = 0;
+                // }
                 $closed = $changed_days[$day]->getClosed();
             }
-            if ($changed_day !== false && isset($orders[$day]) && $orders[$day] != $changed_day && !isset($monthly_subs[$day])) {
-                // ha van erre a napra rekord létrehozva, a naptárban is ki van pipálva, de a két érték nem egyezik (-1 és 1) és a rendelési sablon erre a napra nincs kipipálva
-                // utánrendelés erre a napra
-                $new_orders[$day] = ['type' => 'update', 'value' => 1];
+            $order = (!isset($orders[$day])) ? false : true;
+            $sub   = (!isset($monthly_subs[$day])) ? false : true;
+
+            if ($changed_day == 0) {
+                // nincs rekord létrehozva erre a napra
+                if ($sub && !$order) {
+                    // a naptárban nincs kipipálva, a rendelési sablon erre a napra ki van pipálva, és nincs lezárva a rekord
+                    $new_orders[$day] = ['type' => 'new', 'value' => -1];
+                }
+                elseif (!$sub && $order) {
+                    // a naptárban ki van pipálva, a rendelési sablon erre a napra ki van pipálva, és nincs lezárva a rekord
+                    // utánrendelés erre a napra
+                    $new_orders[$day] = ['type' => 'new', 'value' => 1];
+                }
             }
-            elseif ($changed_days !== false && isset($orders[$day]) && $orders[$day] != $changed_days[$day] && isset($monthly_subs[$day]) && $closed) {
-                // ha van erre a napra rekord létrehozva, a naptárban is ki van pipálva, de a két érték nem egyezik (-1 és 1) és a rendelési sablon erre a napra nincs kipipálva
-                // rekord nullázása?????
-                $new_orders[$day] = ['type' => 'update', 'value' => 2];
-            }
-            // elseif ($changed_day == 1 && !isset($orders[$day]) && isset($monthly_subs[$day])) {
-            //     // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva, de a rendelési sablon erre a napra ki van pipálva
-            //     // lemondás erre a napra
-            //     $new_orders[$day] = ['type' => 'update', 'value' => -1];
-            // }
-            elseif ($changed_day == 1 && !isset($orders[$day]) && !isset($monthly_subs[$day]) && $closed) {
-                // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva, és a rendelési sablon nincs erre a napra kipipálva és a rekord le van zárva
-                $new_orders[$day] = ['type' => 'update', 'value' => 2];
-            }
-            elseif ($changed_day == 1 && !isset($orders[$day]) && !isset($monthly_subs[$day]) && !$closed) {
-                // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva, és a rendelési sablon nincs erre a napra kipipálva és nincs lezárva a rekord
-                // rekord nullázása
-                $new_orders[$day] = ['type' => 'update', 'value' => 0];
-            }
-            // elseif ($changed_days == -1 && !isset($orders[$day]) && !isset($monthly_subs[$day])) {
-            //     // ha van erre a napra rekord létrehozva lemondással, a naptárban nincs kipipálva, és a rendelési sablon nincs erre a napra kipipálva
-            //     // rekord nullázása????
-            //     $new_orders[$day] = ['type' => 'update', 'value' => 0];
-            // }
-            elseif ($changed_days == -1 && isset($orders[$day]) && isset($monthly_subs[$day]) && $closed) {
-                // ha van erre a napra rekord létrehozva lemondással, a naptárban ki van kipipálva, és a rendelési sablon erre a napra ki van pipálva és a rekord le van zárva
-                // rekord nullázása????
-                $new_orders[$day] = ['type' => 'update', 'value' => 2];
-            }
-            elseif ($changed_days == -1 && isset($orders[$day]) && isset($monthly_subs[$day]) && !$closed) {
-                // ha van erre a napra rekord létrehozva lemondással, a naptárban ki van kipipálva, és a rendelési sablon erre a napra ki van pipálva és nincs lezárva a rekord
-                // rekord nullázása????
-                $new_orders[$day] = ['type' => 'update', 'value' => 0];
-            }
-            elseif ($changed_day === false && isset($orders[$day]) && !isset($monthly_subs[$day])) {
-                // ha nincs erre a napra rekord létrehozva, de a naptárban ki van pipálva és rendelési sablon erre a napra nincs kipipálva
-                // utánrendelés erre a napra
-                $new_orders[$day] = ['type' => 'new', 'value' => 1];
-            }
-            elseif ($changed_day !== false && isset($orders[$day]) && !isset($monthly_subs[$day])) {
-                // ha nincs erre a napra rekord létrehozva, de a naptárban ki van pipálva és rendelési sablon erre a napra nincs kipipálva
-                // utánrendelés erre a napra
-                $new_orders[$day] = ['type' => 'update', 'value' => 1];
-            }
-            elseif ($changed_day === false && !isset($orders[$day]) && isset($monthly_subs[$day])) {
-                // ha nincs erre a napra rekord létrehozva, a naptárban nincs kipipálva és rendelési sablon erre a napra ki van kipipálva
-                // lemondás erre a napra
-                $new_orders[$day] = ['type' => 'new', 'value' => -1];
+            else {
+                // update esetén nem számít, hogy a sablonban ezen a napon volt-e rendelés vagy sem
+                // if ($closed) {
+                    // lezárt rekordok
+                    if ($changed_day === -1 && $order) {
+                        // ha van erre a napra rekord létrehozva lemondással, a naptárban ki van pipálva és a rekord le van zárva
+                        // utánrendelés erre a napra
+                        $new_orders[$day] = ['type' => 'update', 'value' => 1];
+                    }
+                    elseif ($changed_day === 1 && !$order) {
+                        // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva és le van zárva a rekord
+                        // rekord nullázása
+                        $new_orders[$day] = ['type' => 'update', 'value' => -1];
+                    }
+                // }
+                // elseif (!$closed) {
+                //     // rekord nincs lezárva
+                //     if ($changed_day === -1 && $order) {
+                //         // ha van erre a napra rekord létrehozva lemondással, a naptárban is ki van pipálva, a rendelési sablon erre a napra ki van pipálva, és nincs lezárva a rekord
+                //         // rekord nullázása
+                //         $new_orders[$day] = ['type' => 'update', 'value' = -1];
+                //     }
+                //     elseif ($changed_day === 1 && !$order) {
+                //         // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva, a rendelési sablon erre a napra nincs kipipálva, és nincs lezárva a rekord
+                //         // utánrendelés erre a napra
+                //         $new_orders[$day] = ['type' => 'update', 'value' = 1];
+                //     }
+                // }
             }
         }
 
@@ -515,15 +512,23 @@ class ClientController extends Controller
                     if ($changed_days[$date]->getCancel()) {
                         $changed_day = -1;
                     }
-                    if (!$changed_days[$date]->getOrder() && !$changed_days[$date]->getCancel()) {
-                        $changed_day = 0;
-                    }
+                    // if (!$changed_days[$date]->getOrder() && !$changed_days[$date]->getCancel()) {
+                    //     $changed_day = 0;
+                    // }
                     // $closed = $changed_days[$date]->getClosed();
+                }
+                if (isset($monthly_subs[$date])) {
+                    $sub = true;
+                    $new_day['catering'] = true;
+                }
+                else {
+                    $sub = false;
+                    $new_day['catering'] = false;
                 }
 
                 if (! is_null($day['day'])) {
                     $new_day['menu'] = $menu;
-                    $class[] = 'day';
+                    $class[]         = 'day';
                 }
                 else {
                     $class[] = 'empty';
@@ -531,18 +536,19 @@ class ClientController extends Controller
                 if (isset($holidays[$date])) {
                     $new_day['holiday'] = (empty($holidays[$date]['desc'])) ? $holyday_type_map[$holidays[$date]['type']] : $holidays[$date]['desc'];
                 }
-                if ($changed_day !== false && $changed_day != 0) {
+                if ($changed_day !== false) {
                     $new_day['changed'] = $changed_day;
-                    $new_day['order'] = ($changed_day == 1) ? 'reorder' : 'cancel';
-                    $class[] = ($changed_day == 1 ) ? 'reorder' : 'cancel';
-                }
-                elseif (isset($monthly_subs[$date])) {
-                    $new_day['ordered'] = $monthly_subs[$date];
-                    $new_day['order'] = ($monthly_subs[$date] == 1) ? 'order' : 'none';
-                    $class[] = 'order';
+                    $new_day['order']   = ($changed_day == 1) ? 'reorder' : 'cancel';
+                    $class[]            = ($changed_day == 1 ) ? 'reorder' : 'cancel';
                 }
                 else {
-                    $new_day['order'] = 'none';
+                    if ($sub) {
+                        $new_day['order']   = 'order';
+                        $class[]            = 'order';
+                    }
+                    else {
+                        $new_day['order'] = 'none';
+                    }
                 }
                 if (isset($day['modifiable']) && $day['modifiable']) {
                     $class[] = 'modifiable';
@@ -553,7 +559,7 @@ class ClientController extends Controller
                 else {
                     $class[] = 'weekday';
                 }
-                $new_day['class'] = implode(' ', $class);
+                $new_day['class']                    = implode(' ', $class);
                 $days[$actual_month][$day['week']][] = $new_day;
             }
         }

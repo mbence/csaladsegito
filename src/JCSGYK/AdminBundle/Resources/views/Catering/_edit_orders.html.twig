@@ -30,6 +30,7 @@
                         <input type="checkbox" name="orders[{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}]" value="1">
                         <span class="menu">{% if day.order == 'cancel' %}{{ 'Lemondva'|trans }}{% else %}{{ param(day.menu) }}{% endif %}</span>
                         <span class="status">{% if day.changed is defined and day.changed == 1 %}{{ 'Utánrendelve'|trans }}{% endif %}</span>
+                        <span class="catering{% if day.catering and day.order != 'order' %} sub{% endif %}"></span>
                     {% endif %}
                     </li>
                     {% endfor %}
