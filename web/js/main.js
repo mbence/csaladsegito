@@ -15289,7 +15289,7 @@ AjaxBag = {
       cl = false;
     }
     this.hideLoader();
-    return $(".ajaxbag .ajax-notice").addClass(cl).stop().clearQueue().html(notice).css({
+    return $(".ajaxbag .ajax-notice").removeClass().addClass("ajax-notice").addClass(cl).stop().clearQueue().html(notice).css({
       'marginLeft': -1 * ($(".ajaxbag .ajax-notice").outerWidth() / 2),
       'opacity': 1
     }).show().delay(4000).fadeOut(3000, function() {

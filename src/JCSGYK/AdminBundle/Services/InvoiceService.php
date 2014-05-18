@@ -16,10 +16,14 @@ class InvoiceService
     /** Service container */
     private $container;
 
+    /** Datastore */
+    private $ds;
+
     /** Constructor */
     public function __construct($container)
     {
         $this->container = $container;
+        $this->ds = $this->container->get('jcs.ds');
     }
 
     /**
@@ -38,9 +42,9 @@ class InvoiceService
             throw new HttpException(500, 'Invalid Start / End dates');
         }
 
-        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $company_id = $this->ds->getCompanyId();
         $em = $this->container->get('doctrine')->getManager();
-        $user = $this->container->get('security.context')->getToken()->getUser();
+        $user = $this->ds->getUser();
         $orders_repo = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder');
 
         //$logger = $this->container->get('logger');
@@ -53,38 +57,40 @@ class InvoiceService
 
         // get all open orders for the given month and before
         $orders = $orders_repo->getOrders($client->getId(), $end_date);
-        // if we have no data, we create no invoice
-        if (empty($orders)) {
-            return false;
-        }
-
         $days = $this->getOrderDays($orders);
 
-        // calculate the costs
-        $items = $this->calulateItems($catering, $orders);
+        // if we have no data, we create no invoice
+        if (!empty($orders) && !empty($days)) {
 
-        // sum up (discount is negative!)
-        $sum = 0;
-        foreach ($items as $item) {
-            $sum += $item['value'];
+            // calculate the costs
+            $items = $this->calulateItems($catering, $orders);
+
+            // sum up (discount is negative!)
+            $sum = 0;
+            foreach ($items as $item) {
+                $sum += $item['value'];
+            }
+
+            // create the new invoice
+            $invoice = new Invoice();
+            $invoice->setCompanyId($company_id);
+            $invoice->setClient($client);
+            $invoice->setStartDate($start_date);
+            $invoice->setEndDate($end_date);
+            $invoice->setItems(json_encode($items));
+            $invoice->setDays(json_encode($days));
+            $invoice->setBalance(0);
+            $invoice->setStatus(Invoice::READY_TO_SEND);
+            $invoice->setAmount($sum);
+            $invoice->setCreatedAt(new \DateTime());
+            $invoice->setCreator($user);
+
+            // save the new invoice
+            $em->persist($invoice);
         }
-
-        // create the new invoice
-        $invoice = new Invoice();
-        $invoice->setCompanyId($company_id);
-        $invoice->setClient($client);
-        $invoice->setStartDate($start_date);
-        $invoice->setEndDate($end_date);
-        $invoice->setItems(json_encode($items));
-        $invoice->setDays(json_encode($days));
-        $invoice->setBalance(0);
-        $invoice->setStatus(Invoice::READY_TO_SEND);
-        $invoice->setAmount($sum);
-        $invoice->setCreatedAt(new \DateTime());
-        $invoice->setCreator($user);
-
-        // save the new invoice
-        $em->persist($invoice);
+        else {
+            $invoice = false;
+        }
 
         // close the used cancel records
         foreach ($orders as $order) {
@@ -140,7 +146,7 @@ class InvoiceService
         // food on every way of the week?
         $all_days = count($subs) == 7;
         // get the holidays
-        $holidays = $this->container->get('jcs.ds')->getHolidays($start_date->format('Y-m-d'), $end_date->format('Y-m-d'));
+        $holidays = $this->ds->getHolidays($start_date->format('Y-m-d'), $end_date->format('Y-m-d'));
 //        var_dump($holidays);
 
         $days = [];
@@ -185,7 +191,7 @@ class InvoiceService
             $date = $order->getDate()->format('Y-m-d');
             // get the actual catering costs table
             // this runs a query for every day. Maybe not necessary...
-            $table = $this->container->get('jcs.ds')->getOption('cateringcosts', $date);
+            $table = $this->ds->getOption('cateringcosts', $date);
             // check the cost for the day
             $daily_cost = $this->getCostForADay($catering, $table);
             if (!is_null($daily_cost)) {
@@ -248,9 +254,8 @@ class InvoiceService
     public function saveDays(Client $client, $start_date, $end_date)
     {
         $em = $this->container->get('doctrine')->getManager();
-        $sec = $this->container->get('security.context');
-        $user = $sec->getToken()->getUser();
-        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $user = $this->ds->getUser();
+        $company_id = $this->ds->getCompanyId();
         $orders_repo = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder');
 
         // list of days: key is ISO date format, when food was ordered, value is 1 or 0

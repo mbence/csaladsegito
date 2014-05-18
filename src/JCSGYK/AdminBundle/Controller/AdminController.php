@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use Cocur\BackgroundProcess\BackgroundProcess;
 
 use JCSGYK\AdminBundle\Entity\User;
 use JCSGYK\AdminBundle\Entity\Parameter;
@@ -456,6 +457,7 @@ class AdminController extends Controller
         $request = $this->getRequest();
         $closing = null;
         $form_view = null;
+        $auto_refresh = false;
 
         $em = $this->getDoctrine()->getManager();
         $ds = $this->container->get('jcs.ds');
@@ -466,6 +468,25 @@ class AdminController extends Controller
             $closing = $em->getRepository('JCSGYKAdminBundle:MonthlyClosing')->findBy(['id' => $id, 'companyId' => $company_id]);
             if (!empty($closing[0])) {
                 $closing = $closing[0];
+            }
+
+            if (!empty($closing->getFiles()) && $request->query->get('download')) {
+                // send the zip file to download
+                $fn = 'etkeztetes_import_' . $closing->getCreatedAt()->format('Ymd') . '.zip';
+
+                return $this->sendDownloadResponse($fn, stream_get_contents($closing->getFiles()), 'application/zip');
+            }
+        }
+
+        // check the background process
+        $process = $this->get('session')->get('monthly_closing_process');
+        if (!empty($process)) {
+            if ($process->isRunning()) {
+                $auto_refresh = true;
+
+            }
+            else {
+                $this->get('session')->remove('monthly_closing_process');
             }
         }
 
@@ -485,7 +506,22 @@ class AdminController extends Controller
 
                 $data = $form->getData();
 
-                $closing = $closing_service->run($data['period']);
+                // create a process for the background running
+                $kernel = $this->container->get('kernel');
+                $php = $this->container->getParameter('php_path', '/usr/bin/php');
+
+                $command = sprintf('%s %s/console jcs:closing %s --env=%s --no-debug', $php, $kernel->getRootDir(), $company_id, $kernel->getEnvironment());
+                if (0 == $data['period']) {
+                    $command .= ' -a';
+                }
+
+                $process = new BackgroundProcess($command);
+                $process->run();
+
+                // save the process in session
+                $this->get('session')->set('monthly_closing_process', $process);
+
+                //$closing = $closing_service->run($data['period']);
 
                 if (!empty($closing)) {
                     $id = $closing->getId();
@@ -501,6 +537,7 @@ class AdminController extends Controller
             'closings' => $closing_service->getList(),
             'act' => $closing,
             'form' => $form->createView(),
+            'auto_refresh' => $auto_refresh,
         ]);
     }
 
@@ -631,18 +668,23 @@ class AdminController extends Controller
                 throw new HttpException(400, "Bad request");
             }
 
-            $response = new Response();
-
-            $response->headers->set('Content-Type', $template->getMimeType());
-            $response->headers->set('Content-Disposition', 'attachment;filename="' . $template->getOriginalName());
-
-            $response->setContent(file_get_contents($docpath));
-
-            return $response;
+            return $this->sendDownloadResponse($template->getOriginalName(), file_get_contents($docpath), $template->getMimeType());
         }
         else {
             throw new HttpException(400, "Bad request");
         }
+    }
+
+    public function sendDownloadResponse($file_name, $file_contents, $content_type)
+    {
+        $response = new Response();
+
+        $response->headers->set('Content-Type', $content_type);
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $file_name);
+
+        $response->setContent($file_contents);
+
+        return $response;
     }
 
     /**

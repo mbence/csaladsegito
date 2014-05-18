@@ -12,3 +12,4 @@ parameters:
     locale: hu_HU
     secret: 109cd42bcd931f86fcb97cad1c2664167
     database_path: null
+    php_path: /usr/bin/php
