@@ -16262,6 +16262,7 @@ JcsCatering = {
   initMultiDatesPicker: function() {
     this.calendarNavigation();
     this.setupDatePicker();
+    this.setupHolidayInfo();
     $(".month-wrapper:eq(2)").addClass("active");
     $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"));
     return $("li.day").each(function() {
@@ -16271,6 +16272,14 @@ JcsCatering = {
       if ($(this).data("modifiable") === 0) {
         return $(this).find("input").attr("disabled", "disabled");
       }
+    });
+  },
+  setupHolidayInfo: function() {
+    $("span.holiday").mouseenter(function() {
+      return $(this).find(".desc").fadeIn(200);
+    });
+    return $("span.holiday").mouseleave(function() {
+      return $(this).find(".desc").fadeOut(200);
     });
   },
   calendarNavigation: function() {
@@ -16301,8 +16310,12 @@ JcsCatering = {
         if (order === "cancel" && new_order === void 0) {
           $(this).data("new_order", "reorder");
           $(this).find(".menu").text($(this).data("menu"));
-          $(this).find(".status").text("Utánrendelve");
-          $(this).removeClass("cancel").addClass("reorder");
+          if ($(this).data("closed") === 1) {
+            $(this).find(".status").text("Utánrendelve");
+            $(this).removeClass("cancel").addClass("order");
+          } else if ($(this).data("closed") === 0) {
+            $(this).removeClass("cancel").addClass("reorder");
+          }
           $(this).find("input").attr("checked", "checked");
         } else if (order === "cancel" && new_order !== void 0) {
           $(this).removeData("new_order");
@@ -16313,19 +16326,25 @@ JcsCatering = {
         }
         if (order === "none" && new_order === void 0) {
           $(this).data("new_order", "reorder");
-          $(this).find(".status").text("Utánrendelve");
+          $(this).find(".menu").text($(this).data("menu"));
+          if ($(this).data("closed") === 1) {
+            $(this).find(".status").text("Utánrendelve");
+          }
           $(this).addClass("reorder");
           $(this).find("input").attr("checked", "checked");
         } else if (order === "none" && new_order !== void 0) {
           $(this).removeData("new_order");
           $(this).find(".status").empty();
+          $(this).find(".menu").empty();
           $(this).removeClass("reorder");
           $(this).find("input").removeAttr("checked");
         }
         if (order === "order" && new_order === void 0) {
           $(this).data("new_order", "cancel");
-          $(this).find(".menu").text("Lemondva");
-          $(this).removeClass("order").addClass("cancel");
+          if ($(this).data("closed") === 1) {
+            $(this).find(".menu").text("Lemondva");
+            $(this).removeClass("order").addClass("cancel");
+          }
           $(this).find("input").removeAttr("checked");
         } else if (order === "order" && new_order !== void 0) {
           $(this).removeData("new_order");
@@ -16342,7 +16361,9 @@ JcsCatering = {
         } else if (order === "reorder" && new_order !== void 0) {
           $(this).removeData("new_order");
           $(this).find(".menu").text($(this).data("menu"));
-          $(this).find(".status").text("Utánrendelve");
+          if ($(this).data("closed") === 1) {
+            $(this).find(".status").text("Utánrendelve");
+          }
           $(this).removeClass("cancel").addClass("reorder");
           return $(this).find("input").attr("checked", "checked");
         }

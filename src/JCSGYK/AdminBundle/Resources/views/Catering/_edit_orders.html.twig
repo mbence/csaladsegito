@@ -23,14 +23,15 @@
                 <ul class="table-body">
                     <li class="week-header">{{ weeknumber }}. {{ 'hét'|trans }}</li>
                     {% for index,day in week %}
-                    <li class="{{ day.class }}"{% if day.day is not null %} data-menu="{{ param(day.menu) }}" data-order="{{ day.order }}" data-modifiable="{{ day.modifiable }}"{% endif %}>
+                    <li class="{{ day.class }}"{% if day.day is not null %} data-catering="{{ day.catering }}" data-closed="{{ day.closed }}" data-menu="{{ param(day.menu) }}" data-order="{{ day.order }}" data-modifiable="{{ day.modifiable }}"{% endif %}>
                     {% if day.day is not null %}
                         <span class="day">{% if day.day == 1 %}{{ timestamp|date('F') }} {% endif %}{{ day.day }}.</span>
-                        <span class="dayinfo" data-info="INFO"></span>
+                        {% if day.holiday %}
+                        <span class="holiday">i<span class="desc">{{ day.holiday }}</span></span>
+                        {% endif %}
                         <input type="checkbox" name="orders[{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}]" value="1">
-                        <span class="menu">{% if day.order == 'cancel' %}{{ 'Lemondva'|trans }}{% else %}{{ param(day.menu) }}{% endif %}</span>
+                        <span class="menu">{% if day.order == 'cancel' %}{{ 'Lemondva'|trans }}{% else %}{% if day.order != 'none' %}{{ param(day.menu) }}{% endif %}{% endif %}</span>
                         <span class="status">{% if day.changed is defined and day.changed == 1 %}{{ 'Utánrendelve'|trans }}{% endif %}</span>
-                        <span class="catering{% if day.catering and day.order != 'order' %} sub{% endif %}"></span>
                     {% endif %}
                     </li>
                     {% endfor %}

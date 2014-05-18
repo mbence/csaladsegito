@@ -409,10 +409,7 @@ class ClientController extends Controller
         $days_of_months      = $this->container->get('jcs.ds')->getDaysOfPeriod($first_day_of_period, $last_day_of_period);
         $monthly_subs        = $this->container->get('jcs.invoice')->getMonthlySubs($catering, $first_day_of_period, $last_day_of_period);
         $changed_days        = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getOrdersForPeriod($client->getId(), $first_day_of_period, $last_day_of_period);
-        // $changed_days        = $this->container->get('jcs.invoice')->getOrderDays($changes);
         $new_orders          = [];
-
-        // return $changed_days;
 
         foreach ($days_of_months as $day) {
             $changed_day = 0;
@@ -424,9 +421,6 @@ class ClientController extends Controller
                 if ($changed_days[$day]->getCancel()) {
                     $changed_day = -1;
                 }
-                // if (!$changed_days[$day]->getOrder() && !$changed_days[$day]->getCancel()) {
-                //     $changed_day = 0;
-                // }
                 $closed = $changed_days[$day]->getClosed();
             }
             $order = (!isset($orders[$day])) ? false : true;
@@ -446,7 +440,7 @@ class ClientController extends Controller
             }
             else {
                 // update esetén nem számít, hogy a sablonban ezen a napon volt-e rendelés vagy sem
-                // if ($closed) {
+                if ($closed) {
                     // lezárt rekordok
                     if ($changed_day === -1 && $order) {
                         // ha van erre a napra rekord létrehozva lemondással, a naptárban ki van pipálva és a rekord le van zárva
@@ -456,22 +450,22 @@ class ClientController extends Controller
                     elseif ($changed_day === 1 && !$order) {
                         // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva és le van zárva a rekord
                         // rekord nullázása
+                        $new_orders[$day] = ['type' => 'update', 'value' => 2];
+                    }
+                }
+                elseif (!$closed) {
+                    // rekord nincs lezárva
+                    if ($changed_day === -1 && $order) {
+                        // ha van erre a napra rekord létrehozva lemondással, a naptárban is ki van pipálva, a rendelési sablon erre a napra ki van pipálva, és nincs lezárva a rekord
+                        // rekord nullázása
+                        $new_orders[$day] = ['type' => 'update', 'value' => 1];
+                    }
+                    elseif ($changed_day === 1 && !$order) {
+                        // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva, a rendelési sablon erre a napra nincs kipipálva, és nincs lezárva a rekord
+                        // utánrendelés erre a napra
                         $new_orders[$day] = ['type' => 'update', 'value' => -1];
                     }
-                // }
-                // elseif (!$closed) {
-                //     // rekord nincs lezárva
-                //     if ($changed_day === -1 && $order) {
-                //         // ha van erre a napra rekord létrehozva lemondással, a naptárban is ki van pipálva, a rendelési sablon erre a napra ki van pipálva, és nincs lezárva a rekord
-                //         // rekord nullázása
-                //         $new_orders[$day] = ['type' => 'update', 'value' = -1];
-                //     }
-                //     elseif ($changed_day === 1 && !$order) {
-                //         // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva, a rendelési sablon erre a napra nincs kipipálva, és nincs lezárva a rekord
-                //         // utánrendelés erre a napra
-                //         $new_orders[$day] = ['type' => 'update', 'value' = 1];
-                //     }
-                // }
+                }
             }
         }
 
@@ -493,7 +487,6 @@ class ClientController extends Controller
         $days_of_months      = $this->container->get('jcs.ds')->getDaysOfMonths($first_day_of_period,5);
         $monthly_subs        = $this->container->get('jcs.invoice')->getMonthlySubs($catering, $first_day_of_period, $last_day_of_period);
         $changed_days        = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getOrdersForPeriod($client->getId(), $first_day_of_period, $last_day_of_period);
-        // $changed_days        = $this->container->get('jcs.invoice')->getOrderDays($changes);
         $holidays            = $this->container->get('jcs.ds')->getHolidaysDetails($first_day_of_period->format('Y-m-d'), $last_day_of_period->format('Y-m-d'));
         $holyday_type_map    = $this->container->get('jcs.ds')->getHolidayTypeMap();
         $days                = [];
@@ -504,7 +497,10 @@ class ClientController extends Controller
                 $date    = $actual_month . '-' . str_pad($day['day'], 2, '0', STR_PAD_LEFT);
                 $class   = [];
 
+                // alapértelmezett érték
                 $changed_day = false;
+                $closed      = 0;
+                // ha van rekord az adott naphoz, akkor változtassuk meg az alapértelmezett false-t
                 if (isset($changed_days[$date])) {
                     if ($changed_days[$date]->getOrder()) {
                         $changed_day = 1;
@@ -512,20 +508,18 @@ class ClientController extends Controller
                     if ($changed_days[$date]->getCancel()) {
                         $changed_day = -1;
                     }
-                    // if (!$changed_days[$date]->getOrder() && !$changed_days[$date]->getCancel()) {
-                    //     $changed_day = 0;
-                    // }
-                    // $closed = $changed_days[$date]->getClosed();
+                    $closed = ($changed_days[$date]->getClosed()) ? 1 : 0;
                 }
+                // állítsuk be az előfizetési sablon alapján a változókat
                 if (isset($monthly_subs[$date])) {
                     $sub = true;
-                    $new_day['catering'] = true;
+                    $new_day['catering'] = 1;
                 }
                 else {
                     $sub = false;
-                    $new_day['catering'] = false;
+                    $new_day['catering'] = 0;
                 }
-
+                // a hónap napjaihoz állítsuk be a "day" classt és a menü nevét adjuk hozzá
                 if (! is_null($day['day'])) {
                     $new_day['menu'] = $menu;
                     $class[]         = 'day';
@@ -533,32 +527,48 @@ class ClientController extends Controller
                 else {
                     $class[] = 'empty';
                 }
+                // ha az adott napra valamilyen munkaszüneti nap tartozik, adjuk hozzá
                 if (isset($holidays[$date])) {
                     $new_day['holiday'] = (empty($holidays[$date]['desc'])) ? $holyday_type_map[$holidays[$date]['type']] : $holidays[$date]['desc'];
                 }
+                else {
+                    $new_day['holiday'] = false;
+                }
                 if ($changed_day !== false) {
-                    $new_day['changed'] = $changed_day;
-                    $new_day['order']   = ($changed_day == 1) ? 'reorder' : 'cancel';
-                    $class[]            = ($changed_day == 1 ) ? 'reorder' : 'cancel';
+                    // ha van rekord az adtott naphoz
+                    $new_day['changed'] = ($changed_day == -1) ? -1 : (($closed) ? 1 : '');
+                }
+                if ($changed_day !== false && $closed) {
+                    // ha van rekord az adtott naphoz és a rekord le is van zárva
+                    $new_day['order'] = ($changed_day == -1) ? 'cancel' : 'reorder';
+                    $class[]          = ($changed_day == -1) ? 'cancel' : 'reorder';
+                }
+                elseif ($changed_day !== false && !$closed) {
+                    // ha van rekord az adtott naphoz és a rekord nincs lezárva
+                    $new_day['order'] = ($changed_day == -1) ? 'none' : 'order';
                 }
                 else {
+                    // ha nincs rekord, akkor a rendelési sablon alapján állítsuk be az adott napot
                     if ($sub) {
-                        $new_day['order']   = 'order';
-                        $class[]            = 'order';
+                        $new_day['order'] = 'order';
+                        $class[]          = 'order';
                     }
                     else {
                         $new_day['order'] = 'none';
                     }
                 }
+                // ha módosítható (+2nap) akkor ezt jelezzük
                 if (isset($day['modifiable']) && $day['modifiable']) {
                     $class[] = 'modifiable';
                 }
+                // ha hétvége az adott nap, akkor az másképpen nézzen ki
                 if ($day['weekend']) {
                     $class[] = 'weekend';
                 }
                 else {
                     $class[] = 'weekday';
                 }
+                $new_day['closed']                   = $closed;
                 $new_day['class']                    = implode(' ', $class);
                 $days[$actual_month][$day['week']][] = $new_day;
             }

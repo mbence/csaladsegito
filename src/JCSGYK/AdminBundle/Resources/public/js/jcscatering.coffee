@@ -102,6 +102,7 @@ JcsCatering =
     initMultiDatesPicker: ->
         @calendarNavigation()
         @setupDatePicker()
+        @setupHolidayInfo()
         $(".month-wrapper:eq(2)").addClass("active")
         $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"))
         $("li.day").each ->
@@ -110,11 +111,16 @@ JcsCatering =
             if $(this).data("modifiable") == 0
                 $(this).find("input").attr("disabled","disabled")
 
+    setupHolidayInfo: ->
+        $("span.holiday").mouseenter ->
+            $(this).find(".desc").fadeIn(200)
+        $("span.holiday").mouseleave ->
+            $(this).find(".desc").fadeOut(200)
+
     calendarNavigation: ->
         $(".calendar-nav li").click ->
             direction    = $(this).data("direction")
             next_element = $(this).data("next")
-            # console.log(direction + ": " + next_element)
             if next_element != -1 and $(".month-wrapper:eq(" + next_element + ")").length
                 $(".month-wrapper").removeClass("active")
                 $(".month-wrapper:eq(" + next_element + ")").addClass("active")
@@ -134,8 +140,12 @@ JcsCatering =
                 if order == "cancel" && new_order == undefined
                     $(this).data("new_order", "reorder")
                     $(this).find(".menu").text($(this).data("menu"))
-                    $(this).find(".status").text("Utánrendelve")
-                    $(this).removeClass("cancel").addClass("reorder")
+                    # if it is closed, this is a reorder
+                    if $(this).data("closed") == 1
+                        $(this).find(".status").text("Utánrendelve")
+                        $(this).removeClass("cancel").addClass("order")
+                    else if $(this).data("closed") == 0
+                        $(this).removeClass("cancel").addClass("reorder")
                     $(this).find("input").attr("checked","checked")
                 else if order == "cancel" && new_order != undefined
                     $(this).removeData("new_order")
@@ -146,19 +156,25 @@ JcsCatering =
 
                 if order == "none" && new_order == undefined
                     $(this).data("new_order", "reorder")
-                    $(this).find(".status").text("Utánrendelve")
+                    $(this).find(".menu").text($(this).data("menu"))
+                    if $(this).data("closed") == 1
+                        $(this).find(".status").text("Utánrendelve")
                     $(this).addClass("reorder")
                     $(this).find("input").attr("checked","checked")
                 else if order == "none" && new_order != undefined
                     $(this).removeData("new_order")
                     $(this).find(".status").empty()
+                    $(this).find(".menu").empty()
                     $(this).removeClass("reorder")
                     $(this).find("input").removeAttr("checked")
 
                 if order == "order" && new_order == undefined
                     $(this).data("new_order", "cancel")
-                    $(this).find(".menu").text("Lemondva")
-                    $(this).removeClass("order").addClass("cancel")
+                    if $(this).data("closed") == 1
+                        $(this).find(".menu").text("Lemondva")
+                        $(this).removeClass("order").addClass("cancel")
+                    # else $(this).data("closed") == 0
+                        # $(this).removeClass("order").addClass("cancel")
                     $(this).find("input").removeAttr("checked")
                 else if order == "order" && new_order != undefined
                     $(this).removeData("new_order")
@@ -175,7 +191,8 @@ JcsCatering =
                 else if order == "reorder" && new_order != undefined
                     $(this).removeData("new_order")
                     $(this).find(".menu").text($(this).data("menu"))
-                    $(this).find(".status").text("Utánrendelve")
+                    if $(this).data("closed") == 1
+                        $(this).find(".status").text("Utánrendelve")
                     $(this).removeClass("cancel").addClass("reorder")
                     $(this).find("input").attr("checked","checked")
         
