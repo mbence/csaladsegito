@@ -31,6 +31,8 @@ AjaxBag =
     showNotice: (notice, cl = false) ->
         @hideLoader()
         $(".ajaxbag .ajax-notice")
+            .removeClass()
+            .addClass("ajax-notice")
             .addClass(cl)
             .stop().clearQueue().html(notice)
             .css({

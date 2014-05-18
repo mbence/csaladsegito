@@ -53,6 +53,12 @@
                 </tr>
             </table>
         </div>
+            {% if act.files %}
+                <br>
+                <div class="floatright right">
+                    <a href="{{ path('admin_closings', {'id': act.id, 'download': 1}) }}" class="greybutton" id="new_club"><span>{{ 'letöltés'|trans }}</span></a>
+                </div>
+            {% endif %}
         {% else %}
             <div class="info">
                 <p>

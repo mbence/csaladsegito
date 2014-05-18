@@ -46,7 +46,7 @@ class ClosingService
         $em = $this->container->get('doctrine')->getManager();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
-        return $em->createQuery("SELECT c FROM JCSGYKAdminBundle:MonthlyClosing c WHERE c.companyId = :company_id ORDER BY c.createdAt DESC")
+        return $em->createQuery("SELECT c.id, c.companyId, c.startDate, c.endDate, c.status FROM JCSGYKAdminBundle:MonthlyClosing c WHERE c.companyId = :company_id ORDER BY c.createdAt DESC")
             ->setParameter('company_id', $company_id)
             ->setMaxResults(20)
             ->getResult();

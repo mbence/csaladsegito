@@ -53,38 +53,40 @@ class InvoiceService
 
         // get all open orders for the given month and before
         $orders = $orders_repo->getOrders($client->getId(), $end_date);
-        // if we have no data, we create no invoice
-        if (empty($orders)) {
-            return false;
-        }
-
         $days = $this->getOrderDays($orders);
 
-        // calculate the costs
-        $items = $this->calulateItems($catering, $orders);
+        // if we have no data, we create no invoice
+        if (!empty($orders) && !empty($days)) {
 
-        // sum up (discount is negative!)
-        $sum = 0;
-        foreach ($items as $item) {
-            $sum += $item['value'];
+            // calculate the costs
+            $items = $this->calulateItems($catering, $orders);
+
+            // sum up (discount is negative!)
+            $sum = 0;
+            foreach ($items as $item) {
+                $sum += $item['value'];
+            }
+
+            // create the new invoice
+            $invoice = new Invoice();
+            $invoice->setCompanyId($company_id);
+            $invoice->setClient($client);
+            $invoice->setStartDate($start_date);
+            $invoice->setEndDate($end_date);
+            $invoice->setItems(json_encode($items));
+            $invoice->setDays(json_encode($days));
+            $invoice->setBalance(0);
+            $invoice->setStatus(Invoice::READY_TO_SEND);
+            $invoice->setAmount($sum);
+            $invoice->setCreatedAt(new \DateTime());
+            $invoice->setCreator($user);
+
+            // save the new invoice
+            $em->persist($invoice);
         }
-
-        // create the new invoice
-        $invoice = new Invoice();
-        $invoice->setCompanyId($company_id);
-        $invoice->setClient($client);
-        $invoice->setStartDate($start_date);
-        $invoice->setEndDate($end_date);
-        $invoice->setItems(json_encode($items));
-        $invoice->setDays(json_encode($days));
-        $invoice->setBalance(0);
-        $invoice->setStatus(Invoice::READY_TO_SEND);
-        $invoice->setAmount($sum);
-        $invoice->setCreatedAt(new \DateTime());
-        $invoice->setCreator($user);
-
-        // save the new invoice
-        $em->persist($invoice);
+        else {
+            $invoice = false;
+        }
 
         // close the used cancel records
         foreach ($orders as $order) {

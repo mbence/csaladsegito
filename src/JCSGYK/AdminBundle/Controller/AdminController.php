@@ -467,6 +467,22 @@ class AdminController extends Controller
             if (!empty($closing[0])) {
                 $closing = $closing[0];
             }
+
+            if (!empty($closing->getFiles()) && $request->query->get('download')) {
+                // send the zip file to download
+                $fn = 'etkeztetes_import_' . $closing->getCreatedAt()->format('Ymd') . '.zip';
+
+                return $this->sendDownloadResponse($fn, stream_get_contents($closing->getFiles()), 'application/zip');
+            }
+
+            /* // if we are afraid of loading the huge blob content (zip file) to memory, we have a problem showing related record: creator
+            $closing = $em->createQuery("SELECT c.id, c.companyId, c.startDate, c.endDate, c.status, c.summary, c.createdAt"
+                    . " FROM JCSGYKAdminBundle:MonthlyClosing c WHERE c.companyId = :company_id AND c.id = :id")
+            ->setParameter('company_id', $company_id)
+            ->setParameter('id', $id)
+            ->getSingleResult();
+             *
+             */
         }
 
         $form = $this->createFormBuilder()
@@ -631,18 +647,23 @@ class AdminController extends Controller
                 throw new HttpException(400, "Bad request");
             }
 
-            $response = new Response();
-
-            $response->headers->set('Content-Type', $template->getMimeType());
-            $response->headers->set('Content-Disposition', 'attachment;filename="' . $template->getOriginalName());
-
-            $response->setContent(file_get_contents($docpath));
-
-            return $response;
+            return $this->sendDownloadResponse($template->getOriginalName(), file_get_contents($docpath), $template->getMimeType());
         }
         else {
             throw new HttpException(400, "Bad request");
         }
+    }
+
+    public function sendDownloadResponse($file_name, $file_contents, $content_type)
+    {
+        $response = new Response();
+
+        $response->headers->set('Content-Type', $content_type);
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $file_name);
+
+        $response->setContent($file_contents);
+
+        return $response;
     }
 
     /**

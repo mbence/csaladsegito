@@ -148,7 +148,10 @@ footer#colophon .credits a:hover {
     /*text-shadow: 0 0 2px #4c9d43;*/
 }
 .ajaxbag div.ajax-error {
+    color: #fff;
     background-color: #e62033;
+    border-color: #faa;
+    box-shadow: 0 1px 1px 1px rgba(255,200,200,0.1);
 }
 .flashbag div:after, .ajaxbag div:after {
     display: block;
