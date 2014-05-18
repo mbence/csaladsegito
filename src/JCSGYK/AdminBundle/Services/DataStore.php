@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 use JCSGYK\AdminBundle\Entity\Relation;
 use JCSGYK\AdminBundle\Entity\Client;
@@ -63,7 +64,7 @@ class DataStore
 
     private $closingStatuses = [
         MonthlyClosing::RUNNING     => 'Fut',
-        MonthlyClosing::SUCCESS     => 'Siker',
+        MonthlyClosing::SUCCESS     => 'Kész',
         MonthlyClosing::ERROR       => 'Hiba',
     ];
 
@@ -109,12 +110,26 @@ class DataStore
     {
         if (empty($this->company)) {
             $em = $this->container->get('doctrine')->getManager();
-            $req = $this->container->get('request');
-            // find the current company based on server host
-            $company = $em->createQuery('SELECT c FROM JCSGYKAdminBundle:Company c WHERE c.host LIKE :host')
-                ->setMaxResults(1)
-                ->setParameter('host', '%' . $req->getHost() . '%')
-                ->getArrayResult();
+
+            // using the request in controller or a session in command line
+            if ($this->container->isScopeActive('request')) {
+                $req = $this->container->get('request');
+                // find the current company based on server host
+                $company = $em->createQuery('SELECT c FROM JCSGYKAdminBundle:Company c WHERE c.host LIKE :host')
+                    ->setMaxResults(1)
+                    ->setParameter('host', '%' . $req->getHost() . '%')
+                    ->getArrayResult();
+            }
+            else {
+                $session = new Session();
+                $company_id = $session->get('company_id');
+                if (!empty($company_id)) {
+                    $company = $em->createQuery('SELECT c FROM JCSGYKAdminBundle:Company c WHERE c.id = :id')
+                        ->setMaxResults(1)
+                        ->setParameter('id', $company_id)
+                        ->getArrayResult();
+                }
+            }
 
             // exception for unknown host
             if (empty($company)) {
@@ -166,6 +181,24 @@ class DataStore
     public function companyIsFH()
     {
         return $this->companyHas(Client::FH);
+    }
+
+
+    /**
+     * Returns the logged user, or null for console runs
+     * @return null
+     */
+    public function getUser()
+    {
+        $sec = $this->container->get('security.context');
+        if (!empty($sec->getToken())) {
+            $user = $sec->getToken()->getUser();
+        }
+        else {
+            $user = null;
+        }
+
+        return $user;
     }
 
     /**

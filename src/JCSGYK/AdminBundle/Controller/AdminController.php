@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use Cocur\BackgroundProcess\BackgroundProcess;
 
 use JCSGYK\AdminBundle\Entity\User;
 use JCSGYK\AdminBundle\Entity\Parameter;
@@ -456,6 +457,7 @@ class AdminController extends Controller
         $request = $this->getRequest();
         $closing = null;
         $form_view = null;
+        $auto_refresh = false;
 
         $em = $this->getDoctrine()->getManager();
         $ds = $this->container->get('jcs.ds');
@@ -474,15 +476,18 @@ class AdminController extends Controller
 
                 return $this->sendDownloadResponse($fn, stream_get_contents($closing->getFiles()), 'application/zip');
             }
+        }
 
-            /* // if we are afraid of loading the huge blob content (zip file) to memory, we have a problem showing related record: creator
-            $closing = $em->createQuery("SELECT c.id, c.companyId, c.startDate, c.endDate, c.status, c.summary, c.createdAt"
-                    . " FROM JCSGYKAdminBundle:MonthlyClosing c WHERE c.companyId = :company_id AND c.id = :id")
-            ->setParameter('company_id', $company_id)
-            ->setParameter('id', $id)
-            ->getSingleResult();
-             *
-             */
+        // check the background process
+        $process = $this->get('session')->get('monthly_closing_process');
+        if (!empty($process)) {
+            if ($process->isRunning()) {
+                $auto_refresh = true;
+
+            }
+            else {
+                $this->get('session')->remove('monthly_closing_process');
+            }
         }
 
         $form = $this->createFormBuilder()
@@ -501,7 +506,22 @@ class AdminController extends Controller
 
                 $data = $form->getData();
 
-                $closing = $closing_service->run($data['period']);
+                // create a process for the background running
+                $kernel = $this->container->get('kernel');
+                $php = $this->container->getParameter('php_path', '/usr/bin/php');
+
+                $command = sprintf('%s %s/console jcs:closing %s --env=%s --no-debug', $php, $kernel->getRootDir(), $company_id, $kernel->getEnvironment());
+                if (0 == $data['period']) {
+                    $command .= ' -a';
+                }
+
+                $process = new BackgroundProcess($command);
+                $process->run();
+
+                // save the process in session
+                $this->get('session')->set('monthly_closing_process', $process);
+
+                //$closing = $closing_service->run($data['period']);
 
                 if (!empty($closing)) {
                     $id = $closing->getId();
@@ -517,6 +537,7 @@ class AdminController extends Controller
             'closings' => $closing_service->getList(),
             'act' => $closing,
             'form' => $form->createView(),
+            'auto_refresh' => $auto_refresh,
         ]);
     }
 

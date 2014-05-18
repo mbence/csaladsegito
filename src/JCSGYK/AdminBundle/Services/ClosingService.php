@@ -3,6 +3,7 @@
 namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use Symfony\Component\Console\Output\OutputInterface;
 
 use JCSGYK\AdminBundle\Entity\MonthlyClosing;
 use JCSGYK\AdminBundle\Entity\Invoice;
@@ -14,6 +15,9 @@ class ClosingService
 {
     /** Service container */
     private $container;
+
+    /** Datastore */
+    private $ds;
 
     /** data array for the exports */
     private $files = [];
@@ -27,10 +31,20 @@ class ClosingService
     /** where to store tmp files */
     private $tmp_folder;
 
+    /** Command output Interface*/
+    private $output;
+
+    /** Process summary text
+     * @var Symfony\Component\Console\Output\OutputInterface
+     */
+    private $summary = '';
+
+
     /** Constructor */
     public function __construct($container)
     {
         $this->container = $container;
+        $this->ds = $this->container->get('jcs.ds');
 
         // TODO: make this company dependent!
         $this->setExportFormat();
@@ -44,7 +58,7 @@ class ClosingService
     public function getList()
     {
         $em = $this->container->get('doctrine')->getManager();
-        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $company_id = $this->ds->getCompanyId();
 
         return $em->createQuery("SELECT c.id, c.companyId, c.startDate, c.endDate, c.status FROM JCSGYKAdminBundle:MonthlyClosing c WHERE c.companyId = :company_id ORDER BY c.createdAt DESC")
             ->setParameter('company_id', $company_id)
@@ -52,18 +66,28 @@ class ClosingService
             ->getResult();
     }
 
+    private function output($text)
+    {
+        $this->summary .= $text . "\n";
+
+        if (!empty($this->output)) {
+            $this->output->writeln($text);
+        }
+    }
+
     /**
      * Start the monthly closing process
      * @param int $period 1 = normal run (next month), 0 = actual month
      * @return \JCSGYK\AdminBundle\Entity\MonthlyClosing
      */
-    public function run($period = 1)
+    public function run($period = 1, OutputInterface $output = null)
     {
+        $this->output = $output;
+
         $em = $this->container->get('doctrine')->getManager();
-        $sec = $this->container->get('security.context');
-        $user = $sec->getToken()->getUser();
-        $company_id = $this->container->get('jcs.ds')->getCompanyId();
-        $summary = '';
+        $ds = $this->container->get('jcs.ds');
+        $user = $ds->getUser();
+        $company_id = $ds->getCompanyId();
 
         // set the start / end dates
         // start date is next months first day
@@ -79,9 +103,9 @@ class ClosingService
         }
         $created_at = new \DateTime();
 
-        $summary .= "Havi zárás \n";
-        $summary .= sprintf("%s - %s \n\n", $start->format('Y-m-d'), $end->format('Y-m-d'));
-        $summary .= sprintf("%s: Indítva \n", $created_at->format('H:i:s'));
+        $this->output("Havi zárás");
+        $this->output(sprintf("%s - %s \n", $start->format('Y-m-d'), $end->format('Y-m-d')));
+        $this->output(sprintf("%s: Indítva", $created_at->format('H:i:s')));
 
         // create a new closing record
         $closing = new MonthlyClosing();
@@ -91,16 +115,18 @@ class ClosingService
         $closing->setStatus(MonthlyClosing::RUNNING);
         $closing->setStartDate($start);
         $closing->setEndDate($end);
-        $closing->setSummary($summary);
+        $closing->setSummary($this->summary);
 
         $em->persist($closing);
         $em->flush();
 
         // find all clients that have active subscriptions
         $clients = $em->getRepository('JCSGYKAdminBundle:Client')->getForClosing($company_id);
-        $summary .= sprintf("%s: %s ügyfél lekérdezve\n", date('H:i:s'), count($clients));
-        $closing->setSummary($summary);
+        $this->output(sprintf("%s: %s ügyfél lekérdezve", date('H:i:s'), count($clients)));
+        $closing->setSummary($this->summary);
         $em->flush();
+
+        sleep(3);
 
         // create the invoices
         $invoice_count = 0;
@@ -112,16 +138,18 @@ class ClosingService
             }
         }
         if (empty($invoice_count)) {
-            $summary .= sprintf("%s: Nincsen új megrendelés \n", date('H:i:s'));
+            $this->output(sprintf("%s: Nincsen új megrendelés", date('H:i:s')));
         }
         else {
-            $summary .= sprintf("%s: %s db számla kiállítva \n", date('H:i:s'), $invoice_count);
+            $this->output(sprintf("%s: %s db számla kiállítva", date('H:i:s'), $invoice_count));
         }
+
+      sleep(3);
 
         // create the EcoSTAT files
         $exp = $this->export();
         if (!empty($exp)) {
-            $summary .= sprintf("%s: EcoStat fájlok létrehozva \n", date('H:i:s'));
+            $this->output(sprintf("%s: EcoStat fájlok létrehozva", date('H:i:s')));
 
             // close the output files
             $this->closeFiles();
@@ -133,28 +161,30 @@ class ClosingService
             // save the zip file in the monthlyClosing record
 
             $closing->setFiles($zip_file_contents);
-            $closing->setSummary($summary);
+            $closing->setSummary($this->summary);
             $em->flush();
+
+        sleep(3);
 
             // Send the EcoSTAT files to bookkeeping
             //$this->writeFiles();
             $mail_ok = $this->sendMails($start, $end, basename($zip), $zip_file_contents);
             if ($mail_ok) {
-                $summary .= sprintf("%s: Email sikeresen kiküldve \n", date('H:i:s'));
+                $this->output(sprintf("%s: Email sikeresen kiküldve", date('H:i:s')));
             }
             else {
-                $summary .= sprintf("%s: Email hiba! \n", date('H:i:s'));
+                $this->output(sprintf("%s: Email hiba!", date('H:i:s')));
             }
         }
 
         // update the closing record
-        $summary .= sprintf("%s: Befejezve\n", date('H:i:s'));
+        $this->output(sprintf("%s: Befejezve", date('H:i:s')));
 
-        $closing->setSummary($summary);
+        $closing->setSummary($this->summary);
         $closing->setStatus(MonthlyClosing::SUCCESS);
         $em->flush();
 
-
+        sleep(3);
 
         return $closing;
     }
@@ -166,9 +196,8 @@ class ClosingService
     public function export()
     {
         $em = $this->container->get('doctrine')->getManager();
-        $sec = $this->container->get('security.context');
-        $user = $sec->getToken()->getUser();
-        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $user = $this->ds->getUser();
+        $company_id = $this->ds->getCompanyId();
         $invocie_service = $this->container->get('jcs.invoice');
 
         $result = 0;
@@ -335,7 +364,7 @@ class ClosingService
         }
         // create and open the file
         if (empty($this->files[$file])) {
-            $handle = fopen($this->tmp_folder . $file, "w+");
+            $handle = fopen($this->tmp_folder . $file,"w+");
             if (false === $handle) {
                 throw new HttpException(500, 'File write error');
             }
@@ -403,7 +432,7 @@ class ClosingService
     /**
      * multibyte str_pad
      */
-    private function mb_str_pad ($input, $pad_length, $pad_string, $pad_style, $encoding = "UTF-8")
+    private function mb_str_pad ($input, $pad_length, $pad_string, $pad_style, $encoding ="UTF-8")
     {
        return str_pad($input, strlen($input) - mb_strlen($input,$encoding) + $pad_length, $pad_string, $pad_style);
     }
@@ -418,7 +447,7 @@ class ClosingService
                                                           4. szlaatm.dbf / szlaatm.txt        : számla megjegyzések
 
         Az átadó file-ok szerkezete itt található.
-        Ha a PARTNERKOD vagy a BSZAM mező rövid lenne az adatok átadására, akkor használható a "Módosított struktúra" lapon található formátum..
+        Ha a PARTNERKOD vagy a BSZAM mező rövid lenne az adatok átadására, akkor használható a"Módosított struktúra" lapon található formátum..
         Itt annyi az eltérés, hogy a file-ok neve: szlaatf2.txt, szlaatt2.txt, szlaatm2.txt. A BSZAM mező 50 karakter hosszú és a PARTNERKOD mező 8 karakter lett.
         Az új struktúra csak a text file-okkal működik jelenleg.
         */
@@ -526,7 +555,7 @@ class ClosingService
             ->setSubject($subject)
             ->setFrom([$mailer_from => $mailer_from_name])
             ->setTo([$mailer_to => $mailer_to_name])
-            ->setBody("Tisztelt Könyvelés!\n\n Mellékelve küldjük a számlák beolvasásához szükséges fájlokat.\n", 'text/plain');
+            ->setBody("Tisztelt Könyvelés!\n\n Mellékelve küldjük a számlák beolvasásához szükséges fájlokat.", 'text/plain');
 
             // add attachment
             $attachment = \Swift_Attachment::newInstance($zip_file_contents, $zip, 'application/zip');

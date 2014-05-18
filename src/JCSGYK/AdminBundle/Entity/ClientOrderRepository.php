@@ -19,6 +19,11 @@ class ClientOrderRepository extends EntityRepository
      */
     public function getOrders($client_id, $end_date, $closed = false)
     {
+        // remove the time part of the dates
+        if ($end_date instanceof \DateTime) {
+            $end_date = $end_date->format('Y-m-d');
+        }
+
         return $this->getEntityManager()
             ->createQuery("SELECT o FROM JCSGYKAdminBundle:ClientOrder o WHERE o.client = :client_id AND o.date <= :end_date AND o.closed = :closed ORDER BY o.date, o.createdAt")
             ->setParameter('client_id', $client_id)
@@ -37,6 +42,13 @@ class ClientOrderRepository extends EntityRepository
      */
     public function getOrdersForPeriod($client_id, $start_date, $end_date)
     {
+        // remove the time part of the dates
+        if ($start_date instanceof \DateTime) {
+            $start_date = $start_date->format('Y-m-d');
+        }
+        if ($end_date instanceof \DateTime) {
+            $end_date = $end_date->format('Y-m-d');
+        }
         $orders = [];
         $os = $this->getEntityManager()
             ->createQuery("SELECT o FROM JCSGYKAdminBundle:ClientOrder o WHERE o.client = :client_id AND o.date >= :start_date AND o.date <= :end_date ORDER BY o.date, o.createdAt")

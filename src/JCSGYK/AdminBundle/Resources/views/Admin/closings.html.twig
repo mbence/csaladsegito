@@ -1,5 +1,11 @@
 {% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
 
+{% block head %}
+    {% if auto_refresh %}
+        <meta http-equiv="refresh" content="2">
+    {% endif %}
+{% endblock %}
+
 {% block settings_content %}
 
 <div class="template-top">
@@ -45,7 +51,13 @@
             <table class="client" cellspacing="0" border="0">
                 <tr>
                     <th>{{ 'Létrehozta'|trans }}:</th>
-                    <td>{{ fname(act.creator.firstname, act.creator.lastname) }}</td>
+                    <td>
+                        {% if act.creator %}
+                            {{ fname(act.creator.firstname, act.creator.lastname) }}
+                        {% else %}
+                            Automata
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <th>{{ 'Időpont'|trans }}:</th>
