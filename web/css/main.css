@@ -3293,6 +3293,9 @@ h2.order-date {
     width:20000em;
     position:absolute;
 }
+#ordering-calendar .month-wrapper .datepicker ul li input[type=checkbox]{
+    margin-left: -1px;
+}
 .button, .greybutton {
     border-radius: 2px;
     border: 1px solid transparent;
