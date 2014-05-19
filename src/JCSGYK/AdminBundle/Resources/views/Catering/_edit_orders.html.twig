@@ -27,11 +27,12 @@
                     {% if day.day is not null %}
                         <span class="day">{% if day.day == 1 %}{{ timestamp|date('F') }} {% endif %}{{ day.day }}.</span>
                         {% if day.holiday %}
-                        <span class="holiday">i<span class="desc">{{ day.holiday }}</span></span>
+                        <span class="holiday">{{ day.holiday }}</span>
                         {% endif %}
-                        <input type="checkbox" name="orders[{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}]" value="1">
-                        <span class="menu">{% if day.order == 'cancel' %}{{ 'Lemondva'|trans }}{% else %}{% if day.order != 'none' %}{{ param(day.menu) }}{% endif %}{% endif %}</span>
-                        <span class="status">{% if day.changed is defined and day.changed == 1 %}{{ 'Utánrendelve'|trans }}{% endif %}</span>
+                        <input type="radio" class="order" name="orders[{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}]" value="1"><label>{{ param(day.menu) }}</label><br>
+                        <input type="radio" class="cancel" name="orders[{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}]" value="-1"><label>Lemondás</label>
+                        {# <span class="menu">{% if day.order == 'cancel' %}{{ 'Lemondva'|trans }}{% else %}{% if day.order != 'none' %}{{ param(day.menu) }}{% endif %}{% endif %}</span> #}
+                        {# <span class="status">{% if day.changed is defined and day.changed == 1 %}{{ 'Utánrendelve'|trans }}{% endif %}</span> #}
                     {% endif %}
                     </li>
                     {% endfor %}

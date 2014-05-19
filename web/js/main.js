@@ -16261,13 +16261,14 @@ JcsCatering = {
    */
   initMultiDatesPicker: function() {
     this.calendarNavigation();
-    this.setupDatePicker();
     this.setupHolidayInfo();
     $(".month-wrapper:eq(2)").addClass("active");
     $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"));
     return $("li.day").each(function() {
       if ($(this).data("order") === "order" || $(this).data("order") === "reorder") {
-        $(this).find("input").attr("checked", "checked");
+        $(this).find("input.order").attr("checked", "checked");
+      } else if ($(this).data("order") === "cancel") {
+        $(this).find("input.cancel").attr("checked", "checked");
       }
       if ($(this).data("modifiable") === 0) {
         return $(this).find("input").attr("disabled", "disabled");
