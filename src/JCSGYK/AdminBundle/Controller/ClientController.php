@@ -423,16 +423,18 @@ class ClientController extends Controller
                 }
                 $closed = $changed_days[$day]->getClosed();
             }
-            $order = (!isset($orders[$day])) ? false : true;
+            $order = (!isset($orders[$day])) ? false : $orders[$day];
             $sub   = (!isset($monthly_subs[$day])) ? false : true;
 
             if ($changed_day == 0) {
                 // nincs rekord létrehozva erre a napra
-                if ($sub && !$order) {
+                if ($order == -1) {
+                // if ($sub && $order == -1) {
                     // a naptárban nincs kipipálva, a rendelési sablon erre a napra ki van pipálva, és nincs lezárva a rekord
                     $new_orders[$day] = ['type' => 'new', 'value' => -1];
                 }
-                elseif (!$sub && $order) {
+                elseif ($order == 1) {
+                // elseif (!$sub && $order == 1) {
                     // a naptárban ki van pipálva, a rendelési sablon erre a napra ki van pipálva, és nincs lezárva a rekord
                     // utánrendelés erre a napra
                     $new_orders[$day] = ['type' => 'new', 'value' => 1];
@@ -442,12 +444,12 @@ class ClientController extends Controller
                 // update esetén nem számít, hogy a sablonban ezen a napon volt-e rendelés vagy sem
                 if ($closed) {
                     // lezárt rekordok
-                    if ($changed_day === -1 && $order) {
+                    if ($changed_day === -1 && $order == 1) {
                         // ha van erre a napra rekord létrehozva lemondással, a naptárban ki van pipálva és a rekord le van zárva
                         // utánrendelés erre a napra
                         $new_orders[$day] = ['type' => 'update', 'value' => 1];
                     }
-                    elseif ($changed_day === 1 && !$order) {
+                    elseif ($changed_day === 1 && $order == -1) {
                         // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva és le van zárva a rekord
                         // rekord nullázása
                         $new_orders[$day] = ['type' => 'update', 'value' => 2];
@@ -455,12 +457,12 @@ class ClientController extends Controller
                 }
                 elseif (!$closed) {
                     // rekord nincs lezárva
-                    if ($changed_day === -1 && $order) {
+                    if ($changed_day === -1 && $order == 1) {
                         // ha van erre a napra rekord létrehozva lemondással, a naptárban is ki van pipálva, a rendelési sablon erre a napra ki van pipálva, és nincs lezárva a rekord
                         // rekord nullázása
                         $new_orders[$day] = ['type' => 'update', 'value' => 1];
                     }
-                    elseif ($changed_day === 1 && !$order) {
+                    elseif ($changed_day === 1 && $order == -1) {
                         // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva, a rendelési sablon erre a napra nincs kipipálva, és nincs lezárva a rekord
                         // utánrendelés erre a napra
                         $new_orders[$day] = ['type' => 'update', 'value' => -1];
@@ -538,24 +540,24 @@ class ClientController extends Controller
                     // ha van rekord az adtott naphoz
                     $new_day['changed'] = ($changed_day == -1) ? -1 : (($closed) ? 1 : '');
                 }
-                if ($changed_day !== false && $closed) {
+                if ($changed_day !== false) {
                     // ha van rekord az adtott naphoz és a rekord le is van zárva
-                    $new_day['order'] = ($changed_day == -1) ? 'cancel' : 'reorder';
-                    $class[]          = ($changed_day == -1) ? 'cancel' : 'reorder';
+                    $new_day['order'] = ($changed_day == -1) ? 'cancel' : 'order';
+                    $class[]          = ($changed_day == -1) ? 'cancel' : 'order';
                 }
-                elseif ($changed_day !== false && !$closed) {
-                    // ha van rekord az adtott naphoz és a rekord nincs lezárva
-                    $new_day['order'] = ($changed_day == -1) ? 'none' : 'order';
-                }
+                // elseif ($changed_day !== false && !$closed) {
+                //     // ha van rekord az adtott naphoz és a rekord nincs lezárva
+                //     $new_day['order'] = ($changed_day == -1) ? 'none' : 'order';
+                // }
                 else {
                     // ha nincs rekord, akkor a rendelési sablon alapján állítsuk be az adott napot
-                    if ($sub) {
-                        $new_day['order'] = 'order';
-                        $class[]          = 'order';
-                    }
-                    else {
+                    // if ($sub) {
                         $new_day['order'] = 'none';
-                    }
+                        // $class[]          = 'order';
+                    // }
+                    // else {
+                    //     $new_day['order'] = 'none';
+                    // }
                 }
                 // ha módosítható (+2nap) akkor ezt jelezzük
                 if (isset($day['modifiable']) && $day['modifiable']) {
