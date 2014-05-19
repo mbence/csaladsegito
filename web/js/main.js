@@ -16280,19 +16280,51 @@ JcsCatering = {
    */
   initMultiDatesPicker: function() {
     this.calendarNavigation();
+    this.setupDatePicker();
     this.setupHolidayInfo();
+    this.prepareCalendar();
+    this.prepareOrders();
     $(".month-wrapper:eq(2)").addClass("active");
-    $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"));
+    return $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"));
+  },
+  prepareCalendar: function() {
     return $("li.day").each(function() {
       if ($(this).data("order") === "order" || $(this).data("order") === "reorder") {
-        $(this).find("input.order").attr("checked", "checked");
-      } else if ($(this).data("order") === "cancel") {
-        $(this).find("input.cancel").attr("checked", "checked");
+        $(this).find("input").attr("checked", "checked");
       }
       if ($(this).data("modifiable") === 0) {
         return $(this).find("input").attr("disabled", "disabled");
       }
     });
+  },
+  prepareOrders: function() {
+    var orders;
+    orders = [];
+    $("li.day.modifiable").each(function() {
+      if ($(this).data("order") === "order") {
+        return orders[$(this).data("date")] = 1;
+      } else if ($(this).data("order") === "cancel") {
+        return orders[$(this).data("date")] = -1;
+      }
+    });
+    return $("input[name=orders]").val(JSON.stringify(orders));
+  },
+  processOrders: function() {
+    var orders;
+    orders = [];
+    $("li.day.modifiable").each(function() {
+      if ($(this).data("new_order") !== void 0 && $(this).data("new_order") === "reorder") {
+        return orders[$(this).data("date")] = 1;
+      } else if ($(this).data("new_order") !== void 0 && $(this).data("new_order") === "cancel") {
+        return orders[$(this).data("date")] = -1;
+      } else if ($(this).data("order") === "order") {
+        return orders[$(this).data("date")] = 1;
+      } else if ($(this).data("order") === "cancel") {
+        return orders[$(this).data("date")] = -1;
+      }
+    });
+    $("input[name=orders]").val(JSON.stringify(orders));
+    return console.log($("input[name=orders]").val());
   },
   setupHolidayInfo: function() {
     $("span.holiday").mouseenter(function() {
@@ -16347,24 +16379,24 @@ JcsCatering = {
         if (order === "none" && new_order === void 0) {
           $(this).data("new_order", "reorder");
           $(this).find(".menu").text($(this).data("menu"));
-          if ($(this).data("closed") === 1) {
-            $(this).find(".status").text("Utánrendelve");
-          }
           $(this).addClass("reorder");
           $(this).find("input").attr("checked", "checked");
-        } else if (order === "none" && new_order !== void 0) {
+        } else if (order === "none" && new_order === "reorder") {
+          $(this).data("new_order", "cancel");
+          $(this).find(".status").empty();
+          $(this).find(".menu").text("Lemondás");
+          $(this).removeClass("reorder").addClass("cancel");
+          $(this).find("input").removeAttr("checked");
+        } else if (order === "none" && new_order === "cancel") {
           $(this).removeData("new_order");
           $(this).find(".status").empty();
           $(this).find(".menu").empty();
-          $(this).removeClass("reorder");
-          $(this).find("input").removeAttr("checked");
+          $(this).removeClass("cancel");
         }
         if (order === "order" && new_order === void 0) {
           $(this).data("new_order", "cancel");
-          if ($(this).data("closed") === 1) {
-            $(this).find(".menu").text("Lemondva");
-            $(this).removeClass("order").addClass("cancel");
-          }
+          $(this).find(".menu").text("Lemondva");
+          $(this).removeClass("order").addClass("cancel");
           $(this).find("input").removeAttr("checked");
         } else if (order === "order" && new_order !== void 0) {
           $(this).removeData("new_order");
@@ -16377,7 +16409,7 @@ JcsCatering = {
           $(this).find(".menu").text("Lemondva");
           $(this).find(".status").empty();
           $(this).removeClass("reorder").addClass("cancel");
-          return $(this).find("input").removeAttr("checked");
+          $(this).find("input").removeAttr("checked");
         } else if (order === "reorder" && new_order !== void 0) {
           $(this).removeData("new_order");
           $(this).find(".menu").text($(this).data("menu"));
@@ -16385,8 +16417,9 @@ JcsCatering = {
             $(this).find(".status").text("Utánrendelve");
           }
           $(this).removeClass("cancel").addClass("reorder");
-          return $(this).find("input").attr("checked", "checked");
+          $(this).find("input").attr("checked", "checked");
         }
+        return JcsCatering.processOrders();
       }
     });
     return $("#ordering-calendar").on("click", "li.day input[type=checkbox]", function(event) {
