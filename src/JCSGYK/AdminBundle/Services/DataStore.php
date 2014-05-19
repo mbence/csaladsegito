@@ -569,19 +569,67 @@ class DataStore
 
     public function getClubs()
     {
-        if (empty($this->clubs)) {
-            $this->clubs = $this->container->get('doctrine')->getManager()
-                ->getRepository('JCSGYKAdminBundle:Club')
-                ->getAll($this->getCompanyId());
+        $sec  = $this->container->get('security.context');
+
+        if ($sec->isGranted('ROLE_ADMIN')) {
+
+            if (empty($this->clubs)) {
+                $this->clubs = $this->container->get('doctrine')->getManager()
+                    ->getRepository('JCSGYKAdminBundle:Club')
+                    ->getAll($this->getCompanyId());
+            }
+    //
+    //        $re = [];
+    //        foreach ($this->clubs as $club) {
+    //            $re[$club->getId()] = $club->getName();
+    //        }
+    //
+    //        return $re;
         }
-//
-//        $re = [];
-//        foreach ($this->clubs as $club) {
-//            $re[$club->getId()] = $club->getName();
-//        }
-//
-//        return $re;
+        else {
+            $user = $sec->getToken()->getUser();
+
+            if (empty($this->clubs)) {
+                $this->clubs = $this->container->get('doctrine')->getManager()
+                    ->getRepository('JCSGYKAdminBundle:Club')
+                    ->findBy(['companyId' =>$this->getCompanyId(), 'coordinator' => $user->getId()]);
+            }
+        }
+
         return $this->clubs;
+    }
+
+    /**
+     * Return
+     */
+    public function getClubsMenuList($clubs)
+    {
+        $menu_list = [];
+
+        if ($clubs) {
+            $all_launch_types = $this->getGroup('lunch_types');
+            if (empty($all_launch_types)) {
+                $all_launch_types = [];
+            }
+
+
+            foreach ($clubs as $club) {
+                $launch_types = $club->getLunchTypes();
+
+                if (!empty($launch_types)) {
+
+                    foreach ($launch_types as $type) {
+                        $menu_list[$club->getId()][$type] = $all_launch_types[$type];
+                    }
+                }
+                else {
+                    $menu_list[$club->getId()] = $all_launch_types;
+                }
+
+            }
+        }
+
+        return $menu_list;
     }
 
     /**

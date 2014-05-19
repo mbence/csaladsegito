@@ -12,15 +12,17 @@ use JCSGYK\AdminBundle\Entity\ClubRepository;
 class CateringType extends AbstractType
 {
     private $ds;
+    private $clubs;
 
     /**
      * Save the Datastore for parameter retrieval
      *
      * @param \JCSGYK\AdminBundle\Services\DataStore $ds
      */
-    public function __construct(DataStore $ds)
+    public function __construct(DataStore $ds, $clubs)
     {
         $this->ds = $ds;
+        $this->clubs = $clubs;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -38,7 +40,8 @@ class CateringType extends AbstractType
         $builder->add('club', 'entity', [
             'label' => 'Klub',
             'class' => 'JCSGYKAdminBundle:Club',
-            'choices'   => $this->ds->getClubs(),
+            // 'choices'   => $this->ds->getClubs(),
+            'choices'   => $this->clubs,
             'required' => true,
         ]);
 

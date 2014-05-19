@@ -23,6 +23,7 @@ JcsCatering =
         JcsModal.setCloseButton()
         @initMultiDatesPicker()
         @initInvoices()
+        @initMenuList()
 
         # day selectors
         $(".day-selectors > a").on "click", ->
@@ -113,6 +114,27 @@ JcsCatering =
         # modal dialog
         JcsModal.init()
 
+    initMenuList: ->
+        # save selected menu for later using
+        $("#catering_menu").data("selected_menu", $("#catering_menu").val())
+        JcsCatering.processMenuList($("#catering_club").val())
+        JcsCatering.setupMenuFiltering()
+
+    setupMenuFiltering: ->
+        $("#catering_club").change ->
+            JcsCatering.processMenuList($(this).val())
+
+    processMenuList: (club_id) ->
+        # remove all options
+        $("#catering_menu").empty()
+        # build the new menu list based on club_id
+        for menu_id,menu_name of clubs_menu_list[club_id]
+            $("#catering_menu").append("<option value=\"" + menu_id + "\">" + menu_name + "</option>")
+        # if saved menu exists, set it selected
+        if $("#catering_menu option[value=" + $("#catering_menu").data("selected_menu") + "]").length
+            $("#catering_menu").val($("#catering_menu").data("selected_menu"))
+
+
     ###
         Init and setup ordering table
     ###
@@ -164,14 +186,15 @@ JcsCatering =
             $(this).find(".desc").fadeOut(200)
 
     calendarNavigation: ->
-        $("#ordering-calendar").scrollable({
-            'initialIndex': 2,
-            'onSeek' : (event) ->
-                $(".title-date").text($(".month-wrapper:eq(" + this.getIndex() + ")").data("date"))
-        })
-        setTimeout( ->
-            $("#ordering-calendar").data("scrollable").seekTo(2, 0)
-        , 200)
+        if  $("#ordering-calendar").length
+            $("#ordering-calendar").scrollable({
+                'initialIndex': 2,
+                'onSeek' : (event) ->
+                    $(".title-date").text($(".month-wrapper:eq(" + this.getIndex() + ")").data("date"))
+            })
+            setTimeout( ->
+                $("#ordering-calendar").data("scrollable").seekTo(2, 0)
+            , 200)
 
     setupDatePicker: ->
         $("#ordering-calendar").on "click", "li.day", ->

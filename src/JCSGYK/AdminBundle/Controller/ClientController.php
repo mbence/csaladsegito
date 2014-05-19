@@ -206,12 +206,12 @@ class ClientController extends Controller
         $request = $this->getRequest();
 
         if (!empty($id)) {
-            $em = $this->getDoctrine()->getManager();
+            $em         = $this->getDoctrine()->getManager();
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
-            $ae = $this->container->get('jcs.twig.adminextension');
-            $ds = $this->container->get('jcs.ds');
-            $sec = $this->get('security.context');
-            $user= $sec->getToken()->getUser();
+            $ae         = $this->container->get('jcs.twig.adminextension');
+            $ds         = $this->container->get('jcs.ds');
+            $sec        = $this->get('security.context');
+            $user       = $sec->getToken()->getUser();
 
             // get the client
             $client = $this->getClient($id);
@@ -219,7 +219,10 @@ class ClientController extends Controller
             // Global security check for user type
             $ds->userRoleCheck($client->getType());
 
-            $form = $this->createForm(new CateringType($ds), $client->getCatering());
+            // get club list by user role
+            $clubs = $ds->getClubs();
+
+            $form = $this->createForm(new CateringType($ds, $clubs), $client->getCatering());
 
             // save the catering data
             if ($request->isMethod('POST')) {
@@ -239,8 +242,9 @@ class ClientController extends Controller
             }
 
             return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
-                'client' => $client,
-                'form' => $form->createView(),
+                'client'          => $client,
+                'form'            => $form->createView(),
+                'clubs_menu_list' => json_encode($ds->getClubsMenuList($clubs)),
             ]);
         }
         else {

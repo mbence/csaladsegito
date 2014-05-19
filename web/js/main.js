@@ -16193,6 +16193,7 @@ JcsCatering = {
     JcsModal.setCloseButton();
     this.initMultiDatesPicker();
     this.initInvoices();
+    this.initMenuList();
     $(".day-selectors > a").on("click", function() {
       var day, days, index, _i, _len;
       days = $(this).data("days");
@@ -16275,6 +16276,28 @@ JcsCatering = {
     });
     return JcsModal.init();
   },
+  initMenuList: function() {
+    $("#catering_menu").data("selected_menu", $("#catering_menu").val());
+    JcsCatering.processMenuList($("#catering_club").val());
+    return JcsCatering.setupMenuFiltering();
+  },
+  setupMenuFiltering: function() {
+    return $("#catering_club").change(function() {
+      return JcsCatering.processMenuList($(this).val());
+    });
+  },
+  processMenuList: function(club_id) {
+    var menu_id, menu_name, _ref;
+    $("#catering_menu").empty();
+    _ref = clubs_menu_list[club_id];
+    for (menu_id in _ref) {
+      menu_name = _ref[menu_id];
+      $("#catering_menu").append("<option value=\"" + menu_id + "\">" + menu_name + "</option>");
+    }
+    if ($("#catering_menu option[value=" + $("#catering_menu").data("selected_menu") + "]").length) {
+      return $("#catering_menu").val($("#catering_menu").data("selected_menu"));
+    }
+  },
 
   /*
       Init and setup ordering table
@@ -16335,15 +16358,17 @@ JcsCatering = {
     });
   },
   calendarNavigation: function() {
-    $("#ordering-calendar").scrollable({
-      'initialIndex': 2,
-      'onSeek': function(event) {
-        return $(".title-date").text($(".month-wrapper:eq(" + this.getIndex() + ")").data("date"));
-      }
-    });
-    return setTimeout(function() {
-      return $("#ordering-calendar").data("scrollable").seekTo(2, 0);
-    }, 200);
+    if ($("#ordering-calendar").length) {
+      $("#ordering-calendar").scrollable({
+        'initialIndex': 2,
+        'onSeek': function(event) {
+          return $(".title-date").text($(".month-wrapper:eq(" + this.getIndex() + ")").data("date"));
+        }
+      });
+      return setTimeout(function() {
+        return $("#ordering-calendar").data("scrollable").seekTo(2, 0);
+      }, 200);
+    }
   },
   setupDatePicker: function() {
     $("#ordering-calendar").on("click", "li.day", function() {
