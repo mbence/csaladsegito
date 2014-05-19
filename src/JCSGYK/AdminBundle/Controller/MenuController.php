@@ -169,7 +169,7 @@ class MenuController extends Controller
             ],
             [
                 'url'   => $this->generateUrl('client_orders', ['id' => $client->getId()]),
-                'label' => 'lemondás',
+                'label' => 'rendelési naptár',
                 'title' => 'Utánrendelés, lemondás',
                 'class' => 'greybutton catering_orders',
                 'more'  => false,

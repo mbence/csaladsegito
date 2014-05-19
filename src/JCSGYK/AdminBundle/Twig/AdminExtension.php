@@ -24,6 +24,7 @@ class AdminExtension extends \Twig_Extension
     {
         return [
             'fdate' => new \Twig_Filter_Method($this, 'formatDate'),
+            'fdate2' => new \Twig_Filter_Method($this, 'formatDateText'),
             'check' => new \Twig_Filter_Method($this, 'check', ['is_safe' => ['html']]),
             'fphone' => new \Twig_Filter_Method($this, 'formatPhone'),
             'gender' => new \Twig_Filter_Method($this, 'gender'),
@@ -333,9 +334,6 @@ class AdminExtension extends \Twig_Extension
             //$d = new \DateTime();
         }
         if ($d instanceof \DateTime) {
-            // TODO: find a better place for the month names
-            $months = ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];
-
             // short date
             if ('sd' == $type) {
                 return $d->format('Y.m.d.');
@@ -357,6 +355,19 @@ class AdminExtension extends \Twig_Extension
                 return $d->format('Y. ') .  $this->translator->trans($this->ds->getMonth($d->format('n'))) . $d->format(' j.');
             }
         }
+    }
+
+    public function formatDateText($d, $format)
+    {
+        // TODO: find a better place for the month names
+        $months = ['', 'január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];
+
+        $date = strtotime($d);
+
+        $year = date('Y', $date);
+        $month = $months[date('n', $date)];
+
+        return str_replace(['Y', 'F'], [$year, $month], $format);
     }
 
     /**

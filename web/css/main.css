@@ -3172,29 +3172,24 @@ table.task-list tr:hover td {
 }
 /* Ordering */
 .calendar-nav {
-  padding: 10px;
+  margin: 16px 0 0 0;
 }
-.calendar-nav ul li {
-  width: 150px;
-  text-align: center;
-  font-size: 12px;
-  display: block;
-  padding: 10px;
-  background-color: #b17b51;
-}
-.calendar-nav ul li.prev {
+.calendar-nav a.prev {
   float: left;
 }
-.calendar-nav ul li.next {
+.calendar-nav a.next {
   float: right;
 }
-.calendar-nav ul li:hover {
-  background-color: #96613c;
-  color: #fff;
-  cursor: pointer;
+h2.order-date {
+    color: #3344AA;
+    font-size: 20px;
+    font-weight: normal;
 }
 #ordering-calendar .month-wrapper {
-  display: none;
+  /*display: none;*/
+  float: left;
+  width: 664px;
+  height: 362px;
 }
 #ordering-calendar .month-wrapper.active {
   display: block;
@@ -3206,37 +3201,39 @@ table.task-list tr:hover td {
 #ordering-calendar .month-wrapper .datepicker ul.table-header li {
   font-size: 12px;
   font-weight: bold;
-  height: 36px;
-  line-height: 36px;
+  height: 20px;
+  line-height: 20px;
   text-align: center;
-  border-top: 1px solid #b3c8d9;
+  border-bottom: 1px solid #bbb;
+  background-color: #fff;
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li.selected {
   background-color: #8db4a0;
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li.empty {
-  background-color: #41688a;
+  background-color: #fff;
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li.empty:hover {
   cursor: default;
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li.day:hover {
   cursor: pointer;
-  border-color: #891c21;
+  border-color: #989EC2;
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li.week-header {
   font-size: 12px;
 }
-#ordering-calendar .month-wrapper .datepicker ul.table-body li.reorder {
-  background-color: #d0c192;
+#ordering-calendar .month-wrapper .datepicker ul.table-body li.reorder,
+#ordering-calendar .month-wrapper .datepicker ul.table-body li.order {
+  background-color: #cae3e7;
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li.cancel {
-  background-color: #bdc880;
+  background-color: #ddffd6;
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li .day {
   font-size: 12px;
   margin-bottom: 5px;
-  border-bottom: 1px solid gray;
+  /*border-bottom: 1px solid gray;*/
 }
 #ordering-calendar .month-wrapper .datepicker ul.table-body li .status {
   position: absolute;
@@ -3246,36 +3243,54 @@ table.task-list tr:hover td {
 #ordering-calendar .month-wrapper .datepicker ul.table-body li input:hover {
   cursor: pointer;
 }
-#ordering-calendar .month-wrapper .datepicker ul.table-body li .holiday {
+#ordering-calendar .month-wrapper .datepicker ul.table-body li span.holiday {
   display: block;
-  font-size: 10px;
+  font-size: 11px;
+  color: #b10000;
 }
 #ordering-calendar .month-wrapper .datepicker ul li {
   position: relative;
   width: 80px;
   height: 60px;
   font-size: 10px;
-  padding: 3px;
-  border-bottom: 1px solid #b3c8d9;
-  border-left: 1px solid #b3c8d9;
-  background-color: #d7dce0;
+  padding: 3px 3px 3px 5px;
+  border-bottom: 1px solid #ccc;
+/*  border-left: 1px solid #b3c8d9;*/
+  background-color: #f7f7f7;
   float: left;
 }
 #ordering-calendar .month-wrapper .datepicker ul li:last-child {
-  border-right: 1px solid #b3c8d9;
+  /*border-right: 1px solid #b3c8d9;*/
 }
 #ordering-calendar .month-wrapper .datepicker ul li.week-header {
   line-height: 60px;
   text-align: center;
   width: 40px;
+  background-color: #fff;
 }
 #ordering-calendar .month-wrapper .datepicker ul li.weekend {
-  background-color: #6491bf;
+  background-color: #eee;
 }
 #ordering-calendar .month-wrapper .datepicker ul li .day {
   display: block;
 }
+#ordering-calendar .month-wrapper .datepicker ul li.holiday {
+  background-color: #feeed7;
+}
+#ordering-calendar .month-wrapper .datepicker ul li.holiday span.day{
+    color: #b10000;
+}
+#ordering-calendar {
+    position:relative;
+    overflow:hidden;
+    width: 664px;
+    height: 377px
+}
 
+#ordering-calendar .items {
+    width:20000em;
+    position:absolute;
+}
 .button, .greybutton {
     border-radius: 2px;
     border: 1px solid transparent;

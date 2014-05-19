@@ -123,7 +123,7 @@ JcsCatering =
         @prepareCalendar()
         @prepareOrders()
         $(".month-wrapper:eq(2)").addClass("active")
-        $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"))
+        $(".title-date").text($(".month-wrapper:eq(2)").data("date"))
 
     prepareCalendar: ->
         $("li.day").each ->
@@ -155,7 +155,7 @@ JcsCatering =
             else if $(this).data("order") is "cancel"
                 orders[$(this).data("date")] = -1
         $("input[name=orders]").val(JSON.stringify(orders))
-        console.log($("input[name=orders]").val())
+#        console.log($("input[name=orders]").val())
 
     setupHolidayInfo: ->
         $("span.holiday").mouseenter ->
@@ -164,18 +164,14 @@ JcsCatering =
             $(this).find(".desc").fadeOut(200)
 
     calendarNavigation: ->
-        $(".calendar-nav li").click ->
-            direction    = $(this).data("direction")
-            next_element = $(this).data("next")
-            if next_element != -1 and $(".month-wrapper:eq(" + next_element + ")").length
-                $(".month-wrapper").removeClass("active")
-                $(".month-wrapper:eq(" + next_element + ")").addClass("active")
-                $(".title-date").text(" - " + $(".month-wrapper:eq(" + next_element + ")").data("date"))
-                $(".calendar-nav li").each ->
-                    if direction == "prev"
-                        $(this).data().next--
-                    else if direction == "next"
-                        $(this).data().next++
+        $("#ordering-calendar").scrollable({
+            'initialIndex': 2,
+            'onSeek' : (event) ->
+                $(".title-date").text($(".month-wrapper:eq(" + this.getIndex() + ")").data("date"))
+        })
+        setTimeout( ->
+            $("#ordering-calendar").data("scrollable").seekTo(2, 0)
+        , 200)
 
     setupDatePicker: ->
         $("#ordering-calendar").on "click", "li.day", ->
@@ -251,7 +247,7 @@ JcsCatering =
                     $(this).find("input").attr("checked","checked")
 
                 JcsCatering.processOrders()
-        
+
         $("#ordering-calendar").on "click", "li.day input[type=checkbox]", (event) ->
             $(this).parents("li.day").trigger("click")
             event.stopPropagation()

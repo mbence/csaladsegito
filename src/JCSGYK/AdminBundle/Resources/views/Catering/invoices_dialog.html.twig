@@ -5,7 +5,7 @@
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
     {% form_theme form 'JCSGYKAdminBundle:Form:errors.html.twig' %}
-    <h1 class="client center">{{ 'Étkeztetés'|trans }}</h1>
+    <h1 class="client center">{{ 'Befizetések'|trans }}</h1>
 
     <form id="catering_form" class="templateform" action="{{ path('client_invoices', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
         {{ form_errors(form) }}

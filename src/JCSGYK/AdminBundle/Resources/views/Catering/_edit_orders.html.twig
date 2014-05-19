@@ -1,44 +1,55 @@
 {# Edit Orders #}
 <nav class="calendar-nav clearfix">
-    <ul>
+{#    <ul>
         <li class="prev" data-direction="prev" data-next="1">{{ 'Előző hónap'|trans }}</li>
+        <li>
+
+        </li>
         <li class="next" data-direction="next" data-next="3">{{ 'Következő hónap'|trans }}</li>
     </ul>
+#}
+    {# Calendar monthly navigation #}
+    <a href="#" class="greybutton next" data-direction="next" data-next="3"><span>{{ 'Következő hónap'|trans }} &raquo;</span></a>
+    <a href="#" class="greybutton prev" data-direction="prev" data-next="1"><span>&laquo; {{ 'Előző hónap'|trans }}</span></a>
+    <h2 class="order-date center"><span class="title-date"></span></h2>
 </nav>
+
 <div id="ordering-calendar">
-    {% for timestamp,month in orders %}
-    <div class="month-wrapper" data-date="{{ timestamp|date('Y. F') }}">
-        <div class="datepicker clearfix">
-                <ul class="table-header">
-                    <li class="week-header"></li>
-                    <li>{{ 'Hétfő'|trans }}</li>
-                    <li>{{ 'Kedd'|trans }}</li>
-                    <li>{{ 'Szerda'|trans }}</li>
-                    <li>{{ 'Csütörtök'|trans }}</li>
-                    <li>{{ 'Péntek'|trans }}</li>
-                    <li class="weekend">{{ 'Szombat'|trans }}</li>
-                    <li class="weekend">{{ 'Vasárnap'|trans }}</li>
-                </ul>
-                {% for weeknumber,week in month %}
-                <ul class="table-body">
-                    <li class="week-header">{{ weeknumber }}. {{ 'hét'|trans }}</li>
-                    {% for index,day in week %}
-                    <li class="{{ day.class }}"{% if day.day is not null %} data-date="{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}" data-closed="{{ day.closed }}" data-menu="{{ param(day.menu) }}" data-order="{{ day.order }}" data-modifiable="{{ day.modifiable }}"{% endif %}>
-                    {% if day.day is not null %}
-                        <span class="day">{% if day.day == 1 %}{{ timestamp|date('F') }} {% endif %}{{ day.day }}.</span>
-                        {% if day.holiday %}
-                        <span class="holiday">{{ day.holiday }}</span>
+    <div class="items">
+        {% for timestamp,month in orders %}
+        <div class="month-wrapper" data-date="{{ timestamp|fdate2('Y. F') }}">
+            <div class="datepicker clearfix">
+                    <ul class="table-header">
+                        <li class="week-header"></li>
+                        <li>{{ 'Hétfő'|trans }}</li>
+                        <li>{{ 'Kedd'|trans }}</li>
+                        <li>{{ 'Szerda'|trans }}</li>
+                        <li>{{ 'Csütörtök'|trans }}</li>
+                        <li>{{ 'Péntek'|trans }}</li>
+                        <li{# class="weekend"#}>{{ 'Szombat'|trans }}</li>
+                        <li{# class="weekend"#}>{{ 'Vasárnap'|trans }}</li>
+                    </ul>
+                    {% for weeknumber,week in month %}
+                    <ul class="table-body">
+                        <li class="week-header">{{ weeknumber }}. {{ 'hét'|trans }}</li>
+                        {% for index,day in week %}
+                        <li class="{{ day.class }}{% if day.holiday %} holiday{% endif %}"{% if day.day is not null %} data-date="{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}" data-closed="{{ day.closed }}" data-menu="{{ param(day.menu) }}" data-order="{{ day.order }}" data-modifiable="{{ day.modifiable }}"{% endif %}>
+                        {% if day.day is not null %}
+                            <span class="day">{% if day.day == 1 %}{{ timestamp|fdate2('F')|capitalize }} {% endif %}{{ day.day }}.</span>
+                            <input type="checkbox" name="order_{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}" value="1">
+                            {# <input type="radio" class="cancel" name="orders[{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}]" value="-1"><label>Lemondás</label> #}
+                            <span class="menu">{% if day.order == 'cancel' %}{{ 'Lemondva'|trans }}{% else %}{% if day.order != 'none' %}{{ param(day.menu) }}{% endif %}{% endif %}</span>
+                            {# <span class="status">{% if day.changed is defined and day.changed == 1 %}{{ 'Utánrendelve'|trans }}{% endif %}</span> #}
+                            {% if day.holiday %}
+                            <span class="holiday">{{ day.holiday }}</span>
+                            {% endif %}
                         {% endif %}
-                        <input type="checkbox" name="order_{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}" value="1">
-                        {# <input type="radio" class="cancel" name="orders[{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}]" value="-1"><label>Lemondás</label> #}
-                        <span class="menu">{% if day.order == 'cancel' %}{{ 'Lemondva'|trans }}{% else %}{% if day.order != 'none' %}{{ param(day.menu) }}{% endif %}{% endif %}</span>
-                        {# <span class="status">{% if day.changed is defined and day.changed == 1 %}{{ 'Utánrendelve'|trans }}{% endif %}</span> #}
-                    {% endif %}
-                    </li>
+                        </li>
+                        {% endfor %}
+                    </ul>
                     {% endfor %}
-                </ul>
-                {% endfor %}
+            </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>

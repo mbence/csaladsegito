@@ -4,7 +4,7 @@
 {% if success is defined and success %}
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
-    <h1 class="client center">{{ 'Étkeztetés'|trans }} <span class="title-date"></span></h1>
+    <h1 class="client center">{{ 'Rendelési naptár'|trans }}</h1>
 
     <form id="catering_form" class="templateform" action="{{ path('client_orders_edit', {'id': client.id}) }}" method="post" novalidate {# {{ form_enctype(form) }} #}>
         {# {{ form_errors(form) }} #}
