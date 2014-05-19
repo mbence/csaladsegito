@@ -3176,9 +3176,11 @@ table.task-list tr:hover td {
 }
 .calendar-nav a.prev {
   float: left;
+  width: 120px;
 }
 .calendar-nav a.next {
   float: right;
+  width: 120px;
 }
 h2.order-date {
     color: #3344AA;
