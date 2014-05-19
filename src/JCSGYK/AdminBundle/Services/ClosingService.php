@@ -134,7 +134,6 @@ class ClosingService
             if (!empty($invoice)) {
                 $invoice_count ++;
             }
-            $invocie_service->updateBalance($client->getCatering());
         }
         if (empty($invoice_count)) {
             $this->output(sprintf("%s: Nincsen új megrendelés", date('H:i:s')));
@@ -161,6 +160,9 @@ class ClosingService
             $closing->setSummary($this->summary);
             $em->flush();
 
+            // update the client balances
+            $this->updateBalances($clients);
+
             // Send the EcoSTAT files to bookkeeping
             //$this->writeFiles();
             $mail_ok = $this->sendMails($start, $end, basename($zip), $zip_file_contents);
@@ -184,6 +186,15 @@ class ClosingService
         return $closing;
     }
 
+
+    private function updateBalances($clients)
+    {
+        $invocie_service = $this->container->get('jcs.invoice');
+        foreach ($clients as $client) {
+            // update the client balance
+            $invocie_service->updateBalance($client->getCatering());
+        }
+    }
 
     /**
      * Creates the EcoStat export files in $this->files from the unsent invoices
