@@ -225,7 +225,7 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-                    
+
                     // save
                     $em->flush();
 
@@ -329,9 +329,9 @@ class ClientController extends Controller
                                     $new_order->setCancel(true);
                                 }
                                 $em->persist($new_order);
-                                
+
                                 break;
-                            
+
                             case 'update':
                                 $last_order = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->findOneBy(['date' => new \DateTime($date), 'companyId' => $company_id, 'client' => $client]);
 
@@ -348,14 +348,14 @@ class ClientController extends Controller
                                     $last_order->setOrder(false);
                                     $last_order->setCancel(true);
                                     $last_order->setClosed(false);
-                                    
+
                                     // $em->persist($last_order);
                                 }
                                 elseif ($order['value'] == 2) {
                                     $last_order->setOrder(true);
                                     $last_order->setCancel(true);
                                     $last_order->setClosed(false);
-                                    
+
                                     // $em->persist($last_order);
                                 }
                                 // elseif ($order['value'] == 0) {
@@ -584,13 +584,53 @@ class ClientController extends Controller
      */
     public function invoicesAction($id)
     {
+        $em = $this->getDoctrine()->getManager();
+        $ae = $this->container->get('jcs.twig.adminextension');
+        $request = $this->getRequest();
+
         if (!empty($id)) {
             $client = $this->getClient($id);
         }
 
         if (!empty($client)) {
+            // find the last invoices of the client
+            $invoices = $client->getInvoices();
+
+            // create the empty form
+            $form_builder = $this->createFormBuilder();
+
+            foreach ($invoices as $invoice) {
+                if (Invoice::OPEN == $invoice->getStatus()) {
+                    $form_builder->add('i' . $invoice->getId(), 'text', [
+                        'label' => 'Befizetés',
+                    ]);
+                    $open_amount = $invoice->getAmount() - $invoice->getBalance();
+                    $form_builder->add('b' . $invoice->getId(), 'button', [
+                        'label' => $ae->formatCurrency($open_amount),
+                        'attr'  => [
+                            'class' => 'greybutton smallbutton invoice_full_amount',
+                            'data-amount' => $open_amount,
+                        ]
+                    ]);
+                }
+            }
+
+            $form = $form_builder->getForm();
+
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+
+                    $data = $form->getData();
+                }
+
+            }
+
             return $this->render('JCSGYKAdminBundle:Catering:invoices_dialog.html.twig', [
-                'client' => $client,
+                'client'    => $client,
+                'invoices'  => $invoices,
+                'form'      => $form->createView(),
             ]);
         }
         else {

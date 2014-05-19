@@ -417,7 +417,7 @@ class Invoice
     /**
      * Get days
      *
-     * @return string 
+     * @return string
      */
     public function getDays()
     {
@@ -441,10 +441,15 @@ class Invoice
     /**
      * Get changes
      *
-     * @return string 
+     * @return string
      */
     public function getChanges()
     {
         return $this->changes;
+    }
+
+    public function isOpen()
+    {
+        return self::OPEN == $this->getStatus();
     }
 }

@@ -5,29 +5,62 @@
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
     <h1 class="client center">{{ 'Étkeztetés'|trans }}</h1>
-{#
-    <form id="catering_form" class="templateform" action="{{ path('client_catering_edit', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
-        {{ form_errors(form) }}#}
+
+    <form id="catering_form" class="templateform" action="{{ path('client_invoices', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
+        {{ form_errors(form) }}
 
         <table class="client" cellspacing="0" border="0">
-        <tr>
-            <th>{{ 'Név'|trans }}:</th>
-            <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
-        </tr>
-        <tr>
-            <th>{{ client.type|caselabel }}:</th>
-            <td>{{ client|casenum }}</td>
-        </tr>
-    </table>
+            <tr>
+                <th>{{ 'Név'|trans }}:</th>
+                <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
+            </tr>
+            <tr>
+                <th>{{ client.type|caselabel }}:</th>
+                <td>{{ client|casenum }}</td>
+            </tr>
+        </table>
 
-{# {% include "JCSGYKAdminBundle:Catering:_edit_catering.html.twig" %}#}
+        <div class="client-sub">{{ 'számlák'|trans }}</div>
+        <table class="client-edit" cellspacing="0" border="0">
+            <tr>
+                <th>#</th>
+                <th>Dátum</th>
+                <th>Összeg</th>
+                <th>Státusz</th>
+                <th>Egyenleg</th>
+            </tr>
+            {% for invoice in invoices %}
+                <tr data-status="{{ invoice.status }}" data-id="{{ invoice.id }}">
+                    <td>{{ invoice.id }}:</td>
+                    <td>{{ invoice.createdAt|fdate('sd') }}</td>
+                    <td><strong>{{ invoice.amount|fcurr }}</strong></td>
+                    <td>{{ invoice.status|invoice_status }}</td>
+                    <td>{{ invoice.balance|fcurr  }}</td>
+                </tr>
+                {% if invoice.isOpen %}
+                    <tr>
+                        <td colspan="5">
+                            {% set field = form['i' ~ invoice.id] %}
+                            {{ form_errors(field) }}
+                            <table class="client-edit-inner" cellspacing="0" border="0">
+                                <th>{{ form_label(field) }}</th>
+                                <td>{{ form_widget(field) }}</td>
+                                <td>{{ form_widget(form['b' ~ invoice.id]) }}</td>
+                            </table>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
 
-    <div class="toppad10 center">
-        <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
-        <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
-    </div>
-{#
-    {{ form_widget(form._token) }}
-    </form>#}
+    {# {% include "JCSGYKAdminBundle:Catering:_edit_catering.html.twig" %}#}
+
+        <div class="toppad10 center">
+            <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
+            <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
+        </div>
+
+        {{ form_widget(form._token) }}
+    </form>
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% endif %}

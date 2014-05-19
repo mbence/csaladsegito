@@ -126,8 +126,6 @@ class ClosingService
         $closing->setSummary($this->summary);
         $em->flush();
 
-        sleep(3);
-
         // create the invoices
         $invoice_count = 0;
         $invocie_service = $this->container->get('jcs.invoice');
@@ -143,8 +141,6 @@ class ClosingService
         else {
             $this->output(sprintf("%s: %s db számla kiállítva", date('H:i:s'), $invoice_count));
         }
-
-      sleep(3);
 
         // create the EcoSTAT files
         $exp = $this->export();
@@ -163,8 +159,6 @@ class ClosingService
             $closing->setFiles($zip_file_contents);
             $closing->setSummary($this->summary);
             $em->flush();
-
-        sleep(3);
 
             // Send the EcoSTAT files to bookkeeping
             //$this->writeFiles();

@@ -16,7 +16,8 @@ class MonthlyClosingCommand extends ContainerAwareCommand
         $this
             ->setName('jcs:closing')
             ->setDescription('Run the Monthly Closing')
-            ->addArgument('company_id', InputArgument::REQUIRED, 'Company ID')
+            ->addArgument('company', InputArgument::REQUIRED, 'Company ID')
+            ->addOption('user', 'u', InputOption::VALUE_REQUIRED, 'Set the user id of the closing')
             ->addOption('actual-month', 'a', InputOption::VALUE_NONE, 'If set, the closing will run for the actual month')
         ;
     }
@@ -24,11 +25,17 @@ class MonthlyClosingCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $mode = ! $input->getOption('actual-month');
-        $company_id = $input->getArgument('company_id');
+        $company_id = $input->getArgument('company');
+        $user_id = $input->getOption('user');
 
         // set the companyid for the datastore
-        $session = new Session();
+        $session = $this->getContainer()->get('session');
         $session->set('company_id', $company_id);
+        if (!empty($user_id)) {
+            $session->set('user_id', $user_id);
+        }
+        var_dump($user_id);
+        
 
         // get the service
         $closing_service = $this->getContainer()->get('jcs.closing');

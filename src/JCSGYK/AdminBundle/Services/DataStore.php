@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use JCSGYK\AdminBundle\Entity\Relation;
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\MonthlyClosing;
+use JCSGYK\AdminBundle\Entity\Invoice;
 
 /**
  * Service for Data Store
@@ -68,6 +69,13 @@ class DataStore
         MonthlyClosing::ERROR       => 'Hiba',
     ];
 
+    private $invoiceStatuses = [
+        Invoice::READY_TO_SEND   => 'Kiküldésre vár',
+        Invoice::OPEN            => 'Befizetésre vár',
+        Invoice::CLOSED          => 'Kiegyenlítve',
+        Invoice::CANCELLED       => 'Törölt',
+    ];
+
     public function __construct($container)
     {
         $this->container = $container;
@@ -99,6 +107,11 @@ class DataStore
     public function getClosingStatus($status)
     {
         return isset($this->closingStatuses[$status]) ? $this->closingStatuses[$status] : false;
+    }
+
+    public function getInvoiceStatus($status)
+    {
+        return isset($this->invoiceStatuses[$status]) ? $this->invoiceStatuses[$status] : false;
     }
 
     public function getRoles()
@@ -190,12 +203,18 @@ class DataStore
      */
     public function getUser()
     {
+        $user = null;
         $sec = $this->container->get('security.context');
         if (!empty($sec->getToken())) {
             $user = $sec->getToken()->getUser();
         }
         else {
-            $user = null;
+            $user_id = $this->container->get('session')->get('user_id');
+
+            if (!empty($user_id)) {
+                $em = $this->container->get('doctrine')->getManager();
+                $user = $em->getRepository('JCSGYKAdminBundle:User')->find($user_id);
+            }
         }
 
         return $user;

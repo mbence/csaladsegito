@@ -3447,6 +3447,11 @@ button.button, button.greybutton {
     background-color: #eee;
 }
 
+button.smallbutton {
+    height: 23px;
+    font-size: 12px;
+}
+
 /* Quicksearch */
 .quicksearch {
     padding: 10px 6px 0 0;

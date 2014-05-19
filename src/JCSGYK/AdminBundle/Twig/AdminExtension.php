@@ -37,6 +37,7 @@ class AdminExtension extends \Twig_Extension
             'ctmap' => new \Twig_Filter_Method($this, 'clientTypeMap'),
             'cat_days' => new \Twig_Filter_Method($this, 'cateringDays'),
             'closing_status' => new \Twig_Filter_Method($this, 'closingStatus'),
+            'invoice_status' => new \Twig_Filter_Method($this, 'invoiceStatus'),
         ];
     }
 
@@ -63,6 +64,11 @@ class AdminExtension extends \Twig_Extension
     public function closingStatus($status)
     {
         return $this->ds->getClosingStatus($status);
+    }
+
+    public function invoiceStatus($status)
+    {
+        return $this->ds->getInvoiceStatus($status);
     }
 
     public function clientTypeMap($client_type) {
