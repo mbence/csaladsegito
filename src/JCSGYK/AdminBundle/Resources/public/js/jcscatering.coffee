@@ -118,7 +118,7 @@ JcsCatering =
                 $(this).find("input").attr("disabled","disabled")
 
     prepareOrders: ->
-        orders = []
+        orders = {}
         $("li.day.modifiable").each ->
             if $(this).data("order") == "order"
                 orders[$(this).data("date")] = 1
@@ -127,7 +127,7 @@ JcsCatering =
         $("input[name=orders]").val(JSON.stringify(orders))
 
     processOrders: ->
-        orders = []
+        orders = {}
         $("li.day.modifiable").each ->
             if $(this).data("new_order") isnt undefined and $(this).data("new_order") is "reorder"
                 orders[$(this).data("date")] = 1

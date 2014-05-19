@@ -16280,7 +16280,7 @@ JcsCatering = {
   },
   prepareOrders: function() {
     var orders;
-    orders = [];
+    orders = {};
     $("li.day.modifiable").each(function() {
       if ($(this).data("order") === "order") {
         return orders[$(this).data("date")] = 1;
@@ -16292,7 +16292,7 @@ JcsCatering = {
   },
   processOrders: function() {
     var orders;
-    orders = [];
+    orders = {};
     $("li.day.modifiable").each(function() {
       if ($(this).data("new_order") !== void 0 && $(this).data("new_order") === "reorder") {
         return orders[$(this).data("date")] = 1;
