@@ -4,6 +4,7 @@
 {% if success is defined and success %}
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
+    {% form_theme form 'JCSGYKAdminBundle:Form:errors.html.twig' %}
     <h1 class="client center">{{ 'Étkeztetés'|trans }}</h1>
 
     <form id="catering_form" class="templateform" action="{{ path('client_invoices', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
@@ -22,7 +23,7 @@
 
         <div class="client-sub">{{ 'számlák'|trans }}</div>
         <table class="client-edit" cellspacing="0" border="0">
-            <tr>
+            <tr class="catering-top">
                 <th>#</th>
                 <th>Dátum</th>
                 <th>Összeg</th>
@@ -30,25 +31,34 @@
                 <th>Egyenleg</th>
             </tr>
             {% for invoice in invoices %}
-                <tr data-status="{{ invoice.status }}" data-id="{{ invoice.id }}">
+                <tr class="catering-invoice {% if invoice.isOpen %}invoice-open{% endif %}" data-status="{{ invoice.status }}" data-id="{{ invoice.id }}">
                     <td>{{ invoice.id }}:</td>
-                    <td>{{ invoice.createdAt|fdate('sd') }}</td>
+                    <td>{{ invoice.startDate|fdate('sd') }} - {{ invoice.endDate|fdate('sd') }}</td>
                     <td><strong>{{ invoice.amount|fcurr }}</strong></td>
                     <td>{{ invoice.status|invoice_status }}</td>
                     <td>{{ invoice.balance|fcurr  }}</td>
                 </tr>
                 {% if invoice.isOpen %}
                     <tr>
-                        <td colspan="5">
+                        <td colspan="5" class="right">
                             {% set field = form['i' ~ invoice.id] %}
                             {{ form_errors(field) }}
-                            <table class="client-edit-inner" cellspacing="0" border="0">
-                                <th>{{ form_label(field) }}</th>
-                                <td>{{ form_widget(field) }}</td>
-                                <td>{{ form_widget(form['b' ~ invoice.id]) }}</td>
-                            </table>
+                            <div class="right">
+                                {{ form_label(field) }}
+                                {{ form_widget(field) }}
+                                {{ form_widget(form['b' ~ invoice.id]) }}
+                            </div>
                         </td>
                     </tr>
+                {% endif %}
+                {% if invoice.payments %}
+                    {% for payment in invoice.payments %}
+                        <tr class="catering-payments i{{ invoice.id}}_payments">
+                            <th colspan="3">{% if loop.first %}Befizetések:{% endif %}</th>
+                            <td>{{ payment[0] }}:</td>
+                            <td>{{ payment[1]|fcurr }}</td>
+                        </tr>
+                    {% endfor %}
                 {% endif %}
             {% endfor %}
         </table>
@@ -57,7 +67,9 @@
 
         <div class="toppad10 center">
             <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
-            <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
+            {% if invoices|length > 0 %}
+                <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
+            {% endif %}
         </div>
 
         {{ form_widget(form._token) }}

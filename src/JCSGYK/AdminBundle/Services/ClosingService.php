@@ -288,8 +288,8 @@ class ClosingService
         $res = $this->addExportLine($data);
 
         if ($res) {
-            // set the invoice status to open (data exported to EcoSTAT)
-            $invoice->setStatus(Invoice::OPEN);
+            // set the invoice status to open or closed depending on the amount (data exported to EcoSTAT)
+            $invoice->setStatus($invoice->getAmount() == 0 ? Invoice::CLOSED : Invoice::OPEN);
         }
 
         return $res;

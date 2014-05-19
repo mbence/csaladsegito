@@ -21,7 +21,9 @@ JcsCatering =
 
     initCatering: ->
         JcsModal.setCloseButton()
-        JcsCatering.initMultiDatesPicker()
+        @initMultiDatesPicker()
+        @initInvoices()
+
         # day selectors
         $(".day-selectors > a").on "click", ->
             days = $(this).data("days")
@@ -64,6 +66,21 @@ JcsCatering =
         JcsModal.load()
         $("#archive_type").focus()
 
+    initInvoices: ->
+        $("button.invoice_full_amount").on "click", ->
+            amount = $(this).data("amount")
+            $('input[type=text]', $(this).parent()).val(amount)
+        # focus the first input field
+        $("#catering_form input[type=text]").first().focus()
+        # click action on the tr-s
+        $(".catering-invoice").on "click", ->
+            id = $(this).data("id")
+            $(".i" + id + "_payments").toggle()
+        # close the payed (closed) invoice details
+        $(".catering-invoice").each ->
+            if 3 == $(this).data("status")
+                $(this).click()
+
     initButtonRow: ->
         # archive
         $(".edit_catering")
@@ -95,7 +112,7 @@ JcsCatering =
 
         # modal dialog
         JcsModal.init()
-    
+
     ###
         Init and setup ordering table
     ###
@@ -197,7 +214,7 @@ JcsCatering =
                         $(this).find(".status").text("Utánrendelve")
                     $(this).removeClass("cancel").addClass("reorder")
                     $(this).find("input").attr("checked","checked")
-        
+
         $("#ordering-calendar").on "click", "li.day input[type=checkbox]", (event) ->
             $(this).parents("li.day").trigger("click")
             event.stopPropagation()

@@ -12,6 +12,7 @@ use JMS\SecurityExtraBundle\Security\Authorization\Expression\Expression;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Form\FormError;
 
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Form\Type\ClientType;
@@ -605,6 +606,9 @@ class ClientController extends Controller
                 if (Invoice::OPEN == $invoice->getStatus()) {
                     $form_builder->add('i' . $invoice->getId(), 'text', [
                         'label' => 'Befizetés',
+                        'attr'  => [
+                            'class' => 'short',
+                        ],
                     ]);
                     $open_amount = $invoice->getAmount() - $invoice->getBalance();
                     $form_builder->add('b' . $invoice->getId(), 'button', [
@@ -623,10 +627,30 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-
                     $data = $form->getData();
-                }
+                    foreach ($invoices as $invoice) {
+                        if (Invoice::OPEN == $invoice->getStatus()) {
+                            $field = 'i' . $invoice->getId();
+                            if (!empty($data[$field])) {
+                                $res = $invoice->addPayment($data['i' . $invoice->getId()]);
+                                if (-1 == $res) {
+                                    $form->get($field)->addError(new FormError('Túlfizetés nem lehetséges! Adjon be pontos összeget!'));
+                                }
+                            }
+                        }
+                    }
 
+                    // validate the form again
+                    if ($form->isValid()) {
+                        $em->flush();
+
+                        $this->get('session')->getFlashBag()->add('notice', 'Befizetés elmentve');
+
+                        return $this->render('JCSGYKAdminBundle:Catering:invoices_dialog.html.twig', [
+                            'success' => true,
+                        ]);
+                    }
+                }
             }
 
             return $this->render('JCSGYKAdminBundle:Catering:invoices_dialog.html.twig', [

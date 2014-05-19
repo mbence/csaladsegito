@@ -438,6 +438,7 @@ class Client
 
     /**
      * @ORM\OneToMany(targetEntity="Invoice", mappedBy="client")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     private $invoices;
 

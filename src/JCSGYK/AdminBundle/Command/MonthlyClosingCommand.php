@@ -34,8 +34,6 @@ class MonthlyClosingCommand extends ContainerAwareCommand
         if (!empty($user_id)) {
             $session->set('user_id', $user_id);
         }
-        var_dump($user_id);
-        
 
         // get the service
         $closing_service = $this->getContainer()->get('jcs.closing');

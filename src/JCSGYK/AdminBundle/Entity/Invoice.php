@@ -241,7 +241,7 @@ class Invoice
      */
     public function setPayments($payments)
     {
-        $this->payments = $payments;
+        $this->payments = json_encode($payments);
 
         return $this;
     }
@@ -253,7 +253,7 @@ class Invoice
      */
     public function getPayments()
     {
-        return $this->payments;
+        return json_decode($this->payments, true);
     }
 
     /**
@@ -451,5 +451,41 @@ class Invoice
     public function isOpen()
     {
         return self::OPEN == $this->getStatus();
+    }
+
+
+    public function addPayment($amount)
+    {
+        if (is_numeric($amount)) {
+            if ($this->getBalance() + $amount > $this->getAmount()) {
+                return -1;
+            }
+
+            $payments = $this->getPayments();
+            $payments[] = [date('Y-m-d'), $amount];
+            $this->setPayments($payments);
+            $this->updateBalance();
+            $this->updateStatus();
+        }
+    }
+
+    public function updateBalance()
+    {
+        $balance = 0;
+        $payments = $this->getPayments();
+        foreach ($payments as $payment) {
+            $balance += $payment[1];
+        }
+
+        $this->setBalance($balance);
+    }
+
+    public function updateStatus()
+    {
+        if (self::OPEN == $this->getStatus()) {
+            if ($this->getAmount() == $this->getBalance()) {
+                $this->setStatus(self::CLOSED);
+            }
+        }
     }
 }

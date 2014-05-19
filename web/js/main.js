@@ -16190,7 +16190,8 @@ JcsCatering = {
   },
   initCatering: function() {
     JcsModal.setCloseButton();
-    JcsCatering.initMultiDatesPicker();
+    this.initMultiDatesPicker();
+    this.initInvoices();
     $(".day-selectors > a").on("click", function() {
       var day, days, index, _i, _len;
       days = $(this).data("days");
@@ -16229,6 +16230,24 @@ JcsCatering = {
     $("#archive_description").elastic();
     JcsModal.load();
     return $("#archive_type").focus();
+  },
+  initInvoices: function() {
+    $("button.invoice_full_amount").on("click", function() {
+      var amount;
+      amount = $(this).data("amount");
+      return $('input[type=text]', $(this).parent()).val(amount);
+    });
+    $("#catering_form input[type=text]").first().focus();
+    $(".catering-invoice").on("click", function() {
+      var id;
+      id = $(this).data("id");
+      return $(".i" + id + "_payments").toggle();
+    });
+    return $(".catering-invoice").each(function() {
+      if (3 === $(this).data("status")) {
+        return $(this).click();
+      }
+    });
   },
   initButtonRow: function() {
     $(".edit_catering").add(".catering_orders").add(".catering_invoices").off('click').on("click", function(event) {
