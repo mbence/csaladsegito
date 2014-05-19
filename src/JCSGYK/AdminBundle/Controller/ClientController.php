@@ -288,7 +288,7 @@ class ClientController extends Controller
             // save the ordering data
             if ($request->isMethod('POST')) {
 
-                $orders     = $request->request->get('orders');
+                $orders     = json_decode($request->request->get('orders'), true);
                 $new_orders = [];
 
                 if (!empty($orders)) {
@@ -296,8 +296,9 @@ class ClientController extends Controller
                 }
 
                 // return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
-                //     'success' => true,
-                //     'orders'  => $new_orders
+                //     'success'    => true,
+                //     'new_orders' => $new_orders,
+                //     'orders'     => $orders
                 // ]);
 
                 if (empty($new_orders)) {
@@ -407,7 +408,7 @@ class ClientController extends Controller
         $last_day_of_period  = new \DateTime('last day of this month + 2 months');
         $catering            = $client->getCatering();
         $days_of_months      = $this->container->get('jcs.ds')->getDaysOfPeriod($first_day_of_period, $last_day_of_period);
-        $monthly_subs        = $this->container->get('jcs.invoice')->getMonthlySubs($catering, $first_day_of_period, $last_day_of_period);
+        // $monthly_subs        = $this->container->get('jcs.invoice')->getMonthlySubs($catering, $first_day_of_period, $last_day_of_period);
         $changed_days        = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getOrdersForPeriod($client->getId(), $first_day_of_period, $last_day_of_period);
         $new_orders          = [];
 
@@ -423,8 +424,11 @@ class ClientController extends Controller
                 }
                 $closed = $changed_days[$day]->getClosed();
             }
-            $order = (!isset($orders[$day])) ? false : $orders[$day];
-            $sub   = (!isset($monthly_subs[$day])) ? false : true;
+            // $order = (!isset($orders[$day])) ? false : $orders[$day];
+            $order = (!isset($orders[$day])) ? 0 : $orders[$day];
+            // $sub   = (!isset($monthly_subs[$day])) ? false : true;
+
+            // $new_orders[$day] = $order;
 
             if ($changed_day == 0) {
                 // nincs rekord létrehozva erre a napra

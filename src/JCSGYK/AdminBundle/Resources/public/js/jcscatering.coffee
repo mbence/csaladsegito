@@ -101,17 +101,44 @@ JcsCatering =
     ###
     initMultiDatesPicker: ->
         @calendarNavigation()
-        # @setupDatePicker()
+        @setupDatePicker()
         @setupHolidayInfo()
+        @prepareCalendar()
+        @prepareOrders()
         $(".month-wrapper:eq(2)").addClass("active")
         $(".title-date").text(" - " + $(".month-wrapper:eq(2)").data("date"))
+
+    prepareCalendar: ->
         $("li.day").each ->
             if $(this).data("order") == "order" || $(this).data("order") == "reorder"
-                $(this).find("input.order").attr("checked","checked")
-            else if $(this).data("order") == "cancel"
-                $(this).find("input.cancel").attr("checked","checked")
+                $(this).find("input").attr("checked","checked")
+            # else if $(this).data("order") == "cancel"
+            #     $(this).find("input.cancel").attr("checked","checked")
             if $(this).data("modifiable") == 0
                 $(this).find("input").attr("disabled","disabled")
+
+    prepareOrders: ->
+        orders = []
+        $("li.day.modifiable").each ->
+            if $(this).data("order") == "order"
+                orders[$(this).data("date")] = 1
+            else if $(this).data("order") == "cancel"
+                orders[$(this).data("date")] = -1
+        $("input[name=orders]").val(JSON.stringify(orders))
+
+    processOrders: ->
+        orders = []
+        $("li.day.modifiable").each ->
+            if $(this).data("new_order") isnt undefined and $(this).data("new_order") is "reorder"
+                orders[$(this).data("date")] = 1
+            else if $(this).data("new_order") isnt undefined and $(this).data("new_order") is "cancel"
+                orders[$(this).data("date")] = -1
+            else if $(this).data("order") is "order"
+                orders[$(this).data("date")] = 1
+            else if $(this).data("order") is "cancel"
+                orders[$(this).data("date")] = -1
+        $("input[name=orders]").val(JSON.stringify(orders))
+        console.log($("input[name=orders]").val())
 
     setupHolidayInfo: ->
         $("span.holiday").mouseenter ->
@@ -138,6 +165,7 @@ JcsCatering =
             if $(this).data("modifiable")
                 order = $(this).data("order")
                 new_order = $(this).data("new_order")
+                # console.log(new_order)
 
                 if order == "cancel" && new_order == undefined
                     $(this).data("new_order", "reorder")
@@ -156,25 +184,32 @@ JcsCatering =
                     $(this).removeClass("reorder").addClass("cancel")
                     $(this).find("input").removeAttr("checked")
 
+                # ha még nincs order az adott napon
                 if order == "none" && new_order == undefined
                     $(this).data("new_order", "reorder")
                     $(this).find(".menu").text($(this).data("menu"))
-                    if $(this).data("closed") == 1
-                        $(this).find(".status").text("Utánrendelve")
+                    # if $(this).data("closed") == 1
+                        # $(this).find(".status").text("Utánrendelve")
                     $(this).addClass("reorder")
                     $(this).find("input").attr("checked","checked")
-                else if order == "none" && new_order != undefined
+                else if order == "none" && new_order is "reorder"
+                    $(this).data("new_order", "cancel")
+                    $(this).find(".status").empty()
+                    $(this).find(".menu").text("Lemondás")
+                    $(this).removeClass("reorder").addClass("cancel")
+                    $(this).find("input").removeAttr("checked")
+                else if order == "none" && new_order is "cancel"
                     $(this).removeData("new_order")
                     $(this).find(".status").empty()
                     $(this).find(".menu").empty()
-                    $(this).removeClass("reorder")
-                    $(this).find("input").removeAttr("checked")
+                    $(this).removeClass("cancel")
+                    # $(this).find("input").removeAttr("checked")
 
-                if order == "order" && new_order == undefined
+                if order is "order" and new_order is undefined
                     $(this).data("new_order", "cancel")
-                    if $(this).data("closed") == 1
-                        $(this).find(".menu").text("Lemondva")
-                        $(this).removeClass("order").addClass("cancel")
+                    # if $(this).data("closed") == 1
+                    $(this).find(".menu").text("Lemondva")
+                    $(this).removeClass("order").addClass("cancel")
                     # else $(this).data("closed") == 0
                         # $(this).removeClass("order").addClass("cancel")
                     $(this).find("input").removeAttr("checked")
@@ -197,6 +232,8 @@ JcsCatering =
                         $(this).find(".status").text("Utánrendelve")
                     $(this).removeClass("cancel").addClass("reorder")
                     $(this).find("input").attr("checked","checked")
+
+                JcsCatering.processOrders()
         
         $("#ordering-calendar").on "click", "li.day input[type=checkbox]", (event) ->
             $(this).parents("li.day").trigger("click")
