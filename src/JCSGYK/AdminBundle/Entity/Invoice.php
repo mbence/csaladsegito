@@ -465,7 +465,6 @@ class Invoice
             $payments[] = [date('Y-m-d'), $amount];
             $this->setPayments($payments);
             $this->updateBalance();
-            $this->updateStatus();
         }
     }
 

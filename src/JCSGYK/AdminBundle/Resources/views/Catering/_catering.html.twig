@@ -32,6 +32,17 @@
                     <td colspan="3">{{ catering.discount|fcurr }}</td>
                 </tr>
                 {% endif %}
+                <tr>
+                    <th>{{ 'Egyenleg'|trans }}:</th>
+                    <td colspan="3">
+                        {% if catering.balance > 0 %}
+                            <span style="color:red;">{{ catering.balance|fcurr }} tartozás</span>
+                        {% endif %}
+                        {% if catering.balance < 0 %}
+                            <span>{{ catering.balance|fcurr }} jóváírás</span>
+                        {% endif %}
+                    </td>
+                </tr>
             </table>
         </div>
     {% else %}

@@ -12,11 +12,11 @@ class Version20140516214343 extends AbstractMigration
 {
     public function up(Schema $schema)
     {
-        $this->addSql("ALTER TABLE `client_order` ADD COLUMN `billed_state` tinyint(1) DEFAULT NULL AFTER `closed`;");
+        $this->addSql("ALTER TABLE `catering` ADD COLUMN `balance` int DEFAULT NULL AFTER `discount`;");
     }
 
     public function down(Schema $schema)
     {
-        $this->addSql("ALTER TABLE `client_order` DROP COLUMN `billed_state` ;");
+        $this->addSql("ALTER TABLE `catering` DROP COLUMN `balance`;");
     }
 }

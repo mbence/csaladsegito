@@ -134,6 +134,7 @@ class ClosingService
             if (!empty($invoice)) {
                 $invoice_count ++;
             }
+            $invocie_service->updateBalance($client->getCatering());
         }
         if (empty($invoice_count)) {
             $this->output(sprintf("%s: Nincsen új megrendelés", date('H:i:s')));

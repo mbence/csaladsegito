@@ -3159,6 +3159,10 @@ table.task-list tr:hover td {
 .catering-invoice {
     cursor: pointer;
 }
+.invoice-container {
+    overflow: auto;
+    max-height: 300px;
+}
 .clearfix:after {
   content: ".";
   visibility: hidden;

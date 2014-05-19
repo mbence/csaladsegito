@@ -317,4 +317,28 @@ class InvoiceService
             ->setFirstResult($offset)
             ->getResult();
     }
+
+    /**
+     * Update client balance
+     * @param \JCSGYK\AdminBundle\Entity\Catering $catering
+     */
+    public function updateBalance(Catering $catering)
+    {
+        $balance = 0;
+
+        $em = $this->container->get('doctrine')->getManager();
+        // calculate the balance of the open invoices
+        $res = $em->createQuery("SELECT SUM(i.amount - i.balance) as balance FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client AND i.status = :status")
+            ->setParameter('client', $catering->getClient())
+            ->setParameter('status', Invoice::OPEN)
+            ->getSingleResult();
+
+        if (isset($res['balance'])) {
+            $balance = $res['balance'];
+        }
+        $catering->setBalance($res['balance']);
+        $em->flush();
+
+        return $balance;
+    }
 }

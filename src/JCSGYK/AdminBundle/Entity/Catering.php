@@ -71,6 +71,13 @@ class Catering
     private $discount;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="balance", type="integer", nullable=true)
+     */
+    private $balance;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="is_active", type="boolean", nullable=true)
@@ -300,5 +307,29 @@ class Catering
     public function getIsActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * Set balance
+     *
+     * @param integer $balance
+     *
+     * @return Catering
+     */
+    public function setBalance($balance)
+    {
+        $this->balance = $balance;
+
+        return $this;
+    }
+
+    /**
+     * Get balance
+     *
+     * @return integer 
+     */
+    public function getBalance()
+    {
+        return $this->balance;
     }
 }

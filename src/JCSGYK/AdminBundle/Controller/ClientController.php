@@ -593,6 +593,7 @@ class ClientController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
         $request = $this->getRequest();
 
         if (!empty($id)) {
@@ -601,27 +602,36 @@ class ClientController extends Controller
 
         if (!empty($client)) {
             // find the last invoices of the client
-            $invoices = $client->getInvoices();
+            $invoices = $em->createQuery("SELECT i FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id AND i.client= :client ORDER BY i.createdAt DESC")
+                ->setParameter('company_id', $company_id)
+                ->setParameter('client', $client)
+                ->setMaxResults(20)
+                ->getResult();
 
             // create the empty form
             $form_builder = $this->createFormBuilder();
+            $field_count = 0;
 
             foreach ($invoices as $invoice) {
                 if (Invoice::OPEN == $invoice->getStatus()) {
+                    $field_count++;
+                    $open_amount = $invoice->getAmount() - $invoice->getBalance();
+
                     $form_builder->add('i' . $invoice->getId(), 'text', [
-                        'label' => 'Befizetés',
+                        'label' => $open_amount > 0 ? 'Befizetés' : 'Jóváírás',
                         'attr'  => [
                             'class' => 'short',
                         ],
                     ]);
-                    $open_amount = $invoice->getAmount() - $invoice->getBalance();
-                    $form_builder->add('b' . $invoice->getId(), 'button', [
-                        'label' => $ae->formatCurrency($open_amount),
-                        'attr'  => [
-                            'class' => 'greybutton smallbutton invoice_full_amount',
-                            'data-amount' => $open_amount,
-                        ]
-                    ]);
+                    if ($open_amount) {
+                        $form_builder->add('b' . $invoice->getId(), 'button', [
+                            'label' => $ae->formatCurrency($open_amount),
+                            'attr'  => [
+                                'class' => 'greybutton smallbutton invoice_full_amount',
+                                'data-amount' => $open_amount,
+                            ]
+                        ]);
+                    }
                 }
             }
 
@@ -641,12 +651,17 @@ class ClientController extends Controller
                                     $form->get($field)->addError(new FormError('Túlfizetés nem lehetséges! Adjon be pontos összeget!'));
                                 }
                             }
+                            // run the update even if no data was sent
+                            $invoice->updateStatus();
                         }
                     }
 
                     // validate the form again
                     if ($form->isValid()) {
                         $em->flush();
+
+                        // update the client global balance too
+                        $this->get('jcs.invoice')->updateBalance($client->getCatering());
 
                         $this->get('session')->getFlashBag()->add('notice', 'Befizetés elmentve');
 
@@ -658,9 +673,10 @@ class ClientController extends Controller
             }
 
             return $this->render('JCSGYKAdminBundle:Catering:invoices_dialog.html.twig', [
-                'client'    => $client,
-                'invoices'  => $invoices,
-                'form'      => $form->createView(),
+                'client'        => $client,
+                'invoices'      => $invoices,
+                'form'          => $form->createView(),
+                'field_count'   => $field_count,
             ]);
         }
         else {
