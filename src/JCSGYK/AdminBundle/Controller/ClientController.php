@@ -12,6 +12,7 @@ use JMS\SecurityExtraBundle\Security\Authorization\Expression\Expression;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Form\FormError;
 
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Form\Type\ClientType;
@@ -225,7 +226,7 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-                    
+
                     // save
                     $em->flush();
 
@@ -330,9 +331,9 @@ class ClientController extends Controller
                                     $new_order->setCancel(true);
                                 }
                                 $em->persist($new_order);
-                                
+
                                 break;
-                            
+
                             case 'update':
                                 $last_order = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->findOneBy(['date' => new \DateTime($date), 'companyId' => $company_id, 'client' => $client]);
 
@@ -349,14 +350,14 @@ class ClientController extends Controller
                                     $last_order->setOrder(false);
                                     $last_order->setCancel(true);
                                     $last_order->setClosed(false);
-                                    
+
                                     // $em->persist($last_order);
                                 }
                                 elseif ($order['value'] == 2) {
                                     $last_order->setOrder(true);
                                     $last_order->setCancel(true);
                                     $last_order->setClosed(false);
-                                    
+
                                     // $em->persist($last_order);
                                 }
                                 // elseif ($order['value'] == 0) {
@@ -590,13 +591,92 @@ class ClientController extends Controller
      */
     public function invoicesAction($id)
     {
+        $em = $this->getDoctrine()->getManager();
+        $ae = $this->container->get('jcs.twig.adminextension');
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $request = $this->getRequest();
+
         if (!empty($id)) {
             $client = $this->getClient($id);
         }
 
         if (!empty($client)) {
+            // find the last invoices of the client
+            $invoices = $em->createQuery("SELECT i FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id AND i.client= :client ORDER BY i.createdAt DESC")
+                ->setParameter('company_id', $company_id)
+                ->setParameter('client', $client)
+                ->setMaxResults(20)
+                ->getResult();
+
+            // create the empty form
+            $form_builder = $this->createFormBuilder();
+            $field_count = 0;
+
+            foreach ($invoices as $invoice) {
+                if (Invoice::OPEN == $invoice->getStatus()) {
+                    $field_count++;
+                    $open_amount = $invoice->getAmount() - $invoice->getBalance();
+
+                    $form_builder->add('i' . $invoice->getId(), 'text', [
+                        'label' => $open_amount > 0 ? 'Befizetés' : 'Jóváírás',
+                        'attr'  => [
+                            'class' => 'short',
+                        ],
+                    ]);
+                    if ($open_amount) {
+                        $form_builder->add('b' . $invoice->getId(), 'button', [
+                            'label' => $ae->formatCurrency($open_amount),
+                            'attr'  => [
+                                'class' => 'greybutton smallbutton invoice_full_amount',
+                                'data-amount' => $open_amount,
+                            ]
+                        ]);
+                    }
+                }
+            }
+
+            $form = $form_builder->getForm();
+
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    $data = $form->getData();
+                    foreach ($invoices as $invoice) {
+                        if (Invoice::OPEN == $invoice->getStatus()) {
+                            $field = 'i' . $invoice->getId();
+                            if (!empty($data[$field])) {
+                                $res = $invoice->addPayment($data['i' . $invoice->getId()]);
+                                if (-1 == $res) {
+                                    $form->get($field)->addError(new FormError('Túlfizetés nem lehetséges! Adjon be pontos összeget!'));
+                                }
+                            }
+                            // run the update even if no data was sent
+                            $invoice->updateStatus();
+                        }
+                    }
+
+                    // validate the form again
+                    if ($form->isValid()) {
+                        $em->flush();
+
+                        // update the client global balance too
+                        $this->get('jcs.invoice')->updateBalance($client->getCatering());
+
+                        $this->get('session')->getFlashBag()->add('notice', 'Befizetés elmentve');
+
+                        return $this->render('JCSGYKAdminBundle:Catering:invoices_dialog.html.twig', [
+                            'success' => true,
+                        ]);
+                    }
+                }
+            }
+
             return $this->render('JCSGYKAdminBundle:Catering:invoices_dialog.html.twig', [
-                'client' => $client,
+                'client'        => $client,
+                'invoices'      => $invoices,
+                'form'          => $form->createView(),
+                'field_count'   => $field_count,
             ]);
         }
         else {

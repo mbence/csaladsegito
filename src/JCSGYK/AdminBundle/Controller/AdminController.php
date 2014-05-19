@@ -463,6 +463,7 @@ class AdminController extends Controller
         $ds = $this->container->get('jcs.ds');
         // get the current company id from the datatore
         $company_id = $ds->getCompanyId();
+        $user = $ds->getUser();
 
         if (!is_null($id)) {
             $closing = $em->getRepository('JCSGYKAdminBundle:MonthlyClosing')->findBy(['id' => $id, 'companyId' => $company_id]);
@@ -510,7 +511,7 @@ class AdminController extends Controller
                 $kernel = $this->container->get('kernel');
                 $php = $this->container->getParameter('php_path', '/usr/bin/php');
 
-                $command = sprintf('%s %s/console jcs:closing %s --env=%s --no-debug', $php, $kernel->getRootDir(), $company_id, $kernel->getEnvironment());
+                $command = sprintf('%s %s/console jcs:closing %s --user=%s --env=%s --no-debug', $php, $kernel->getRootDir(), $company_id, $user->getId(), $kernel->getEnvironment());
                 if (0 == $data['period']) {
                     $command .= ' -a';
                 }

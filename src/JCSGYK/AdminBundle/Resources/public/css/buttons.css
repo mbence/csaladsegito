@@ -170,3 +170,8 @@ button.button, button.greybutton {
 .sub-vertical .submenu:hover {
     background-color: #eee;
 }
+
+button.smallbutton {
+    height: 23px;
+    font-size: 12px;
+}

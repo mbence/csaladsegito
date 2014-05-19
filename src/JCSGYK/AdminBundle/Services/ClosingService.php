@@ -126,8 +126,6 @@ class ClosingService
         $closing->setSummary($this->summary);
         $em->flush();
 
-        sleep(3);
-
         // create the invoices
         $invoice_count = 0;
         $invocie_service = $this->container->get('jcs.invoice');
@@ -136,6 +134,7 @@ class ClosingService
             if (!empty($invoice)) {
                 $invoice_count ++;
             }
+            $invocie_service->updateBalance($client->getCatering());
         }
         if (empty($invoice_count)) {
             $this->output(sprintf("%s: Nincsen új megrendelés", date('H:i:s')));
@@ -143,8 +142,6 @@ class ClosingService
         else {
             $this->output(sprintf("%s: %s db számla kiállítva", date('H:i:s'), $invoice_count));
         }
-
-      sleep(3);
 
         // create the EcoSTAT files
         $exp = $this->export();
@@ -163,8 +160,6 @@ class ClosingService
             $closing->setFiles($zip_file_contents);
             $closing->setSummary($this->summary);
             $em->flush();
-
-        sleep(3);
 
             // Send the EcoSTAT files to bookkeeping
             //$this->writeFiles();
@@ -294,8 +289,8 @@ class ClosingService
         $res = $this->addExportLine($data);
 
         if ($res) {
-            // set the invoice status to open (data exported to EcoSTAT)
-            $invoice->setStatus(Invoice::OPEN);
+            // set the invoice status to open or closed depending on the amount (data exported to EcoSTAT)
+            $invoice->setStatus($invoice->getAmount() == 0 ? Invoice::CLOSED : Invoice::OPEN);
         }
 
         return $res;
