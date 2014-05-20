@@ -44,13 +44,6 @@ class ClientOrder
     /**
      * @var integer
      *
-     * @ORM\Column(name="menu", type="smallint", nullable=true)
-     */
-    private $menu;
-
-    /**
-     * @var integer
-     *
      * @ORM\Column(name="`order`", type="integer", nullable=true)
      */
     private $order;
@@ -143,30 +136,6 @@ class ClientOrder
     public function getDate()
     {
         return $this->date;
-    }
-
-    /**
-     * Set menu
-     *
-     * @param integer $menu
-     *
-     * @return Catering
-     */
-    public function setMenu($menu)
-    {
-        $this->menu = $menu;
-
-        return $this;
-    }
-
-    /**
-     * Get menu
-     *
-     * @return integer
-     */
-    public function getMenu()
-    {
-        return $this->menu;
     }
 
     /**

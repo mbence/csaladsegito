@@ -232,14 +232,6 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-
-                    // check if menu was changed
-                    if ($original_catering->getMenu() != $catering->getMenu()) {
-                        // we must update the future orders with this menu!
-                        $update_from = new \DateTime('tomorrow');
-                        $em->getRepository("JCSGYKAdminBundle:ClientOrder")->updateMenu($client->getId(), $update_from, $catering->getMenu());
-                    }
-
                     // if isActive was changed we must cancel/reorder all future orders
                     if ($original_catering->getIsActive() != $catering->getIsActive()) {
                         // we must update the future orders with this menu!
@@ -343,7 +335,6 @@ class ClientController extends Controller
                                 $new_order->setDate(new \DateTime($date));
                                 $new_order->setCreator($user);
                                 $new_order->setClosed(false);
-                                $new_order->setMenu($client->getCatering()->getMenu());
 
                                 if ($order['value'] == 1) {
                                     $new_order->setOrder(true);
@@ -551,7 +542,7 @@ class ClientController extends Controller
                 }
                 // a hónap napjaihoz állítsuk be a "day" classt és a menü nevét adjuk hozzá
                 if (! is_null($day['day'])) {
-                    $new_day['menu'] = isset($changed_days[$date]) ? $changed_days[$date]->getMenu() : $menu;
+                    $new_day['menu'] = $menu;
                     $class[]         = 'day';
                 }
                 else {

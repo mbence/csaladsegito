@@ -68,22 +68,6 @@ class ClientOrderRepository extends EntityRepository
     }
 
     /**
-     * Update all future orders to the specified menu
-     * @param int $client_id
-     * @param \DateTime $start_date
-     * @param int $new_menu
-     * @return int number of changed records
-     */
-    public function updateMenu($client_id, $start_date, $new_menu)
-    {
-        return $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o SET o.menu = :menu WHERE o.client = :client_id AND o.date >= :start_date')
-            ->setParameter('client_id', $client_id)
-            ->setParameter('start_date', $start_date)
-            ->setParameter('menu', $new_menu)
-            ->execute();
-    }
-
-    /**
      * Cancel or reorder all future orders. Called when clientcatering is set to inactive/active
      *
      * @param int $client_id
@@ -141,5 +125,22 @@ class ClientOrderRepository extends EntityRepository
         }
 
         return $n;
+    }
+
+    public function getDailyOrders($company_id, $date)
+    {
+        // remove the time part of the dates
+        if ($date instanceof \DateTime) {
+            $date = $date->format('Y-m-d');
+        }
+
+        return $this->getEntityManager()
+            ->createQuery("SELECT b.id, b.name, b.address, a.menu, COUNT(o) as orders "
+                    . "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
+                    . "WHERE o.companyId = :company_id AND o.date = :date AND o.order = 1 AND o.cancel = 0 "
+                    . "GROUP BY a.club, a.menu")
+            ->setParameter('company_id', $company_id)
+            ->setParameter('date', $date)
+            ->getResult();
     }
 }
