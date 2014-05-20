@@ -544,7 +544,7 @@ class ClientController extends Controller
                 }
                 // a hónap napjaihoz állítsuk be a "day" classt és a menü nevét adjuk hozzá
                 if (! is_null($day['day'])) {
-                    $new_day['menu'] = $menu;
+                    $new_day['menu'] = isset($changed_days[$date]) ? $changed_days[$date]->getMenu() : $menu;
                     $class[]         = 'day';
                 }
                 else {
