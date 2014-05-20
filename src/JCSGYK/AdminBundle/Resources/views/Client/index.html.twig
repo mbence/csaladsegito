@@ -5,7 +5,7 @@
         <div class="contentscroller">
             <div id="searchblock">
                 <div id="search-head">
-                    {% if is_expr_granted("hasRole('ROLE_ADMIN') or hasRole('ROLE_ASSISTANCE') or hasRole('ROLE_FAMILY_HELP')") %}
+                    {% if is_expr_granted("hasRole('ROLE_ADMIN') or hasRole('ROLE_ASSISTANCE') or hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CATERING')") %}
                         {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_client']} %}
                     {% endif %}
 

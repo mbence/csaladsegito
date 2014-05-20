@@ -1,7 +1,7 @@
 {# Problems #}
 <div class="client-sub {% if notoggle is not defined %}togglable{% endif %}">{{ 'problémák'|trans }}</div>
 <div>
-    {% if is_expr_granted("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')") %}
+    {% if is_expr_granted("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE') or hasRole('ROLE_CATERING')") %}
         {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_problem']} %}
     {% endif %}
 
