@@ -4,51 +4,50 @@
 <div class="toppad">
     {% render(controller('JCSGYKAdminBundle:Menu:catering', { 'client': client })) %}
     <div class="clear"></div>
-    {% if catering.isActive %}
-        <div>
-            <table class="client" cellspacing="0" border="0">
-                <tr>
-                    <th>{{ 'Heti rendelések'|trans }}:</th>
-                    <td colspan="3">
-                        {{ client|cat_days }}
-                    </td>
-                </tr>
-                <tr>
-                    <th>{{ 'Klub'|trans }}:</th>
-                    <td colspan="3">{% if catering.club %}{{ catering.club.name }}{% endif %}</td>
-                </tr>
-                <tr>
-                    <th>{{ 'Ebéd'|trans }}:</th>
-                    <td colspan="3">{{ param(catering.menu) }}</td>
-                </tr>
-                <tr>
-                    <th>{{ 'Jövedelem'|trans }}:</th>
-                    <td>{{ catering.income|fcurr }}</td>
-                    <td colspan="2">{% if catering.isSingle %}({{ 'egyedülálló'|trans }}){% endif %}</td>
-                </tr>
-                {% if catering.discount %}
-                <tr>
-                    <th>{{ 'Mérséklés'|trans }}:</th>
-                    <td colspan="3">{{ catering.discount|fcurr }}</td>
-                </tr>
-                {% endif %}
-                <tr>
-                    <th>{{ 'Egyenleg'|trans }}:</th>
-                    <td colspan="3">
-                        {% if catering.balance > 0 %}
-                            <span style="color:red;">{{ catering.balance|fcurr }} tartozás</span>
-                        {% endif %}
-                        {% if catering.balance < 0 %}
-                            <span>{{ catering.balance|fcurr }} jóváírás</span>
-                        {% endif %}
-                    </td>
-                </tr>
-            </table>
-        </div>
-    {% else %}
+    {% if not catering.isActive %}
         <div class="catering-inactive">
-            Inaktív ügyfél
+            Szüneteltetve
         </div>
     {% endif %}
+    <div>
+        <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Heti rendelések'|trans }}:</th>
+                <td colspan="3">
+                    {{ client|cat_days }}
+                </td>
+            </tr>
+            <tr>
+                <th>{{ 'Klub'|trans }}:</th>
+                <td colspan="3">{% if catering.club %}{{ catering.club.name }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Ebéd'|trans }}:</th>
+                <td colspan="3">{{ param(catering.menu) }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Jövedelem'|trans }}:</th>
+                <td>{{ catering.income|fcurr }}</td>
+                <td colspan="2">{% if catering.isSingle %}({{ 'egyedülálló'|trans }}){% endif %}</td>
+            </tr>
+            {% if catering.discount %}
+            <tr>
+                <th>{{ 'Mérséklés'|trans }}:</th>
+                <td colspan="3">{{ catering.discount|fcurr }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>{{ 'Egyenleg'|trans }}:</th>
+                <td colspan="3">
+                    {% if catering.balance > 0 %}
+                        <span style="color:red;">{{ catering.balance|fcurr }} tartozás</span>
+                    {% endif %}
+                    {% if catering.balance < 0 %}
+                        <span>{{ catering.balance|fcurr }} jóváírás</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
 {% endif %}

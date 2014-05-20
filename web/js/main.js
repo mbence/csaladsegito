@@ -16204,10 +16204,13 @@ JcsCatering = {
       return false;
     });
     $("input[name='catering[is_active]']").on("change", function() {
+      $("#catering_form .warning").hide();
       if ("1" === $("input[name='catering[is_active]']:checked").val()) {
-        return $("#catering-fields").removeClass("disabled");
+        $("#catering-fields").removeClass("disabled");
+        return $("#catering_form .is_active_reorder").show();
       } else {
-        return $("#catering-fields").addClass("disabled");
+        $("#catering-fields").addClass("disabled");
+        return $("#catering_form .is_active_cancel").show();
       }
     });
     $("#catering_form").submit(function() {

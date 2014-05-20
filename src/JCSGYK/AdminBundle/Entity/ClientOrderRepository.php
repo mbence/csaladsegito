@@ -67,6 +67,13 @@ class ClientOrderRepository extends EntityRepository
         return $orders;
     }
 
+    /**
+     * Update all future orders to the specified menu
+     * @param int $client_id
+     * @param \DateTime $start_date
+     * @param int $new_menu
+     * @return int number of changed records
+     */
     public function updateMenu($client_id, $start_date, $new_menu)
     {
         return $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o SET o.menu = :menu WHERE o.client = :client_id AND o.date >= :start_date')
@@ -74,5 +81,65 @@ class ClientOrderRepository extends EntityRepository
             ->setParameter('start_date', $start_date)
             ->setParameter('menu', $new_menu)
             ->execute();
+    }
+
+    /**
+     * Cancel or reorder all future orders. Called when clientcatering is set to inactive/active
+     *
+     * @param int $client_id
+     * @param \DateTime $start_date
+     * @param bool $new_state 1: order, 0: cancel
+     * @return int number of changed records
+     */
+    public function updateOrders($client_id, $start_date, $new_state)
+    {
+        $n = 0;
+
+        if ($new_state) {
+            // REORDER
+            // $new_stat = 1
+            // 011 -> 100
+            // 010 -> 100
+            // 111 -> 100
+            $n += $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o '
+                    . 'SET o.order = 1, o.cancel = 0, o.closed = 0 '
+                    . 'WHERE o.client = :client_id AND o.date >= :start_date AND '
+                    . '((o.order = 0 AND o.cancel = 1 AND o.closed = 0) OR '
+                    . '(o.order = 0 AND o.cancel = 1 AND o.closed = 1) OR '
+                    . '(o.order = 1 AND o.cancel = 1 AND o.closed = 1))')
+                ->setParameter('client_id', $client_id)
+                ->setParameter('start_date', $start_date)
+                ->execute();
+            // 110 -> 101
+            $n += $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o '
+                    . 'SET o.order = 1, o.cancel = 0, o.closed = 1 '
+                    . 'WHERE o.client = :client_id AND o.date >= :start_date AND '
+                    . 'o.order = 1 AND o.cancel = 1 AND o.closed = 0')
+                ->setParameter('client_id', $client_id)
+                ->setParameter('start_date', $start_date)
+                ->execute();
+        }
+        else {
+            // CANCEL
+            // $new_state = 0
+            // 100 -> 010
+            $n += $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o '
+                    . 'SET o.order = 0, o.cancel = 1, o.closed = 0 '
+                    . 'WHERE o.client = :client_id AND o.date >= :start_date AND '
+                    . 'o.order = 1 AND o.cancel = 0 AND o.closed = 0')
+                ->setParameter('client_id', $client_id)
+                ->setParameter('start_date', $start_date)
+                ->execute();
+            // 101 -> 110
+            $n += $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o '
+                    . 'SET o.order = 1, o.cancel = 1, o.closed = 0 '
+                    . 'WHERE o.client = :client_id AND o.date >= :start_date AND '
+                    . 'o.order = 1 AND o.cancel = 0 AND o.closed = 1')
+                ->setParameter('client_id', $client_id)
+                ->setParameter('start_date', $start_date)
+                ->execute();
+        }
+
+        return $n;
     }
 }

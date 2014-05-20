@@ -33,10 +33,13 @@ JcsCatering =
             false
         # active - inactive radio
         $("input[name='catering[is_active]']").on "change", ->
+            $("#catering_form .warning").hide()
             if "1" == $("input[name='catering[is_active]']:checked").val()
                 $("#catering-fields").removeClass("disabled")
+                $("#catering_form .is_active_reorder").show()
             else
                 $("#catering-fields").addClass("disabled")
+                $("#catering_form .is_active_cancel").show()
 
         # form submit
         $("#catering_form").submit ->

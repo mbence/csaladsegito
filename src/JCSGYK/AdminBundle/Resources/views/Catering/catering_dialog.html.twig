@@ -20,7 +20,16 @@
         </tr>
     </table>
 
-    <div>{{ form_errors(form.is_active) }}{{ form_widget(form.is_active) }}</div>
+    <div>
+        {% if not client.catering.isActive %}
+            <div class="catering-inactive">
+                Szüneteltetve
+            </div>
+        {% endif %}
+        {{ form_errors(form.is_active) }}{{ form_widget(form.is_active) }}
+        <div class="warning is_active_cancel">Figyelem! Szüneteltetéskor minden jövőbeni megrendelés lemondásra kerül!</div>
+        <div class="warning is_active_reorder">Figyelem! A szüneteltetés lezárásakor minden jövőbeni megrendelés újraaktiválásra kerül!</div>
+    </div>
 
     <div id="catering-fields" {% if not client.catering.isActive %}class="disabled"{% endif %}>
         {% include "JCSGYKAdminBundle:Catering:_edit_weekly_orders.html.twig" %}

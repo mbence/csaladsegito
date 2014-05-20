@@ -1052,3 +1052,10 @@ table.task-list tr:hover td {
     overflow: auto;
     max-height: 300px;
 }
+#catering_form .warning {
+    color: red;
+    font-size: 12px;
+    margin: 6px 0 0 0;
+    display: none;
+    text-align: center;
+}

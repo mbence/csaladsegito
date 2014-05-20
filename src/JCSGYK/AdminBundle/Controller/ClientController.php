@@ -223,7 +223,7 @@ class ClientController extends Controller
             $clubs = $ds->getClubs();
             $catering = $client->getCatering();
 
-            $original_menu = $catering->getMenu();
+            $original_catering = clone $catering;
 
             $form = $this->createForm(new CateringType($ds, $clubs), $catering);
 
@@ -234,10 +234,17 @@ class ClientController extends Controller
                 if ($form->isValid()) {
 
                     // check if menu was changed
-                    if ($original_menu != $catering->getMenu()) {
+                    if ($original_catering->getMenu() != $catering->getMenu()) {
                         // we must update the future orders with this menu!
                         $update_from = new \DateTime('tomorrow');
                         $em->getRepository("JCSGYKAdminBundle:ClientOrder")->updateMenu($client->getId(), $update_from, $catering->getMenu());
+                    }
+
+                    // if isActive was changed we must cancel/reorder all future orders
+                    if ($original_catering->getIsActive() != $catering->getIsActive()) {
+                        // we must update the future orders with this menu!
+                        $update_from = new \DateTime('tomorrow');
+                        $em->getRepository("JCSGYKAdminBundle:ClientOrder")->updateOrders($client->getId(), $update_from, $catering->getIsActive());
                     }
 
                     // save

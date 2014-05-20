@@ -61,7 +61,7 @@ class CateringType extends AbstractType
         $builder->add('discount', 'text', ['label' => 'Mérséklés (Ft)', 'required' => false]);
         $builder->add('is_active', 'choice', [
             'label' => '',
-            'choices' => [1 => 'Aktív', 0 => 'Inaktív'],
+            'choices' => [1 => 'Aktiválás', 0 => 'Szüneteltetés'],
             'expanded' => true
         ]);
     }

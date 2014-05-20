@@ -257,10 +257,11 @@ class InvoiceService
         $user = $this->ds->getUser();
         $company_id = $this->ds->getCompanyId();
         $orders_repo = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder');
+        $catering = $client->getCatering();
 
         // list of days: key is ISO date format, when food was ordered, value is 1 or 0
         // based on order template
-        $days = $this->getMonthlySubs($client->getCatering(), $start_date, $end_date);
+        $days = $this->getMonthlySubs($catering, $start_date, $end_date);
 
         // find the already created open records for this time period
         $orders = $orders_repo->getOrdersForPeriod($client->getId(), $start_date, $end_date);
@@ -286,11 +287,19 @@ class InvoiceService
                     $order->setCompanyId($company_id);
                     $order->setClient($client);
                     $order->setDate($date);
-                    $order->setOrder(true);
-                    $order->setCancel(false);
-                    $order->setClosed(false);
+                    if ($catering->getIsActive()) {
+                        $order->setOrder(true);
+                        $order->setCancel(false);
+                        $order->setClosed(false);
+                    }
+                    else {
+                        // for inactive clients we set a cancelled record
+                        $order->setOrder(false);
+                        $order->setCancel(true);
+                        $order->setClosed(false);
+                    }
                     $order->setCreator($user);
-                    $order->setMenu($client->getCatering()->getMenu());
+                    $order->setMenu($catering->getMenu());
 
                     $em->persist($order);
                 }
