@@ -221,8 +221,11 @@ class ClientController extends Controller
 
             // get club list by user role
             $clubs = $ds->getClubs();
+            $catering = $client->getCatering();
 
-            $form = $this->createForm(new CateringType($ds, $clubs), $client->getCatering());
+            $original_menu = $catering->getMenu();
+
+            $form = $this->createForm(new CateringType($ds, $clubs), $catering);
 
             // save the catering data
             if ($request->isMethod('POST')) {
@@ -230,14 +233,21 @@ class ClientController extends Controller
 
                 if ($form->isValid()) {
 
+                    // check if menu was changed
+                    if ($original_menu != $catering->getMenu()) {
+                        // we must update the future orders with this menu!
+                        $update_from = new \DateTime('tomorrow');
+                        $em->getRepository("JCSGYKAdminBundle:ClientOrder")->updateMenu($client->getId(), $update_from, $catering->getMenu());
+                    }
+
                     // save
                     $em->flush();
 
                     $this->get('session')->getFlashBag()->add('notice', 'Étkeztetés elmentve');
 
-                    return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
-                        'success' => true,
-                    ]);
+//                    return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
+//                        'success' => true,
+//                    ]);
                 }
             }
 
@@ -326,6 +336,8 @@ class ClientController extends Controller
                                 $new_order->setDate(new \DateTime($date));
                                 $new_order->setCreator($user);
                                 $new_order->setClosed(false);
+                                $new_order->setMenu($client->getCatering()->getMenu());
+
                                 if ($order['value'] == 1) {
                                     $new_order->setOrder(true);
                                     $new_order->setCancel(false);

@@ -66,4 +66,13 @@ class ClientOrderRepository extends EntityRepository
 
         return $orders;
     }
+
+    public function updateMenu($client_id, $start_date, $new_menu)
+    {
+        return $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o SET o.menu = :menu WHERE o.client = :client_id AND o.date >= :start_date')
+            ->setParameter('client_id', $client_id)
+            ->setParameter('start_date', $start_date)
+            ->setParameter('menu', $new_menu)
+            ->execute();
+    }
 }
