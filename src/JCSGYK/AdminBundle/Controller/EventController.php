@@ -49,7 +49,7 @@ class EventController extends Controller
     /**
      * Edits the event
      *
-     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE') or hasRole('ROLE_CATERING')")
      */
     public function editAction($id = null, $problem_id = null)
     {
@@ -146,7 +146,7 @@ class EventController extends Controller
     /**
      * Delete an event
      *
-     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE') or hasRole('ROLE_CATERING')")
      */
     public function deleteAction($id)
     {

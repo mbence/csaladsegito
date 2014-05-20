@@ -66,7 +66,7 @@ class ProblemController extends Controller
     /**
      * Edits the problem
      *
-     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE') or hasRole('ROLE_CATERING')")
      */
     public function editAction($id = null, $client_id = null)
     {
@@ -177,7 +177,7 @@ class ProblemController extends Controller
     /**
      * Closes the problem
      *
-     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE') or hasRole('ROLE_CATERING')")
      */
     public function closeAction($id)
     {
@@ -262,7 +262,7 @@ class ProblemController extends Controller
     /**
      * Get the list of events for a problem
      *
-     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE')")
+     * @PreAuthorize("hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CHILD_WELFARE') or hasRole('ROLE_CATERING')")
      */
     public function getEventsAction($id)
     {
