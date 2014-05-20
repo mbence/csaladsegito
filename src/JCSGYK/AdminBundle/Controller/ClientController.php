@@ -245,9 +245,9 @@ class ClientController extends Controller
 
                     $this->get('session')->getFlashBag()->add('notice', 'Étkeztetés elmentve');
 
-//                    return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
-//                        'success' => true,
-//                    ]);
+                    return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
+                        'success' => true,
+                    ]);
                 }
             }
 
