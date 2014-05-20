@@ -171,6 +171,9 @@ admin_clubs:
 admin_closings:
     pattern:  /admin/closings/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:closings, id: null }
+admin_dailyorders:
+    pattern:  /admin/dailyorders/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:dailyorders, id: null }
 
 login_redirector:
     pattern:   /loginredirector

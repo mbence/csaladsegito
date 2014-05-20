@@ -542,6 +542,86 @@ class AdminController extends Controller
         ]);
     }
 
+    public function dailyordersAction($id = null)
+    {
+        $request = $this->getRequest();
+        $order = null;
+        $form_view = null;
+        $auto_refresh = false;
+
+        $em = $this->getDoctrine()->getManager();
+        $ds = $this->container->get('jcs.ds');
+        // get the current company id from the datatore
+        $company_id = $ds->getCompanyId();
+        $user = $ds->getUser();
+
+        if (!is_null($id)) {
+            $order = $em->getRepository('JCSGYKAdminBundle:DailyOrder')->findBy(['id' => $id, 'companyId' => $company_id]);
+            if (!empty($order[0])) {
+                $order = $order[0];
+            }
+
+            if (!empty($order->getFile()) && $request->query->get('download')) {
+                // send the zip file to download
+                $fn = 'konyhai_megrendeles_' . $order->getCreatedAt()->format('Ymd') . '.zip';
+
+                return $this->sendDownloadResponse($fn, stream_get_contents($order->getFile()), 'application/zip');
+            }
+        }
+
+        // check the background process
+        $process = $this->get('session')->get('dailyorders_process');
+        if (!empty($process)) {
+            if ($process->isRunning()) {
+                $auto_refresh = true;
+
+            }
+            else {
+                $this->get('session')->remove('dailyorders_process');
+            }
+        }
+
+        $form = $this->createFormBuilder()->getForm();
+
+        $dailyorders_service = $this->container->get('jcs.orders');
+
+        // manual run
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isValid() && 'manual' == $request->request->get('run')) {
+
+                // create a process for the background running
+                $kernel = $this->container->get('kernel');
+                $php = $this->container->getParameter('php_path', '/usr/bin/php');
+
+                $command = sprintf('%s %s/console jcs:dailyorders %s --user=%s --env=%s --no-debug', $php, $kernel->getRootDir(), $company_id, $user->getId(), $kernel->getEnvironment());
+
+//                $process = new BackgroundProcess($command);
+//                $process->run();
+
+                // save the process in session
+//                $this->get('session')->set('dailyorders_process', $process);
+
+                $order = $dailyorders_service->run();
+
+                if (!empty($order)) {
+                    $id = $order->getId();
+                }
+
+                $this->get('session')->getFlashBag()->add('notice', 'Napi megrendelés elindítva');
+
+                //return $this->redirect($this->generateUrl('admin_dailyorders', ['id' => $id]));
+            }
+        }
+
+        return $this->render('JCSGYKAdminBundle:Admin:dailyorders.html.twig', [
+            'orders' => $dailyorders_service->getList(),
+            'act' => $order,
+            'form' => $form->createView(),
+            'auto_refresh' => $auto_refresh,
+        ]);
+    }
+
     /**
      * System update action
      *

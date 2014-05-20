@@ -12,6 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class DailyOrder
 {
+    const RUNNING  = 1;
+    const SUCCESS   = 2;
+    const ERROR     = -1;
+    
     /**
      * @var integer
      *

@@ -10,6 +10,7 @@ use JCSGYK\AdminBundle\Entity\Relation;
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\MonthlyClosing;
 use JCSGYK\AdminBundle\Entity\Invoice;
+use JCSGYK\AdminBundle\Entity\DailyOrder;
 
 /**
  * Service for Data Store
@@ -69,6 +70,12 @@ class DataStore
         MonthlyClosing::ERROR       => 'Hiba',
     ];
 
+    private $dailyorderStatuses = [
+        DailyOrder::RUNNING     => 'Fut',
+        DailyOrder::SUCCESS     => 'Kész',
+        DailyOrder::ERROR       => 'Hiba',
+    ];
+
     private $invoiceStatuses = [
         Invoice::READY_TO_SEND   => 'Kiküldésre vár',
         Invoice::OPEN            => 'Befizetésre vár',
@@ -107,6 +114,11 @@ class DataStore
     public function getClosingStatus($status)
     {
         return isset($this->closingStatuses[$status]) ? $this->closingStatuses[$status] : false;
+    }
+
+    public function getDailyOrderStatus($status)
+    {
+        return isset($this->dailyorderStatuses[$status]) ? $this->dailyorderStatuses[$status] : false;
     }
 
     public function getInvoiceStatus($status)
