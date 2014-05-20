@@ -115,10 +115,11 @@ JcsCatering =
         JcsModal.init()
 
     initMenuList: ->
-        # save selected menu for later using
-        $("#catering_menu").data("selected_menu", $("#catering_menu").val())
-        JcsCatering.processMenuList($("#catering_club").val())
-        JcsCatering.setupMenuFiltering()
+        if $("#catering_menu").length and $("#catering_club").length
+            # save selected menu for later using
+            $("#catering_menu").data("selected_menu", $("#catering_menu").val())
+            JcsCatering.processMenuList($("#catering_club").val())
+            JcsCatering.setupMenuFiltering()
 
     setupMenuFiltering: ->
         $("#catering_club").change ->

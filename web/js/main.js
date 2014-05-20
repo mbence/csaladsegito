@@ -16277,9 +16277,11 @@ JcsCatering = {
     return JcsModal.init();
   },
   initMenuList: function() {
-    $("#catering_menu").data("selected_menu", $("#catering_menu").val());
-    JcsCatering.processMenuList($("#catering_club").val());
-    return JcsCatering.setupMenuFiltering();
+    if ($("#catering_menu").length && $("#catering_club").length) {
+      $("#catering_menu").data("selected_menu", $("#catering_menu").val());
+      JcsCatering.processMenuList($("#catering_club").val());
+      return JcsCatering.setupMenuFiltering();
+    }
   },
   setupMenuFiltering: function() {
     return $("#catering_club").change(function() {
