@@ -135,7 +135,7 @@ class ClientOrderRepository extends EntityRepository
         }
 
         return $this->getEntityManager()
-            ->createQuery("SELECT b.id, b.name, b.address, a.menu, COUNT(o) as orders "
+            ->createQuery("SELECT b.id, a.menu, COUNT(o) as orders "
                     . "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
                     . "WHERE o.companyId = :company_id AND o.date = :date AND o.order = 1 AND o.cancel = 0 "
                     . "GROUP BY a.club, a.menu")

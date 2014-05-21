@@ -510,13 +510,13 @@ class AdminController extends Controller
                 // create a process for the background running
                 $kernel = $this->container->get('kernel');
                 $php = $this->container->getParameter('php_path', '/usr/bin/php');
-
-                $command = sprintf('%s %s/console jcs:closing %s --user=%s --env=%s --no-debug', $php, $kernel->getRootDir(), $company_id, $user->getId(), $kernel->getEnvironment());
+                $console = sprintf('%s %s/console', $php, $kernel->getRootDir());
+                $command = sprintf('jcs:closing %s --user=%s --env=%s --no-debug', $company_id, $user->getId(), $kernel->getEnvironment());
                 if (0 == $data['period']) {
                     $command .= ' -a';
                 }
 
-                $process = new BackgroundProcess($command);
+                $process = new BackgroundProcess($console . ' ' . $command);
                 $process->run();
 
                 // save the process in session
@@ -563,9 +563,9 @@ class AdminController extends Controller
 
             if (!empty($order->getFile()) && $request->query->get('download')) {
                 // send the zip file to download
-                $fn = 'konyhai_megrendeles_' . $order->getCreatedAt()->format('Ymd') . '.zip';
+                $attachment = 'megrendeles_' . $order->getDate()->format('Y.m.d.') . $ds->getDaysOfWeek($order->getDate()->format('N')) . '.xlsx';
 
-                return $this->sendDownloadResponse($fn, stream_get_contents($order->getFile()), 'application/zip');
+                return $this->sendDownloadResponse($attachment, stream_get_contents($order->getFile()), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             }
         }
 
@@ -594,15 +594,16 @@ class AdminController extends Controller
                 $kernel = $this->container->get('kernel');
                 $php = $this->container->getParameter('php_path', '/usr/bin/php');
 
-                $command = sprintf('%s %s/console jcs:dailyorders %s --user=%s --env=%s --no-debug', $php, $kernel->getRootDir(), $company_id, $user->getId(), $kernel->getEnvironment());
+                $console = sprintf('%s %s/console', $php, $kernel->getRootDir());
+                $command = sprintf('jcs:orders %s --user=%s --env=%s --no-debug' , $company_id, $user->getId(), $kernel->getEnvironment());
 
-//                $process = new BackgroundProcess($command);
-//                $process->run();
+                $process = new BackgroundProcess($console . ' ' . $command);
+                $process->run();
 
                 // save the process in session
-//                $this->get('session')->set('dailyorders_process', $process);
+                $this->get('session')->set('dailyorders_process', $process);
 
-                $order = $dailyorders_service->run();
+//                $order = $dailyorders_service->run();
 
                 if (!empty($order)) {
                     $id = $order->getId();
@@ -610,7 +611,7 @@ class AdminController extends Controller
 
                 $this->get('session')->getFlashBag()->add('notice', 'Napi megrendelés elindítva');
 
-                //return $this->redirect($this->generateUrl('admin_dailyorders', ['id' => $id]));
+                return $this->redirect($this->generateUrl('admin_dailyorders', ['id' => $id]));
             }
         }
 

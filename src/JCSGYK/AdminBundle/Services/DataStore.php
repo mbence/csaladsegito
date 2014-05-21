@@ -450,6 +450,13 @@ class DataStore
         return empty($month) || !isset($months[$month - 1]) ? $months : $months[$month - 1];
     }
 
+    public function getDaysOfWeek($day = 0)
+    {
+        $days = ['hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat', 'vasárnap'];
+
+        return empty($day) || !isset($days[$day - 1]) ? $days : $days[$day - 1];
+    }
+
     /**
      * Return the parent types
      * @return array

@@ -356,10 +356,14 @@ class AdminExtension extends \Twig_Extension
             elseif ('osdt' ==  $type) {
                 return $d->format('ymd') == date('ymd') ? $d->format('H:i:s') : $d->format('Y.m.d. H:i:s');
             }
-            // long date (with month name)
+            // full date with month and weekday name
+            elseif ('fd' ==  $type) {
+                return $d->format('Y. ') .  $this->translator->trans($this->ds->getMonth($d->format('n'))) . $d->format(' j. ') . $this->ds->getDaysOfWeek($d->format('N'));
+            }            // long date (with month name)
             else {
                 return $d->format('Y. ') .  $this->translator->trans($this->ds->getMonth($d->format('n'))) . $d->format(' j.');
             }
+
         }
     }
 

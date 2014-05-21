@@ -18,11 +18,11 @@
     </div>
     <h1 class="client">{{ 'Konyhai rendelések'|trans }}</h1>
 </div>
-<div class="adminblock" id="template-list">
+<div class="adminblock dailyorders" id="template-list">
     <div class="rightpad fullheight nocollapse">
         {% for order in orders %}
             <a href="{{ path('admin_dailyorders', {'id': order.id}) }}" class="tpl-list{% if act and act.id == order.id %} current{% endif %}">
-                {{ order.date|fdate('sd') }}: <strong>{{ order.status|order_status }}</strong>
+                {{ order.date|fdate('fd') }}: <strong class="floatright">{{ order.status|order_status }}</strong>
             </a>
         {% endfor %}
     </div>
@@ -33,7 +33,7 @@
         <table class="client" cellspacing="0" border="0">
             <tr>
                 <th>{{ 'Dátum'|trans }}:</th>
-                <td>{{ act.date|fdate }}</td>
+                <td>{{ act.date|fdate('fd') }}</td>
             </tr>
             <tr>
                 <th>{{ 'Státusz'|trans }}:</th>

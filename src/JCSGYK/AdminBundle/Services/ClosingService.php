@@ -181,8 +181,6 @@ class ClosingService
         $closing->setStatus(MonthlyClosing::SUCCESS);
         $em->flush();
 
-        sleep(3);
-
         return $closing;
     }
 

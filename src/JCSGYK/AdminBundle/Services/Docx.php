@@ -22,6 +22,48 @@ class Docx
 
     /**
      * Generate a file from a template, merge the fields, and send the file as a download
+     * No data mapping happens
+     *
+     * @param string $template Template filename
+     * @param array $data Array of merge fields
+     */
+    public function make($template_file, $data, $file_name = null)
+    {
+        if (empty($template_file)) {
+            return false;
+        }
+
+        $tbs = $this->container->get('opentbs');
+        //$tbs->SetOption('noerr', true);
+
+        $tbs->LoadTemplate($template_file, OPENTBS_ALREADY_UTF8); // OPENTBS_DEFAULT, OPENTBS_ALREADY_UTF8, OPENTBS_ALREADY_XML
+
+        // do the field merge
+        foreach ($data as $base => $merge) {
+            if ('blocks' == $base) {
+                foreach ($merge as $block => $source) {
+                    $tbs->MergeBlock($block, $source);
+                }
+            }
+            else {
+                $tbs->MergeField($base, $merge);
+            }
+        }
+
+        if (!is_null($file_name)) {
+            // send back the file
+            $tbs->Show(OPENTBS_DOWNLOAD, $file_name);
+        }
+        else {
+            // return the file contents
+            $tbs->Show(OPENTBS_STRING);
+            
+            return $tbs->Source;
+        }
+    }
+
+    /**
+     * Generate a file from a template, merge the fields, and send the file as a download
      *
      * @param string $template Template filename
      * @param array $data Array of merge fields

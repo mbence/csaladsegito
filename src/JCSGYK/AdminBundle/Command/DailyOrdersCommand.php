@@ -36,7 +36,30 @@ class DailyOrdersCommand extends ContainerAwareCommand
         // get the service
         $dailyorders_service = $this->getContainer()->get('jcs.orders');
 
+        // normally we only run the order for the next day
+        $dates = [];
+        $day_of_week = date('N');
+
+        if ($day_of_week < 4) {
+            $dates[] = new \DateTime('tomorrow');
+        }
+        elseif ($day_of_week == 4) {
+            // but on thursday we also order for the weekend
+            $dates[] = new \DateTime('tomorrow');
+            $dates[] = new \DateTime('tomorrow +1 day');
+            $dates[] = new \DateTime('tomorrow +2 day');
+        }
+        elseif ($day_of_week == 5) {
+            // and on friday we order for the next monday
+            $dates[] = new \DateTime('tomorrow +2 day');
+        }
+        // we wont do anyting on the weekends
+
         // run the process
-        $dailyorders_service->run($output);
+        foreach ($dates as $date) {
+            $dailyorders_service->run($output, $date);
+            // get some sleep
+            sleep(1);
+        }
     }
 }

@@ -2729,6 +2729,9 @@ table.problem-list td {
 .parameter-groups ul li.current, #template-list a.tpl-list.current, #settings-menu a.menuitem.current, #reports-menu a.menuitem.current {
     background-color: #e6e6e6 !important;
 }
+#template-list.dailyorders a.tpl-list {
+    text-align: left;
+}
 .parameter-groups ul div {
     color: #3344AA;
     font-size: 15px;

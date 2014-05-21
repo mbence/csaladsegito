@@ -299,7 +299,6 @@ class InvoiceService
                         $order->setClosed(false);
                     }
                     $order->setCreator($user);
-                    $order->setMenu($catering->getMenu());
 
                     $em->persist($order);
                 }

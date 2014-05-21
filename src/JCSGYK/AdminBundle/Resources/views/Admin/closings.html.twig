@@ -19,11 +19,11 @@
     </div>
     <h1 class="client">{{ 'Havi zárások'|trans }}</h1>
 </div>
-<div class="adminblock" id="template-list">
+<div class="adminblock dailyorders" id="template-list">
     <div class="rightpad fullheight nocollapse">
         {% for closing in closings %}
             <a href="{{ path('admin_closings', {'id': closing.id}) }}" class="tpl-list{% if act and act.id == closing.id %} current{% endif %}">
-                {{ closing.startDate|fdate('sd') }} - {{ closing.endDate|fdate('sd') }}: <strong>{{ closing.status|closing_status }}</strong>
+                {{ closing.startDate|fdate('sd') }} - {{ closing.endDate|fdate('sd') }}: <strong class="floatright">{{ closing.status|closing_status }}</strong>
             </a>
         {% endfor %}
     </div>
