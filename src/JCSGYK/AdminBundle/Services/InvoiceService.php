@@ -186,6 +186,17 @@ class InvoiceService
     private function calulateItems(Catering $catering, array $orders)
     {
         $items = [];
+        $ratio = 1;
+        $discount_text = '';
+
+        // check discount (50% - 100%)
+        if (!empty($catering->getDiscount())) {
+            $discount = $catering->getDiscount();
+            if (is_numeric($discount) && $discount >= 0 && $discount <= 100) {
+                $ratio = (100 - $discount) / 100;
+                $discount_text = " (Mérséklés {$discount}%)";
+            }
+        }
 
         foreach ($orders as $order) {
             $date = $order->getDate()->format('Y-m-d');
@@ -195,6 +206,8 @@ class InvoiceService
             // check the cost for the day
             $daily_cost = $this->getCostForADay($catering, $table);
             if (!is_null($daily_cost)) {
+                // apply the discount
+                $daily_cost = round($daily_cost * $ratio);
                 // if he has ordered for this day
                 if ($order->getOrder()) {
                     if ($order->getCancel()) {
@@ -203,7 +216,7 @@ class InvoiceService
                     }
                     if (!isset($items[$daily_cost])) {
                         $items[$daily_cost] = [
-                            'name' => $daily_cost > 0 ? 'Ebéd rendelés' : 'Jóváírás',
+                            'name' => ($daily_cost > 0 ? 'Ebéd rendelés' : 'Jóváírás') . $discount_text,
                             'quantity' => 1,
                             'unit_price' => $daily_cost,
                             'value' => $daily_cost,

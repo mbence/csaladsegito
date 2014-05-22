@@ -355,6 +355,9 @@ class ClosingService
         // new line at the end
         $line .= "\n";
 
+        // convert to ISO-8859-2
+        $line = mb_convert_encoding($line, 'ISO-8859-2');
+
         // write it out!
         $this->writeFile($file, $line);
 
@@ -461,8 +464,8 @@ class ClosingService
             'szlaatf.txt' => [
                 //      Field name		Width	Dec	Default
                 //      ==========		=====	===	====
-                1  => ['BSZAM',                 10,	0,      ''],     // Az átadó rendszerbeli sorszám, a mi pénzügyi rendszerünkben ez lesz a külső sorszám
-                2  => ['PARTNERKOD',		6,	0,      ''],
+                1  => ['BSZAM',                 10,	0,      '0'],     // Az átadó rendszerbeli sorszám, a mi pénzügyi rendszerünkben ez lesz a külső sorszám
+                2  => ['PARTNERKOD',		6,	0,      '0'],
                 3  => ['BANKNEV',		40,	0,      'Sberbenk Magyarország Zrt.'],
                 4  => ['BANKSZLA',		26,	0,      '14100309-18423949-01000003'],
                 5  => ['IKTATDAT',		8,	0,      ''],     // Formátuma: YYYYMMDD  pl.:20041028
@@ -471,16 +474,16 @@ class ClosingService
                 8  => ['FIZHATIDO',		8,	0,      ''],     // mind a négynél hónap 5. napja​
                 9  => ['FIZMOD',		15,	0,      'Készpénz'],     // Ha az első karakter='K' akkor készpénzes számlaként kerül átvételre. (pl.: Készpénz)
                 10 => ['MEGJ',                  60,	0,      ''],     //Ide be lehetne írni, hogy melyik havi étkezés​
-                11 => ['ALAP_NEM',		12,	0,      ''],     // üres​         Formátuma: 999999999999
-                12 => ['ADOMENTES',		12,	0,      ''],     // üres​         Formátuma: 999999999999
-                13 => ['NETTO1',		12,	0,      ''],     // üres​         5%-os nettó. Formátuma: 999999999999
-                14 => ['NETTO2',		12,	0,      ''],     // üres​         18%-os nettó. Formátuma: 999999999999
-                15 => ['NETTO3',		12,	0,      ''],     // 27%-os nettó. Formátuma: 999999999999        // ez kell
-                16 => ['AFA2',                  9,	0,      ''],     // üres​         18%-os áfa. Formátuma: 999999999
-                17 => ['AFA3',                  9,	0,      ''],     // 27%-os áfa. Formátuma: 999999999             // ez kell
-                18 => ['VEGOSSZEG',		13,	0,      ''],     // Formátuma: 9999999999999
+                11 => ['ALAP_NEM',		12,	0,      '0'],     // üres​         Formátuma: 999999999999
+                12 => ['ADOMENTES',		12,	0,      '0'],     // üres​         Formátuma: 999999999999
+                13 => ['NETTO1',		12,	0,      '0'],     // üres​         5%-os nettó. Formátuma: 999999999999
+                14 => ['NETTO2',		12,	0,      '0'],     // üres​         18%-os nettó. Formátuma: 999999999999
+                15 => ['NETTO3',		12,	0,      '0'],     // 27%-os nettó. Formátuma: 999999999999        // ez kell
+                16 => ['AFA2',                  9,	0,      '0'],     // üres​         18%-os áfa. Formátuma: 999999999
+                17 => ['AFA3',                  9,	0,      '0'],     // 27%-os áfa. Formátuma: 999999999             // ez kell
+                18 => ['VEGOSSZEG',		13,	0,      '0'],     // Formátuma: 9999999999999
                 19 => ['BELSO',                 11,	0,      ''],     // Üresen kell hagyni.
-                20 => ['AFA1',                  9,	0,      ''],     // üres​       5%-os áfa. Formátuma: 999999999
+                20 => ['AFA1',                  9,	0,      '0'],     // üres​       5%-os áfa. Formátuma: 999999999
                 21 => ['EREDETI',		1,	0,      ''],     // üres​         Értéke T vagy F
                 22 => ['HELYESBITO',		11,	0,      ''],     // üres​          A másik számla (helyesbítő pár) BSZAM mezője.
                 23 => ['KULCSSZO',		60,	0,      'Étkeztetés'],       // A számlához eltárolt kulcsszó.
@@ -496,14 +499,14 @@ class ClosingService
                 // A számlához tartozó tételek vannak benne.
                 //      Field name              Width	Dec	Default
                 //      ==========              =====	===	=======
-                1  => ['BSZAM',                 10,	0,	''],	// Az átadó rendszerbeli sorszám ez a kapcsolómező a szlaatf-hez
+                1  => ['BSZAM',                 10,	0,	'0'],	// Az átadó rendszerbeli sorszám ez a kapcsolómező a szlaatf-hez
                 2  => ['KSH',                   15,	0,	''],	// üres​         Kitöltése nem kötelző.
                 3  => ['NEV',                   60,	0,      ''],
                 4  => ['AFA',                   2,	0,	'27'],	// Lehetséges értékei: NK (adóalapot nem képező), AM (adómentes), 5, 15, 18, 25, 20
                 5  => ['MEGYS',                 3,	0,	'Nap​'],	// Mennyiségi egység
-                6  => ['MENNY',                 14,	6,	''],	// Formátuma: 9999999.999999
-                7  => ['EGYSAR',                13,	2,	''],	// Nettó egységár (Formátuma: 9999999999.99)
-                8  => ['ERTEK',                 13,	2,	''],	// Nettó érték  (Formátuma: 9999999999.99)
+                6  => ['MENNY',                 14,	6,	'0'],	// Formátuma: 9999999.999999
+                7  => ['EGYSAR',                13,	2,	'0'],	// Nettó egységár (Formátuma: 9999999999.99)
+                8  => ['ERTEK',                 13,	2,	'0'],	// Nettó érték  (Formátuma: 9999999999.99)
                 9  => ['ALAPFKSZAM',		12,	0,	''],    // üres​ 	Kitöltése nem kötelző.Ha a főkönyvi rendszerben automatikusan könyvelésre fel szeretnénk adni a számlákat, akkor ki kell tölteni. A számla alapokat erre a főkönyvi (9-es) számra könyveljük le.
                 10 => ['AFAFKSZAM',		12,	0,	''],    // üres​ 	Kitöltése nem kötelző.Ha a főkönyvi rendszerben automatikusan könyvelésre fel szeretnénk adni a számlákat, akkor ki kell tölteni.Áfa (9-es)főkönyvi számra történik a főkönyvi programban az automatikus könyvelés..
                 11 => ['GYUJTOKOD',		12,	0,	'321230000​'],    // 	Kitöltése nem kötelző.
