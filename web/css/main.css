@@ -2600,7 +2600,26 @@ table.problem-list td {
     padding: 3px;
     background-color: #f5f5f5;
 }
+.userfilter {
+    font-size: 12px;
+    background-color: #f5f5f5;
 
+}
+.userfilter input[type=text]{
+    width: 100px;
+    font-size: 12px;
+    padding: 2px;
+    margin: 0 10px 0 0;
+}
+.userfilter select {
+    width: 120px;
+    font-size: 12px;
+    margin: 0 10px 0 0;
+    padding: 1px;
+}
+.userfilter button {
+    font-size: 13px;
+}
 .adminblock {
     width: 50%;
     float: left;

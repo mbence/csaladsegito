@@ -1,0 +1,12 @@
+<div class="userfilter">
+    <form id="userfilter" action="{{ path('admin_users', {'id': id}) }}" method="post" novalidate {{ form_enctype(filter) }}>
+        {{ form_errors(filter) }}
+
+        {{ form_widget(filter.quicksearch) }}
+        {{ form_widget(filter.role) }}
+        {{ form_label(filter.enabled) }}
+        {{ form_widget(filter.enabled) }}
+        {{ form_widget(filter.clear) }}
+        {{ form_widget(filter.filter) }}
+    </form>
+</div>

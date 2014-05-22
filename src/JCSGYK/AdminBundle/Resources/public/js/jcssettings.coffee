@@ -3,7 +3,8 @@ JcsSettings =
         # users
         if $("#userlist").length
             @setupUsers()
-            $("#userlist table").tablesorter()
+            @setupUserFilter()
+
             @setupForm()
             @setHeights()
             $(window).resize =>
@@ -125,6 +126,12 @@ JcsSettings =
                 $(this).addClass("current cursor")
                 document.location = $(this).data("user-edit")
         )
+
+    setupUserFilter: ->
+        $("#userfilter input")
+            .add $("#userfilter select")
+            .on "change", ->
+                $("#userfilter").submit()
 
     setHeights: ->
         h = $(window).innerHeight() - $('#header').outerHeight() - $('#colophon').outerHeight() - 36

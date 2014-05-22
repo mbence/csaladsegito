@@ -15358,7 +15358,7 @@ JcsSettings = {
   init: function() {
     if ($("#userlist").length) {
       this.setupUsers();
-      $("#userlist table").tablesorter();
+      this.setupUserFilter();
       this.setupForm();
       this.setHeights();
       $(window).resize((function(_this) {
@@ -15487,6 +15487,11 @@ JcsSettings = {
         $(this).addClass("current cursor");
         return document.location = $(this).data("user-edit");
       }
+    });
+  },
+  setupUserFilter: function() {
+    return $("#userfilter input").add($("#userfilter select")).on("change", function() {
+      return $("#userfilter").submit();
     });
   },
   setHeights: function() {

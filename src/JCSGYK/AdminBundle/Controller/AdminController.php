@@ -56,18 +56,32 @@ class AdminController extends Controller
         $user = null;
         $um = $this->get('fos_user.user_manager');
         $em = $this->getDoctrine()->getManager();
-        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $ds = $this->container->get('jcs.ds');
+        $company_id = $ds->getCompanyId();
 
-        // only superadmins can see and edit superadmins
-        $sql = 'SELECT u FROM JCSGYKAdminBundle:User u WHERE u.companyId=:company ';
-        if (!$this->get('security.context')->isGranted('ROLE_SUPER_ADMIN')) {
-            $sql .= " AND u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'";
+        $session = $this->get('session');
+        $filter_data = $session->get('userfilter', ['enabled' => true]);
+
+        // create the user filter
+        $filter = $this->getFilterForm($filter_data);
+
+        // save the filter change
+        if ($request->isMethod('POST')) {
+            $filter->bind($request);
+            $filter_data = $filter->getData();
+            if (!empty($filter_data['filter'])) {
+                if ($filter->get('clear')->isClicked()) {
+                    $filter_data = ['enabled' => true];
+                }
+                // save the filter and redirect back
+                $session->set('userfilter', $filter_data);
+
+                return $this->redirect($this->generateUrl('admin_users', ['id' => $id]));
+            }
         }
-        $sql .= ' ORDER BY u.lastname, u.firstname';
 
-        $users = $em->createQuery($sql)
-            ->SetParameter('company', $company_id)
-            ->getResult();
+        // get filtered users
+        $users = $this->getUsersFiltered($filter_data, $company_id);
 
         if ('new' == $id) {
             // new user
@@ -109,7 +123,78 @@ class AdminController extends Controller
             $form_view = null;
         }
 
-        return $this->render('JCSGYKAdminBundle:Admin:users.html.twig', ['users' => $users, 'form' => $form_view, 'user' => $user, 'id' => $id]);
+        return $this->render('JCSGYKAdminBundle:Admin:users.html.twig', [
+            'users' => $users,
+            'form'  => $form_view,
+            'user'  => $user,
+            'id'    => $id,
+            'filter' => $filter->createView()
+        ]);
+    }
+
+    private function getFilterForm($filter_data)
+    {
+        $ds = $this->container->get('jcs.ds');
+
+        // create the user filter
+        return $this->createFormBuilder($filter_data)
+            ->add('quicksearch', 'text')
+            ->add('role', 'choice', [
+                'label' => ' ',
+                'choices' => $ds->getRoles(),
+                'required' => false
+            ])
+            ->add('enabled', 'checkbox', [
+                'label' => 'aktív'
+            ])
+            ->add('clear', 'submit', [
+                'label' => 'x',
+                'attr' => [
+                    'title' => 'filter törlése'
+                ]
+            ])
+            ->add('filter', 'hidden', [
+                'data'  => 1
+            ])
+            ->getForm();
+    }
+
+    /**
+     * Get the users list with the filters applied
+     * @param array $filter_data
+     * @param int $company_id
+     * @return array of User records
+     */
+    private function getUsersFiltered($filter_data, $company_id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        // only superadmins can see and edit superadmins
+        $sql = 'SELECT u FROM JCSGYKAdminBundle:User u WHERE u.companyId=:company ';
+        if (!$this->get('security.context')->isGranted('ROLE_SUPER_ADMIN')) {
+            $sql .= " AND u.roles NOT LIKE '%ROLE_SUPER_ADMIN%'";
+        }
+        // add filters
+        $sql .= ' AND u.enabled = :enabled';
+        if  (!empty($filter_data['quicksearch'])) {
+            $sql .= " AND (CONCAT(u.lastname, ' ', u.firstname) LIKE :qs OR u.username LIKE :qs)";
+        }
+        if  (!empty($filter_data['role'])) {
+            $sql .= " AND u.roles LIKE :role";
+        }
+
+        $sql .= ' ORDER BY u.lastname, u.firstname';
+
+        $q = $em->createQuery($sql)
+            ->SetParameter('company', $company_id)
+            ->SetParameter('enabled', $filter_data['enabled']);
+        if  (!empty($filter_data['quicksearch'])) {
+            $q->SetParameter('qs', "%{$filter_data['quicksearch']}%");
+        }
+        if  (!empty($filter_data['role'])) {
+            $q->SetParameter('role', "%{$filter_data['role']}%");
+        }
+
+        return $q->getResult();
     }
 
     /**

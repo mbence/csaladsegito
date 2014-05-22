@@ -1,18 +1,22 @@
 {% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
 
 {% block settings_content %}
+<div class="template-top">
+    <div class="button-row">
+        <a href="{{ path('admin_users', {'id': 'new'}) }}" class="button" id="new_user"><span>{{ 'új felhasználó'|trans }}</span></a>
+    </div>
+    <h1 class="client">{{ 'Felhasználók'|trans }}</h1>
+</div>
+
 <div class="adminblock" id="userlist">
     <div class="rightpad fullheight nocollapse">
-        <div class="button-row toppad10">
-            <a href="{{ path('admin_users', {'id': 'new'}) }}" class="button" id="new_user"><span>{{ 'új felhasználó'|trans }}</span></a>
-        </div>
-        <h1 class="client">{{ 'Felhasználók'|trans }}</h1>
+
+        {% include "JCSGYKAdminBundle:Admin:userfilter.html.twig" %}
 
         <table class="search-results tablesorter" cellspacing=0 border=0>
             <thead><tr>
                 <th>{{ 'név'|trans }}</th>
                 <th>{{ 'felhasználói név'|trans }}</th>
-        {#        <th>{{ 'email'|trans }}</th> #}
                 <th>{{ 'utolsó belépés'|trans }}</th>
                 <th>{{ 'aktív'|trans }}</th>
             </tr></thead>
