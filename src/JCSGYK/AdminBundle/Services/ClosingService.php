@@ -356,7 +356,7 @@ class ClosingService
         $line .= "\n";
 
         // convert to ISO-8859-2
-        $line = mb_convert_encoding($line, 'ISO-8859-2');
+        $line = mb_convert_encoding($line, 'ISO-8859-2', 'UTF-8');
 
         // write it out!
         $this->writeFile($file, $line);
