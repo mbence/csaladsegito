@@ -127,20 +127,28 @@ class ClientOrderRepository extends EntityRepository
         return $n;
     }
 
-    public function getDailyOrders($company_id, $date)
+    public function getDailyOrders($company_id, $date, $end_date = null)
     {
         // remove the time part of the dates
         if ($date instanceof \DateTime) {
             $date = $date->format('Y-m-d');
         }
+        if (empty($end_date)) {
+            $end_date = $date;
+        }
+        elseif ($end_date instanceof \DateTime) {
+            $end_date = $end_date->format('Y-m-d');
+        }
 
         return $this->getEntityManager()
             ->createQuery("SELECT b.id, a.menu, COUNT(o) as orders "
                     . "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
-                    . "WHERE o.companyId = :company_id AND o.date = :date AND o.order = 1 AND o.cancel = 0 "
+                    . "WHERE o.companyId = :company_id AND o.order = 1 AND o.cancel = 0 "
+                    . "AND o.date >= :date AND o.date <= :end_date "
                     . "GROUP BY a.club, a.menu")
             ->setParameter('company_id', $company_id)
             ->setParameter('date', $date)
+            ->setParameter('end_date', $end_date)
             ->getResult();
     }
 }

@@ -359,7 +359,12 @@ class AdminExtension extends \Twig_Extension
             // full date with month and weekday name
             elseif ('fd' ==  $type) {
                 return $d->format('Y. ') .  $this->translator->trans($this->ds->getMonth($d->format('n'))) . $d->format(' j. ') . $this->ds->getDaysOfWeek($d->format('N'));
-            }            // long date (with month name)
+            }
+            // week number
+            elseif ('week' ==  $type) {
+                return $d->format('W. ') . 'hét';
+            }
+            // long date (with month name)
             else {
                 return $d->format('Y. ') .  $this->translator->trans($this->ds->getMonth($d->format('n'))) . $d->format(' j.');
             }

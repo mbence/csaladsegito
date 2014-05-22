@@ -41,23 +41,43 @@ class DailyOrdersCommand extends ContainerAwareCommand
         $day_of_week = date('N');
 
         if ($day_of_week < 4) {
-            $dates[] = new \DateTime('tomorrow');
+            $dates[] = [
+                'start' => new \DateTime('tomorrow'),
+                'end' => null
+            ];
         }
         elseif ($day_of_week == 4) {
             // but on thursday we also order for the weekend
-            $dates[] = new \DateTime('tomorrow');
-            $dates[] = new \DateTime('tomorrow +1 day');
-            $dates[] = new \DateTime('tomorrow +2 day');
+            $dates[] = [
+                'start' => new \DateTime('tomorrow'),
+                'end' => null
+            ];
+            $dates[] = [
+                'start' => new \DateTime('tomorrow +1 day'),
+                'end' => null
+            ];
+            $dates[] = [
+                'start' => new \DateTime('tomorrow +2 day'),
+                'end' => null
+            ];
+            // make the weekly order summary
+            $dates[] = [
+                'start' => new \DateTime('this week'),
+                'end' => new \DateTime('this week + 6 days')
+            ];        
         }
         elseif ($day_of_week == 5) {
             // and on friday we order for the next monday
-            $dates[] = new \DateTime('tomorrow +2 day');
+            $dates[] = [
+                'start' => new \DateTime('tomorrow +2 day'),
+                'end' => null
+            ];
         }
         // we wont do anyting on the weekends
 
         // run the process
         foreach ($dates as $date) {
-            $dailyorders_service->run($output, $date);
+            $dailyorders_service->run($output, $date['start'], $date['end']);
             // get some sleep
             sleep(1);
         }

@@ -12,12 +12,12 @@ class Version20140520120432 extends AbstractMigration
 {
     public function up(Schema $schema)
     {
-        $this->addSql("ALTER TABLE `client_order` ADD COLUMN `menu` smallint DEFAULT NULL AFTER `date`;");
+        $this->addSql("ALTER TABLE `daily_order` CHANGE COLUMN `date` `start_date` date NOT NULL, ADD COLUMN `end_date` date DEFAULT NULL AFTER `start_date`;");
     }
 
     public function down(Schema $schema)
     {
-        $this->addSql("ALTER TABLE `client_order` DROP COLUMN `menu`;");
+        $this->addSql("ALTER TABLE `daily_order` CHANGE COLUMN `start_date` `date` date NOT NULL, DROP COLUMN `end_date`;");
     }
 }
 

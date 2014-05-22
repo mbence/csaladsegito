@@ -551,6 +551,8 @@ class AdminController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $ds = $this->container->get('jcs.ds');
+        $dailyorders_service = $this->container->get('jcs.orders');
+
         // get the current company id from the datatore
         $company_id = $ds->getCompanyId();
         $user = $ds->getUser();
@@ -563,7 +565,7 @@ class AdminController extends Controller
 
             if (!empty($order->getFile()) && $request->query->get('download')) {
                 // send the zip file to download
-                $attachment = 'megrendeles_' . $order->getDate()->format('Y.m.d.') . $ds->getDaysOfWeek($order->getDate()->format('N')) . '.xlsx';
+                $attachment = $dailyorders_service->getAttachmentName($order);
 
                 return $this->sendDownloadResponse($attachment, stream_get_contents($order->getFile()), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             }
@@ -582,8 +584,6 @@ class AdminController extends Controller
         }
 
         $form = $this->createFormBuilder()->getForm();
-
-        $dailyorders_service = $this->container->get('jcs.orders');
 
         // manual run
         if ($request->isMethod('POST')) {

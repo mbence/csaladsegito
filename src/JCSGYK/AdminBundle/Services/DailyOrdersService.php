@@ -57,7 +57,7 @@ class DailyOrdersService
         $em = $this->container->get('doctrine')->getManager();
         $company_id = $this->ds->getCompanyId();
 
-        return $em->createQuery("SELECT d.id, d.companyId, d.date, d.status FROM JCSGYKAdminBundle:DailyOrder d WHERE d.companyId = :company_id ORDER BY d.createdAt DESC")
+        return $em->createQuery("SELECT d.id, d.companyId, d.startDate, d.endDate, d.status FROM JCSGYKAdminBundle:DailyOrder d WHERE d.companyId = :company_id ORDER BY d.createdAt DESC")
             ->setParameter('company_id', $company_id)
             ->setMaxResults(31)
             ->getResult();
@@ -74,9 +74,13 @@ class DailyOrdersService
 
     /**
      * Start the daily orders process
-     * @return \JCSGYK\AdminBundle\Entity\MonthlyClosing
+     * Or if the end date is present, then send the weekly order summary
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param \DateTime $date   day of the order or the start date of the week
+     * @param \DateTime $end_date  end date of the week
+     * @return \JCSGYK\AdminBundle\Entity\DailyOrder
      */
-    public function run(OutputInterface $output = null, \DateTime $date = null)
+    public function run(OutputInterface $output = null, \DateTime $date = null, \DateTime $end_date = null)
     {
         // reset
         $this->output = $output;
@@ -96,8 +100,12 @@ class DailyOrdersService
         }
         $created_at = new \DateTime();
 
-        $this->output("Konyhai megrendelés");
-        $this->output(sprintf("%s \n", $ae->formatDate($date, 'fd')));
+        $this->output(empty($end_date) ? 'Konyhai megrendelés' : 'Heti számla összesítő');
+        $this->output(empty($end_date) ?
+                sprintf("%s \n", $ae->formatDate($date, 'fd'))
+                :
+                sprintf("%s - %s \n", $ae->formatDate($date, 'fd'), $ae->formatDate($end_date, 'fd'))
+        );
         $this->output(sprintf("%s: Indítva", $created_at->format('H:i:s')));
 
         // create a new closing record
@@ -106,21 +114,22 @@ class DailyOrdersService
         $order->setCreator($user);
         $order->setCreatedAt($created_at);
         $order->setStatus(DailyOrder::RUNNING);
-        $order->setDate($date);
+        $order->setStartDate($date);
+        $order->setEndDate($end_date);
         $order->setSummary($this->summary);
 
         $em->persist($order);
         $em->flush();
 
         // get and build the orders from the client order table
-        $this->getOrders($company_id, $date);
+        $this->getOrders($company_id, $date, $end_date);
 
         $this->output(sprintf("%s: %s db megrendelés lekérdezve", date('H:i:s'), $this->orders['total']['sum']));
         $order->setSummary($this->summary);
         $em->flush();
 
         // create the order files
-        $file_contents = $this->export($date);
+        $file_contents = $this->export($date, $end_date);
 
         if (!empty($file_contents)) {
             $this->output(sprintf("%s: Megrendelés fájl létrehozva", date('H:i:s')));
@@ -129,10 +138,9 @@ class DailyOrdersService
             $order->setSummary($this->summary);
             $em->flush();
 
+            $attachment = $this->getAttachmentName($order);
             // Send the files to kitchen
-            $attachment = 'megrendeles_' . $date->format('Y.m.d.') . $this->ds->getDaysOfWeek($date->format('N')) . '.xlsx';
-
-            $mail_ok = $this->sendMails($date, $attachment, $file_contents);
+            $mail_ok = $this->sendMails($date, $end_date, $attachment, $file_contents);
             if ($mail_ok) {
                 $this->output(sprintf("%s: Email sikeresen kiküldve", date('H:i:s')));
             }
@@ -152,7 +160,19 @@ class DailyOrdersService
         return $order;
     }
 
-    private function getOrders($company_id, \DateTime $date)
+    public function getAttachmentName(DailyOrder $order)
+    {
+        if (empty($order->getEndDate())) {
+            $attachment = 'Megrendeles_' . $order->getStartDate()->format('Y.m.d.') . $this->ds->getDaysOfWeek($order->getStartDate()->format('N')) . '.xlsx';
+        }
+        else {
+            $attachment = sprintf('Heti_szamla_osszesito_%s.het_%s-%s.xlsx', $order->getStartDate()->format('Y.W'), $order->getStartDate()->format('Y.m.d'), $order->getEndDate()->format('Y.m.d'));
+        }
+
+        return $attachment;
+    }
+
+    private function getOrders($company_id, \DateTime $date, \DateTime $end_date = null)
     {
         $em = $this->container->get('doctrine')->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
@@ -188,7 +208,7 @@ class DailyOrdersService
         }
 
         // get the orders grouped by club and menu
-        $orders = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->getDailyOrders($company_id, $date);
+        $orders = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->getDailyOrders($company_id, $date, $end_date);
 
         // fill the orders matrix
         foreach ($orders as $order) {
@@ -230,13 +250,20 @@ class DailyOrdersService
     /**
      * Creates the EcoStat export files in $this->files from the unsent invoices
      */
-    public function export(\DateTime $date)
+    public function export(\DateTime $date, \DateTime $end_date = null)
     {
         $ae = $this->container->get('jcs.twig.adminextension');
         $data = [
-            'sp.datum'  => $ae->formatDate(new \DateTime('today')),
-            'et.het'    => $date->format('W'),
-            'et.datum'  => $ae->formatDate($date, 'fd'),
+            'et.cim'        => empty($end_date) ? 'MEGRENDELŐ' : 'HETI SZÁMLA ÖSSZESÍTŐ',
+            'sp.datum'      => $ae->formatDate(new \DateTime('today')),
+            'et.het'        => $date->format('W'),
+            'et.datum'      =>  empty($end_date) ?
+                    $ae->formatDate($date, 'fd')
+                    :
+                    sprintf("%s - %s", $ae->formatDate($date, 'fd'), $ae->formatDate($end_date, 'fd')),
+            'et.adagszam'   => $this->orders['total']['sum'],
+            'et.fizetendo'  => $this->orders['total']['amount'],
+            'et.egysegar'   => $ae->formatCurrency($this->menuCost),
             'blocks'    => [
                 // column names
                 'columns'       => $this->colunms,
@@ -259,15 +286,20 @@ class DailyOrdersService
      * @param string $attachment_contents
      * @return boolean
      */
-    private function sendMails(\DateTime $date, $attachment, &$attachment_contents)
+    private function sendMails(\DateTime $date, $end_date, $attachment, &$attachment_contents)
     {
         if (!empty($attachment)) {
 
             $ae = $this->container->get('jcs.twig.adminextension');
 
-            $subject = sprintf('Napi megrendelés %s', $ae->formatDate($date, 'fd'));
-            $mailer_from = 'mxbence@gmail.com';
-            $mailer_from_name = 'Nyilvántartó';
+            $subject = empty($end_date) ?
+                sprintf('Napi kijelentő %s', $ae->formatDate($date, 'fd'))
+                :
+                sprintf('Heti számla összesítő %s - %s', $ae->formatDate($date, 'fd'), $ae->formatDate($end_date, 'fd'))
+            ;
+
+            $mailer_from = 'oszirozsaebed@gmail.com';
+            $mailer_from_name = 'JSZSZGYK Szociális étkeztetés';
             $mailer_to = 'mxbence@gmail.com';
             $mailer_to_name = 'Mészáros Bence';
 
@@ -275,7 +307,7 @@ class DailyOrdersService
             ->setSubject($subject)
             ->setFrom([$mailer_from => $mailer_from_name])
             ->setTo([$mailer_to => $mailer_to_name])
-            ->setBody("Tisztelt Konyha!\n\n Mellékelve küldjük a mai megrendelést.", 'text/plain');
+            ->setBody($subject, 'text/plain');
 
             // add attachment
             $attachment = \Swift_Attachment::newInstance($attachment_contents, $attachment, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

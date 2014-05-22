@@ -550,8 +550,8 @@ class ClosingService
             $ae = $this->container->get('jcs.twig.adminextension');
 
             $subject = sprintf('Havi számla import: %s - %s', $ae->formatDate($start_date), $ae->formatDate($end_date));
-            $mailer_from = 'mxbence@gmail.com';
-            $mailer_from_name = 'Nyilvántartó';
+            $mailer_from = 'oszirozsaebed@gmail.com';
+            $mailer_from_name = 'JSZSZGYK Szociális étkeztetés';
             $mailer_to = 'mxbence@gmail.com';
             $mailer_to_name = 'Mészáros Bence';
 

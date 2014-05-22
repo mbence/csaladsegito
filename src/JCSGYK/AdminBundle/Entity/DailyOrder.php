@@ -15,7 +15,7 @@ class DailyOrder
     const RUNNING  = 1;
     const SUCCESS   = 2;
     const ERROR     = -1;
-    
+
     /**
      * @var integer
      *
@@ -35,9 +35,16 @@ class DailyOrder
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="date", nullable=true)
+     * @ORM\Column(name="start_date", type="date", nullable=false)
      */
-    private $date;
+    private $startDate;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="end_date", type="date", nullable=true)
+     */
+    private $endDate;
 
     /**
      * @var integer
@@ -110,27 +117,51 @@ class DailyOrder
     }
 
     /**
-     * Set date
+     * Set startDate
      *
-     * @param \DateTime $date
+     * @param \DateTime $startDate
      *
-     * @return DailyOrder
+     * @return MonthlyClosing
      */
-    public function setDate($date)
+    public function setStartDate($startDate)
     {
-        $this->date = $date;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
     /**
-     * Get date
+     * Get startDate
      *
      * @return \DateTime
      */
-    public function getDate()
+    public function getStartDate()
     {
-        return $this->date;
+        return $this->startDate;
+    }
+
+    /**
+     * Set endDate
+     *
+     * @param \DateTime $endDate
+     *
+     * @return MonthlyClosing
+     */
+    public function setEndDate($endDate)
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * Get endDate
+     *
+     * @return \DateTime
+     */
+    public function getEndDate()
+    {
+        return $this->endDate;
     }
 
     /**
