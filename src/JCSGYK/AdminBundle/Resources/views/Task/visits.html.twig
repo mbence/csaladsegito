@@ -22,7 +22,7 @@
                 {% if type == 3 %}
                 <td>{{ param(task.dispatch) }}</td>
                 {% endif %}
-                <td>{{ task.client|casenum }}</td>
+                <td>{{ task.client.caseLabel }}</td>
                 <td><strong>{{ fname(task.client.firstname, task.client.lastname, task.client.title) }}</strong></td>
                 <td>{{ task.createdAt|fdate('osdt') }}</td>
                 <td>{% if task_status[task.status] is defined %}{{ task_status[task.status]|trans }}{% else %}{{ task.status }}{% endif %}</td>

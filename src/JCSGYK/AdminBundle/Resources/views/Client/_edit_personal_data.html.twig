@@ -41,7 +41,7 @@
                     {{ form_errors(form.case_year) }} {{ form_errors(form.case_number) }}
                     {{ casefield(form_widget(form.case_year), form_widget(form.case_number), client.type) }}
                 {% else %}
-                    <div class="bottompad4">{% if client is defined %}{{ client|casenum }}{% endif %}</div>
+                    <div class="bottompad4">{% if client is defined %}{{ client.caseLabel }}{% endif %}</div>
                 {% endif %}
             </td>
             <th>{{ form_label(form.gender) }}:</th>

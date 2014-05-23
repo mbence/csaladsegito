@@ -1339,7 +1339,7 @@ class ClientController extends Controller
         if (!empty($q)) {
             $num_ver = Client::cleanupNum($q);
             $db = $this->get('doctrine.dbal.default_connection');
-            $sql = "SELECT id, type, case_year, case_number, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM client WHERE";
+            $sql = "SELECT id, type, case_year, case_number, case_label, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM client WHERE";
             // recognize a case number
             if ($this->isCase($q, $client_type)) {
                 $sql .= " case_label LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type={$client_type}";

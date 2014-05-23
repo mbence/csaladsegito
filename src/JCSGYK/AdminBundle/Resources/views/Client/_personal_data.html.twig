@@ -18,7 +18,7 @@
     <table class="client" cellspacing="0" border="0">
         <tr>
             <th>{{ client.type|caselabel }}:</th>
-            <td>{{ client|casenum }}</td>
+            <td>{{ client.caseLabel }}</td>
             {% if display_type %}
                 <th>{{ 'Típus'|trans }}:</th>
                 <td>{{ client.type|ctype }}</td>

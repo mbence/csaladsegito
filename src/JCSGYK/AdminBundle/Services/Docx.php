@@ -57,7 +57,7 @@ class Docx
         else {
             // return the file contents
             $tbs->Show(OPENTBS_STRING);
-            
+
             return $tbs->Source;
         }
     }
@@ -300,7 +300,7 @@ class Docx
         $em = $this->container->get('doctrine')->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
         $re = [
-            'szam' => $ae->formatCaseNumber($client),
+            'szam' => $client->getCaseLabel(),
             'nev' => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
             'titulus' => $client->getTitle(),
             'csaladinev' => $client->getLastname(),
