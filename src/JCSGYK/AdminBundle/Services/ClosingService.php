@@ -337,7 +337,7 @@ class ClosingService
                 $value = $data[$field[0]];
             }
             else {
-                $value = $field[3];
+                $value = trim($field[3]);
             }
             // format the numeric values
             if (!empty($field[2])) {
@@ -487,7 +487,7 @@ class ClosingService
                 21 => ['EREDETI',		1,	0,      ''],     // üres​         Értéke T vagy F
                 22 => ['HELYESBITO',		11,	0,      ''],     // üres​          A másik számla (helyesbítő pár) BSZAM mezője.
                 23 => ['KULCSSZO',		60,	0,      'Étkeztetés'],       // A számlához eltárolt kulcsszó.
-                24 => ['GAZDKOD',		20,	0,      '300​'],              // A gazdálkodó kódja.
+                24 => ['GAZDKOD',		20,	0,      '300'],              // A gazdálkodó kódja.
                 /*
                  * Az EREDETI, HELYESBITO mező csak helyesbítő vagy stornó számlák esetén használt.
                  * Az EREDETI mező jelöli, hogy melyik az eredeti számla, ami helyesbítve lett. Az eredeti számlánál T (true), a helyesbitő számlánál F.
@@ -503,15 +503,15 @@ class ClosingService
                 2  => ['KSH',                   15,	0,	''],	// üres​         Kitöltése nem kötelző.
                 3  => ['NEV',                   60,	0,      ''],
                 4  => ['AFA',                   2,	0,	'27'],	// Lehetséges értékei: NK (adóalapot nem képező), AM (adómentes), 5, 15, 18, 25, 20
-                5  => ['MEGYS',                 3,	0,	'Nap​'],	// Mennyiségi egység
+                5  => ['MEGYS',                 3,	0,	'Nap'],	// Mennyiségi egység
                 6  => ['MENNY',                 14,	6,	'0'],	// Formátuma: 9999999.999999
                 7  => ['EGYSAR',                13,	2,	'0'],	// Nettó egységár (Formátuma: 9999999999.99)
                 8  => ['ERTEK',                 13,	2,	'0'],	// Nettó érték  (Formátuma: 9999999999.99)
                 9  => ['ALAPFKSZAM',		12,	0,	''],    // üres​ 	Kitöltése nem kötelző.Ha a főkönyvi rendszerben automatikusan könyvelésre fel szeretnénk adni a számlákat, akkor ki kell tölteni. A számla alapokat erre a főkönyvi (9-es) számra könyveljük le.
                 10 => ['AFAFKSZAM',		12,	0,	''],    // üres​ 	Kitöltése nem kötelző.Ha a főkönyvi rendszerben automatikusan könyvelésre fel szeretnénk adni a számlákat, akkor ki kell tölteni.Áfa (9-es)főkönyvi számra történik a főkönyvi programban az automatikus könyvelés..
-                11 => ['GYUJTOKOD',		12,	0,	'321230000​'],    // 	Kitöltése nem kötelző.
+                11 => ['GYUJTOKOD',		12,	0,	'321230000'],    // 	Kitöltése nem kötelző.
                 12 => ['ROVAT',                 8,	0,	''],	// üres​         Kitöltése nem kötelző.
-                13 => ['FELADAT',		10,	0,	'40104-K​'],    // 	Kitöltése nem kötelző.
+                13 => ['FELADAT',		10,	0,	'40104-K'],    // 	Kitöltése nem kötelző.
                 14 => ['TARTOZIK',		20,	0,	''],    // üres​ 	A kontírozáson megjelenő tartozik számlaszám
                 15 => ['KOVETEL',		20,	0,	''],    // üres​ 	A kontírozáson megjelenő követel számlaszám
                 16 => ['MASODLAGOS',		20,	0,	''],    // üres​ 	A kontírozáson megjelenő másodlagos számlaszám
