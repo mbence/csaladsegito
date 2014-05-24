@@ -242,14 +242,16 @@ class ClosingService
         $city = substr($client->getCity(), 0, 16);
         $city2 = substr($client->getCity(), 16);
 
-        $vat = 0.27;
+        $vat = $this->ds->getVat();
+
         // deadline is the 5th day of next month
         $deadline = clone $invoice->getEndDate();
         $deadline = $deadline->modify('first day of next month')->format('Ymd');
 
         $comment = sprintf('%s. havi étkeztetés', $invoice->getEndDate()->format('n'));
 
-        $net_amount = round($invoice->getAmount() * (1 - $vat));
+        $net_amount = $invoice->getAmount();
+        $gross_amount = round($invoice->getAmount() * (1 + $vat));
 
         $data = [
             'szlaatf.txt' => [
@@ -261,8 +263,8 @@ class ClosingService
                 'FIZHATIDO'     => $deadline,
                 'MEGJ'          => $comment,
                 'NETTO3'        => $net_amount,
-                'AFA3'          => $invoice->getAmount() - $net_amount,
-                'VEGOSSZEG'     => $invoice->getAmount(),
+                'AFA3'          => $gross_amount - $net_amount,
+                'VEGOSSZEG'     => $gross_amount,
             ],
             'szlaatt.txt'   => [],
             'vevo.txt'      => [],

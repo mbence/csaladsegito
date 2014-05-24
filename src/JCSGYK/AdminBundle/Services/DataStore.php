@@ -24,6 +24,7 @@ class DataStore
     private $parameterList = [];
     private $groups = [];
     private $clubs;
+    private $optionStorage = [];
 
     private $container;
 
@@ -82,6 +83,8 @@ class DataStore
         Invoice::CLOSED          => 'Kiegyenlítve',
         Invoice::CANCELLED       => 'Törölt',
     ];
+
+    private $vat = 0.27;
 
     public function __construct($container)
     {
@@ -830,9 +833,19 @@ class DataStore
         if (is_null($date)) {
             $date = date('Y-m-d');
         }
-        $em = $this->container->get('doctrine')->getManager();
+        // make sure we have a string date
+        elseif ($date instanceof \DateTime) {
+            $date = $date->format('Y-m-d');
+        }
+
         $company_id = $this->getCompanyId();
 
+        // check the mem first
+        if (isset($this->optionStorage[$company_id][$name][$date])) {
+            return $this->optionStorage[$company_id][$name][$date];
+        }
+
+        $em = $this->container->get('doctrine')->getManager();
         $table = $em->createQuery("SELECT o FROM JCSGYKAdminBundle:Option o WHERE o.companyId = :company_id AND o.name = :name AND o.isActive = 1 AND o.validFrom < :now ORDER BY o.validFrom DESC")
             ->setParameter('company_id', $this->getCompanyId())
             ->setParameter('name', $name)
@@ -845,6 +858,9 @@ class DataStore
         if (!empty($table[0])) {
             $re = json_decode($table[0]->getValue(), true);
         }
+
+        // save the value for later use
+        $this->optionStorage[$company_id][$name][$date] = $re;
 
         return $re;
     }
@@ -891,5 +907,10 @@ class DataStore
         }
 
         return $re;
+    }
+
+    public function getVat()
+    {
+        return $this->vat;
     }
 }

@@ -188,6 +188,7 @@ class InvoiceService
         $items = [];
         $ratio = 1;
         $discount_text = '';
+        $vat = $this->ds->getVat();
 
         // check discount (50% - 100%)
         if (!empty($catering->getDiscount())) {
@@ -205,7 +206,11 @@ class InvoiceService
             $table = $this->ds->getOption('cateringcosts', $date);
             // check the cost for the day
             $daily_cost = $this->getCostForADay($catering, $table);
+
             if (!is_null($daily_cost)) {
+                // this is a gross cost, so we must reduce it to net
+                $daily_cost = $daily_cost * (1 - $vat);
+                
                 // apply the discount
                 $daily_cost = round($daily_cost * $ratio);
                 // if he has ordered for this day
