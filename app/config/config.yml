@@ -79,6 +79,9 @@ doctrine:
 #                connection: csaszir
 #                mappings:
 #                  JCSGYKDbimportBundle: ~
+        dql:
+            datetime_functions:
+                date_format: JCSGYK\AdminBundle\DQL\DateFormat
 
 # Swiftmailer Configuration
 swiftmailer:

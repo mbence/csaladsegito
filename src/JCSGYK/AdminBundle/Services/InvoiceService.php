@@ -202,6 +202,8 @@ class InvoiceService
 
         foreach ($orders as $order) {
             $date = $order->getDate()->format('Y-m-d');
+            // is it a weekday or weekend
+            $weekday = $order->getDate()->format('N') < 6;
             // get the actual catering costs table
             // this runs a query for every day. Maybe not necessary...
             $table = $this->ds->getOption('cateringcosts', $date);
@@ -226,11 +228,15 @@ class InvoiceService
                             'quantity' => 1,
                             'unit_price' => $daily_cost,
                             'value' => $daily_cost,
+                            'weekday_quantity' => 0,
                         ];
                     }
                     else {
                         $items[$daily_cost]['quantity']++;
                         $items[$daily_cost]['value'] += $daily_cost;
+                    }
+                    if ($weekday) {
+                        $items[$daily_cost]['weekday_quantity']++;
                     }
                 }
                 // we dont deal with records at all, where there was no order
@@ -374,10 +380,18 @@ class InvoiceService
     {
         $em = $this->container->get('doctrine')->getManager();
 
-        return $em->createQuery("SELECT DISTINCT(CONCAT(i.startDate, ' - ', i.endDate)) as period, i.startDate, i.endDate FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id ORDER BY i.startDate DESC")
+        $res = $em->createQuery("SELECT DISTINCT(DATE_FORMAT(i.startDate, '%Y-%m')) as date FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id ORDER BY i.startDate DESC")
             ->setParameter('company_id', $company_id)
             ->setMaxResults(12)
             ->getResult();
+
+        $re = [];
+        foreach ($res as $month) {
+            $d = new \DateTime($month['date']);
+            $re[$month['date']] = sprintf('%s %s', $d->format('Y'), $this->ds->getMonth($d->format('n')));
+        }
+
+        return $re;
     }
 
 
@@ -389,13 +403,62 @@ class InvoiceService
      * @param \JCSGYK\AdminBundle\Entity\Club $club
      * @return array
      */
-    public function getCateringReport($company_id, \DateTime $startDate, \DateTime $endDate, Club $club = null)
+    public function getCateringReport($company_id, \DateTime $month, Club $club = null)
     {
+        // clear the time part
+        $month = $month->format('Y-m-d');
+        $em = $this->container->get('doctrine')->getManager();
+        $ae = $this->container->get('jcs.twig.adminextension');
+
         $data = [];
         // find all the invoices and clients of the given month
+        $sql = "SELECT i, c, a FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
+                . "WHERE i.companyId = :company_id AND i.startDate <= :month AND i.endDate >= :month ";
+        if (!empty($club)) {
+            $sql .= "AND a.club = :club ";
+        }
+        $sql .= "ORDER BY c.lastname, c.firstname";
+
+        $q = $em->createQuery($sql)
+            ->setParameter('company_id', $company_id)
+            ->setParameter('month', $month);
+        if (!empty($club)) {
+            $q->setParameter('club', $club);
+        }
+
+        $res = $q->getResult();
 
         // balance, invoice items, workday / weekend
+        if (!empty($res)) {
+            foreach ($res as $invoice) {
+                $client = $invoice->getClient();
+                $catering = $client->getCatering();
+                $items = json_decode($invoice->getItems(), true);
+                // process items
+                $discount = [];
+                $costs = [];
+                foreach ($items as $item) {
+                    if ($item['value'] >= 0) {
+                        $costs = $item;
+                    }
+                    else {
+                        $discount = $item;
+                    }
+                }
 
+                $data[] = [
+                    'id'        => $client->getId(),
+                    'name'      => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
+                    'balance'   => $ae->formatCurrency2($catering->getBalance()),
+                    'discount_days' => empty($discount) ? 0 : $discount['quantity'],
+                    'days' => empty($costs) ? 0 : $costs['quantity'],
+                    'unit_price' => $ae->formatCurrency2(empty($costs) ? 0 : $costs['unit_price']),
+                    'weekdays' => empty($costs) ? 0 : $costs['weekday_quantity'],
+                ];
+            }
+        }
+
+        var_dump($data);
 
         return $data;
     }

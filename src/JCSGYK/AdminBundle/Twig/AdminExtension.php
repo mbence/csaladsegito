@@ -455,6 +455,14 @@ class AdminExtension extends \Twig_Extension
         return $price;
     }
 
+    public function formatCurrency2 ($number, $decimals = 0, $decPoint = ',', $thousandsSep = ' ')
+    {
+        $price = number_format($number, $decimals, $decPoint, $thousandsSep);
+        $price = $price . ' Ft';
+
+        return $price;
+    }
+
 /*
     public function priceFilter($number, $decimals = 0, $decPoint = '.', $thousandsSep = ',')
     {

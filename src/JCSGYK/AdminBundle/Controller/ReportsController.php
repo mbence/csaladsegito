@@ -163,15 +163,10 @@ class ReportsController extends Controller
     private function getInvoiceMonths(&$form_builder)
     {
         $company_id = $this->ds->getCompanyId();
-        $months = $this->container->get('jcs.invoice')->getMonths($company_id);
-        $m = [];
-        foreach ($months as $period) {
-            $m[] = $period['period'];
-        }
 
         $form_builder->add('month', 'choice', [
             'label' => 'Dátum',
-            'choices' => $m,
+            'choices' => $this->container->get('jcs.invoice')->getMonths($company_id),
             'required' => true,
        ]);
     }
@@ -318,13 +313,10 @@ class ReportsController extends Controller
         if (!isset($months[$form_data['month']])) {
             throw new AccessDeniedHttpException();
         }
-        $start_date = $months[$form_data['month']]['startDate'];
-        $end_date = $months[$form_data['month']]['endDate'];
 
-        $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $start_date, $end_date, $form_data['club']);
+        $month = new \DateTime($form_data['month']);
 
-        var_dump($report_data);
-        die();
+        $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $month, $form_data['club']);
 
         $data = [
             'blocks' => [
@@ -332,10 +324,10 @@ class ReportsController extends Controller
             ]
         ];
 
-        $template_file = __DIR__.'/../Resources/public/reports/catering.xlsx';
-        $output_name = 'etkeztetes_kimutatas_' . date('Ymd') . '.xlsx';
-        $send = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
-
-        return $send;
+//        $template_file = __DIR__.'/../Resources/public/reports/catering.xlsx';
+//        $output_name = 'etkeztetes_kimutatas_' . date('Ymd') . '.xlsx';
+//        $send = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+//
+//        return $send;
     }
 }

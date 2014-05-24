@@ -25,7 +25,7 @@ class ClientOrderRepository extends EntityRepository
         }
 
         return $this->getEntityManager()
-            ->createQuery("SELECT o FROM JCSGYKAdminBundle:ClientOrder o WHERE o.client = :client_id AND o.date <= :end_date AND o.closed = :closed ORDER BY o.date, o.createdAt")
+            ->createQuery("SELECT o FROM JCSGYKAdminBundle:ClientOrder o WHERE o.client = :client_id AND o.date <= :end_date AND o.closed = :closed ORDER BY o.date")
             ->setParameter('client_id', $client_id)
             ->setParameter('end_date', $end_date)
             ->setParameter('closed', $closed)
@@ -51,7 +51,7 @@ class ClientOrderRepository extends EntityRepository
         }
         $orders = [];
         $os = $this->getEntityManager()
-            ->createQuery("SELECT o FROM JCSGYKAdminBundle:ClientOrder o WHERE o.client = :client_id AND o.date >= :start_date AND o.date <= :end_date ORDER BY o.date, o.createdAt")
+            ->createQuery("SELECT o FROM JCSGYKAdminBundle:ClientOrder o WHERE o.client = :client_id AND o.date >= :start_date AND o.date <= :end_date ORDER BY o.date")
             ->setParameter('client_id', $client_id)
             ->setParameter('start_date', $start_date)
             ->setParameter('end_date', $end_date)
