@@ -13,11 +13,16 @@ class ReportsController extends Controller
 {
     private $reports = [];
 
+    /** Datastore */
+    private $ds;
+
     /**
     * @Secure(roles="ROLE_USER")
     */
     public function indexAction($report = null)
     {
+        $this->ds = $this->container->get('jcs.ds');
+
         // check if user has access to the selected report
         $this->checkRole($report);
 
@@ -90,9 +95,8 @@ class ReportsController extends Controller
         }
 
         $sec = $this->container->get('security.context');
-        $ds = $this->container->get('jcs.ds');
-        $client_type_list = $ds->getClientTypes();
-//        $company_id = $ds->getCompanyId();
+        $client_type_list = $this->ds->getClientTypes();
+//        $company_id = $this->ds->getCompanyId();
 //        $em = $this->getDoctrine();
 
         $form_builder = $this->createFormBuilder();
@@ -105,7 +109,7 @@ class ReportsController extends Controller
             }
             // admins can select the users of this company
             if($sec->isGranted('ROLE_ADMIN')) {
-                $this->getCaseAdminSelect($form_builder, $ds, false, 'nincs');
+                $this->getCaseAdminSelect($form_builder, false, 'nincs');
             }
         }
         elseif ('casecounts' == $report) {
@@ -115,7 +119,19 @@ class ReportsController extends Controller
             }
             // admins can select the users of this company
             if($sec->isGranted('ROLE_ADMIN')) {
-                $this->getCaseAdminSelect($form_builder, $ds, false, 'mind');
+                $this->getCaseAdminSelect($form_builder, false, 'mind');
+            }
+        }
+        elseif ('catering' == $report) {
+            // month
+            $this->getInvoiceMonths($form_builder);
+            // clubs
+            if ($sec->isGranted('ROLE_ADMIN')) {
+                $this->getClubSelect($form_builder, false, 'mind');
+            }
+            else {
+                // no all-clubs for non-admins
+                $this->getClubSelect($form_builder);
             }
         }
 
@@ -132,12 +148,40 @@ class ReportsController extends Controller
         ]);
     }
 
-    private function getCaseAdminSelect(&$form_builder, $ds, $required = true, $empty_value = '')
+    private function getCaseAdminSelect(&$form_builder, $required = true, $empty_value = '')
     {
         $form_builder->add('case_admin', 'entity', [
             'label' => 'Esetgazda',
             'class' => 'JCSGYKAdminBundle:User',
-            'choices' => $ds->getCaseAdmins(null, false),
+            'choices' => $this->ds->getCaseAdmins(null, false),
+            'required' => $required,
+            'empty_value' => $empty_value,
+       ]);
+    }
+
+    // list the months when we have invoice data
+    private function getInvoiceMonths(&$form_builder)
+    {
+        $company_id = $this->ds->getCompanyId();
+        $months = $this->container->get('jcs.invoice')->getMonths($company_id);
+        $m = [];
+        foreach ($months as $period) {
+            $m[] = $period['period'];
+        }
+
+        $form_builder->add('month', 'choice', [
+            'label' => 'Dátum',
+            'choices' => $m,
+            'required' => true,
+       ]);
+    }
+
+    private function getClubSelect(&$form_builder, $required = true, $empty_value = '')
+    {
+        $form_builder->add('club', 'entity', [
+            'label' => 'Klub',
+            'class' => 'JCSGYKAdminBundle:Club',
+            'choices' => $this->ds->getClubs(),
             'required' => $required,
             'empty_value' => $empty_value,
        ]);
@@ -151,6 +195,9 @@ class ReportsController extends Controller
         elseif ('casecounts' == $report) {
             return $this->getCasecountsReport($form_data);
         }
+        elseif ('catering' == $report) {
+            return $this->getCateringReport($form_data);
+        }
 
         return false;
     }
@@ -160,6 +207,7 @@ class ReportsController extends Controller
         $menu = [
             ['slug' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
             ['slug' => 'casecounts', 'label' => 'Esetszámok', 'role' => 'ROLE_USER'],
+            ['slug' => 'catering', 'label' => 'Étkeztetés', 'role' => 'ROLE_CATERING'],
         ];
 
         return $menu;
@@ -177,11 +225,10 @@ class ReportsController extends Controller
         // check for user roles and set the params accordingly
         $em = $this->getDoctrine();
         $sec = $this->container->get('security.context');
-        $ds = $this->container->get('jcs.ds');
         $ae = $this->container->get('jcs.twig.adminextension');
-        $client_type_list = $ds->getClientTypes();
+        $client_type_list = $this->ds->getClientTypes();
         $client_type_keys = array_keys($client_type_list);
-        $company_id = $ds->getCompanyId();
+        $company_id = $this->ds->getCompanyId();
 
         // non admins can only see their own clients
         if(!$sec->isGranted('ROLE_ADMIN')) {
@@ -218,11 +265,10 @@ class ReportsController extends Controller
         // check for user roles and set the params accordingly
         $em = $this->getDoctrine();
         $sec = $this->container->get('security.context');
-        $ds = $this->container->get('jcs.ds');
         $ae = $this->container->get('jcs.twig.adminextension');
-        $client_type_list = $ds->getClientTypes();
+        $client_type_list = $this->ds->getClientTypes();
         $client_type_keys = array_keys($client_type_list);
-        $company_id = $ds->getCompanyId();
+        $company_id = $this->ds->getCompanyId();
 
         // non admins can only see their own clients
         if(!$sec->isGranted('ROLE_ADMIN')) {
@@ -243,6 +289,52 @@ class ReportsController extends Controller
         $template_file = __DIR__.'/../Resources/public/reports/casecounts.xlsx';
         $output_name = 'esetszam_kimutatas_' . date('Ymd') . '.xlsx';
         $send = $this->container->get('jcs.docx')->makeReport($template_file, $data, $output_name);
+
+        return $send;
+    }
+
+    private function getCateringReport($form_data)
+    {
+        $form_fields = [
+            'month' => null,
+            'club' => null,
+        ];
+        // make sure we have all required fields
+        // 'club' => Club entity or null for all
+        $form_data = array_merge($form_fields, $form_data);
+
+        // check for user roles and set the params accordingly
+        $em = $this->getDoctrine();
+        $sec = $this->container->get('security.context');
+        $ae = $this->container->get('jcs.twig.adminextension');
+        $company_id = $this->ds->getCompanyId();
+        $months = $this->container->get('jcs.invoice')->getMonths($company_id);
+
+        // non admins not get all clubs
+        if(!$sec->isGranted('ROLE_ADMIN') && empty($form_fields['club'])) {
+            throw new AccessDeniedHttpException();
+        }
+        // get the period
+        if (!isset($months[$form_data['month']])) {
+            throw new AccessDeniedHttpException();
+        }
+        $start_date = $months[$form_data['month']]['startDate'];
+        $end_date = $months[$form_data['month']]['endDate'];
+
+        $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $start_date, $end_date, $form_data['club']);
+
+        var_dump($report_data);
+        die();
+
+        $data = [
+            'blocks' => [
+                'catering' => $report_data,
+            ]
+        ];
+
+        $template_file = __DIR__.'/../Resources/public/reports/catering.xlsx';
+        $output_name = 'etkeztetes_kimutatas_' . date('Ymd') . '.xlsx';
+        $send = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
 
         return $send;
     }

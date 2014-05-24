@@ -7,6 +7,7 @@ use JCSGYK\AdminBundle\Entity\Invoice;
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\Catering;
 use JCSGYK\AdminBundle\Entity\ClientOrder;
+use JCSGYK\AdminBundle\Entity\Club;
 
 /**
  * Invoice related service
@@ -210,7 +211,7 @@ class InvoiceService
             if (!is_null($daily_cost)) {
                 // this is a gross cost, so we must reduce it to net
                 $daily_cost = $daily_cost * (1 - $vat);
-                
+
                 // apply the discount
                 $daily_cost = round($daily_cost * $ratio);
                 // if he has ordered for this day
@@ -367,5 +368,35 @@ class InvoiceService
         $em->flush();
 
         return $balance;
+    }
+
+    public function getMonths($company_id)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+
+        return $em->createQuery("SELECT DISTINCT(CONCAT(i.startDate, ' - ', i.endDate)) as period, i.startDate, i.endDate FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id ORDER BY i.startDate DESC")
+            ->setParameter('company_id', $company_id)
+            ->setMaxResults(12)
+            ->getResult();
+    }
+
+
+    /**
+     * Get the monthy catering report
+     *
+     * @param int $company_id
+     * @param \DateTime $month
+     * @param \JCSGYK\AdminBundle\Entity\Club $club
+     * @return array
+     */
+    public function getCateringReport($company_id, \DateTime $startDate, \DateTime $endDate, Club $club = null)
+    {
+        $data = [];
+        // find all the invoices and clients of the given month
+
+        // balance, invoice items, workday / weekend
+
+
+        return $data;
     }
 }
