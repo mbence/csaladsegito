@@ -160,7 +160,6 @@ class ClientRepository extends EntityRepository
         return $this->getEntityManager()->getConnection()->executeQuery($sql, $params)->fetchAll();
     }
 
-
     /**
      * returns all clients who have an active catering record
      */

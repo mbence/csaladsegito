@@ -319,15 +319,18 @@ class ReportsController extends Controller
         $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $month, $form_data['club']);
 
         $data = [
+            'ca.cim'    => sprintf('%s havi ebéd összesítő', $ae->formatDate($month, 'ym')),
+            'ca.klub'   => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
+            'sp.datum'  => $ae->formatDate(new \DateTime('today')),
             'blocks' => [
                 'catering' => $report_data,
             ]
         ];
 
-//        $template_file = __DIR__.'/../Resources/public/reports/catering.xlsx';
-//        $output_name = 'etkeztetes_kimutatas_' . date('Ymd') . '.xlsx';
-//        $send = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
-//
-//        return $send;
+        $template_file = __DIR__.'/../Resources/public/reports/catering.xlsx';
+        $output_name = 'ebed_osszesito_' . date('Ymd') . '.xlsx';
+        $send = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+
+        return $send;
     }
 }

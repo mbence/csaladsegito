@@ -364,6 +364,10 @@ class AdminExtension extends \Twig_Extension
             elseif ('week' ==  $type) {
                 return $d->format('W. ') . 'hét';
             }
+            // year and month
+            elseif ('ym' ==  $type) {
+                return $d->format('Y. ') . $this->translator->trans($this->ds->getMonth($d->format('n')));
+            }
             // long date (with month name)
             else {
                 return $d->format('Y. ') .  $this->translator->trans($this->ds->getMonth($d->format('n'))) . $d->format(' j.');

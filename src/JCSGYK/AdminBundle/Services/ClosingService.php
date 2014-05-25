@@ -209,23 +209,12 @@ class ClosingService
         // find the unsent invocies in batches
         $offset = 0;
         $limit = 10;
-        $invoices = $invocie_service->getInvoices($company_id, $limit, $offset);
-        while (!empty($invoices)) {
-            // process the invoce
-            foreach ($invoices as $invoice) {
-                $result += $this->exportInvoice($invoice);
-            }
-            $em->flush();
-
-            // get the next batch
-            if (count($invoices) == $limit) {
-                $offset += $limit;
-                $invoices = $invocie_service->getInvoices($company_id, $limit, $offset);
-            }
-            else {
-                $invoices = [];
-            }
+        $invoices = $invocie_service->getInvoices($company_id);
+        // process the invoce
+        foreach ($invoices as $invoice) {
+            $result += $this->exportInvoice($invoice);
         }
+        $em->flush();
 
         return $result;
     }
@@ -250,8 +239,8 @@ class ClosingService
 
         $comment = sprintf('%s. havi étkeztetés', $invoice->getEndDate()->format('n'));
 
-        $net_amount = $invoice->getAmount();
-        $gross_amount = round($invoice->getAmount() * (1 + $vat));
+        $gross_amount = $invoice->getAmount();
+        $net_amount = round($gross_amount / (1 + $vat));
 
         $data = [
             'szlaatf.txt' => [
@@ -291,8 +280,8 @@ class ClosingService
                     'BSZAM'     => $invoice->getId(),
                     'NEV'       => $item['name'],
                     'MENNY'     => $item['quantity'],
-                    'EGYSAR'    => $item['unit_price'],
-                    'ERTEK'     => $item['value'],
+                    'EGYSAR'    => $item['net_price'],
+                    'ERTEK'     => $item['net_value'],
                 ];
             }
         }

@@ -212,10 +212,10 @@ class InvoiceService
 
             if (!is_null($daily_cost)) {
                 // this is a gross cost, so we must reduce it to net
-                $daily_cost = $daily_cost * (1 - $vat);
+                $net_cost = number_format($daily_cost / (1 + $vat), 4);
 
                 // apply the discount
-                $daily_cost = round($daily_cost * $ratio);
+                $daily_cost = $daily_cost * $ratio;
                 // if he has ordered for this day
                 if ($order->getOrder()) {
                     if ($order->getCancel()) {
@@ -224,16 +224,19 @@ class InvoiceService
                     }
                     if (!isset($items[$daily_cost])) {
                         $items[$daily_cost] = [
-                            'name' => ($daily_cost > 0 ? 'Ebéd rendelés' : 'Jóváírás') . $discount_text,
+                            'name' => ($daily_cost >= 0 ? 'Ebéd rendelés' : 'Jóváírás') . $discount_text,
                             'quantity' => 1,
+                            'net_price' => $net_cost,
                             'unit_price' => $daily_cost,
                             'value' => $daily_cost,
+                            'net_value' => $net_cost,
                             'weekday_quantity' => 0,
                         ];
                     }
                     else {
                         $items[$daily_cost]['quantity']++;
                         $items[$daily_cost]['value'] += $daily_cost;
+                        $items[$daily_cost]['net_value'] += $net_cost;
                     }
                     if ($weekday) {
                         $items[$daily_cost]['weekday_quantity']++;
@@ -341,14 +344,12 @@ class InvoiceService
      * @param int $status
      * @return array of JCSGYK\AdminBundle\Entity\Invoice
      */
-    public function getInvoices($company_id, $limit = 100, $offset = 0, $status = Invoice::READY_TO_SEND)
+    public function getInvoices($company_id, $status = Invoice::READY_TO_SEND)
     {
         $em = $this->container->get('doctrine')->getManager();
         return $em->createQuery("SELECT i, c FROM JCSGYKAdminBundle:Invoice i JOIN i.client c WHERE i.companyId = :company_id AND i.status = :status")
             ->setParameter('company_id', $company_id)
             ->setParameter('status', $status)
-            ->setMaxResults($limit)
-            ->setFirstResult($offset)
             ->getResult();
     }
 
@@ -430,6 +431,16 @@ class InvoiceService
 
         // balance, invoice items, workday / weekend
         if (!empty($res)) {
+            // summary
+            $sums = [
+                'id'    => '',
+                'name'  => 'ÖSSZESEN',
+                'balance'   => 0,
+                'discount_days' => 0,
+                'days' => 0,
+                'unit_price' => '',
+                'weekdays' => 0,
+            ];
             foreach ($res as $invoice) {
                 $client = $invoice->getClient();
                 $catering = $client->getCatering();
@@ -447,7 +458,7 @@ class InvoiceService
                 }
 
                 $data[] = [
-                    'id'        => $client->getId(),
+                    'id'        => $client->getCaseLabel(),
                     'name'      => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
                     'balance'   => $ae->formatCurrency2($catering->getBalance()),
                     'discount_days' => empty($discount) ? 0 : $discount['quantity'],
@@ -455,10 +466,16 @@ class InvoiceService
                     'unit_price' => $ae->formatCurrency2(empty($costs) ? 0 : $costs['unit_price']),
                     'weekdays' => empty($costs) ? 0 : $costs['weekday_quantity'],
                 ];
+                $sums['balance'] += $catering->getBalance();
+                $sums['discount_days'] += empty($discount) ? 0 : $discount['quantity'];
+                $sums['days'] += empty($costs) ? 0 : $costs['quantity'];
+                $sums['weekdays'] += empty($costs) ? 0 : $costs['weekday_quantity'];
             }
+            // format the summary balance
+            $sums['balance'] = $ae->formatCurrency2($sums['balance']);
+            // add the summary to the end of the report
+            $data[] = $sums;
         }
-
-        var_dump($data);
 
         return $data;
     }
