@@ -2,11 +2,13 @@
 <div class="client-sub {% if notoggle is not defined %}togglable{% endif %}">{{ 'előzmények'|trans }}</div>
 <div>
     <table class="client" cellspacing="0" border="0">
+        {% if item.creator %}
         <tr>
             <th>{{ 'Létrehozta'|trans }}:</th>
             <td>{{ fname(item.creator.firstname, item.creator.lastname) }}</td>
             <td>({{ item.createdAt|fdate('dt') }})</td>
         </tr>
+        {% endif %}
         {% if item.modifiedAt and item.modifiedAt != item.createdAt %}
         <tr>
             <th>{{ 'Módosította'|trans }}:</th>

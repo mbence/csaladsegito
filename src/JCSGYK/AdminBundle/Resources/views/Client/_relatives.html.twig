@@ -24,21 +24,25 @@
             <td colspan="3">{{ fname(relative.birthFirstname, relative.birthLastname, relative.birthTitle) }}</td>
         </tr>
         {% endif %}
+        {% if relative.birthPlace or relative.birthDate %}
         <tr>
             <th>{{ 'Szül. hely, idő'|trans }}:</th>
             <td colspan="2">{% if relative.birthPlace %}{{ relative.birthPlace }}, {% endif %}{{ relative.birthDate|fdate }}</td>
             <td><div class="short floatright">{{ relative.gender|gender }}</div></td>
         </tr>
+        {% endif %}
         {% if relative.motherFirstname or relative.motherLastname %}
         <tr>
             <th>{{ 'Anyja neve'|trans }}:</th>
             <td colspan="3">{{ fname(relative.motherFirstname, relative.motherLastname, relative.motherTitle) }}</td>
         </tr>
         {% endif %}
+        {% if relative.citizenship %}
         <tr>
             <th>{{ 'Állampolgárság'|trans }}:</th>
             <td colspan="3">{{ param(relative.citizenship) }} ({{ param(relative.citizenshipStatus) }})</td>
         </tr>
+        {% endif %}
 
     {# Kapcsolat #}
         {% if relative.mobile or relative.phone %}
