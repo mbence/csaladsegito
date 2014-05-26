@@ -591,30 +591,21 @@ class DataStore
 
     public function getClubs()
     {
+        $em = $this->container->get('doctrine')->getManager();
         $sec  = $this->container->get('security.context');
 
-        if ($sec->isGranted('ROLE_ADMIN')) {
-
-            if (empty($this->clubs)) {
-                $this->clubs = $this->container->get('doctrine')->getManager()
-                    ->getRepository('JCSGYKAdminBundle:Club')
-                    ->getAll($this->getCompanyId());
+        if (empty($this->clubs)) {
+            if ($sec->isGranted('ROLE_ADMIN')) {
+                $this->clubs = $em->getRepository('JCSGYKAdminBundle:Club')->getAll($this->getCompanyId());
             }
-    //
-    //        $re = [];
-    //        foreach ($this->clubs as $club) {
-    //            $re[$club->getId()] = $club->getName();
-    //        }
-    //
-    //        return $re;
-        }
-        else {
-            $user = $sec->getToken()->getUser();
+            else {
+                $user = $sec->getToken()->getUser();
 
-            if (empty($this->clubs)) {
-                $this->clubs = $this->container->get('doctrine')->getManager()
-                    ->getRepository('JCSGYKAdminBundle:Club')
-                    ->findBy(['companyId' =>$this->getCompanyId(), 'coordinator' => $user->getId()]);
+                $this->clubs = $em->createQuery("SELECT c FROM JCSGYKAdminBundle:Club c WHERE "
+                        . "c.companyID = :company_id AND c.users LIKE :users")
+                    ->setParameter('company_id', $this->getCompanyId())
+                    ->setParameter('users', '%"' . $user->getId() . '"%')
+                    ->getResult();
             }
         }
 

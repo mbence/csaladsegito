@@ -68,11 +68,6 @@ class User extends BaseUser
     private $tasks;
 
     /**
-     * @ORM\OneToMany(targetEntity="Club", mappedBy="coordinator")
-     */
-    private $clubCoordinator;
-
-    /**
      * @ORM\OneToMany(targetEntity="MonthlyClosing", mappedBy="creator")
      */
     private $closings;
@@ -100,7 +95,6 @@ class User extends BaseUser
         $this->clientcreated = new ArrayCollection();
         $this->clientmodified = new ArrayCollection();
         $this->archivecreated = new ArrayCollection();
-        $this->clubCoordinator = new ArrayCollection();
         $this->closings = new ArrayCollection();
         $this->tasks = new ArrayCollection();
         $this->optioncreated = new ArrayCollection();

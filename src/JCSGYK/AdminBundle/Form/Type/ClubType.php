@@ -26,11 +26,13 @@ class ClubType extends AbstractType
         $builder->add('name', 'text', ['label' => 'Név']);
         $builder->add('address', 'text', ['label' => 'Cím']);
         $builder->add('phone', 'text', ['label' => 'Telefon']);
-        $builder->add('coordinator', 'entity', [
+        $builder->add('users', 'choice', [
             'label' => 'Koordinátor',
-            'class' => 'JCSGYKAdminBundle:User',
             'choices' => $this->ds->getCaseAdmins(Client::CA),
             'required' => false,
+            'multiple'  => true,
+            'expanded'  => false,
+            'attr'  => ['style' => 'height: 200px;']
         ]);
 
         $lunch_types = $this->ds->getGroup('lunch_types');

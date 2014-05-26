@@ -155,13 +155,9 @@ class ClosingService
             $this->deleteFiles($zip);
 
             // save the zip file in the monthlyClosing record
-
             $closing->setFiles($zip_file_contents);
             $closing->setSummary($this->summary);
             $em->flush();
-
-            // update the client balances
-            $this->updateBalances($clients);
 
             // Send the EcoSTAT files to bookkeeping
             //$this->writeFiles();
@@ -172,6 +168,9 @@ class ClosingService
             else {
                 $this->output(sprintf("%s: Email hiba!", date('H:i:s')));
             }
+
+            // update the client balances
+            $this->updateBalances($clients);
         }
 
         // update the closing record

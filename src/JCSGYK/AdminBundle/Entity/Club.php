@@ -51,10 +51,11 @@ class Club
     private $phone;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="clubCoordinator", fetch="EAGER")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @var string
+     *
+     * @ORM\Column(name="users", type="string", length=255, nullable=true)
      */
-    private $coordinator;
+    private $users;
 
     /**
      * @var string
@@ -188,29 +189,6 @@ class Club
     }
 
     /**
-     * Set coordinator
-     *
-     * @param \JCSGYK\AdminBundle\Entity\User $coordinator
-     * @return Club
-     */
-    public function setCoordinator(\JCSGYK\AdminBundle\Entity\User $coordinator = null)
-    {
-        $this->coordinator = $coordinator;
-
-        return $this;
-    }
-
-    /**
-     * Get coordinator
-     *
-     * @return \JCSGYK\AdminBundle\Entity\User
-     */
-    public function getCoordinator()
-    {
-        return $this->coordinator;
-    }
-
-    /**
      * Set isActive
      *
      * @param boolean $isActive
@@ -284,10 +262,34 @@ class Club
     /**
      * Get lunchTypes
      *
-     * @return string
+     * @return array
      */
     public function getLunchTypes()
     {
         return json_decode($this->lunchTypes, true);
+    }
+
+    /**
+     * Set users
+     *
+     * @param string $users
+     *
+     * @return Club
+     */
+    public function setUsers($users)
+    {
+        $this->users = json_encode($users);
+
+        return $this;
+    }
+
+    /**
+     * Get users
+     *
+     * @return array
+     */
+    public function getUsers()
+    {
+        return json_decode($this->users, true);
     }
 }
