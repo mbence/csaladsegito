@@ -433,13 +433,14 @@ class InvoiceService
         if (!empty($res)) {
             // summary
             $sums = [
-                'id'    => '',
-                'name'  => 'ÖSSZESEN',
-                'balance'   => 0,
+                'id'            => '',
+                'name'          => 'ÖSSZESEN',
+                'balance'       => 0,
+                'amount'        => 0,
                 'discount_days' => 0,
-                'days' => 0,
-                'unit_price' => '',
-                'weekdays' => 0,
+                'days'          => 0,
+                'unit_price'    => '',
+                'weekdays'      => 0,
             ];
             foreach ($res as $invoice) {
                 $client = $invoice->getClient();
@@ -458,21 +459,24 @@ class InvoiceService
                 }
 
                 $data[] = [
-                    'id'        => $client->getCaseLabel(),
-                    'name'      => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
-                    'balance'   => $ae->formatCurrency2($catering->getBalance()),
+                    'id'            => $client->getCaseLabel(),
+                    'name'          => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
+                    'balance'       => $ae->formatCurrency2($catering->getBalance()),
+                    'amount'        => $ae->formatCurrency2($invoice->getAmount()),
                     'discount_days' => empty($discount) ? 0 : $discount['quantity'],
-                    'days' => empty($costs) ? 0 : $costs['quantity'],
-                    'unit_price' => $ae->formatCurrency2(empty($costs) ? 0 : $costs['unit_price']),
-                    'weekdays' => empty($costs) ? 0 : $costs['weekday_quantity'],
+                    'days'          => empty($costs) ? 0 : $costs['quantity'],
+                    'unit_price'    => $ae->formatCurrency2(empty($costs) ? 0 : $costs['unit_price']),
+                    'weekdays'      => empty($costs) ? 0 : $costs['weekday_quantity'],
                 ];
-                $sums['balance'] += $catering->getBalance();
+                $sums['balance']    += $catering->getBalance();
+                $sums['amount']     += $invoice->getAmount();
                 $sums['discount_days'] += empty($discount) ? 0 : $discount['quantity'];
-                $sums['days'] += empty($costs) ? 0 : $costs['quantity'];
-                $sums['weekdays'] += empty($costs) ? 0 : $costs['weekday_quantity'];
+                $sums['days']       += empty($costs) ? 0 : $costs['quantity'];
+                $sums['weekdays']   += empty($costs) ? 0 : $costs['weekday_quantity'];
             }
             // format the summary balance
             $sums['balance'] = $ae->formatCurrency2($sums['balance']);
+            $sums['amount'] = $ae->formatCurrency2($sums['amount']);
             // add the summary to the end of the report
             $data[] = $sums;
         }

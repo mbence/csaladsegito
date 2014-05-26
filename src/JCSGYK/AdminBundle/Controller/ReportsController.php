@@ -173,13 +173,17 @@ class ReportsController extends Controller
 
     private function getClubSelect(&$form_builder, $required = true, $empty_value = '')
     {
-        $form_builder->add('club', 'entity', [
+        $c = [
             'label' => 'Klub',
             'class' => 'JCSGYKAdminBundle:Club',
             'choices' => $this->ds->getClubs(),
             'required' => $required,
-            'empty_value' => $empty_value,
-       ]);
+        ];
+        if (!empty($empty_value)) {
+            $c['empty_value'] = $empty_value;
+        }
+
+        $form_builder->add('club', 'entity', $c);
     }
 
     private function getReport($report, $form_data)
@@ -306,7 +310,7 @@ class ReportsController extends Controller
         $months = $this->container->get('jcs.invoice')->getMonths($company_id);
 
         // non admins not get all clubs
-        if(!$sec->isGranted('ROLE_ADMIN') && empty($form_fields['club'])) {
+        if(!$sec->isGranted('ROLE_ADMIN') && empty($form_data['club'])) {
             throw new AccessDeniedHttpException();
         }
         // get the period

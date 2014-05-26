@@ -602,9 +602,9 @@ class DataStore
                 $user = $sec->getToken()->getUser();
 
                 $this->clubs = $em->createQuery("SELECT c FROM JCSGYKAdminBundle:Club c WHERE "
-                        . "c.companyID = :company_id AND c.users LIKE :users")
+                        . "c.companyId = :company_id AND c.users LIKE :users")
                     ->setParameter('company_id', $this->getCompanyId())
-                    ->setParameter('users', '%"' . $user->getId() . '"%')
+                    ->setParameter('users', '%' . $user->getId() . '%')
                     ->getResult();
             }
         }
@@ -707,7 +707,7 @@ class DataStore
             // add each user to the corresponding role group but only once
             foreach ($user_roles as $role) {
                 if (isset($this->roles[$role])) {
-                    $re[$this->roles[$role]][] = $user;
+                    $re[$this->roles[$role]][$user->getId()] = $user;
                 }
                 break;
             }
