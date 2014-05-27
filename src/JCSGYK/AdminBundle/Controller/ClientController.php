@@ -1336,10 +1336,41 @@ class ClientController extends Controller
         $this->get('session')->set('quicksearch.' . $client_type, $q);
 
         $time_start = microtime(true);
-        if (!empty($q)) {
+
+        $db = $this->get('doctrine.dbal.default_connection');
+        if (empty($q)) {
+            $sec = $this->get('security.context');
+            $user= $sec->getToken()->getUser();
+            $ds = $this->container->get('jcs.ds');
+
+            // list all the clients for the catering users
+            if (!$sec->isGranted('ROLE_ADMIN') && $sec->isGranted('ROLE_CATERING')) {
+                $clubs = $ds->getClubs();
+                $club_list = [];
+                foreach ($clubs as $club) {
+                    $club_list[] = $club->getId();
+                }
+                $club_list = implode(',', $club_list);
+                if (!empty($clubs)) {
+                    $sql = "SELECT c.id, c.type, c.case_year, c.case_number, c.case_label, c.company_id, c.title, c.firstname, c.lastname, c.mother_firstname, c.mother_lastname, c.zip_code, c.city, c.street, c.street_type, c.street_number, c.flat_number, c.is_archived "
+                        . "FROM client c LEFT JOIN catering a ON c.id = a.client_id WHERE"
+                        . " a.club_id IN ($club_list) AND c.is_archived = 0"
+                        . " ORDER BY c.lastname, c.firstname LIMIT " . $limit;
+                    $re = $db->fetchAll($sql);
+                }
+            }
+            // list all active clients for the FH or CW users
+            elseif (!$sec->isGranted('ROLE_ADMIN') && ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE'))) {
+                $user_id = $user->getId();
+                $sql = "SELECT id, type, case_year, case_number, case_label, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number, is_archived FROM client WHERE"
+                    . "case_admin = {$user_id} AND is_archived = 0"
+                    . " ORDER BY c.lastname, c.firstname LIMIT " . $limit;
+                $re = $db->fetchAll($sql);
+            }
+        }
+        else {
             $num_ver = Client::cleanupNum($q);
-            $db = $this->get('doctrine.dbal.default_connection');
-            $sql = "SELECT id, type, case_year, case_number, case_label, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number FROM client WHERE";
+            $sql = "SELECT id, type, case_year, case_number, case_label, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number, is_archived FROM client WHERE";
             // recognize a case number
             if ($this->isCase($q, $client_type)) {
                 $sql .= " case_label LIKE {$db->quote($q . '%')} AND company_id={$db->quote($company_id)} AND type={$client_type}";

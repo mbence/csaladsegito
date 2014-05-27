@@ -8,7 +8,7 @@
     </thead>
     <tbody class="walkable">
         {% for p in clients %}
-        <tr data-userid="{{ p.id }}" tabindex="{{ loop.index + 99 }}" {% if loop.first %}class="cursor"{% endif %}>
+        <tr data-userid="{{ p.id }}" tabindex="{{ loop.index + 99 }}" class="{% if loop.first %}cursor{% endif %} {% if p.is_archived %}archived-result{% endif %}">
             <td>
                 <a name="r{{ p.id }}"></a>
                 {{ p.case_label }}

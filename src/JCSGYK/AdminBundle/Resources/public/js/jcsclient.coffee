@@ -253,6 +253,17 @@ JcsClient =
         @setDelProvider()
 
     initButtonRow: ->
+        # search help button
+        $("#search_help").off("click").on "click" , ->
+            $("#search-info").toggle()
+            if $("#search-info").is(":visible")
+                $("#search-results").addClass("opaque")
+            else
+                $("#search-results").removeClass("opaque")
+            return false
+        $("#search-info").off("click").on "click", ->
+            $("#search_help").click()
+
         # get buttons
         $(".edit_client").add(".back_to_view").add(".new_client").off('click').on 'click', (event) ->
             event.stopPropagation()

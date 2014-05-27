@@ -1,8 +1,6 @@
 JcsSearch =
     qto: null
     init: ->
-        orig_results_text = $("#search-results").html()
-
         setActive = $("#clientblock .clientcontent").text() == ""
 
         # search field
@@ -29,17 +27,15 @@ JcsSearch =
         $("#quicksearch").submit( ->
             nf.start()
             HBlocks.scrollTo(1)
-            if $("#quicksearch #q").val() == ''
-                $("#search-results").html(orig_results_text)
+            $("#search-info").hide()
             search_url = $(this).attr("action")
             if $("#q").val() then search_url += '?q=' + encodeURIComponent($("#q").val())
             $.get(search_url, (data) ->
                 nf.stop()
-                if $("#quicksearch #q").val() != ''
-                    # display search results
-                    $("#search-results").html(data)
-                    # bind click events on the results
-                    JcsSearch.setupResults()
+                # display search results
+                $("#search-results").html(data)
+                # bind click events on the results
+                JcsSearch.setupResults()
             ).error( (data) ->
                 nf.stop()
                 # there was some error :(
@@ -52,7 +48,7 @@ JcsSearch =
         # new client button
         JcsClient.initButtonRow()
 
-        if $("#clientblock .clientcontent").text() == "" and $("#quicksearch #q").val() != ''
+        if $("#clientblock .clientcontent").text() == "" # and $("#quicksearch #q").val() != ''
             JcsSearch.qSubmit()
 
     qSubmit: ->
@@ -91,5 +87,5 @@ JcsSearch =
         # highlight the search keywords
         keywords = $("#quicksearch #q").val().split(" ")
         $("#search-results").highlight key for key in keywords
-        
+
         true

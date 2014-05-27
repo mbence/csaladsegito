@@ -68,6 +68,9 @@
 
 {# Clients #}
         {# new client #}
+        {% if button == 'search_help' %}
+            <a href="#" class="greybutton" id="search_help" title="{{ 'Segítség'|trans }}"><span> ? </span></a>
+        {% endif %}
         {% if button == 'new_client' %}
             <a href="{{ path('client_new', {'client_type': client_type|ctmap}) }}" class="button new_client" title="{{ 'Új ügyfél létrehozása'|trans }}"><span>{{ 'új ügyfél'|trans }}</span></a>
         {% endif %}

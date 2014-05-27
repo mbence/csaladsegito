@@ -15711,8 +15711,7 @@ var JcsSearch;
 JcsSearch = {
   qto: null,
   init: function() {
-    var nf, orig_results_text, setActive;
-    orig_results_text = $("#search-results").html();
+    var nf, setActive;
     setActive = $("#clientblock .clientcontent").text() === "";
     nf = new NiceField($("#quicksearch #q"), {
       clearHook: (function(_this) {
@@ -15742,19 +15741,15 @@ JcsSearch = {
       var search_url;
       nf.start();
       HBlocks.scrollTo(1);
-      if ($("#quicksearch #q").val() === '') {
-        $("#search-results").html(orig_results_text);
-      }
+      $("#search-info").hide();
       search_url = $(this).attr("action");
       if ($("#q").val()) {
         search_url += '?q=' + encodeURIComponent($("#q").val());
       }
       $.get(search_url, function(data) {
         nf.stop();
-        if ($("#quicksearch #q").val() !== '') {
-          $("#search-results").html(data);
-          return JcsSearch.setupResults();
-        }
+        $("#search-results").html(data);
+        return JcsSearch.setupResults();
       }).error(function(data) {
         nf.stop();
         return AjaxBag.showError(data.statusText);
@@ -15762,7 +15757,7 @@ JcsSearch = {
       return false;
     });
     JcsClient.initButtonRow();
-    if ($("#clientblock .clientcontent").text() === "" && $("#quicksearch #q").val() !== '') {
+    if ($("#clientblock .clientcontent").text() === "") {
       return JcsSearch.qSubmit();
     }
   },
@@ -16043,6 +16038,18 @@ JcsClient = {
     return this.setDelProvider();
   },
   initButtonRow: function() {
+    $("#search_help").off("click").on("click", function() {
+      $("#search-info").toggle();
+      if ($("#search-info").is(":visible")) {
+        $("#search-results").addClass("opaque");
+      } else {
+        $("#search-results").removeClass("opaque");
+      }
+      return false;
+    });
+    $("#search-info").off("click").on("click", function() {
+      return $("#search_help").click();
+    });
     $(".edit_client").add(".back_to_view").add(".new_client").off('click').on('click', function(event) {
       event.stopPropagation();
       if (!$(this).hasClass('animbutton')) {

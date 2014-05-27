@@ -6,21 +6,21 @@
             <div id="searchblock">
                 <div id="search-head">
                     {% if is_expr_granted("hasRole('ROLE_ADMIN') or hasRole('ROLE_ASSISTANCE') or hasRole('ROLE_FAMILY_HELP') or hasRole('ROLE_CATERING')") %}
-                        {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['new_client']} %}
+                        {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {'buttons': ['search_help', 'new_client']} %}
                     {% endif %}
 
                     <h1 class="client left">{{ 'Ügyfelek'|trans }}</h1>
                     {% include "JCSGYKAdminBundle:Elements:quicksearch.html.twig" %}
                 </div>
-                <div id="search-results">
-                    <div class="info">
+                <div id="search-info" class="info">
                     <p>A gyorskereső mezőben ügyfélszám (ügyiratszám), név, TAJ szám vagy utcanév és házszám szerint is kereshet.</p>
                     <p>Ügyfélszám vagy TAJ szám esetében csak számokat írjon be, vagy a pontos ügyiratszám formátumot használja ({{ {'case_year': 2013, 'case_number': 1, 'type': client_type}|casenum }})!</p>
                     <p>Házszámra való keresés esetében a számnak mindig utolsóként kell szerepelni, és pontosan kell
                        megadni a házszámot (Pl 'Üllői 54-56').<br>
                        A szám végére *-ot téve résztalálatokra is kereshet.<br>
                        (Pl: Üllői 66*)</p>
-                    </div>
+                </div>
+                <div id="search-results">
                 </div>
             </div>
 
