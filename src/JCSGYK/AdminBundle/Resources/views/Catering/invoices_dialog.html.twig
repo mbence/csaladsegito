@@ -5,77 +5,79 @@
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
     {% form_theme form 'JCSGYKAdminBundle:Form:errors.html.twig' %}
-    <h1 class="client center">{{ 'Befizetések'|trans }}</h1>
+    <div class="modal-middle">
+        <h1 class="client center">{{ 'Befizetések'|trans }}</h1>
 
-    <form id="catering_form" class="templateform" action="{{ path('client_invoices', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
-        {{ form_errors(form) }}
+        <form id="catering_form" class="templateform" action="{{ path('client_invoices', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
+            {{ form_errors(form) }}
 
-        <table class="client" cellspacing="0" border="0">
-            <tr>
-                <th>{{ 'Név'|trans }}:</th>
-                <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
-            </tr>
-            <tr>
-                <th>{{ client.type|caselabel }}:</th>
-                <td>{{ client.caseLabel }}</td>
-            </tr>
-        </table>
-
-        <div class="client-sub">{{ 'számlák'|trans }}</div>
-        <div class="invoice-container">
-            <table class="client-edit" cellspacing="0" border="0">
-                <tr class="catering-top">
-                    <th>#</th>
-                    <th>Dátum</th>
-                    <th>Összeg</th>
-                    <th>Státusz</th>
-                    <th>Egyenleg</th>
+            <table class="client" cellspacing="0" border="0">
+                <tr>
+                    <th>{{ 'Név'|trans }}:</th>
+                    <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
                 </tr>
-                {% for invoice in invoices %}
-                    <tr class="catering-invoice {% if invoice.isOpen %}invoice-open{% endif %}" data-status="{{ invoice.status }}" data-id="{{ invoice.id }}">
-                        <td>{{ invoice.id }}:</td>
-                        <td>{{ invoice.startDate|fdate('sd') }} - {{ invoice.endDate|fdate('sd') }}</td>
-                        <td><strong>{{ invoice.amount|fcurr }}</strong></td>
-                        <td>{{ invoice.status|invoice_status }}</td>
-                        <td>{{ invoice.balance|fcurr  }}</td>
-                    </tr>
-                    {% if invoice.isOpen %}
-                        <tr>
-                            <td colspan="5" class="right">
-                                {% set field = form['i' ~ invoice.id] %}
-                                {{ form_errors(field) }}
-                                <div class="right">
-                                    {{ form_label(field) }}
-                                    {{ form_widget(field) }}
-                                    {% if form['b' ~ invoice.id] is defined %}
-                                        {{ form_widget(form['b' ~ invoice.id]) }}
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                    {% endif %}
-                    {% if invoice.payments %}
-                        {% for payment in invoice.payments %}
-                            <tr class="catering-payments i{{ invoice.id}}_payments">
-                                <th colspan="3">{% if loop.first %}Befizetések:{% endif %}</th>
-                                <td>{{ payment[0] }}:</td>
-                                <td>{{ payment[1]|fcurr }}</td>
-                            </tr>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
+                <tr>
+                    <th>{{ client.type|caselabel }}:</th>
+                    <td>{{ client.caseLabel }}</td>
+                </tr>
             </table>
 
-        </div>
+            <div class="client-sub">{{ 'számlák'|trans }}</div>
+            <div class="invoice-container">
+                <table class="client-edit" cellspacing="0" border="0">
+                    <tr class="catering-top">
+                        <th>#</th>
+                        <th>Dátum</th>
+                        <th>Összeg</th>
+                        <th>Státusz</th>
+                        <th>Egyenleg</th>
+                    </tr>
+                    {% for invoice in invoices %}
+                        <tr class="catering-invoice {% if invoice.isOpen %}invoice-open{% endif %}" data-status="{{ invoice.status }}" data-id="{{ invoice.id }}">
+                            <td>{{ invoice.id }}:</td>
+                            <td>{{ invoice.startDate|fdate('sd') }} - {{ invoice.endDate|fdate('sd') }}</td>
+                            <td><strong>{{ invoice.amount|fcurr }}</strong></td>
+                            <td>{{ invoice.status|invoice_status }}</td>
+                            <td>{{ invoice.balance|fcurr  }}</td>
+                        </tr>
+                        {% if invoice.isOpen %}
+                            <tr>
+                                <td colspan="5" class="right">
+                                    {% set field = form['i' ~ invoice.id] %}
+                                    {{ form_errors(field) }}
+                                    <div class="right">
+                                        {{ form_label(field) }}
+                                        {{ form_widget(field) }}
+                                        {% if form['b' ~ invoice.id] is defined %}
+                                            {{ form_widget(form['b' ~ invoice.id]) }}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if invoice.payments %}
+                            {% for payment in invoice.payments %}
+                                <tr class="catering-payments i{{ invoice.id}}_payments">
+                                    <th colspan="3">{% if loop.first %}Befizetések:{% endif %}</th>
+                                    <td>{{ payment[0] }}:</td>
+                                    <td>{{ payment[1]|fcurr }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </table>
 
-        <div class="toppad10 center">
-            <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
-            {% if invoices|length > 0 and field_count > 0 %}
-                <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
-            {% endif %}
-        </div>
+            </div>
 
-        {{ form_widget(form._token) }}
-    </form>
-    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+            <div class="toppad10 center">
+                <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
+                {% if invoices|length > 0 and field_count > 0 %}
+                    <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
+                {% endif %}
+            </div>
+
+            {{ form_widget(form._token) }}
+        </form>
+        {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+    </div>
 {% endif %}

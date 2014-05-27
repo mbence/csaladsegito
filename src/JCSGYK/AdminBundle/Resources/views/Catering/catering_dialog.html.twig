@@ -4,47 +4,49 @@
 {% if success is defined and success %}
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
-    <h1 class="client center">{{ 'Étkeztetés'|trans }}</h1>
+    <div class="modal-middle">
+        <h1 class="client center">{{ 'Étkeztetés'|trans }}</h1>
 
-    <form id="catering_form" class="templateform" action="{{ path('client_catering_edit', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
-        {{ form_errors(form) }}
+        <form id="catering_form" class="templateform" action="{{ path('client_catering_edit', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
+            {{ form_errors(form) }}
 
-        <table class="client" cellspacing="0" border="0">
-        <tr>
-            <th>{{ 'Név'|trans }}:</th>
-            <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
-        </tr>
-        <tr>
-            <th>{{ client.type|caselabel }}:</th>
-            <td>{{ client.caseLabel}}</td>
-        </tr>
-    </table>
+            <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Név'|trans }}:</th>
+                <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
+            </tr>
+            <tr>
+                <th>{{ client.type|caselabel }}:</th>
+                <td>{{ client.caseLabel}}</td>
+            </tr>
+        </table>
 
-    <div>
-        {% if not client.catering.isActive %}
-            <div class="catering-inactive">
-                Szüneteltetve
-            </div>
-        {% endif %}
-        {{ form_errors(form.is_active) }}{{ form_widget(form.is_active) }}
-        <div class="warning is_active_cancel">Figyelem! Szüneteltetéskor minden jövőbeni megrendelés lemondásra kerül!</div>
-        <div class="warning is_active_reorder">Figyelem! A szüneteltetés lezárásakor minden jövőbeni megrendelés újraaktiválásra kerül!</div>
+        <div>
+            {% if not client.catering.isActive %}
+                <div class="catering-inactive">
+                    Szüneteltetve
+                </div>
+            {% endif %}
+            {{ form_errors(form.is_active) }}{{ form_widget(form.is_active) }}
+            <div class="warning is_active_cancel">Figyelem! Szüneteltetéskor minden jövőbeni megrendelés lemondásra kerül!</div>
+            <div class="warning is_active_reorder">Figyelem! A szüneteltetés lezárásakor minden jövőbeni megrendelés újraaktiválásra kerül!</div>
+        </div>
+
+        <div id="catering-fields" {% if not client.catering.isActive %}class="disabled"{% endif %}>
+            {% include "JCSGYKAdminBundle:Catering:_edit_weekly_orders.html.twig" %}
+            {% include "JCSGYKAdminBundle:Catering:_edit_catering.html.twig" %}
+        </div>
+
+        <div class="toppad10 center">
+            <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
+            <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
+        </div>
+
+        {{ form_widget(form._token) }}
+        </form>
+        <script type="text/javascript">
+            var clubs_menu_list = {{clubs_menu_list|raw}};
+        </script>
+        {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
     </div>
-
-    <div id="catering-fields" {% if not client.catering.isActive %}class="disabled"{% endif %}>
-        {% include "JCSGYKAdminBundle:Catering:_edit_weekly_orders.html.twig" %}
-        {% include "JCSGYKAdminBundle:Catering:_edit_catering.html.twig" %}
-    </div>
-
-    <div class="toppad10 center">
-        <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
-        <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
-    </div>
-
-    {{ form_widget(form._token) }}
-    </form>
-    <script type="text/javascript">
-        var clubs_menu_list = {{clubs_menu_list|raw}};
-    </script>
-    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% endif %}

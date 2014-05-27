@@ -4,31 +4,33 @@
 {% if success is defined and success %}
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
-    <h1 class="client center">{{ 'Rendelési naptár'|trans }}</h1>
+    <div class="modal-wide">
+        <h1 class="client center">{{ 'Rendelési naptár'|trans }}</h1>
 
-    <form id="catering_form" class="templateform" action="{{ path('client_orders_edit', {'id': client.id}) }}" method="post" novalidate {# {{ form_enctype(form) }} #}>
-        {# {{ form_errors(form) }} #}
-        <input type="hidden" name="orders">
+        <form id="catering_form" class="templateform" action="{{ path('client_orders_edit', {'id': client.id}) }}" method="post" novalidate {# {{ form_enctype(form) }} #}>
+            {# {{ form_errors(form) }} #}
+            <input type="hidden" name="orders">
 
-        <table class="client" cellspacing="0" border="0">
-        <tr>
-            <th>{{ 'Név'|trans }}:</th>
-            <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
-        </tr>
-        <tr>
-            <th>{{ client.type|caselabel }}:</th>
-            <td>{{ client.caseLabel }}</td>
-        </tr>
-    </table>
+            <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Név'|trans }}:</th>
+                <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
+            </tr>
+            <tr>
+                <th>{{ client.type|caselabel }}:</th>
+                <td>{{ client.caseLabel }}</td>
+            </tr>
+        </table>
 
-    {% include "JCSGYKAdminBundle:Catering:_edit_orders.html.twig" %}
+        {% include "JCSGYKAdminBundle:Catering:_edit_orders.html.twig" %}
 
-    <div class="toppad10 center">
-        <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
-        <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
+        <div class="toppad10 center">
+            <button title="{{ 'Visszalépés'|trans }}" class="close greybutton" type="reset"><span>{{ 'mégse'|trans }}</span></button>
+            <button type="submit" class="button save-catering" name="save-catering" value="save"><span>{{ 'mentés'|trans }}</span></button>
+        </div>
+
+        {# {{ form_widget(form._token) }} #}
+        </form>
+        {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
     </div>
-
-    {# {{ form_widget(form._token) }} #}
-    </form>
-    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% endif %}

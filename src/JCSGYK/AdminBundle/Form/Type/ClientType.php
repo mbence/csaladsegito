@@ -131,7 +131,7 @@ class ClientType extends AbstractType
                     'mapped' => false,
                     'data' => $this->client->getParam($param->getId()),
                     'required' => false,
-                    'attr' => ['class' => 'short']
+//                    'attr' => ['class' => 'short']
                 ]);
             }
         }

@@ -11,7 +11,7 @@ JcsModal =
                 closeSpeed: 0
                 opacity: 0.9
             closeOnClick: true
-            width: "600"
+            width: "670px"
             left: "center"
             target: ".modal"
             load: false
@@ -22,7 +22,20 @@ JcsModal =
         return $(".modal").is(":visible")
 
     load: ->
+        $(".modal").css
+            "height": "auto"
+            "width":  "auto"
+        
         $(".modal").overlay().load()
+        # restrict modal window height
+        winH = $(window).innerHeight()
+        console.log winH, parseInt($(".modal").css("top")) + $(".modal").innerHeight()
+        if parseInt($(".modal").css("top")) + $(".modal").innerHeight() > winH
+            $(".modal").height(winH - 60)
+            $(".modal").css("top", 10)
+            # remove horizontal scroll
+            w = $(".modal .modal-content > div").innerWidth()
+            $(".modal").width(w + 10)
 
     close: ->
         $(".modal").overlay().close()

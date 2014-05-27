@@ -5,26 +5,27 @@
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
     {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+    <div class="modal-wide">
+        {% if relative.id is defined and relative.id %}
+            {% set relation_id = relative.id %}
+        {% else %}
+            {% set relation_id = 'new' %}
+        {% endif %}
 
-    {% if relative.id is defined and relative.id %}
-        {% set relation_id = relative.id %}
-    {% else %}
-        {% set relation_id = 'new' %}
-    {% endif %}
+        <form action="{{ path('relative_edit', {'id': relative.childId, 'relation_id': relation_id}) }}" id="parent_form" method="post" {{ form_enctype(form) }}>
+            <h1 class="client">Hozzátartozó szerkesztése</h1>
+            {{ form_errors(form) }}
 
-    <form action="{{ path('relative_edit', {'id': relative.childId, 'relation_id': relation_id}) }}" id="parent_form" method="post" {{ form_enctype(form) }}>
-        <h1 class="client">Hozzátartozó szerkesztése</h1>
-        {{ form_errors(form) }}
-
-        {% include "JCSGYKAdminBundle:Client:_edit_relative.html.twig" %}
-        {% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" with {client: relative.parent} %}
-        {% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: relative.parent} %}
+            {% include "JCSGYKAdminBundle:Client:_edit_relative.html.twig" %}
+            {% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" with {client: relative.parent} %}
+            {% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: relative.parent} %}
 
 
-        <div class="toppad10">
-            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_parent', title:'Szülő mentése', label:'mentés'}] } %}
-            <div class="clear"></div>
-        </div>
-        {{ form_widget(form._token) }}
-    </form>
+            <div class="toppad10">
+                {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_parent', title:'Szülő mentése', label:'mentés'}] } %}
+                <div class="clear"></div>
+            </div>
+            {{ form_widget(form._token) }}
+        </form>
+    </div>
 {% endif %}

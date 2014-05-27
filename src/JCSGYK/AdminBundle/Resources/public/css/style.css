@@ -913,11 +913,19 @@ table.client-edit div.multiselect.active {
     opacity: 0.8;
     border-radius: 4px;
     box-shadow: 0 0 50px #ccc;
+    overflow: auto;
 }
 .modal .archives {
     overflow: auto;
     max-height: 200px;
 }
+.modal-middle {
+    width: 500px;
+}
+.modal-wide {
+    width: 665px;
+}
+
 .client-edit td.td-right-pad {
     padding-right: 6px;
 }
