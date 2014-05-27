@@ -71,6 +71,20 @@ class Catering
     private $discount;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="discount_from", type="date", nullable=true)
+     */
+    private $discountFrom;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="discount_to", type="date", nullable=true)
+     */
+    private $discountTo;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="balance", type="integer", nullable=true)
@@ -326,10 +340,58 @@ class Catering
     /**
      * Get balance
      *
-     * @return integer 
+     * @return integer
      */
     public function getBalance()
     {
         return $this->balance;
+    }
+
+    /**
+     * Set discountFrom
+     *
+     * @param \DateTime $discountFrom
+     *
+     * @return Catering
+     */
+    public function setDiscountFrom($discountFrom)
+    {
+        $this->discountFrom = $discountFrom;
+
+        return $this;
+    }
+
+    /**
+     * Get discountFrom
+     *
+     * @return \DateTime
+     */
+    public function getDiscountFrom()
+    {
+        return $this->discountFrom;
+    }
+
+    /**
+     * Set discountTo
+     *
+     * @param \DateTime $discountTo
+     *
+     * @return Catering
+     */
+    public function setDiscountTo($discountTo)
+    {
+        $this->discountTo = $discountTo;
+
+        return $this;
+    }
+
+    /**
+     * Get discountTo
+     *
+     * @return \DateTime
+     */
+    public function getDiscountTo()
+    {
+        return $this->discountTo;
     }
 }

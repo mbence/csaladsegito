@@ -234,7 +234,7 @@ class ClosingService
 
         // deadline is the 5th day of next month
         $deadline = clone $invoice->getEndDate();
-        $deadline = $deadline->modify('first day of next month')->format('Ymd');
+        $deadline = $deadline->modify('first day of next month')->modify('+4 days')->format('Ymd');
 
         $comment = sprintf('%s. havi étkeztetés', $invoice->getEndDate()->format('n'));
 
@@ -456,8 +456,8 @@ class ClosingService
                 //      ==========		=====	===	====
                 1  => ['BSZAM',                 10,	0,      '0'],     // Az átadó rendszerbeli sorszám, a mi pénzügyi rendszerünkben ez lesz a külső sorszám
                 2  => ['PARTNERKOD',		6,	0,      '0'],
-                3  => ['BANKNEV',		40,	0,      'Sberbenk Magyarország Zrt.'],
-                4  => ['BANKSZLA',		26,	0,      '14100309-18423949-01000003'],
+                3  => ['BANKNEV',		40,	0,      ''],        // Sberbenk Magyarország Zrt.
+                4  => ['BANKSZLA',		26,	0,      ''],        // 14100309-18423949-01000003
                 5  => ['IKTATDAT',		8,	0,      ''],     // Formátuma: YYYYMMDD  pl.:20041028
                 6  => ['SZLADAT',		8,	0,      ''],     // Formátuma: YYYYMMDD
                 7  => ['TELJDAT',		8,	0,      ''],     // Formátuma: YYYYMMDD

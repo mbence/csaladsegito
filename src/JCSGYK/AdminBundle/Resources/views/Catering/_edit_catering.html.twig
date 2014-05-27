@@ -19,6 +19,10 @@
     </tr>
     <tr>
         <th>{{ form_label(form.discount) }}:</th>
-        <td>{{ form_errors(form.discount) }}{{ form_widget(form.discount) }}</td>
+        <td>
+            {{ form_errors(form.discount) }}{{ form_widget(form.discount) }}
+            {{ form_errors(form.discount_from) }}{{ form_widget(form.discount_from) }} -
+            {{ form_errors(form.discount_to) }}{{ form_widget(form.discount_to) }}
+        </td>
     </tr>
 </table>
