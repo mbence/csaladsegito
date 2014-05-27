@@ -1738,17 +1738,33 @@ class Client
      * - she is the creator of the record
      * - she is the case admin of this client
      *
+     * - CATERING users who are coordinators of a club can also edit everyone in that club
+     *
      * @param SecurityContext $sec
      */
     public function canEdit(SecurityContext $sec)
     {
         $user_id = $sec->getToken()->getUser()->getId();
 
-        return $this->isArchived == 0 && (
+        $re = $this->isArchived == 0 && (
             $sec->isGranted('ROLE_ADMIN') || $sec->isGranted('ROLE_ASSISTANCE') ||
             (!empty($this->creator) && $this->creator->getID() == $user_id) ||
             (!empty($this->caseAdmin) && $this->caseAdmin->getId() == $user_id)
         );
+
+        // check the club rights for catering users
+        if (false == $re && $this->isArchived == 0 && $sec->isGranted('ROLE_CATERING')) {
+            $catering = $this->getCatering();
+            if (!empty($catering)) {
+                $club = $catering->getClub();
+                $coordinators = $club->getUsers();
+                if (is_array($coordinators) && in_array($sec->getToken()->getUser()->getId(), $coordinators)) {
+                    $re = true;
+                }
+            }
+        }
+
+        return $re;
     }
 
     /**
