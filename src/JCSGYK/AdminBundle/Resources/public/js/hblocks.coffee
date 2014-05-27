@@ -235,6 +235,8 @@ HBlocks =
         x = Math.round((block - 1) * blockW - (($("#content").width() - blockW) / 2))
         if x < 0
           x = 0
+        if block < 3
+          x = 0
 
         # calculate the animation time based on the scroll distance
         dist =  Math.abs($(".contentwrapper").scrollLeft() - x);

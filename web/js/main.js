@@ -17195,6 +17195,9 @@ HBlocks = {
     if (x < 0) {
       x = 0;
     }
+    if (block < 3) {
+      x = 0;
+    }
     dist = Math.abs($(".contentwrapper").scrollLeft() - x);
     anim_duration = 500 * (dist / blockW);
     if (anim_duration < 250) {

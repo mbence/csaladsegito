@@ -1746,7 +1746,7 @@ class Client
 
         return $this->isArchived == 0 && (
             $sec->isGranted('ROLE_ADMIN') || $sec->isGranted('ROLE_ASSISTANCE') ||
-            $this->creator->getID() == $user_id ||
+            (!empty($this->creator) && $this->creator->getID() == $user_id) ||
             (!empty($this->caseAdmin) && $this->caseAdmin->getId() == $user_id)
         );
     }
