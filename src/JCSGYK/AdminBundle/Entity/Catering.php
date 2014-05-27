@@ -394,4 +394,13 @@ class Catering
     {
         return $this->discountTo;
     }
+
+    public function discountIsActive($date = null)
+    {
+        if (is_null($date)) {
+            $date = new \DateTime('today');
+        }
+
+        return !empty($this->getDiscount()) && $this->getDiscountFrom() <= $date && $this->getDiscountTo() >= $date;
+    }
 }

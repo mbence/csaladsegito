@@ -71,6 +71,8 @@ class InvoiceService
             foreach ($items as $item) {
                 $sum += $item['value'];
             }
+            // sum is always round
+            $sum = round($sum);
 
             // create the new invoice
             $invoice = new Invoice();
@@ -187,16 +189,14 @@ class InvoiceService
     private function calulateItems(Catering $catering, array $orders)
     {
         $items = [];
-        $ratio = 1;
-        $discount_text = '';
+        $discount_ratio = 0;
         $vat = $this->ds->getVat();
 
         // check discount (50% - 100%)
         if (!empty($catering->getDiscount())) {
             $discount = $catering->getDiscount();
             if (is_numeric($discount) && $discount >= 0 && $discount <= 100) {
-                $ratio = (100 - $discount) / 100;
-                $discount_text = " (Mérséklés {$discount}%)";
+                $discount_ratio = $discount / 100;
             }
         }
 
@@ -214,17 +214,50 @@ class InvoiceService
                 // this is a gross cost, so we must reduce it to net
                 $net_cost = number_format($daily_cost / (1 + $vat), 4);
 
-                // apply the discount
-                $daily_cost = $daily_cost * $ratio;
+                // check if he has discount for this day
+                $discount_is_active = $catering->discountIsActive($order->getDate());
+
                 // if he has ordered for this day
                 if ($order->getOrder()) {
+
+                    // add the discount item to every day when order is set
+                    if ($discount_is_active && !$order->getCancel()) {
+                        // discount is 1 item with 50% or 100% unit price and total amount are the same
+                        $discount_net = -1 * $net_cost * $discount_ratio;
+                        $discount_gross = -1 * $daily_cost * $discount_ratio;
+
+                        if (!isset($items['discount'])) {
+                            $items['discount'] = [
+                                'name' => 'Mérséklés',
+                                'quantity' => $discount,
+                                'unit'  => '%',
+                                'net_price' => $discount_net,
+                                'unit_price' => $discount_gross,
+                                'value' => $discount_gross,
+                                'net_value' => $discount_net,
+                            ];
+                        }
+                        else {
+                            $items['discount']['value'] += $discount_gross;
+                            $items['discount']['unit_price'] += $discount_gross;
+                            $items['discount']['net_value'] += $discount_net;
+                            $items['discount']['net_price'] += $discount_net;
+                        }
+                    }
+
                     if ($order->getCancel()) {
                         // if ordered but later cancelled, we add it only to the discounts
                         $daily_cost *= -1;
+                        $net_cost *= -1;
+                        // if cancelled and he had a discount for this day, we only add the real amount he actually payed before
+                        if ($discount_is_active) {
+                            $daily_cost = $daily_cost - ($daily_cost * $discount_ratio);
+                            $net_cost = $net_cost - ($net_cost * $discount_ratio);
+                        }
                     }
                     if (!isset($items[$daily_cost])) {
                         $items[$daily_cost] = [
-                            'name' => ($daily_cost >= 0 ? 'Ebéd rendelés' : 'Jóváírás') . $discount_text,
+                            'name' => $order->getCancel() ? 'Jóváírás' : 'Ebéd rendelés',
                             'quantity' => 1,
                             'net_price' => $net_cost,
                             'unit_price' => $daily_cost,

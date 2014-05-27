@@ -275,13 +275,17 @@ class ClosingService
         $items = json_decode($invoice->getItems(), true);
         if (!empty($items)) {
             foreach ($items as $item) {
-                $data['szlaatt.txt'][] = [
+                $data_item = [
                     'BSZAM'     => $invoice->getId(),
                     'NEV'       => $item['name'],
                     'MENNY'     => $item['quantity'],
                     'EGYSAR'    => $item['net_price'],
                     'ERTEK'     => $item['net_value'],
                 ];
+                if (isset($item['unit'])) {
+                    $data['szlaatt.txt']['MEGYS'] = $item['unit'];
+                }
+                $data['szlaatt.txt'][] = $data_item;
             }
         }
 
