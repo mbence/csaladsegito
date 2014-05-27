@@ -1,4 +1,5 @@
 {# Edit Catering #}
+{% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
 <div class="client-sub">{{ 'étkeztetés'|trans }}</div>
 <table class="client-edit" cellspacing="0" border="0">
     <tr>
@@ -20,9 +21,10 @@
     <tr>
         <th>{{ form_label(form.discount) }}:</th>
         <td>
-            {{ form_errors(form.discount) }}{{ form_widget(form.discount) }}
-            {{ form_errors(form.discount_from) }}{{ form_widget(form.discount_from) }} -
-            {{ form_errors(form.discount_to) }}{{ form_widget(form.discount_to) }}
+            <div class="inblock">{{ form_errors(form.discount) }}{{ form_widget(form.discount) }}</div>
+            <div class="inblock"> Időtartam:</div>
+            <div class="inblock">{{ form_errors(form.discount_from) }}{{ form_widget(form.discount_from) }} - </div>
+            <div class="inblock">{{ form_errors(form.discount_to) }}{{ form_widget(form.discount_to) }}</div>
         </td>
     </tr>
 </table>
