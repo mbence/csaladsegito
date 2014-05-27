@@ -66,7 +66,7 @@ class CateringType extends AbstractType
         $builder->add('discount_from', 'date', [
             'label' => 'Kezdete',
             'widget' => 'single_text',
-            'attr' => array('class' => 'datepicker'),
+            'attr' => array('class' => 'datepicker', 'type' => 'text'),
             'required' => false,
         ]);
         $builder->add('discount_to', 'date', [

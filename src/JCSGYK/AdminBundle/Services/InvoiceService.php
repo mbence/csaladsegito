@@ -440,14 +440,16 @@ class InvoiceService
     public function getCateringReport($company_id, \DateTime $month, Club $club = null)
     {
         // clear the time part
-        $month = $month->format('Y-m-d');
+        $month_end = $month->format('Y-m-t');
+        $month_start = $month->format('Y-m-01');
+
         $em = $this->container->get('doctrine')->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
 
         $data = [];
         // find all the invoices and clients of the given month
         $sql = "SELECT i, c, a FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
-                . "WHERE i.companyId = :company_id AND i.startDate <= :month AND i.endDate >= :month ";
+                . "WHERE i.companyId = :company_id AND i.startDate >= :month_start AND i.endDate <= :month_end ";
         if (!empty($club)) {
             $sql .= "AND a.club = :club ";
         }
@@ -455,7 +457,8 @@ class InvoiceService
 
         $q = $em->createQuery($sql)
             ->setParameter('company_id', $company_id)
-            ->setParameter('month', $month);
+            ->setParameter('month_start', $month_start)
+            ->setParameter('month_end', $month_end);
         if (!empty($club)) {
             $q->setParameter('club', $club);
         }

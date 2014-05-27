@@ -1353,7 +1353,7 @@ class ClientController extends Controller
                 $club_list = implode(',', $club_list);
                 if (!empty($clubs)) {
                     $sql = "SELECT c.id, c.type, c.case_year, c.case_number, c.case_label, c.company_id, c.title, c.firstname, c.lastname, c.mother_firstname, c.mother_lastname, c.zip_code, c.city, c.street, c.street_type, c.street_number, c.flat_number, c.is_archived "
-                        . "FROM client c LEFT JOIN catering a ON c.id = a.client_id WHERE"
+                        . " FROM client c LEFT JOIN catering a ON c.id = a.client_id WHERE"
                         . " a.club_id IN ($club_list) AND c.is_archived = 0"
                         . " ORDER BY c.lastname, c.firstname LIMIT " . $limit;
                     $re = $db->fetchAll($sql);
@@ -1363,8 +1363,8 @@ class ClientController extends Controller
             elseif (!$sec->isGranted('ROLE_ADMIN') && ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE'))) {
                 $user_id = $user->getId();
                 $sql = "SELECT id, type, case_year, case_number, case_label, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number, is_archived FROM client WHERE"
-                    . "case_admin = {$user_id} AND is_archived = 0"
-                    . " ORDER BY c.lastname, c.firstname LIMIT " . $limit;
+                    . " case_admin = {$user_id} AND is_archived = 0"
+                    . " ORDER BY lastname, firstname LIMIT " . $limit;
                 $re = $db->fetchAll($sql);
             }
         }

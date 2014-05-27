@@ -118,7 +118,7 @@ class ClientRepository extends EntityRepository
         if (!empty($client_type)) {
             $sql .= ' AND c.type=:client_type';
         }
-        $sql .= ' ORDER BY c.caseLabel, c.lastname, c.firstname';
+        $sql .= ' ORDER BY c.lastname, c.firstname';
 
         $q = $this->getEntityManager()
             ->createQuery($sql)
