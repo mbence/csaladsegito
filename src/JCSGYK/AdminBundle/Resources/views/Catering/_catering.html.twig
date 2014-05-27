@@ -30,10 +30,13 @@
                 <td>{{ catering.income|fcurr }}</td>
                 <td colspan="2">{% if catering.isSingle %}({{ 'egyedülálló'|trans }}){% endif %}</td>
             </tr>
-            {% if catering.discount %}
+            {% if catering.discountIsActive %}
             <tr>
                 <th>{{ 'Mérséklés'|trans }}:</th>
-                <td colspan="3">{{ catering.discount }}%</td>
+                <td colspan="3">
+                    {{ catering.discount }}%
+                    ({{ catering.discountFrom|fdate }} - {{ catering.discountTo|fdate }})
+                </td>
             </tr>
             {% endif %}
             <tr>

@@ -57,6 +57,9 @@ a {
 .floatright {
     float: right;
 }
+.inblock {
+    display: inline-block;
+}
 #container {
     min-height: 100%;
     margin: 0 0 -28px 0;
@@ -783,7 +786,7 @@ table.problem-list td {
     font-weight: normal;
     white-space: nowrap;
 }
-.client-edit input[type=text], .client-edit input[type=password], .edit-note textarea {
+.client-edit input[type=text], .client-edit input[type=password], .edit-note textarea, .client-edit input[type=date] {
     border: 1px solid #a0a0a0;
     border-color: #a9a9a9 #b9b9b9 #b9b9b9;
     background-color: #f9f9f9;
@@ -798,6 +801,9 @@ table.problem-list td {
 }
 .client .short, .client-edit .short, .client-edit input.short  {
     width: 50px;
+}
+.client-edit input[type=date].datepicker {
+    width: 100px;
 }
 .client-edit table.client-edit {
     /*margin: -2px -6px;*/
@@ -817,6 +823,7 @@ table.problem-list td {
 }
 .client-edit input[type=text]:hover, .client-edit input[type=text]:focus,
 .client-edit input[type=password]:hover, .client-edit input[type=password]:focus,
+.client-edit input[type=date]:hover, .client-edit input[type=date]:focus,
 .edit-note textarea:hover, .edit-note textarea:focus {
     border-color: #777 #888 #888;
     background-color: #fafafa;

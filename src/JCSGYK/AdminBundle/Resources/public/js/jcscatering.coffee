@@ -25,6 +25,9 @@ JcsCatering =
         @initInvoices()
         @initMenuList()
 
+        # discount datepicker
+        $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
+
         # day selectors
         $(".day-selectors > a").on "click", ->
             days = $(this).data("days")

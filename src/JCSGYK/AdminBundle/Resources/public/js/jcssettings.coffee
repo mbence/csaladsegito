@@ -199,3 +199,6 @@ JcsSettings =
         options.afterChange = afterChange
 
         $("#handsontable").handsontable(options)
+
+        # discount datepicker
+        $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
