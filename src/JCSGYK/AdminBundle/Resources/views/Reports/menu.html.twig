@@ -1,5 +1,5 @@
 {% for item in menu %}
-    {% if is_granted(item.role) %}
+    {% if item.on %}
         <a href="{{ path('reports', {'report': item.slug}) }}"
            class="menuitem {% if item.slug == report %}current{% endif %}"
            {% if item.id is defined %}id="{{ item.id }}"{% endif %}>

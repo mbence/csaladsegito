@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use JCSGYK\AdminBundle\Entity\Stat;
 use JCSGYK\AdminBundle\Entity\UserRepository;
+use JCSGYK\AdminBundle\Entity\Client;
 
 class ReportsController extends Controller
 {
@@ -26,7 +27,7 @@ class ReportsController extends Controller
         // check if user has access to the selected report
         $this->checkRole($report);
 
-        $result = null;
+        $result  = null;
         $request = $this->getRequest();
 
         // get the form for the selected report
@@ -40,10 +41,10 @@ class ReportsController extends Controller
         }
 
         return $this->render('JCSGYKAdminBundle:Reports:index.html.twig', [
-            'menu' => $this->getMenu(),
+            'menu'   => $this->getMenu(),
             'report' => $report,
             'result' => $result,
-            'form' => $form ? $form->createView() : null,
+            'form'   => $form ? $form->createView() : null,
         ]);
     }
 
@@ -62,13 +63,11 @@ class ReportsController extends Controller
         }
 
         $granted = false;
-        $sec = $this->container->get('security.context');
 
         $menu = $this->getMenu();
         foreach ($menu as $item) {
             if ($item['slug'] == $report) {
-                $role_needed = $item['role'];
-                if ($sec->isGranted($role_needed)) {
+                if ($item['on']) {
                     $granted = true;
                 }
                 break;
@@ -94,7 +93,7 @@ class ReportsController extends Controller
             return false;
         }
 
-        $sec = $this->container->get('security.context');
+        $sec              = $this->container->get('security.context');
         $client_type_list = $this->ds->getClientTypes();
 //        $company_id = $this->ds->getCompanyId();
 //        $em = $this->getDoctrine();
@@ -108,7 +107,7 @@ class ReportsController extends Controller
                 $this->getClientTypeSelect($form_builder, $client_type_list);
             }
             // admins can select the users of this company
-            if($sec->isGranted('ROLE_ADMIN')) {
+            if ($sec->isGranted('ROLE_ADMIN')) {
                 $this->getCaseAdminSelect($form_builder, false, 'nincs');
             }
         }
@@ -118,14 +117,25 @@ class ReportsController extends Controller
                 $this->getClientTypeSelect($form_builder, $client_type_list);
             }
             // admins can select the users of this company
-            if($sec->isGranted('ROLE_ADMIN')) {
+            if ($sec->isGranted('ROLE_ADMIN')) {
                 $this->getCaseAdminSelect($form_builder, false, 'mind');
             }
         }
-        elseif ('catering' == $report) {
+        elseif ('catering_orders' == $report) {
+            // month
+            $this->getCateringWeeks($form_builder);
+        }
+        elseif ('catering_cashbook' == $report) {
             // month
             $this->getInvoiceMonths($form_builder);
-            // clubs
+        }
+        elseif ('catering_summary' == $report) {
+            // month
+            $this->getInvoiceMonths($form_builder);
+        }
+
+        // club select for all catering reports
+        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary'])) {
             if ($sec->isGranted('ROLE_ADMIN')) {
                 $this->getClubSelect($form_builder, false, 'mind');
             }
@@ -141,9 +151,9 @@ class ReportsController extends Controller
     private function getClientTypeSelect(&$form_builder, $client_type_list)
     {
         $form_builder->add('client_type', 'choice', [
-            'label' => 'Ügyfél típus',
-            'choices' => $client_type_list,
-            'required' => false,
+            'label'       => 'Ügyfél típus',
+            'choices'     => $client_type_list,
+            'required'    => false,
             'empty_value' => 'összes',
         ]);
     }
@@ -151,12 +161,12 @@ class ReportsController extends Controller
     private function getCaseAdminSelect(&$form_builder, $required = true, $empty_value = '')
     {
         $form_builder->add('case_admin', 'entity', [
-            'label' => 'Esetgazda',
-            'class' => 'JCSGYKAdminBundle:User',
-            'choices' => $this->ds->getCaseAdmins(null, false),
-            'required' => $required,
+            'label'       => 'Esetgazda',
+            'class'       => 'JCSGYKAdminBundle:User',
+            'choices'     => $this->ds->getCaseAdmins(null, false),
+            'required'    => $required,
             'empty_value' => $empty_value,
-       ]);
+        ]);
     }
 
     // list the months when we have invoice data
@@ -165,18 +175,45 @@ class ReportsController extends Controller
         $company_id = $this->ds->getCompanyId();
 
         $form_builder->add('month', 'choice', [
-            'label' => 'Dátum',
-            'choices' => $this->container->get('jcs.invoice')->getMonths($company_id),
+            'label'    => 'Dátum',
+            'choices'  => $this->container->get('jcs.invoice')->getMonths($company_id),
             'required' => true,
-       ]);
+        ]);
+    }
+
+    private function getCateringWeeks(&$form_builder)
+    {
+        $form_builder->add('week', 'choice', [
+            'label'    => 'Hét',
+            'choices'  => $this->getWeeks(),
+            'data'     => (new \DateTime('this week'))->format('Y-m-d'),
+            'required' => true,
+        ]);
+    }
+
+    private function getWeeks()
+    {
+        $re       = [];
+        $ae       = $this->container->get('jcs.twig.adminextension');
+        $date     = new \DateTime('last week 0:0'); // 0h 0m 0s the first day of last week
+        $one_week = new \DateInterval('P1W');
+
+        for ($i = 0; $i < 6; $i++) {
+            $end_of_week            = clone $date;
+            $end_of_week->modify('+ 6 days');
+            $re[$date->format('Y-m-d')] = sprintf('%s (%s - %s)', $ae->formatDate($date, 'week'), $ae->formatDate($date, 'md'), $ae->formatDate($end_of_week, 'md'));
+            $date->add($one_week);
+        }
+
+        return $re;
     }
 
     private function getClubSelect(&$form_builder, $required = true, $empty_value = '')
     {
         $c = [
-            'label' => 'Klub',
-            'class' => 'JCSGYKAdminBundle:Club',
-            'choices' => $this->ds->getClubs(),
+            'label'    => 'Klub',
+            'class'    => 'JCSGYKAdminBundle:Club',
+            'choices'  => $this->ds->getClubs(),
             'required' => $required,
         ];
         if (!empty($empty_value)) {
@@ -194,8 +231,11 @@ class ReportsController extends Controller
         elseif ('casecounts' == $report) {
             return $this->getCasecountsReport($form_data);
         }
-        elseif ('catering' == $report) {
-            return $this->getCateringReport($form_data);
+        elseif ('catering_orders' == $report) {
+            return $this->getCateringOrderReport($form_data);
+        }
+        elseif ('catering_cashbook' == $report || 'catering_summary' == $report) {
+            return $this->getCateringReport($form_data, $report);
         }
 
         return false;
@@ -203,10 +243,20 @@ class ReportsController extends Controller
 
     private function getMenu()
     {
+        $sec = $this->container->get('security.context');
+        $ds  = $this->container->get('jcs.ds');
+
+        // role checks
+        $famly_help_on    = $ds->companyHas(Client::FH) && $sec->isGranted('ROLE_FAMILY_HELP');
+        $child_welfare_on = $ds->companyHas(Client::CW) && $sec->isGranted('ROLE_CHILD_WELFARE');
+        $catering_on      = $ds->companyHas(Client::CA) && $sec->isGranted('ROLE_CATERING');
+
         $menu = [
-            ['slug' => 'clients', 'label' => 'Ügyfelek', 'role' => 'ROLE_USER'],
-            ['slug' => 'casecounts', 'label' => 'Esetszámok', 'role' => 'ROLE_USER'],
-            ['slug' => 'catering', 'label' => 'Étkeztetés', 'role' => 'ROLE_CATERING'],
+            ['slug' => 'clients', 'label' => 'Ügyfelek', 'on' => $famly_help_on || $child_welfare_on],
+            ['slug' => 'casecounts', 'label' => 'Esetszámok', 'on' => $famly_help_on || $child_welfare_on],
+            ['slug' => 'catering_orders', 'label' => 'Heti ebédrendelések', 'on' => $catering_on],
+            ['slug' => 'catering_cashbook', 'label' => 'Pénztárkönyv', 'on' => $catering_on],
+            ['slug' => 'catering_summary', 'label' => 'Havi ebédösszesítő', 'on' => $catering_on],
         ];
 
         return $menu;
@@ -215,22 +265,22 @@ class ReportsController extends Controller
     private function getClientReport($form_data)
     {
         $form_fields = [
-            'case_admin' => null,
+            'case_admin'  => null,
             'client_type' => null,
         ];
         // make sure we have all required fields
-        $form_data = array_merge($form_fields, $form_data);
+        $form_data   = array_merge($form_fields, $form_data);
 
         // check for user roles and set the params accordingly
-        $em = $this->getDoctrine();
-        $sec = $this->container->get('security.context');
-        $ae = $this->container->get('jcs.twig.adminextension');
+        $em               = $this->getDoctrine();
+        $sec              = $this->container->get('security.context');
+        $ae               = $this->container->get('jcs.twig.adminextension');
         $client_type_list = $this->ds->getClientTypes();
         $client_type_keys = array_keys($client_type_list);
-        $company_id = $this->ds->getCompanyId();
+        $company_id       = $this->ds->getCompanyId();
 
         // non admins can only see their own clients
-        if(!$sec->isGranted('ROLE_ADMIN')) {
+        if (!$sec->isGranted('ROLE_ADMIN')) {
             $form_data['case_admin'] = $sec->getToken()->getUser()->getId();
         }
         // make sure the client type is correct
@@ -245,9 +295,9 @@ class ReportsController extends Controller
                 'client' => $clients,
             ]
         ];
-        $template_file = __DIR__.'/../Resources/public/reports/clients.xlsx';
-        $output_name = 'ugyfel_kimutatas_' . date('Ymd') . '.xlsx';
-        $send = $this->container->get('jcs.docx')->makeReport($template_file, $data, $output_name);
+        $template_file = __DIR__ . '/../Resources/public/reports/clients.xlsx';
+        $output_name   = 'ugyfel_kimutatas_' . date('Ymd') . '.xlsx';
+        $send          = $this->container->get('jcs.docx')->makeReport($template_file, $data, $output_name);
 
         return $send;
     }
@@ -255,22 +305,22 @@ class ReportsController extends Controller
     private function getCasecountsReport($form_data)
     {
         $form_fields = [
-            'case_admin' => null,
+            'case_admin'  => null,
             'client_type' => null,
         ];
         // make sure we have all required fields
-        $form_data = array_merge($form_fields, $form_data);
+        $form_data   = array_merge($form_fields, $form_data);
 
         // check for user roles and set the params accordingly
-        $em = $this->getDoctrine();
-        $sec = $this->container->get('security.context');
-        $ae = $this->container->get('jcs.twig.adminextension');
+        $em               = $this->getDoctrine();
+        $sec              = $this->container->get('security.context');
+        $ae               = $this->container->get('jcs.twig.adminextension');
         $client_type_list = $this->ds->getClientTypes();
         $client_type_keys = array_keys($client_type_list);
-        $company_id = $this->ds->getCompanyId();
+        $company_id       = $this->ds->getCompanyId();
 
         // non admins can only see their own clients
-        if(!$sec->isGranted('ROLE_ADMIN')) {
+        if (!$sec->isGranted('ROLE_ADMIN')) {
             $form_data['case_admin'] = $sec->getToken()->getUser()->getId();
         }
         // make sure the client type is correct
@@ -280,37 +330,131 @@ class ReportsController extends Controller
 
         $counts = $em->getRepository('JCSGYKAdminBundle:Client')->getCaseCounts($company_id, $form_data['case_admin'], $form_data['client_type']);
 
-        $data = [
+        $data  = [
             'blocks' => [
                 'casecount' => $counts,
             ]
         ];
-        $template_file = __DIR__.'/../Resources/public/reports/casecounts.xlsx';
-        $output_name = 'esetszam_kimutatas_' . date('Ymd') . '.xlsx';
-        $send = $this->container->get('jcs.docx')->makeReport($template_file, $data, $output_name);
+        $template_file = __DIR__ . '/../Resources/public/reports/casecounts.xlsx';
+        $output_name   = 'esetszam_kimutatas_' . date('Ymd') . '.xlsx';
+        $send          = $this->container->get('jcs.docx')->makeReport($template_file, $data, $output_name);
 
         return $send;
     }
 
-    private function getCateringReport($form_data)
+    private function getCateringOrderReport($form_data)
     {
         $form_fields = [
-            'month' => null,
-            'club' => null,
+            'week' => null,
+            'club'  => null,
         ];
         // make sure we have all required fields
         // 'club' => Club entity or null for all
-        $form_data = array_merge($form_fields, $form_data);
+        $form_data   = array_merge($form_fields, $form_data);
 
         // check for user roles and set the params accordingly
-        $em = $this->getDoctrine();
-        $sec = $this->container->get('security.context');
-        $ae = $this->container->get('jcs.twig.adminextension');
+        $em         = $this->container->get('doctrine')->getManager();
+        $sec        = $this->container->get('security.context');
+        $ae         = $this->container->get('jcs.twig.adminextension');
         $company_id = $this->ds->getCompanyId();
-        $months = $this->container->get('jcs.invoice')->getMonths($company_id);
+        $weeks      = $this->getWeeks();
 
         // non admins not get all clubs
-        if(!$sec->isGranted('ROLE_ADMIN') && empty($form_data['club'])) {
+        if (!$sec->isGranted('ROLE_ADMIN') && empty($form_data['club'])) {
+            throw new AccessDeniedHttpException();
+        }
+        // get the period
+        if (!isset($weeks[$form_data['week']])) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $start_date = new \DateTime($form_data['week']);
+        $end_date = clone $start_date;
+        $end_date = $end_date->modify('+ 6 days');
+
+        $menus = $this->ds->getGroup('lunch_types');
+        // get only the first character from the menu names
+        foreach ($menus as $m_id => $menu) {
+            $new_name = '';
+            $name_parts = explode(' ', $menu);
+            $new_name .= end($name_parts)[0];
+            $menus[$m_id] = $new_name;
+        }
+
+        $res = $em->createQuery("SELECT o, c.id, c.title, c.lastname, c.firstname, c.socialSecurityNumber, c.zipCode, c.city, c.street, c.streetType, c.streetNumber, c.flatNumber"
+                . " FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c"
+                . " WHERE o.companyId = :company_id AND o.date >= :start_date AND o.date <= :end_date"
+                . " ORDER BY c.lastname, c.firstname, o.date")
+            ->setParameter('company_id', $company_id)
+            ->setParameter('start_date', $start_date->format('Y-m-d'))
+            ->setParameter('end_date', $end_date->format('Y-m-d'))
+            ->getResult();
+
+        $report_data = [];
+        foreach ($res as $rec) {
+            if (empty($report_data[$rec['id']])) {
+                $report_data[$rec['id']] = [
+                    'ssn' => $rec['socialSecurityNumber'],
+                    'name' => $ae->formatName($rec['firstname'], $rec['lastname'], $rec['title']),
+                    'address' => $ae->formatAddress('', '', '', $rec['street'], $rec['streetType'], $rec['streetNumber'], $rec['flatNumber']),
+                    1 => '',
+                    2 => '',
+                    3 => '',
+                    4 => '',
+                    5 => '',
+                    6 => '',
+                    7 => '',
+                ];
+            }
+            $day_num = $rec[0]->getDate()->format('N');
+            $o = '';
+            if ($rec[0]->getOrder()) {
+                if ($rec[0]->getCancel()) {
+                    $o = '-';
+                }
+                else {
+                    $o = isset($menus[$rec[0]->getMenu()]) ? $menus[$rec[0]->getMenu()] : '?';
+                }
+            }
+
+            $report_data[$rec['id']][$day_num] = $o;
+        }
+
+        $data = [
+            'ca.cim'   => sprintf('%s. %s heti ebéd rendelések', $start_date->format('Y'), $start_date->format('W')),
+            'ca.klub'  => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
+            'sp.datum' => $ae->formatDate(new \DateTime('today')),
+            'blocks'   => [
+                'catering' => $report_data,
+            ]
+        ];
+
+        $template_file = __DIR__ . '/../Resources/public/reports/catering_orders.xlsx';
+        $output_name   = $data['ca.cim'] . '.xlsx';
+        $send          = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+
+        return $send;
+    }
+
+    private function getCateringReport($form_data, $report)
+    {
+        $form_fields = [
+            'month' => null,
+            'club'  => null,
+        ];
+        // make sure we have all required fields
+        // 'club' => Club entity or null for all
+        $form_data   = array_merge($form_fields, $form_data);
+
+        // check for user roles and set the params accordingly
+        $em         = $this->getDoctrine();
+        $sec        = $this->container->get('security.context');
+        $ae         = $this->container->get('jcs.twig.adminextension');
+        $company_id = $this->ds->getCompanyId();
+        $months     = $this->container->get('jcs.invoice')->getMonths($company_id);
+
+        // non admins not get all clubs
+        if (!$sec->isGranted('ROLE_ADMIN') && empty($form_data['club'])) {
             throw new AccessDeniedHttpException();
         }
         // get the period
@@ -323,18 +467,19 @@ class ReportsController extends Controller
         $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $month, $form_data['club']);
 
         $data = [
-            'ca.cim'    => sprintf('%s havi ebéd összesítő', $ae->formatDate($month, 'ym')),
-            'ca.klub'   => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
-            'sp.datum'  => $ae->formatDate(new \DateTime('today')),
-            'blocks' => [
+            'ca.cim'   => sprintf('%s havi ebéd összesítő', $ae->formatDate($month, 'ym')),
+            'ca.klub'  => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
+            'sp.datum' => $ae->formatDate(new \DateTime('today')),
+            'blocks'   => [
                 'catering' => $report_data,
             ]
         ];
 
-        $template_file = __DIR__.'/../Resources/public/reports/catering.xlsx';
-        $output_name = 'ebed_osszesito_' . date('Ymd') . '.xlsx';
-        $send = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+        $template_file = __DIR__ . '/../Resources/public/reports/catering.xlsx';
+        $output_name   = 'ebed_osszesito_' . date('Ymd') . '.xlsx';
+        $send          = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
 
         return $send;
     }
+
 }

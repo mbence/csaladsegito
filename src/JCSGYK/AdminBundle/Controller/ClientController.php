@@ -232,6 +232,14 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
+
+                    // check if menu was changed
+                    if ($original_catering->getMenu() != $catering->getMenu()) {
+                        // we must update the future orders with this menu!
+                        $update_from = new \DateTime('tomorrow');
+                        $em->getRepository("JCSGYKAdminBundle:ClientOrder")->updateMenu($client->getId(), $update_from, $catering->getMenu());
+                    }
+
                     // if isActive was changed we must cancel/reorder all future orders
                     if ($original_catering->getIsActive() != $catering->getIsActive()) {
                         // we must update the future orders with this menu!
@@ -531,6 +539,7 @@ class ClientController extends Controller
                 $closed      = 0;
                 // ha van rekord az adott naphoz, akkor változtassuk meg az alapértelmezett false-t
                 if (isset($changed_days[$date])) {
+                    $menu = $changed_days[$date]->getMenu();
                     if ($changed_days[$date]->getOrder()) {
                         $changed_day = 1;
                     }
@@ -538,6 +547,9 @@ class ClientController extends Controller
                         $changed_day = -1;
                     }
                     $closed = ($changed_days[$date]->getClosed()) ? 1 : 0;
+                }
+                else {
+                    $menu = $catering->getMenu();
                 }
                 // állítsuk be az előfizetési sablon alapján a változókat
                 if (isset($monthly_subs[$date])) {

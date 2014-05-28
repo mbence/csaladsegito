@@ -228,9 +228,9 @@ class InvoiceService
 
                         if (!isset($items['discount'])) {
                             $items['discount'] = [
-                                'name' => 'Mérséklés',
-                                'quantity' => $discount,
-                                'unit'  => '%',
+                                'name' => sprintf('%s mérséklés', $discount . '%'),
+                                'quantity' => 1,
+                                'unit'  => 'db',
                                 'net_price' => $discount_net,
                                 'unit_price' => $discount_gross,
                                 'value' => $discount_gross,
@@ -360,6 +360,7 @@ class InvoiceService
                         $order->setClosed(false);
                     }
                     $order->setCreator($user);
+                    $order->setMenu($catering->getMenu());
 
                     $em->persist($order);
                 }
@@ -410,6 +411,11 @@ class InvoiceService
         return $balance;
     }
 
+    /**
+     * Return a list of months for the reports
+     * @param int $company_id
+     * @return array
+     */
     public function getMonths($company_id)
     {
         $em = $this->container->get('doctrine')->getManager();
@@ -427,7 +433,6 @@ class InvoiceService
 
         return $re;
     }
-
 
     /**
      * Get the monthy catering report

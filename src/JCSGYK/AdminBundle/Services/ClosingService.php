@@ -98,7 +98,9 @@ class ClosingService
         }
         else {
             // actual month
-            $start = new \DateTime('+2 day');
+            //$start = new \DateTime('+2 day');
+
+            $start = new \DateTime('first day of this month');
             $end = new \DateTime('last day of this month');
         }
         $created_at = new \DateTime();

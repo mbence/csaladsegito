@@ -63,6 +63,13 @@ class ClientOrder
     private $closed;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="menu", type="integer", nullable=true)
+     */
+    private $menu;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -280,5 +287,29 @@ class ClientOrder
     public function getClosed()
     {
         return $this->closed;
+    }
+
+    /**
+     * Set menu
+     *
+     * @param integer $menu
+     *
+     * @return ClientOrder
+     */
+    public function setMenu($menu)
+    {
+        $this->menu = $menu;
+
+        return $this;
+    }
+
+    /**
+     * Get menu
+     *
+     * @return integer 
+     */
+    public function getMenu()
+    {
+        return $this->menu;
     }
 }

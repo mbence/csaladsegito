@@ -311,7 +311,7 @@ class AdminExtension extends \Twig_Extension
             $country = '';
         }
         else {
-            $country .= ', ';
+            $country .= ',';
         }
         if (!empty($streetNumber) && '.' != substr($streetNumber, -1)) {
             $streetNumber .= '.';
@@ -319,7 +319,9 @@ class AdminExtension extends \Twig_Extension
         if (!empty($city)) {
             $city .= ',';
         }
-        $re = sprintf('%s%s %s %s %s %s', $country, $zipCode, $city, $street, $streetType, $streetNumber);
+
+        $re = trim(implode(' ', [$country, $zipCode, $city, $street, $streetType, $streetNumber]));
+
         if (!empty($flatNumber)) {
             $re .= sprintf(' (%s)', $flatNumber);
         }
@@ -367,6 +369,10 @@ class AdminExtension extends \Twig_Extension
             // year and month
             elseif ('ym' ==  $type) {
                 return $d->format('Y. ') . $this->translator->trans($this->ds->getMonth($d->format('n')));
+            }
+            // month and day
+            elseif ('md' ==  $type) {
+                return $this->translator->trans($this->ds->getMonth($d->format('n'))) . $d->format(' d.');
             }
             // long date (with month name)
             else {
