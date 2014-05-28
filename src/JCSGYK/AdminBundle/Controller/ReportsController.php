@@ -402,7 +402,7 @@ class ReportsController extends Controller
         foreach ($res as $rec) {
             if (empty($report_data[$rec['id']])) {
                 $report_data[$rec['id']] = [
-                    'ssn'     => $ae->formatSSN($rec['socialSecurityNumber']),
+                    'ssn'     => $ae->formatSSN($rec['socialSecurityNumber'], ' '),
                     'name'    => $ae->formatName($rec['firstname'], $rec['lastname'], $rec['title']),
                     'address' => $ae->formatAddress('', '', '', $rec['street'], $rec['streetType'], $rec['streetNumber'], $rec['flatNumber']),
                     1         => '',

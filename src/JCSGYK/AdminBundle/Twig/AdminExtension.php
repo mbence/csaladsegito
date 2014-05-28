@@ -143,15 +143,16 @@ class AdminExtension extends \Twig_Extension
 
     /**
      * Formats a social secrity number, inserting a space after every third character
-     * @param type $ssn
+     * @param string $ssn
+     * @param string $glue string to place between sections 
      * @return type
      */
-    public function formatSSN($ssn)
+    public function formatSSN($ssn, $glue = '&nbsp;')
     {
         // remove anything but numbers
         $ssn = preg_replace('/[^0-9]/', '', $ssn);
-        
-        return wordwrap($ssn, 3, "&nbsp;", true);
+
+        return wordwrap($ssn, 3, $glue, true);
     }
 
     public function formatAgreeDate($d)
