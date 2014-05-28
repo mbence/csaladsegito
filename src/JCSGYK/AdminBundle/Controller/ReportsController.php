@@ -381,14 +381,22 @@ class ReportsController extends Controller
             $menus[$m_id] = $new_name;
         }
 
-        $res = $em->createQuery("SELECT o, c.id, c.title, c.lastname, c.firstname, c.socialSecurityNumber, c.zipCode, c.city, c.street, c.streetType, c.streetNumber, c.flatNumber"
-                . " FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c"
-                . " WHERE o.companyId = :company_id AND o.date >= :start_date AND o.date <= :end_date"
-                . " ORDER BY c.lastname, c.firstname, o.date")
+        $sql = "SELECT o, c.id, c.title, c.lastname, c.firstname, c.socialSecurityNumber, c.zipCode, c.city, c.street, c.streetType, c.streetNumber, c.flatNumber"
+                . " FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a"
+                . " WHERE o.companyId = :company_id AND o.date >= :start_date AND o.date <= :end_date";
+        if (!empty($form_data['club'])) {
+            $sql .= ' AND a.club = :club';
+        }
+        $sql .= " ORDER BY c.lastname, c.firstname, o.date";
+
+        $q = $em->createQuery($sql)
             ->setParameter('company_id', $company_id)
             ->setParameter('start_date', $start_date->format('Y-m-d'))
-            ->setParameter('end_date', $end_date->format('Y-m-d'))
-            ->getResult();
+            ->setParameter('end_date', $end_date->format('Y-m-d'));
+        if (!empty($form_data['club'])) {
+            $q->setParameter('club', $form_data['club']);
+        }
+        $res = $q->getResult();
 
         $report_data = [];
         foreach ($res as $rec) {
