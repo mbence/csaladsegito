@@ -476,6 +476,7 @@ class InvoiceService
             $sums = [
                 'id'            => '',
                 'name'          => 'ÖSSZESEN',
+                'address'       => '',
                 'balance'       => 0,
                 'amount'        => 0,
                 'discount_days' => 0,
@@ -502,6 +503,7 @@ class InvoiceService
                 $data[] = [
                     'id'            => $client->getCaseLabel(),
                     'name'          => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
+                    'address'       => sprintf('(%s)', $ae->formatAddress('', '', $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber())),
                     'balance'       => $ae->formatCurrency2($catering->getBalance()),
                     'amount'        => $ae->formatCurrency2($invoice->getAmount()),
                     'discount_days' => empty($discount) ? 0 : $discount['quantity'],

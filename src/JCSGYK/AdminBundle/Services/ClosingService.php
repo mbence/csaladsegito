@@ -551,14 +551,13 @@ class ClosingService
             $subject = sprintf('Havi számla import: %s - %s', $ae->formatDate($start_date), $ae->formatDate($end_date));
             $mailer_from = 'oszirozsaebed@gmail.com';
             $mailer_from_name = 'JSZSZGYK Szociális étkeztetés';
-            $mailer_to = 'mxbence@gmail.com';
-            $mailer_to_name = 'Mészáros Bence';
 
             $message = \Swift_Message::newInstance()
             ->setSubject($subject)
             ->setFrom([$mailer_from => $mailer_from_name])
-            ->setTo([$mailer_to => $mailer_to_name])
-            ->setBody("Tisztelt Könyvelés!\n\n Mellékelve küldjük a számlák beolvasásához szükséges fájlokat.", 'text/plain');
+            ->addTo('penzugy@jszszgyk.hu')
+            ->addCC('gazdasag@jszszgyk.hu')
+            ->setBody("Tisztelt Pénzügy!\n\n Mellékelve küldjük a számlák importálásához szükséges fájlokat.", 'text/plain');
 
             // add attachment
             $attachment = \Swift_Attachment::newInstance($zip_file_contents, $zip, 'application/zip');

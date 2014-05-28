@@ -483,7 +483,7 @@ class ReportsController extends Controller
             ]
         ];
 
-        $template_file = __DIR__ . '/../Resources/public/reports/catering.xlsx';
+        $template_file = __DIR__ . '/../Resources/public/reports/catering_summary.xlsx';
         $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
         $send          = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
 
