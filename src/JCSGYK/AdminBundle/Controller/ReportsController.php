@@ -255,7 +255,7 @@ class ReportsController extends Controller
             ['slug' => 'clients', 'label' => 'Ügyfelek', 'on' => $famly_help_on || $child_welfare_on],
             ['slug' => 'casecounts', 'label' => 'Esetszámok', 'on' => $famly_help_on || $child_welfare_on],
             ['slug' => 'catering_orders', 'label' => 'Heti ebédrendelések', 'on' => $catering_on],
-            ['slug' => 'catering_cashbook', 'label' => 'Pénztárkönyv', 'on' => $catering_on],
+//            ['slug' => 'catering_cashbook', 'label' => 'Pénztárkönyv', 'on' => $catering_on],
             ['slug' => 'catering_summary', 'label' => 'Havi ebédösszesítő', 'on' => $catering_on],
         ];
 
@@ -346,7 +346,7 @@ class ReportsController extends Controller
     {
         $form_fields = [
             'week' => null,
-            'club'  => null,
+            'club' => null,
         ];
         // make sure we have all required fields
         // 'club' => Club entity or null for all
@@ -369,15 +369,15 @@ class ReportsController extends Controller
         }
 
         $start_date = new \DateTime($form_data['week']);
-        $end_date = clone $start_date;
-        $end_date = $end_date->modify('+ 6 days');
+        $end_date   = clone $start_date;
+        $end_date   = $end_date->modify('+ 6 days');
 
         $menus = $this->ds->getGroup('lunch_types');
         // get only the first character from the menu names
         foreach ($menus as $m_id => $menu) {
-            $new_name = '';
-            $name_parts = explode(' ', $menu);
-            $new_name .= end($name_parts)[0];
+            $new_name     = '';
+            $name_parts   = explode(' ', $menu);
+            $new_name    .= end($name_parts)[0];
             $menus[$m_id] = $new_name;
         }
 
@@ -390,9 +390,9 @@ class ReportsController extends Controller
         $sql .= " ORDER BY c.lastname, c.firstname, o.date";
 
         $q = $em->createQuery($sql)
-            ->setParameter('company_id', $company_id)
-            ->setParameter('start_date', $start_date->format('Y-m-d'))
-            ->setParameter('end_date', $end_date->format('Y-m-d'));
+                ->setParameter('company_id', $company_id)
+                ->setParameter('start_date', $start_date->format('Y-m-d'))
+                ->setParameter('end_date', $end_date->format('Y-m-d'));
         if (!empty($form_data['club'])) {
             $q->setParameter('club', $form_data['club']);
         }
@@ -402,20 +402,20 @@ class ReportsController extends Controller
         foreach ($res as $rec) {
             if (empty($report_data[$rec['id']])) {
                 $report_data[$rec['id']] = [
-                    'ssn' => $rec['socialSecurityNumber'],
-                    'name' => $ae->formatName($rec['firstname'], $rec['lastname'], $rec['title']),
+                    'ssn'     => $ae->formatSSN($rec['socialSecurityNumber']),
+                    'name'    => $ae->formatName($rec['firstname'], $rec['lastname'], $rec['title']),
                     'address' => $ae->formatAddress('', '', '', $rec['street'], $rec['streetType'], $rec['streetNumber'], $rec['flatNumber']),
-                    1 => '',
-                    2 => '',
-                    3 => '',
-                    4 => '',
-                    5 => '',
-                    6 => '',
-                    7 => '',
+                    1         => '',
+                    2         => '',
+                    3         => '',
+                    4         => '',
+                    5         => '',
+                    6         => '',
+                    7         => '',
                 ];
             }
             $day_num = $rec[0]->getDate()->format('N');
-            $o = '';
+            $o       = '';
             if ($rec[0]->getOrder()) {
                 if ($rec[0]->getCancel()) {
                     $o = '-';

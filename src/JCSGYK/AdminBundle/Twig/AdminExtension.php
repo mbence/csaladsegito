@@ -148,6 +148,9 @@ class AdminExtension extends \Twig_Extension
      */
     public function formatSSN($ssn)
     {
+        // remove anything but numbers
+        $ssn = preg_replace('/[^0-9]/', '', $ssn);
+        
         return wordwrap($ssn, 3, "&nbsp;", true);
     }
 
