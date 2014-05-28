@@ -429,7 +429,7 @@ class ReportsController extends Controller
         }
 
         $data = [
-            'ca.cim'   => sprintf('%s. %s heti ebéd rendelések', $start_date->format('Y'), $start_date->format('W')),
+            'ca.cim'   => sprintf('%s. %s. heti ebéd rendelések', $start_date->format('Y'), $start_date->format('W')),
             'ca.klub'  => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
             'sp.datum' => $ae->formatDate(new \DateTime('today')),
             'blocks'   => [
