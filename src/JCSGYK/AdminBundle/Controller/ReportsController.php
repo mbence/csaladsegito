@@ -430,7 +430,7 @@ class ReportsController extends Controller
         ];
 
         $template_file = __DIR__ . '/../Resources/public/reports/catering_orders.xlsx';
-        $output_name   = $data['ca.cim'] . '.xlsx';
+        $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
         $send          = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
 
         return $send;
@@ -476,7 +476,7 @@ class ReportsController extends Controller
         ];
 
         $template_file = __DIR__ . '/../Resources/public/reports/catering.xlsx';
-        $output_name   = 'ebed_osszesito_' . date('Ymd') . '.xlsx';
+        $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
         $send          = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
 
         return $send;
