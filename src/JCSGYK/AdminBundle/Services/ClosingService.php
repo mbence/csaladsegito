@@ -283,7 +283,7 @@ class ClosingService
                     'ERTEK'     => $item['net_value'],
                 ];
                 if (isset($item['unit'])) {
-                    $data['szlaatt.txt']['MEGYS'] = $item['unit'];
+                    $data_item['MEGYS'] = $item['unit'];
                 }
                 $data['szlaatt.txt'][] = $data_item;
             }

@@ -239,6 +239,10 @@ class ClientController extends Controller
                         $em->getRepository("JCSGYKAdminBundle:ClientOrder")->updateOrders($client->getId(), $update_from, $catering->getIsActive());
                     }
 
+                    // save client modifier
+                    $client->setModifier($user);
+                    $client->setModifiedAt(new \DateTime());
+
                     // save
                     $em->flush();
 
@@ -388,6 +392,10 @@ class ClientController extends Controller
 
                                 break;
                         }
+
+                        // save client modifier
+                        $client->setModifier($user);
+                        $client->setModifiedAt(new \DateTime());
 
                         // save
                         $em->flush();
