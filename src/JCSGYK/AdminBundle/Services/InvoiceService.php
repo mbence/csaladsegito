@@ -440,9 +440,10 @@ class InvoiceService
      * @param int $company_id
      * @param \DateTime $month
      * @param \JCSGYK\AdminBundle\Entity\Club $club
+     * @param string $report slug of the report (summary or datacheck)
      * @return array
      */
-    public function getCateringReport($company_id, \DateTime $month, Club $club = null)
+    public function getCateringReport($company_id, \DateTime $month, Club $club = null, $report = null)
     {
         // clear the time part
         $month_end = $month->format('Y-m-t');
@@ -484,6 +485,12 @@ class InvoiceService
                 'unit_price'    => '',
                 'weekdays'      => 0,
             ];
+            // add extra fields to datacheck report
+            if ('catering_datacheck' == $report) {
+                $sums['income']    = '';
+                $sums['is_single'] = '';
+                $sums['orders']    = '';
+            }
             foreach ($res as $invoice) {
                 $client = $invoice->getClient();
                 $catering = $client->getCatering();
@@ -500,7 +507,7 @@ class InvoiceService
                     }
                 }
 
-                $data[] = [
+                $data_row = [
                     'id'            => $client->getCaseLabel(),
                     'name'          => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
                     'address'       => sprintf('(%s)', $ae->formatAddress('', '', $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber())),
@@ -511,6 +518,16 @@ class InvoiceService
                     'unit_price'    => $ae->formatCurrency2(empty($costs) ? 0 : $costs['unit_price']),
                     'weekdays'      => empty($costs) ? 0 : $costs['weekday_quantity'],
                 ];
+
+                // add extra fields to datacheck report
+                if ('catering_datacheck' == $report) {
+                    $data_row['income']    = $ae->formatCurrency2($catering->getIncome());
+                    $data_row['is_single'] = $catering->getIsSingle() ? 'X' : '';
+                    $data_row['orders']    = $this->ds->getSubTemplate($catering);
+                }
+
+                $data[] = $data_row;
+
                 $sums['balance']    += $catering->getBalance();
                 $sums['amount']     += $invoice->getAmount();
                 $sums['discount_days'] += empty($discount) ? 0 : $discount['quantity'];

@@ -11,6 +11,7 @@ use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\MonthlyClosing;
 use JCSGYK\AdminBundle\Entity\Invoice;
 use JCSGYK\AdminBundle\Entity\DailyOrder;
+use JCSGYK\AdminBundle\Entity\Catering;
 
 /**
  * Service for Data Store
@@ -903,5 +904,18 @@ class DataStore
     public function getVat()
     {
         return $this->vat;
+    }
+
+    public function getSubTemplate(Catering $catering)
+    {
+        $menu_name = substr($this->get($catering->getMenu()), 0, 1);
+        $tpl = $catering->getSubscriptions();
+        $re = '';
+        for ($i = 0; $i < 7; $i++) {
+            $re .= empty($tpl[$i]) ? '-' : $menu_name;
+            $re .= ' ';
+        }
+
+        return $re;
     }
 }

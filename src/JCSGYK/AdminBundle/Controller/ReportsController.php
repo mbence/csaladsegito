@@ -122,20 +122,20 @@ class ReportsController extends Controller
             }
         }
         elseif ('catering_orders' == $report) {
-            // month
+            // weeks
             $this->getCateringWeeks($form_builder);
         }
         elseif ('catering_cashbook' == $report) {
             // month
             $this->getInvoiceMonths($form_builder);
         }
-        elseif ('catering_summary' == $report) {
+        elseif (in_array($report, ['catering_summary', 'catering_datacheck'])) {
             // month
             $this->getInvoiceMonths($form_builder);
         }
 
         // club select for all catering reports
-        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary'])) {
+        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_datacheck'])) {
             if ($sec->isGranted('ROLE_ADMIN')) {
                 $this->getClubSelect($form_builder, false, 'mind');
             }
@@ -234,7 +234,7 @@ class ReportsController extends Controller
         elseif ('catering_orders' == $report) {
             return $this->getCateringOrderReport($form_data);
         }
-        elseif ('catering_cashbook' == $report || 'catering_summary' == $report) {
+        elseif ('catering_cashbook' == $report || 'catering_summary' == $report || 'catering_datacheck' == $report) {
             return $this->getCateringReport($form_data, $report);
         }
 
@@ -257,6 +257,7 @@ class ReportsController extends Controller
             ['slug' => 'catering_orders', 'label' => 'Heti ebédrendelések', 'on' => $catering_on],
 //            ['slug' => 'catering_cashbook', 'label' => 'Pénztárkönyv', 'on' => $catering_on],
             ['slug' => 'catering_summary', 'label' => 'Havi ebédösszesítő', 'on' => $catering_on],
+            ['slug' => 'catering_datacheck', 'label' => 'Adategyeztető', 'on' => $catering_on],
         ];
 
         return $menu;
@@ -400,32 +401,35 @@ class ReportsController extends Controller
 
         $report_data = [];
         foreach ($res as $rec) {
-            if (empty($report_data[$rec['id']])) {
-                $report_data[$rec['id']] = [
-                    'ssn'     => $ae->formatSSN($rec['socialSecurityNumber'], ' '),
-                    'name'    => $ae->formatName($rec['firstname'], $rec['lastname'], $rec['title']),
-                    'address' => $ae->formatAddress('', '', '', $rec['street'], $rec['streetType'], $rec['streetNumber'], $rec['flatNumber']),
-                    1         => '',
-                    2         => '',
-                    3         => '',
-                    4         => '',
-                    5         => '',
-                    6         => '',
-                    7         => '',
-                ];
-            }
-            $day_num = $rec[0]->getDate()->format('N');
-            $o       = '';
+            // we skip the suspended days
             if ($rec[0]->getOrder()) {
+                // create the user row
+                if (empty($report_data[$rec['id']])) {
+                    $report_data[$rec['id']] = [
+                        'ssn'     => $ae->formatSSN($rec['socialSecurityNumber'], ' '),
+                        'name'    => $ae->formatName($rec['firstname'], $rec['lastname'], $rec['title']),
+                        'address' => $ae->formatAddress('', '', '', $rec['street'], $rec['streetType'], $rec['streetNumber'], $rec['flatNumber']),
+                        1         => '',
+                        2         => '',
+                        3         => '',
+                        4         => '',
+                        5         => '',
+                        6         => '',
+                        7         => '',
+                    ];
+                }
+                $day_num = $rec[0]->getDate()->format('N');
+                $o       = '';
+
                 if ($rec[0]->getCancel()) {
                     $o = '-';
                 }
                 else {
                     $o = isset($menus[$rec[0]->getMenu()]) ? $menus[$rec[0]->getMenu()] : '?';
                 }
-            }
 
-            $report_data[$rec['id']][$day_num] = $o;
+                $report_data[$rec['id']][$day_num] = $o;
+            }
         }
 
         $data = [
@@ -472,10 +476,19 @@ class ReportsController extends Controller
 
         $month = new \DateTime($form_data['month']);
 
-        $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $month, $form_data['club']);
+        $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $month, $form_data['club'], $report);
+
+        if ('catering_datacheck' == $report) {
+            $title = sprintf('%s havi adategyeztető', $ae->formatDate($month, 'ym'));
+            $template_file = __DIR__ . '/../Resources/public/reports/catering_datacheck.xlsx';
+        }
+        else {
+            $title = sprintf('%s havi ebéd összesítő', $ae->formatDate($month, 'ym'));
+            $template_file = __DIR__ . '/../Resources/public/reports/catering_summary.xlsx';
+        }
 
         $data = [
-            'ca.cim'   => sprintf('%s havi ebéd összesítő', $ae->formatDate($month, 'ym')),
+            'ca.cim'   => $title,
             'ca.klub'  => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
             'sp.datum' => $ae->formatDate(new \DateTime('today')),
             'blocks'   => [
@@ -483,7 +496,6 @@ class ReportsController extends Controller
             ]
         ];
 
-        $template_file = __DIR__ . '/../Resources/public/reports/catering_summary.xlsx';
         $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
         $send          = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
 
