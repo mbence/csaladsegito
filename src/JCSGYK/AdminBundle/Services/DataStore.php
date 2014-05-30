@@ -906,9 +906,16 @@ class DataStore
         return $this->vat;
     }
 
+    /**
+     * Return a short list of the menu types in the order template
+     * 
+     * @param \JCSGYK\AdminBundle\Entity\Catering $catering
+     * @return string
+     */
     public function getSubTemplate(Catering $catering)
     {
-        $menu_name = substr($this->get($catering->getMenu()), 0, 1);
+        $name_parts   = explode(' ', $this->get($catering->getMenu()));
+        $menu_name    .= end($name_parts)[0];
         $tpl = $catering->getSubscriptions();
         $re = '';
         for ($i = 0; $i < 7; $i++) {
