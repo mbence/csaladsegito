@@ -300,13 +300,14 @@ class DailyOrdersService
 
             $mailer_from = 'oszirozsaebed@gmail.com';
             $mailer_from_name = 'JSZSZGYK Szociális étkeztetés';
-            $mailer_to = 'mxbence@gmail.com';
-            $mailer_to_name = 'Mészáros Bence';
 
             $message = \Swift_Message::newInstance()
             ->setSubject($subject)
             ->setFrom([$mailer_from => $mailer_from_name])
-            ->setTo([$mailer_to => $mailer_to_name])
+//            ->addTo('sodexokonyha@gmail.com')
+//            ->addTo('5102.onsite.hu@sodexo.com')
+            ->addTo('oszirozsaebed@gmail.com')
+            ->addCC('mxbence@gmail.com')
             ->setBody($subject, 'text/plain');
 
             // add attachment

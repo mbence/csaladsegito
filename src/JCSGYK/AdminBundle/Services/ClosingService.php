@@ -557,6 +557,7 @@ class ClosingService
             ->setFrom([$mailer_from => $mailer_from_name])
             ->addTo('penzugy@jszszgyk.hu')
             ->addCC('gazdasag@jszszgyk.hu')
+            ->addCC('mxbence@gmail.com')
             ->setBody("Tisztelt Pénzügy!\n\n Mellékelve küldjük a számlák importálásához szükséges fájlokat.", 'text/plain');
 
             // add attachment
