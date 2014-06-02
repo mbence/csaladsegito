@@ -167,4 +167,17 @@ class ClientOrderRepository extends EntityRepository
             ->setParameter('end_date', $end_date)
             ->getResult();
     }
+
+    /**
+     * Closes all the give orders with one update query
+     * @param array of Order $orders
+     * @return affected rows
+     */
+    public function closeOrders($orders)
+    {
+        return $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o SET o.closed = 1 WHERE o.id IN (:idlist)')
+            ->setParameter('idlist', $orders)
+            ->execute();
+    }
+
 }

@@ -96,9 +96,10 @@ class InvoiceService
         }
 
         // close the used cancel records
-        foreach ($orders as $order) {
-            $order->setClosed(true);
-        }
+        $orders_repo->closeOrders($orders);
+//        foreach ($orders as $order) {
+//            $order->setClosed(true);
+//        }
 
         $em->flush();
 
@@ -410,6 +411,23 @@ class InvoiceService
 
         return $balance;
     }
+
+
+    /**
+     * Update client balances
+     * @param \JCSGYK\AdminBundle\Entity\Catering $catering
+     */
+    public function bulkUpdateBalance()
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        // calculate the balance of the open invoices
+        $res = $em->createQuery("UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status = :status)")
+            ->setParameter('status', Invoice::OPEN)
+            ->getSingleResult();
+        $em->flush();
+    }
+
+
 
     /**
      * Return a list of months for the reports

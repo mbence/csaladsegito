@@ -169,7 +169,7 @@ class ClientRepository extends EntityRepository
             ->createQuery("SELECT c, a FROM JCSGYKAdminBundle:Client c JOIN c.catering a WHERE c.companyId = :company_id AND c.isArchived = 0 AND c.type = :client_type")
             ->setParameter('company_id', $company_id)
             ->setParameter('client_type', Client::CA)
-            //->setMaxresults(20)
+//            ->setMaxresults(100)
             ->getResult();
     }
 }

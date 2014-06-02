@@ -129,12 +129,18 @@ class ClosingService
         $em->flush();
 
         // create the invoices
+        $client_clount = 0;
         $invoice_count = 0;
         $invocie_service = $this->container->get('jcs.invoice');
         foreach ($clients as $client) {
             $invoice = $invocie_service->create($client, clone $start, clone $end);
             if (!empty($invoice)) {
                 $invoice_count ++;
+            }
+            $client_clount++;
+            if ($client_clount % 100 == 0) {
+                $this->output(sprintf("%s: %s ügyfél feldolgozva", date('H:i:s'), $client_clount));
+                $closing->setSummary($this->summary);
             }
         }
         if (empty($invoice_count)) {
@@ -172,7 +178,7 @@ class ClosingService
             }
 
             // update the client balances
-            $this->updateBalances($clients);
+            $invocie_service->bulkUpdateBalance();
         }
 
         // update the closing record
