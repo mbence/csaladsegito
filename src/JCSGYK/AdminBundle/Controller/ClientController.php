@@ -347,6 +347,7 @@ class ClientController extends Controller
                                 $new_order->setDate(new \DateTime($date));
                                 $new_order->setCreator($user);
                                 $new_order->setClosed(false);
+                                $new_order->setMenu($client->getCatering()->getMenu());
 
                                 if ($order['value'] == 1) {
                                     $new_order->setOrder(true);
