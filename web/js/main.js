@@ -16205,7 +16205,7 @@ JcsCatering = {
     this.initMultiDatesPicker();
     this.initInvoices();
     this.initMenuList();
-    $('.datepicker').datepicker({
+    $('.inblock .datepicker').datepicker({
       dateFormat: 'yy-mm-dd'
     });
     $(".day-selectors > a").on("click", function() {

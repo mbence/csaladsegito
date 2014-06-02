@@ -14,6 +14,22 @@
 {% endspaceless %}
 {% endblock form_errors %}
 
+{% block date_widget %}
+{% spaceless %}
+    {% if widget == 'single_text' %}
+        <input type="text" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+    {% else %}
+        <div {{ block('widget_container_attributes') }}>
+            {{ date_pattern|replace({
+                '{{ year }}':  form_widget(form.year),
+                '{{ month }}': form_widget(form.month),
+                '{{ day }}':   form_widget(form.day),
+            })|raw }}
+        </div>
+    {% endif %}
+{% endspaceless %}
+{% endblock date_widget %}
+
 {% block choice_widget_expanded %}
 {% spaceless %}
     <div class="multiselect" {{ block('widget_container_attributes') }}>

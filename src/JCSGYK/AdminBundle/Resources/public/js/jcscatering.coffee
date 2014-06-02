@@ -26,7 +26,7 @@ JcsCatering =
         @initMenuList()
 
         # discount datepicker
-        $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
+        $('.inblock .datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
 
         # day selectors
         $(".day-selectors > a").on "click", ->
