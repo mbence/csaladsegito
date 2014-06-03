@@ -800,7 +800,8 @@ class DataStore
                 'day'     => $i,
                 'week'    => $week,
                 'weekend' => (count($month) % 7 == 5 || count($month) % 7 == 6) ? true : false,
-                'modifiable' => (strtotime($actual_month . $i) < $aftertomorow) ? 0 : 1
+                // 'modifiable' => (strtotime($actual_month . $i) < $aftertomorow) ? 0 : 1
+                'modifiable' => 1
             ];
         }
         for ($i = 7; $i > $last_day; $i--) {
