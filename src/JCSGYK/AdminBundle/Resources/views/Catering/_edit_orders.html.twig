@@ -33,8 +33,7 @@
                     <ul class="table-body">
                         <li class="week-header">{{ weeknumber }}. {{ 'hét'|trans }}</li>
                         {% for index,day in week %}
-                        {# <li class="{{ day.class }}{% if day.holiday %} holiday{% endif %}"{% if day.day is not null %} data-date="{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}" data-closed="{{ day.closed }}" data-menu="{{ param(day.menu) }}" data-order="{{ day.order }}" data-modifiable="{{ day.modifiable }}"{% endif %}> #}
-                        <li class="{{ day.class }}{% if day.holiday %} holiday{% endif %}"{% if day.day is not null %} data-date="{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}" data-closed="{{ day.closed }}" data-menu="{{ param(day.menu) }}" data-order="{{ day.order }}" data-modifiable="1"{% endif %}>
+                        <li class="{{ day.class }}{% if day.holiday %} holiday{% endif %}"{% if day.day is not null %} data-date="{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}" data-closed="{{ day.closed }}" data-menu="{{ param(day.menu) }}" data-order="{{ day.order }}" data-modifiable="{{ day.modifiable }}"{% endif %}>
                         {% if day.day is not null %}
                             <span class="day">{% if day.day == 1 %}{{ timestamp|fdate2('F')|capitalize }} {% endif %}{{ day.day }}.</span>
                             <input type="checkbox" name="order_{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}" value="1">

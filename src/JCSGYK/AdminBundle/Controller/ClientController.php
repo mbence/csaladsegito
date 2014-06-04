@@ -436,8 +436,8 @@ class ClientController extends Controller
      */
     private function processOrders(Client $client, $orders)
     {
-        // $first_day_of_period = new \DateTime('tomorrow + 1 days');
-        $first_day_of_period = new \DateTime('first day of this month');
+        $first_day_of_period = new \DateTime('tomorrow + 1 days');
+        //$first_day_of_period = new \DateTime('first day of this month');
         $last_day_of_period  = new \DateTime('last day of this month + 2 months');
         $catering            = $client->getCatering();
         $days_of_months      = $this->container->get('jcs.ds')->getDaysOfPeriod($first_day_of_period, $last_day_of_period);
