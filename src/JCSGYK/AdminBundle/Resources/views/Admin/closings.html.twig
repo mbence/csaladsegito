@@ -17,13 +17,13 @@
             {{ form_widget(form._token) }}
         </form>
     </div>
-    <h1 class="client">{{ 'Havi zárások'|trans }}</h1>
+    <h1 class="client">{{ 'Napi és havi zárások'|trans }}</h1>
 </div>
 <div class="adminblock dailyorders" id="template-list">
     <div class="rightpad fullheight nocollapse">
         {% for closing in closings %}
             <a href="{{ path('admin_closings', {'id': closing.id}) }}" class="tpl-list{% if act and act.id == closing.id %} current{% endif %}">
-                {{ closing.startDate|fdate('sd') }} - {{ closing.endDate|fdate('sd') }}: <strong class="floatright">{{ closing.status|closing_status }}</strong>
+                {{ closing.createdAt|fdate() }} {{ closing.summary|first_line }}<strong class="floatright">{{ closing.status|closing_status }}</strong>
             </a>
         {% endfor %}
     </div>
@@ -74,7 +74,7 @@
         {% else %}
             <div class="info">
                 <p>
-                    {{ 'A havi zárások részletes adataihoz kattintson a bal oldai listában a megfelelő sorra!'|trans }}
+                    {{ 'A napi és havi zárások részletes adataihoz kattintson a bal oldai listában a megfelelő sorra!'|trans }}
                 </p>
             </div>
         {% endif %}

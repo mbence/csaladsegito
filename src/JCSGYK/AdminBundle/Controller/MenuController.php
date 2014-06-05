@@ -78,7 +78,7 @@ class MenuController extends Controller
             ['route' => 'admin_clubs', 'label' => 'Klubok', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_options', 'options' => ['name' => 'cateringcosts'], 'label' => 'Díjtáblázat', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_options', 'options' => ['name' => 'holidays'], 'label' => 'Munkaszüneti napok', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_closings', 'label' => 'Havi zárások', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_closings', 'label' => 'Napi és havi zárások', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_dailyorders', 'label' => 'Konyhai rendelések', 'role' => 'ROLE_ADMIN'],
         ];
 

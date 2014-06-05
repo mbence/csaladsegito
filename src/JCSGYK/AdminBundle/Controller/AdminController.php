@@ -578,8 +578,8 @@ class AdminController extends Controller
 
         $form = $this->createFormBuilder()
             ->add('period', 'choice', [
-                'choices' => ['aktuális hónap', 'következő hónap'],
-                'data' => 1,
+                'choices' => ['napi zárás', 'havi zárás'],
+                'data' => 0,
             ])
             ->getForm();
 
@@ -613,7 +613,7 @@ class AdminController extends Controller
                     $id = $closing->getId();
                 }
 
-                $this->get('session')->getFlashBag()->add('notice', 'Havi zárás elindítva');
+                $this->get('session')->getFlashBag()->add('notice', (0 == $data['period'] ? 'Napi' : 'Havi') . ' zárás elindítva');
 
                 return $this->redirect($this->generateUrl('admin_closings', ['id' => $id]));
             }

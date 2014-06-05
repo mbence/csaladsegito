@@ -60,7 +60,7 @@ class ClosingService
         $em = $this->container->get('doctrine')->getManager();
         $company_id = $this->ds->getCompanyId();
 
-        return $em->createQuery("SELECT c.id, c.companyId, c.startDate, c.endDate, c.status FROM JCSGYKAdminBundle:MonthlyClosing c WHERE c.companyId = :company_id ORDER BY c.createdAt DESC")
+        return $em->createQuery("SELECT c.id, c.companyId, c.startDate, c.endDate, c.status, c.createdAt, c.summary FROM JCSGYKAdminBundle:MonthlyClosing c WHERE c.companyId = :company_id ORDER BY c.createdAt DESC")
             ->setParameter('company_id', $company_id)
             ->setMaxResults(20)
             ->getResult();
@@ -77,7 +77,7 @@ class ClosingService
 
     /**
      * Start the monthly closing process
-     * @param int $period 1 = normal run (next month), 0 = actual month
+     * @param int $period 1 = normal run (next month), 0 = actual month (daily closing)
      * @return \JCSGYK\AdminBundle\Entity\MonthlyClosing
      */
     public function run($period = 1, OutputInterface $output = null)
@@ -98,12 +98,12 @@ class ClosingService
         }
         else {
             // actual month
-            $start = new \DateTime('+2 day');
+            $start = new \DateTime('+1 day');
             $end = new \DateTime('last day of this month');
         }
         $created_at = new \DateTime();
 
-        $this->output("Havi zárás");
+        $this->output(1 == $period ? 'Havi zárás' : 'Napi zárás');
         $this->output(sprintf("%s - %s \n", $start->format('Y-m-d'), $end->format('Y-m-d')));
         $this->output(sprintf("%s: Indítva", $created_at->format('H:i:s')));
 
@@ -121,7 +121,8 @@ class ClosingService
         $em->flush();
 
         // find all clients that have active subscriptions
-        $clients = $em->getRepository('JCSGYKAdminBundle:Client')->getForClosing($company_id);
+        // for daily closing only select the clients that are new and dont have an invoice yet
+        $clients = $em->getRepository('JCSGYKAdminBundle:Client')->getForClosing($company_id, $period);
         $this->output(sprintf("%s: %s ügyfél lekérdezve", date('H:i:s'), count($clients)));
         $closing->setSummary($this->summary);
         $em->flush();
@@ -185,7 +186,7 @@ class ClosingService
         $closing->setSummary($this->summary);
         $closing->setStatus(MonthlyClosing::SUCCESS);
         $em->flush();
-
+        
         return $closing;
     }
 

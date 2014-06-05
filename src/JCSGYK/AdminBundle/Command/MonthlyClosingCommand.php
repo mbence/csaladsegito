@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Console\Input\ArrayInput;
 
 class MonthlyClosingCommand extends ContainerAwareCommand
 {
@@ -40,5 +41,22 @@ class MonthlyClosingCommand extends ContainerAwareCommand
 
         // run the closing
         $closing = $closing_service->run($mode, $output);
+
+        // start the daily orders after the daily closing
+        if (0 == $mode) {
+            $command = $this->getApplication()->find('jcs:orders');
+
+            $arguments = array(
+                'command' => 'jcs:orders',
+                'company'    => $company_id,
+            );
+            if (!empty($user_id)) {
+                $arguments['--user'] = $user_id;
+            }
+
+            $input = new ArrayInput($arguments);
+            $returnCode = $command->run($input, $output);
+        }
+
     }
 }

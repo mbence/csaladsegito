@@ -21,14 +21,16 @@
 <div class="adminblock dailyorders" id="template-list">
     <div class="rightpad fullheight nocollapse">
         {% for order in orders %}
+            {% spaceless %}
             <a href="{{ path('admin_dailyorders', {'id': order.id}) }}" class="tpl-list{% if act and act.id == order.id %} current{% endif %}">
                 {% if  order.endDate is null %}
                     {{ order.startDate|fdate('fd') }}
                 {% else %}
                     {{ order.startDate|fdate('week') }}
                 {% endif %}
-                : <strong class="floatright">{{ order.status|order_status }}</strong>
+                <strong class="floatright">{{ order.status|order_status }}</strong>
             </a>
+            {% endspaceless %}
         {% endfor %}
     </div>
 </div>

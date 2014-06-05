@@ -40,6 +40,7 @@ class AdminExtension extends \Twig_Extension
             'closing_status' => new \Twig_Filter_Method($this, 'closingStatus'),
             'invoice_status' => new \Twig_Filter_Method($this, 'invoiceStatus'),
             'order_status' => new \Twig_Filter_Method($this, 'dailyOrderStatus'),
+            'first_line' => new \Twig_Filter_Method($this, 'firstLine'),
         ];
     }
 
@@ -144,7 +145,7 @@ class AdminExtension extends \Twig_Extension
     /**
      * Formats a social secrity number, inserting a space after every third character
      * @param string $ssn
-     * @param string $glue string to place between sections 
+     * @param string $glue string to place between sections
      * @return type
      */
     public function formatSSN($ssn, $glue = '&nbsp;')
@@ -513,5 +514,12 @@ class AdminExtension extends \Twig_Extension
         }
 
         return implode(', ', $re);
+    }
+
+    public function firstLine($text)
+    {
+        $re = explode("\n", $text);
+
+        return is_array($re) ? reset($re) : $text;
     }
 }

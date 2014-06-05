@@ -161,15 +161,35 @@ class ClientRepository extends EntityRepository
     }
 
     /**
-     * returns all clients who have an active catering record
+     * Returns all clients who have an active catering record
+     *
+     * @param int $company_id
+     * @param int $period 1 = monthly (all clients); 0 = daily (only new clients)
+     * @return type
      */
-    public function getForClosing($company_id)
+    public function getForClosing($company_id, $period = 1)
     {
-        return $this->getEntityManager()
-            ->createQuery("SELECT c, a FROM JCSGYKAdminBundle:Client c JOIN c.catering a WHERE c.companyId = :company_id AND c.isArchived = 0 AND c.type = :client_type")
-            ->setParameter('company_id', $company_id)
-            ->setParameter('client_type', Client::CA)
-//            ->setMaxresults(100)
-            ->getResult();
+        if (1 == $period) {
+            $query = $this->getEntityManager()
+                ->createQuery("SELECT c, a FROM JCSGYKAdminBundle:Client c JOIN c.catering a WHERE c.companyId = :company_id AND c.isArchived = 0 AND c.type = :client_type")
+                ->setParameter('company_id', $company_id)
+                ->setParameter('client_type', Client::CA)
+    //            ->setMaxresults(100)
+            ;
+        }
+        else {
+            // daily closing, only select the new clients, that hav no invoice for this period
+            $query = $this->getEntityManager()
+                ->createQuery("SELECT c, a "
+                        . "FROM JCSGYKAdminBundle:Client c JOIN c.catering a LEFT JOIN c.invoices i WITH i.createdAt >= :created "
+                        . "WHERE c.companyId = :company_id AND c.isArchived = 0 AND c.type = :client_type AND c.createdAt >= :created AND i.id is NULL")
+                ->setParameter('company_id', $company_id)
+                ->setParameter('client_type', Client::CA)
+                ->setParameter('created', new \DateTime('yesterday 10:00'))
+    //            ->setMaxresults(100)
+            ;
+        }
+
+        return $query->getResult();
     }
 }
