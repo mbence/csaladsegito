@@ -374,13 +374,62 @@ class ReportsController extends Controller
         $end_date   = $end_date->modify('+ 6 days');
 
         $menus = $this->ds->getGroup('lunch_types');
+
+        $summary_data = [];
         // get only the first character from the menu names
         foreach ($menus as $m_id => $menu) {
             $new_name     = '';
             $name_parts   = explode(' ', $menu);
             $new_name    .= end($name_parts)[0];
             $menus[$m_id] = $new_name;
+
+            // add the menu to the summary
+            $summary_data[$m_id] = [
+                'menu'  => $menu,
+                1       => 0,
+                2       => 0,
+                3       => 0,
+                4       => 0,
+                5       => 0,
+                6       => 0,
+                7       => 0,
+                'total' => 0,
+            ];
         }
+        // add totals
+        $summary_data[] = [
+            'menu'  => '',
+            1       => '',
+            2       => '',
+            3       => '',
+            4       => '',
+            5       => '',
+            6       => '',
+            7       => '',
+            'total' => '',
+        ];
+        $summary_data['sum1'] = [
+            'menu'  => 'Összesen',
+            1       => 0,
+            2       => 0,
+            3       => 0,
+            4       => 0,
+            5       => 0,
+            6       => 0,
+            7       => 0,
+            'total' => '',
+        ];
+        $summary_data['sum2'] = [
+            'menu'  => '',
+            1       => '',
+            2       => '',
+            3       => '',
+            4       => '',
+            5       => 0,
+            6       => '',
+            7       => 0,
+            'total' => 0,
+        ];
 
         $sql = "SELECT o, c.id, c.title, c.lastname, c.firstname, c.socialSecurityNumber, c.zipCode, c.city, c.street, c.streetType, c.streetNumber, c.flatNumber"
                 . " FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a"
@@ -399,16 +448,19 @@ class ReportsController extends Controller
         }
         $res = $q->getResult();
 
+
         $report_data = [];
         foreach ($res as $rec) {
             // we skip the suspended days
             if ($rec[0]->getOrder()) {
                 // create the user row
                 if (empty($report_data[$rec['id']])) {
+                    $addr = $ae->formatAddress('', '', '', $rec['street'], $rec['streetType'], $rec['streetNumber'], $rec['flatNumber']);
+                    $ssn = $ae->formatSSN($rec['socialSecurityNumber'], ' ');
                     $report_data[$rec['id']] = [
-                        'ssn'     => $ae->formatSSN($rec['socialSecurityNumber'], ' '),
+                        'ssn'     => !empty($ssn) ? $ssn : ' ',
                         'name'    => $ae->formatName($rec['firstname'], $rec['lastname'], $rec['title']),
-                        'address' => $ae->formatAddress('', '', '', $rec['street'], $rec['streetType'], $rec['streetNumber'], $rec['flatNumber']),
+                        'address' => !empty($addr) ? $addr : ' ',
                         1         => '',
                         2         => '',
                         3         => '',
@@ -426,18 +478,35 @@ class ReportsController extends Controller
                 }
                 else {
                     $o = isset($menus[$rec[0]->getMenu()]) ? $menus[$rec[0]->getMenu()] : '?';
+                    $summary_data[$rec[0]->getMenu()][$day_num] ++;
+                    $summary_data[$rec[0]->getMenu()]['total'] ++;
+                    $summary_data['sum1'][$day_num] ++;
+                    if ($day_num < 6) {
+                        $summary_data['sum2'][5] ++;
+                    }
+                    else {
+                        $summary_data['sum2'][7] ++;
+                    }
+                    $summary_data['sum2']['total'] ++;
                 }
 
                 $report_data[$rec['id']][$day_num] = $o;
             }
         }
 
+//        var_dump($report_data);
+//        die;
+
         $data = [
-            'ca.cim'   => sprintf('%s. %s. heti ebéd rendelések', $start_date->format('Y'), $start_date->format('W')),
-            'ca.klub'  => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
-            'sp.datum' => $ae->formatDate(new \DateTime('today')),
-            'blocks'   => [
+            'ca.cim'           => sprintf('%s. %s. heti ebéd rendelések', $start_date->format('Y'), $start_date->format('W')),
+            'ca.klub'          => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
+            'sp.datum'         => $ae->formatDate(new \DateTime('today')),
+            'total.sum'        => $summary_data['sum2']['total'],
+            'total.unit_price' => $ae->formatCurrency($this->ds->getMenuCost()),
+            'total.amount'     => $ae->formatCurrency($this->ds->getMenuCost() * $summary_data['sum2']['total']),
+            'blocks'           => [
                 'catering' => $report_data,
+                'summary'  => $summary_data,
             ]
         ];
 

@@ -87,6 +87,9 @@ class DataStore
 
     private $vat = 0.27;
 
+    /** cost of 1 lunch */
+    private $menuCost = 856;
+
     public function __construct($container)
     {
         $this->container = $container;
@@ -924,5 +927,10 @@ class DataStore
         }
 
         return $re;
+    }
+
+    public function getMenuCost()
+    {
+        return $this->menuCost;
     }
 }

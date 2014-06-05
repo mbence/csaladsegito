@@ -37,7 +37,7 @@ class DailyOrdersService
     private $orders = [];
 
     /** cost of 1 lunch */
-    private $menuCost = 856;
+    private $menuCost;
 
     /** Constructor */
     public function __construct($container)
@@ -46,6 +46,7 @@ class DailyOrdersService
         $this->ds = $this->container->get('jcs.ds');
 
         $this->tmp_folder = $this->container->get('kernel')->getRootDir() . '/cache/tmp/' . uniqid() . '/';
+        $this->menuCost = $this->ds->getMenuCost();
     }
 
     /**
