@@ -782,7 +782,8 @@ class DataStore
         $week         = $date->format('W');
         $day_count    = $date->format('t');
         $first_day    = $date->format('N');
-        $aftertomorow = (new \DateTime('tomorrow + 1 days'))->getTimestamp();
+        // $aftertomorow = (new \DateTime('tomorrow + 1 days'))->getTimestamp();
+        $first_modifiable_day = (date('G') < 10) ? (new \DateTime('tomorrow'))->getTimestamp() : (new \DateTime('tomorrow + 1 days'))->getTimestamp();
         $actual_month = $date->format('Y-m-');
         $new_date     = clone $date;
         $new_date->modify('+' . ($day_count-1) . ' days');
@@ -803,7 +804,7 @@ class DataStore
                 'day'     => $i,
                 'week'    => $week,
                 'weekend' => (count($month) % 7 == 5 || count($month) % 7 == 6) ? true : false,
-                'modifiable' => (strtotime($actual_month . $i) < $aftertomorow) ? 0 : 1
+                'modifiable' => (strtotime($actual_month . $i) < $first_modifiable_day) ? 0 : 1
             ];
         }
         for ($i = 7; $i > $last_day; $i--) {

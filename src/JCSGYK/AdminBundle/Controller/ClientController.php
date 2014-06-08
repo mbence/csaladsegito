@@ -436,7 +436,7 @@ class ClientController extends Controller
      */
     private function processOrders(Client $client, $orders)
     {
-        $first_day_of_period = new \DateTime('tomorrow + 1 days');
+        $first_day_of_period = ( date( 'G' ) < 10 ) ? new \DateTime('tomorrow') : new \DateTime('tomorrow + 1 days');
         //$first_day_of_period = new \DateTime('first day of this month');
         $last_day_of_period  = new \DateTime('last day of this month + 2 months');
         $catering            = $client->getCatering();
