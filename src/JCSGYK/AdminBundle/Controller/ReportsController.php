@@ -834,10 +834,6 @@ class ReportsController extends Controller
 
         $data['inv.sum'] = $ae->formatCurrency($data['inv.sum']);
 
-        if (!$download) {
-            return;
-        }
-
         $template_file = __DIR__ . '/../Resources/public/reports/catering_stats.xlsx';
         $twig_tpl = '_catering_stats.html.twig';
 
@@ -852,7 +848,6 @@ class ReportsController extends Controller
             return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $twig_tpl, ['data' => $data]);
         }
     }
-
 
     private function getRangeKey($val, $range)
     {

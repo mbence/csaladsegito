@@ -1064,7 +1064,38 @@ table.tbl-right td {
 table.tbl-b td {
     font-weight: bold;
 }
-
+td.bigrep {
+    vertical-align: middle;
+    text-align: center;
+    font-size: 17px;
+}
+.reports-stats td {
+    font-size: 13px;
+    min-width: 70px;
+    text-align: right;
+}
+.reports-stats th {
+    font-size: 13px;
+    font-weight: normal;
+    min-width: 200px;
+    text-align: left;
+    border: 1px solid #ccc;
+}
+.reports-stats td {
+    font-size: 13px;
+    min-width: 70px;
+    text-align: right;
+}
+.reports-matrix th {
+    font-size: 13px;
+    border: 1px solid #ccc;
+    font-weight: normal;
+}
+.reports-matrix th:first-child {
+    font-size: 13px;
+    text-align: left;
+    border: 1px solid #ccc;
+}
 /* Caternig */
 .day-of-week {
     float: left;

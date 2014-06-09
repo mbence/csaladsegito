@@ -1,0 +1,117 @@
+<h1>{{ data['ca.cim'] }} {{ data['ca.klub'] }}</h1>
+<table class="reports-table reports-stats">
+    <tr>
+        <th>Létszám hónap 1-én</th>
+        <td> {{ data['cnum.start'] }} </td>
+    </tr>
+    <tr>
+        <th>Új felvétel</th>
+        <td> {{ data['cnum.new'] }} </td>
+    </tr>
+    <tr>
+        <th>Teljes havi létszám</th>
+        <td> {{ data['cnum.all'] }} </td>
+    </tr>
+    <tr>
+        <th>Megszűntek</th>
+        <td> {{ data['cnum.archived'] }} </td>
+    </tr>
+    <tr>
+        <th>Létszám hónap végén</th>
+        <td> {{ data['cnum.end'] }} </td>
+    </tr>
+</table>
+<br>
+<table class="reports-table reports-stats">
+    <tr>
+        <th>Étkezési napok száma</th>
+        <td> {{ data['inv.days'] }} </td>
+    </tr>
+    <tr>
+        <th>TM ebéd H-P adag / fő</th>
+        <td> {{ data['inv.discweek'] }} </td>
+        <td> {{ data['inv.discweekcli'] }} </td>
+    </tr>
+    <tr>
+        <th>TM ebéd hétvége adag / fő</th>
+        <td> {{ data['inv.discend'] }} </td>
+        <td> {{ data['inv.discendcli'] }} </td>
+    </tr>
+    <tr>
+        <th>Fizetős ebéd H-P adag / fő</th>
+        <td> {{ data['inv.payweek'] }} </td>
+        <td> {{ data['inv.payweekcli'] }} </td>
+    </tr>
+    <tr>
+        <th>Fizetős ebéd hétvége adag / fő</th>
+        <td> {{ data['inv.payend'] }} </td>
+        <td> {{ data['inv.payendcli'] }} </td>
+    </tr>
+    <tr>
+        <th>Térítési díj bevétel összesen</th>
+        <td colspan="2"> {{ data['inv.sum'] }} </td>
+    </tr>
+    <tr>
+        <th>Étkezők száma NŐ</th>
+        <td> {{ data['cnum.woman'] }} </td>
+    </tr>
+    <tr>
+        <th>Étkezők száma FÉRFI</th>
+        <td> {{ data['cnum.man'] }} </td>
+    </tr>
+</table>
+<br>
+<table class="reports-table reports-matrix">
+    <tr>
+        <th>Kor szerinti megoszlás</th>
+        {% for ageh in data.blocks.age_headers %}
+            <th>{{ ageh }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th>NŐ</th>
+        {% for age2 in data.blocks.age_2 %}
+            <td class="bigrep">{{ age2 }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th>FÉRFI</th>
+        {% for age1 in data.blocks.age_1 %}
+            <td class="bigrep">{{ age1 }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th rowspan="2">Komfort fokozat</th>
+        {% for comh in data.blocks.comfort_headers %}
+            <th>{{ comh }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+        {% for com in data.blocks.comfort %}
+            <td class="bigrep">{{ com }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th rowspan="2">Jövedelem szerinti megoszlás</th>
+        {% for inch in data.blocks.income_headers %}
+            <th>{{ inch }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+
+        {% for inc in data.blocks.income %}
+            <td class="bigrep">{{ inc }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th rowspan="2">Lakásban tartózkodás jogcíme</th>
+        {% for ownh in data.blocks.ownership_headers %}
+            <th>{{ ownh }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+        {% for own in data.blocks.ownership %}
+            <td class="bigrep">{{ own }}</td>
+        {% endfor %}
+    </tr>
+</table>
