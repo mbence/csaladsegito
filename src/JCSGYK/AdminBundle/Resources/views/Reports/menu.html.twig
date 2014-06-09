@@ -1,9 +1,10 @@
-{% for item in menu %}
-    {% if item.on %}
+{% for title, m2 in menu %}
+    <h2>{{ title }}</h2>
+    {% for item in m2 %}
         <a href="{{ path('reports', {'report': item.slug}) }}"
            class="menuitem {% if item.slug == report %}current{% endif %}"
            {% if item.id is defined %}id="{{ item.id }}"{% endif %}>
             {{ item.label|trans() }}
         </a>
-    {% endif %}
+    {% endfor %}
 {% endfor %}

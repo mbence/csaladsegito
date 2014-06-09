@@ -1,0 +1,24 @@
+<h1>{{ data['ca.cim'] }} {{ data['ca.klub'] }}</h1>
+<table class="reports-table">
+    <tr>
+        <th>Név</th>
+        <th>Egyenleg</th>
+        <th>Fizetendő</th>
+        <th>Étkezési<br>napok<br>száma</th>
+        <th>Térítési<br>díj /<br>adag</th>
+        <th>Jóvá-<br>írások</th>
+    </tr>
+    {% for catering in data.blocks.catering %}
+    <tr>
+        <td>
+            <strong>{{ catering.name }}</strong>
+            {{ catering.address }}
+        </td>
+        <td> {{ catering.balance }} </td>
+        <td> <strong>{{ catering.amount }}</strong> </td>
+        <td> {{ catering.days }} </td>
+        <td> {{ catering.unit_price }} </td>
+        <td> {{ catering.discount_days }} </td>
+    </tr>
+    {% endfor %}
+</table>

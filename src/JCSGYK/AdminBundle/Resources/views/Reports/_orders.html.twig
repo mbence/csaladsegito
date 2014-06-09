@@ -1,0 +1,71 @@
+<h1>{{ data['ca.cim'] }} {{ data['ca.klub'] }}</h1>
+<table class="reports-table">
+    <tr>
+        <th>Név, cím</th>
+        <th class="short-days">H</th>
+        <th class="short-days">K</th>
+        <th class="short-days">SZ</th>
+        <th class="short-days">CS</th>
+        <th class="short-days">P</th>
+        <th class="short-days">SZ</th>
+        <th class="short-days">V</th>
+    </tr>
+    {% for catering in data.blocks.catering %}
+    <tr>
+        <td>
+            <span class="grey">{{ catering.ssn }}</span>
+            <strong>{{ catering.name }}</strong>
+            ({{ catering.address }})
+        </td>
+        <td> {{ catering.1 }} </td>
+        <td> {{ catering.2 }} </td>
+        <td> {{ catering.3 }} </td>
+        <td> {{ catering.4 }} </td>
+        <td> {{ catering.5 }} </td>
+        <td> {{ catering.6 }} </td>
+        <td> {{ catering.7 }} </td>
+    </tr>
+    {% endfor %}
+</table>
+<br><br>
+<table class="reports-table tbl-right">
+    <tr>
+        <th></th>
+        <th>Hétfő</th>
+        <th>Kedd</th>
+        <th>Szerda</th>
+        <th>Csütörtök</th>
+        <th>Péntek</th>
+        <th>Szombat</th>
+        <th>Vasárnap</th>
+        <th>Összesen</th>
+    </tr>
+    {% for summary in data.blocks.summary %}
+    <tr>
+        <th>{{ summary.menu }}</th>
+        <td> {{ summary.1 }} </td>
+        <td> {{ summary.2 }} </td>
+        <td> {{ summary.3 }} </td>
+        <td> {{ summary.4 }} </td>
+        <td> {{ summary.5 }} </td>
+        <td> {{ summary.6 }} </td>
+        <td> {{ summary.7 }} </td>
+        <td> {{ summary.total }} </td>
+    </tr>
+    {% endfor %}
+</table>
+<br><br>
+<table class="reports-table tbl-right tbl-b">
+    <tr>
+        <th>Adag:</th>
+        <td> {{ data['total.sum'] }} </td>
+    </tr>
+    <tr>
+        <th>Ár:</th>
+        <td> {{ data['total.unit_price'] }} </td>
+    </tr>
+    <tr>
+        <th>Fizetendő:</th>
+        <td> {{ data['total.amount'] }} </td>
+    </tr>
+</table>

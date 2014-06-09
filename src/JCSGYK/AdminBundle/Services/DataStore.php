@@ -917,6 +917,7 @@ class DataStore
      */
     public function getSubTemplate(Catering $catering)
     {
+        $menu_name = '';
         $name_parts   = explode(' ', $this->get($catering->getMenu()));
         $menu_name    .= end($name_parts)[0];
         $tpl = $catering->getSubscriptions();

@@ -3134,16 +3134,46 @@ table.task-list tr:hover td {
 }
 #reports-content {
     margin-left: 180px;
-    width: 30%;
 }
 #reports-content form label {
     padding: 0 10px 0 0;
 }
 #reports-content form div#form > div {
-    border-bottom: 1px solid #DDDDDD;
     color: #5661A2;
     padding: 2px 3px 6px 6px;
     white-space: nowrap;
+}
+#reports-content #form div {
+    float: left;
+}
+#reports-content .show_report {
+    margin: 0 20px;
+}
+#reports-content .reports-header {
+    border-bottom: 1px solid #DDDDDD;
+}
+.reports-table td {
+    font-size: 13px;
+    border: 1px solid #ccc;
+    padding: 1px 2px;
+}
+.reports-table th {
+    text-align: center;
+    vertical-align: bottom;
+    font-size: 11px;
+    padding: 2px 2px;
+}
+.reports-table th.short-days {
+    width: 16px;
+}
+.reports-table .grey {
+    color: #888;
+}
+table.tbl-right td {
+    text-align: right;
+}
+table.tbl-b td {
+    font-weight: bold;
 }
 
 /* Caternig */

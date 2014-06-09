@@ -509,6 +509,16 @@ class InvoiceService
                 $sums['is_single'] = '';
                 $sums['orders']    = '';
             }
+
+            // empty month
+            $empty_month = [];
+            foreach (range(1, 31) as $d) {
+                $empty_month[$d] = '';
+            }
+            if ('catering_summary_detailed' == $report) {
+                $sums['calendar'] = $empty_month;
+            }
+
             foreach ($res as $invoice) {
                 $client = $invoice->getClient();
                 $catering = $client->getCatering();
@@ -542,6 +552,15 @@ class InvoiceService
                     $data_row['income']    = $ae->formatCurrency2($catering->getIncome());
                     $data_row['is_single'] = $catering->getIsSingle() ? 'X' : '';
                     $data_row['orders']    = $this->ds->getSubTemplate($catering);
+                }
+                // extra fields for detailed report
+                if ('catering_summary_detailed' == $report) {
+                    $data_row['calendar'] = $empty_month;
+                    $days = json_decode($invoice->getDays(), true);
+                    foreach ($days as $day => $o) {
+                        $n = (new \DateTime($day))->format('j');
+                        $data_row['calendar'][$n] = $o > 0 ? 'X' : '-';
+                    }
                 }
 
                 $data[] = $data_row;

@@ -36,8 +36,9 @@ class ReportsController extends Controller
         // render and download reports
         if ($request->isMethod('POST')) {
             $form->bind($request);
+            $dl = $request->request->get('download', false);
 
-            $result = $this->getReport($report, $form->getData());
+            $result = $this->getReport($report, $form->getData(), $dl);
         }
 
         return $this->render('JCSGYKAdminBundle:Reports:index.html.twig', [
@@ -65,12 +66,12 @@ class ReportsController extends Controller
         $granted = false;
 
         $menu = $this->getMenu();
-        foreach ($menu as $item) {
-            if ($item['slug'] == $report) {
-                if ($item['on']) {
+        foreach ($menu as $m2) {
+            foreach ($m2 as $item) {
+                if ($item['slug'] == $report) {
                     $granted = true;
+                    break(2);
                 }
-                break;
             }
         }
 
@@ -129,13 +130,13 @@ class ReportsController extends Controller
             // month
             $this->getInvoiceMonths($form_builder);
         }
-        elseif (in_array($report, ['catering_summary', 'catering_datacheck'])) {
+        elseif (in_array($report, ['catering_summary', 'catering_datacheck', 'catering_summary_detailed'])) {
             // month
             $this->getInvoiceMonths($form_builder);
         }
 
         // club select for all catering reports
-        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_datacheck'])) {
+        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck'])) {
             if ($sec->isGranted('ROLE_ADMIN')) {
                 $this->getClubSelect($form_builder, false, 'mind');
             }
@@ -223,19 +224,19 @@ class ReportsController extends Controller
         $form_builder->add('club', 'entity', $c);
     }
 
-    private function getReport($report, $form_data)
+    private function getReport($report, $form_data, $download)
     {
         if ('clients' == $report) {
-            return $this->getClientReport($form_data);
+            return $this->getClientReport($form_data, $download);
         }
         elseif ('casecounts' == $report) {
-            return $this->getCasecountsReport($form_data);
+            return $this->getCasecountsReport($form_data, $download);
         }
         elseif ('catering_orders' == $report) {
-            return $this->getCateringOrderReport($form_data);
+            return $this->getCateringOrderReport($form_data, $download);
         }
-        elseif ('catering_cashbook' == $report || 'catering_summary' == $report || 'catering_datacheck' == $report) {
-            return $this->getCateringReport($form_data, $report);
+        elseif ('catering_cashbook' == $report || 'catering_summary' == $report || 'catering_summary_detailed' == $report || 'catering_datacheck' == $report) {
+            return $this->getCateringReport($form_data, $report, $download);
         }
 
         return false;
@@ -251,14 +252,28 @@ class ReportsController extends Controller
         $child_welfare_on = $ds->companyHas(Client::CW) && $sec->isGranted('ROLE_CHILD_WELFARE');
         $catering_on      = $ds->companyHas(Client::CA) && $sec->isGranted('ROLE_CATERING');
 
-        $menu = [
-            ['slug' => 'clients', 'label' => 'Ügyfelek', 'on' => $famly_help_on || $child_welfare_on],
-            ['slug' => 'casecounts', 'label' => 'Esetszámok', 'on' => $famly_help_on || $child_welfare_on],
-            ['slug' => 'catering_orders', 'label' => 'Heti ebédrendelések', 'on' => $catering_on],
-//            ['slug' => 'catering_cashbook', 'label' => 'Pénztárkönyv', 'on' => $catering_on],
-            ['slug' => 'catering_summary', 'label' => 'Havi ebédösszesítő', 'on' => $catering_on],
-            ['slug' => 'catering_datacheck', 'label' => 'Adategyeztető', 'on' => $catering_on],
-        ];
+        $menu = [];
+        if ($famly_help_on) {
+            $menu['Családsegítő'] = [
+                ['slug' => 'clients', 'label' => 'Ügyfelek'],
+                ['slug' => 'casecounts', 'label' => 'Esetszámok'],
+            ];
+        }
+        if ($child_welfare_on) {
+            $menu['Gyermekjólét'] = [
+                ['slug' => 'clients', 'label' => 'Ügyfelek'],
+                ['slug' => 'casecounts', 'label' => 'Esetszámok'],
+            ];
+        }
+        if ($catering_on) {
+            $menu['Étkeztetés'] = [
+                ['slug' => 'catering_orders', 'label' => 'Heti ebédrendelések'],
+    //            ['slug' => 'catering_cashbook', 'label' => 'Pénztárkönyv'],
+                ['slug' => 'catering_summary', 'label' => 'Havi ebédösszesítő'],
+                ['slug' => 'catering_summary_detailed', 'label' => 'Részletes ebédösszesítő'],
+                ['slug' => 'catering_datacheck', 'label' => 'Adategyeztető'],
+            ];
+        }
 
         return $menu;
     }
@@ -343,7 +358,7 @@ class ReportsController extends Controller
         return $send;
     }
 
-    private function getCateringOrderReport($form_data)
+    private function getCateringOrderReport($form_data, $download)
     {
         $form_fields = [
             'week' => null,
@@ -512,12 +527,18 @@ class ReportsController extends Controller
 
         $template_file = __DIR__ . '/../Resources/public/reports/catering_orders.xlsx';
         $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
-        $send          = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
 
-        return $send;
+        if ($download) {
+
+            return $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+        }
+        else {
+
+            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:_orders.html.twig', ['data' => $data]);
+        }
     }
 
-    private function getCateringReport($form_data, $report)
+    private function getCateringReport($form_data, $report, $download)
     {
         $form_fields = [
             'month' => null,
@@ -550,10 +571,17 @@ class ReportsController extends Controller
         if ('catering_datacheck' == $report) {
             $title = sprintf('%s havi adategyeztető', $ae->formatDate($month, 'ym'));
             $template_file = __DIR__ . '/../Resources/public/reports/catering_datacheck.xlsx';
+            $twig_tpl = '_datacheck.html.twig';
+        }
+        elseif ('catering_summary_detailed' == $report) {
+            $title = sprintf('%s havi étkezési napok összesítése', $ae->formatDate($month, 'ym'));
+            $template_file = __DIR__ . '/../Resources/public/reports/catering_summary_detailed.xlsx';
+            $twig_tpl = '_summary_detailed.html.twig';
         }
         else {
             $title = sprintf('%s havi ebéd összesítő', $ae->formatDate($month, 'ym'));
             $template_file = __DIR__ . '/../Resources/public/reports/catering_summary.xlsx';
+            $twig_tpl = '_summary.html.twig';
         }
 
         $data = [
@@ -564,11 +592,20 @@ class ReportsController extends Controller
                 'catering' => $report_data,
             ]
         ];
+        if ('catering_summary_detailed' == $report) {
+            $data['blocks']['months_days'] = range(1, 31);
+        }
 
         $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
-        $send          = $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
 
-        return $send;
+        if ($download) {
+
+            return $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+        }
+        else {
+
+            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $twig_tpl, ['data' => $data]);
+        }
     }
 
 }
