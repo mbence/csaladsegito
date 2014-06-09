@@ -130,13 +130,13 @@ class ReportsController extends Controller
             // month
             $this->getInvoiceMonths($form_builder);
         }
-        elseif (in_array($report, ['catering_summary', 'catering_datacheck', 'catering_summary_detailed'])) {
+        elseif (in_array($report, ['catering_summary', 'catering_datacheck', 'catering_summary_detailed', 'catering_stats'])) {
             // month
             $this->getInvoiceMonths($form_builder);
         }
 
         // club select for all catering reports
-        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck'])) {
+        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck', 'catering_stats'])) {
             if ($sec->isGranted('ROLE_ADMIN')) {
                 $this->getClubSelect($form_builder, false, 'mind');
             }
@@ -235,8 +235,11 @@ class ReportsController extends Controller
         elseif ('catering_orders' == $report) {
             return $this->getCateringOrderReport($form_data, $download);
         }
-        elseif ('catering_cashbook' == $report || 'catering_summary' == $report || 'catering_summary_detailed' == $report || 'catering_datacheck' == $report) {
+        elseif (in_array($report, ['catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck'])) {
             return $this->getCateringReport($form_data, $report, $download);
+        }
+        elseif ('catering_stats' == $report) {
+            return $this->getCateringStats($form_data, $download);
         }
 
         return false;
@@ -272,6 +275,7 @@ class ReportsController extends Controller
                 ['slug' => 'catering_summary', 'label' => 'Havi ebédösszesítő'],
                 ['slug' => 'catering_summary_detailed', 'label' => 'Részletes ebédösszesítő'],
                 ['slug' => 'catering_datacheck', 'label' => 'Adategyeztető'],
+                ['slug' => 'catering_stats', 'label' => 'Statisztika'],
             ];
         }
 
@@ -549,7 +553,6 @@ class ReportsController extends Controller
         $form_data   = array_merge($form_fields, $form_data);
 
         // check for user roles and set the params accordingly
-        $em         = $this->getDoctrine();
         $sec        = $this->container->get('security.context');
         $ae         = $this->container->get('jcs.twig.adminextension');
         $company_id = $this->ds->getCompanyId();
@@ -566,7 +569,7 @@ class ReportsController extends Controller
 
         $month = new \DateTime($form_data['month']);
 
-        $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $month, $form_data['club'], $report);
+            $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $month, $form_data['club'], $report);
 
         if ('catering_datacheck' == $report) {
             $title = sprintf('%s havi adategyeztető', $ae->formatDate($month, 'ym'));
@@ -608,4 +611,207 @@ class ReportsController extends Controller
         }
     }
 
+    private function getCateringStats($form_data, $download)
+    {
+        $form_fields = [
+            'month' => null,
+            'club'  => null,
+        ];
+        // make sure we have all required fields
+        // 'club' => Club entity or null for all
+        $form_data   = array_merge($form_fields, $form_data);
+
+        // check for user roles and set the params accordingly
+        $em         = $this->container->get('doctrine')->getManager();
+        $sec        = $this->container->get('security.context');
+        $ae         = $this->container->get('jcs.twig.adminextension');
+        $company_id = $this->ds->getCompanyId();
+        $months     = $this->container->get('jcs.invoice')->getMonths($company_id);
+
+        // non admins not get all clubs
+        if (!$sec->isGranted('ROLE_ADMIN') && empty($form_data['club'])) {
+            throw new AccessDeniedHttpException();
+        }
+        // get the period
+        if (!isset($months[$form_data['month']])) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $month = new \DateTime($form_data['month']);
+        $now = new \DateTime();
+
+        $start_date = $month->format('Y-m-d');
+        $end_date   = $month->format('Y-m-t');
+
+        $data = [
+            'ca.cim'        => sprintf('%s havi EBÉD statisztika', $ae->formatDate($month, 'ym')),
+            'ca.klub'       => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
+            'sp.datum'      => $ae->formatDate(new \DateTime('today')),
+            'cnum.start'    => 0,
+            'cnum.new'      => 0,
+            'cnum.all'      => 0,
+            'cnum.archived' => 0,
+            'cnum.end'      => 0,
+            'blocks'        => [],
+        ];
+        // comfort
+        $data['blocks']['comfort_headers'] = $this->ds->getGroup(200);
+        foreach ($this->ds->getGroup(200) as $c => $v) {
+            $data['blocks']['comfort'][$c] = 0;
+        }
+
+        // ownership
+        $data['blocks']['ownership_headers'] = $this->ds->getGroup(204);
+        foreach ($this->ds->getGroup(204) as $o => $v) {
+            $data['blocks']['ownership'][$o] = 0;
+        }
+        // ranges
+        $data['blocks']['income_headers'] = [
+            0 => '28 500 alatt',
+            1 => '57 000-ig',
+            2 => '85 000-ig',
+            3 => '114 000-ig',
+            4 => '114 000 felett'
+        ];
+        $income_ranges = [
+            0 => [0, 28500],
+            1 => [28501, 57000],
+            2 => [57001, 85000],
+            3 => [85001, 114000],
+            4 => [114001, 99999999],
+        ];
+        foreach ($income_ranges as $k => $v) {
+            $data['blocks']['income'][$k] = 0;
+        }
+        $data['blocks']['age_headers'] = [
+            0 => '18 év alatt',
+            1 => '18-39 évig',
+            2 => '40-59 évig',
+            3 => '60-64 évig',
+            4 => '65-69 évig',
+            5 => '70-74 évig',
+            6 => '75-79 évig',
+            7 => '80-89 évig',
+            8 => '90 év felett',
+        ];
+        $age_ranges = [
+            0 =>  [0, 18],
+            1 =>  [18, 39],
+            2 =>  [40, 59],
+            3 =>  [60, 64],
+            4 =>  [65, 69],
+            5 =>  [70, 74],
+            6 =>  [75, 79],
+            7 =>  [80, 89],
+            8 =>  [90, 999],
+        ];
+        foreach ($age_ranges as $k => $v) {
+            $data['blocks']['age_2'][$k] = 0;
+            $data['blocks']['age_1'][$k] = 0;
+        }
+
+
+        // get all the clients
+        $sql = "SELECT c, a, k FROM JCSGYKAdminBundle:Client c JOIN c.catering a LEFT JOIN c.archives k"
+                . " WHERE c.companyId = :company_id AND c.type = :type AND c.createdAt <= :end_date";
+        if (!empty($form_data['club'])) {
+            $sql .= ' AND a.club = :club';
+        }
+
+        $q = $em->createQuery($sql)
+            ->setParameter('company_id', $company_id)
+            ->setParameter('type', Client::CA)
+//            ->setParameter('start_date', $start_date)
+            ->setParameter('end_date', $end_date)
+        ;
+        if (!empty($form_data['club'])) {
+            $q->setParameter('club', $form_data['club']);
+        }
+        $res = $q->getResult();
+
+        // loop through the clients
+        foreach ($res as $client) {
+            $params = $client->getParams();
+            if ($client->getIsArchived() == 0) {
+                if ($client->getCreatedAt() < $month) {
+                    $data['cnum.start']++;
+                }
+                else {
+                    $data['cnum.new']++;
+                }
+                // comfort
+                if (!empty($params[200])) {
+                    if (!isset($data['blocks']['comfort'][$params[200]])) {
+                        $data['blocks']['comfort'][$params[200]] = 0;
+                    }
+                    $data['blocks']['comfort'][$params[200]]++;
+                }
+                // ownership
+                if (!empty($params[204])) {
+                    if (!isset($data['blocks']['ownership'][$params[204]])) {
+                        $data['blocks']['ownership'][$params[204]] = 0;
+                    }
+                    $data['blocks']['ownership'][$params[204]]++;
+                }
+                // income
+                $k = $this->getRangeKey($client->getCatering()->getIncome(), $income_ranges);
+                if (false !== $k) {
+                    $data['blocks']['income'][$k]++;
+                }
+                // age
+                $bday = $client->getBirthDate();
+                if (!empty($bday)) {
+                    $age = $now->diff($bday)->format('%y');
+                    $k = $this->getRangeKey($age, $age_ranges);
+                    if (false !== $k) {
+                        $gen = $client->getGender();
+                        $data['blocks']['age_' . $gen][$k]++;
+                    }
+                }
+            }
+            else {
+                $archives = $client->getArchives();
+                foreach ($archives as $archive) {
+                    if ($archive->getCreatedAt() >= $month) {
+                        $data['cnum.archived']++;
+                        break;
+                    }
+                }
+            }
+        }
+        $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'];
+        $data['cnum.end'] = $data['cnum.all'] - $data['cnum.archived'];
+
+        if (!$download) {
+            var_dump($data);
+            return;
+        }
+
+        $template_file = __DIR__ . '/../Resources/public/reports/catering_stats.xlsx';
+        $twig_tpl = '_catering_stats.html.twig';
+
+        $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
+
+        if ($download) {
+
+            return $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+        }
+        else {
+
+            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $twig_tpl, ['data' => $data]);
+        }
+    }
+
+
+    private function getRangeKey($val, $range)
+    {
+        foreach ($range as $k => $d) {
+            if ($val >= $d[0] && $val <= $d[1]) {
+
+                return $k;
+            }
+        }
+
+        return false;
+    }
 }
