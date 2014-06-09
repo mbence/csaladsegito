@@ -644,15 +644,27 @@ class ReportsController extends Controller
         $end_date   = $month->format('Y-m-t');
 
         $data = [
-            'ca.cim'        => sprintf('%s havi EBÉD statisztika', $ae->formatDate($month, 'ym')),
-            'ca.klub'       => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
-            'sp.datum'      => $ae->formatDate(new \DateTime('today')),
-            'cnum.start'    => 0,
-            'cnum.new'      => 0,
-            'cnum.all'      => 0,
-            'cnum.archived' => 0,
-            'cnum.end'      => 0,
-            'blocks'        => [],
+            'ca.cim'          => sprintf('%s havi EBÉD statisztika', $ae->formatDate($month, 'ym')),
+            'ca.klub'         => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
+            'sp.datum'        => $ae->formatDate(new \DateTime('today')),
+            'cnum.start'      => 0,
+            'cnum.new'        => 0,
+            'cnum.all'        => 0,
+            'cnum.archived'   => 0,
+            'cnum.end'        => 0,
+            'cnum.man'        => 0,
+            'cnum.woman'      => 0,
+            'inv.days'        => 0,
+            'inv.discweek'    => 0,
+            'inv.discweekcli' => [],
+            'inv.discend'    => 0,
+            'inv.discendcli' => [],
+            'inv.payweek'     => 0,
+            'inv.payweekcli'  => [],
+            'inv.payend'      => 0,
+            'inv.payendcli'   => [],
+            'inv.sum'         => 0,
+            'blocks'          => [],
         ];
         // comfort
         $data['blocks']['comfort_headers'] = $this->ds->getGroup(200);
@@ -712,78 +724,117 @@ class ReportsController extends Controller
 
 
         // get all the clients
-        $sql = "SELECT c, a, k FROM JCSGYKAdminBundle:Client c JOIN c.catering a LEFT JOIN c.archives k"
-                . " WHERE c.companyId = :company_id AND c.type = :type AND c.createdAt <= :end_date";
+        $sql = "SELECT i, c, a FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
+                . "WHERE i.companyId = :company_id AND i.startDate >= :month_start AND i.endDate <= :month_end ";
         if (!empty($form_data['club'])) {
             $sql .= ' AND a.club = :club';
         }
 
         $q = $em->createQuery($sql)
             ->setParameter('company_id', $company_id)
-            ->setParameter('type', Client::CA)
-//            ->setParameter('start_date', $start_date)
-            ->setParameter('end_date', $end_date)
-        ;
+            ->setParameter('month_start', $start_date)
+            ->setParameter('month_end', $end_date);
         if (!empty($form_data['club'])) {
             $q->setParameter('club', $form_data['club']);
         }
         $res = $q->getResult();
 
-        // loop through the clients
-        foreach ($res as $client) {
-            $params = $client->getParams();
-            if ($client->getIsArchived() == 0) {
-                if ($client->getCreatedAt() < $month) {
-                    $data['cnum.start']++;
+        $client_list = [];
+        foreach ($res as $invoice) {
+            // loop through the clients
+            $client = $invoice->getClient();
+            $cid = $client->getId();
+            if (!in_array($cid, $client_list)) {
+                $client_list[] = $cid;
+
+                $params = $client->getParams();
+                if ($client->getIsArchived() == 0) {
+                    if ($client->getCreatedAt() < $month) {
+                        $data['cnum.start']++;
+                    }
+                    else {
+                        $data['cnum.new']++;
+                    }
+                    // comfort
+                    if (!empty($params[200])) {
+                        if (!isset($data['blocks']['comfort'][$params[200]])) {
+                            $data['blocks']['comfort'][$params[200]] = 0;
+                        }
+                        $data['blocks']['comfort'][$params[200]]++;
+                    }
+                    // ownership
+                    if (!empty($params[204])) {
+                        if (!isset($data['blocks']['ownership'][$params[204]])) {
+                            $data['blocks']['ownership'][$params[204]] = 0;
+                        }
+                        $data['blocks']['ownership'][$params[204]]++;
+                    }
+                    // income
+                    $k = $this->getRangeKey($client->getCatering()->getIncome(), $income_ranges);
+                    if (false !== $k) {
+                        $data['blocks']['income'][$k]++;
+                    }
+                    // age
+                    $gen = $client->getGender();
+                    $bday = $client->getBirthDate();
+                    if (!empty($bday)) {
+                        $age = $now->diff($bday)->format('%y');
+                        $k = $this->getRangeKey($age, $age_ranges);
+                        if (false !== $k) {
+                            $data['blocks']['age_' . $gen][$k]++;
+                        }
+                    }
+                    if ($gen == 1) {
+                        $data['cnum.man']++;
+                    }
+                    elseif ($gen == 2) {
+                        $data['cnum.woman']++;
+                    }
                 }
                 else {
-                    $data['cnum.new']++;
-                }
-                // comfort
-                if (!empty($params[200])) {
-                    if (!isset($data['blocks']['comfort'][$params[200]])) {
-                        $data['blocks']['comfort'][$params[200]] = 0;
-                    }
-                    $data['blocks']['comfort'][$params[200]]++;
-                }
-                // ownership
-                if (!empty($params[204])) {
-                    if (!isset($data['blocks']['ownership'][$params[204]])) {
-                        $data['blocks']['ownership'][$params[204]] = 0;
-                    }
-                    $data['blocks']['ownership'][$params[204]]++;
-                }
-                // income
-                $k = $this->getRangeKey($client->getCatering()->getIncome(), $income_ranges);
-                if (false !== $k) {
-                    $data['blocks']['income'][$k]++;
-                }
-                // age
-                $bday = $client->getBirthDate();
-                if (!empty($bday)) {
-                    $age = $now->diff($bday)->format('%y');
-                    $k = $this->getRangeKey($age, $age_ranges);
-                    if (false !== $k) {
-                        $gen = $client->getGender();
-                        $data['blocks']['age_' . $gen][$k]++;
-                    }
+                    $data['cnum.archived']++;
                 }
             }
-            else {
-                $archives = $client->getArchives();
-                foreach ($archives as $archive) {
-                    if ($archive->getCreatedAt() >= $month) {
-                        $data['cnum.archived']++;
-                        break;
+            // loop through the invoices
+            $all_items = json_decode($invoice->getItems(), true);
+            //var_dump($items);
+            foreach ($all_items as $items) {
+                $data['inv.days'] += $items['quantity'];
+                if ($items['unit_price'] == 0) {
+                    if (!empty($items['weekday_quantity'])) {
+                        $data['inv.discweek'] += $items['weekday_quantity'];
+                        $data['inv.discweekcli'][$cid] = 1;
+                    }
+                    if ($items['quantity'] > $items['weekday_quantity']) {
+                        $data['inv.discend'] += $items['quantity'] - $items['weekday_quantity'];
+                        $data['inv.discendcli'][$cid] = 1;
                     }
                 }
+                else {
+                    if (!empty($items['weekday_quantity'])) {
+                        $data['inv.payweek'] += $items['weekday_quantity'];
+                        $data['inv.payweekcli'][$cid] = 1;
+                    }
+                    if ($items['quantity'] > $items['weekday_quantity']) {
+                        $data['inv.payend'] += $items['quantity'] - $items['weekday_quantity'];
+                        $data['inv.payendcli'][$cid] = 1;
+                    }
+                }
+                $data['inv.sum'] += $invoice->getAmount();
             }
         }
+        // get only the client counts
+        $data['inv.discweekcli'] = count($data['inv.discweekcli']);
+        $data['inv.discendcli'] = count($data['inv.discendcli']);
+        $data['inv.payweekcli'] = count($data['inv.payweekcli']);
+        $data['inv.payendcli'] = count($data['inv.payendcli']);
+
         $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'];
         $data['cnum.end'] = $data['cnum.all'] - $data['cnum.archived'];
 
+        $data['inv.sum'] = $ae->formatCurrency($data['inv.sum']);
+
         if (!$download) {
-            var_dump($data);
             return;
         }
 
