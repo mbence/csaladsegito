@@ -1096,6 +1096,13 @@ td.bigrep {
     text-align: left;
     border: 1px solid #ccc;
 }
+h2.menu-section {
+    border-bottom: 1px solid #3344AA;
+    color: #3344AA;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 7px 0 1px;
+}
 /* Caternig */
 .day-of-week {
     float: left;

@@ -477,7 +477,7 @@ class ReportsController extends Controller
                     $addr = $ae->formatAddress('', '', '', $rec['street'], $rec['streetType'], $rec['streetNumber'], $rec['flatNumber']);
                     $ssn = $ae->formatSSN($rec['socialSecurityNumber'], ' ');
                     $report_data[$rec['id']] = [
-                        'ssn'     => !empty($ssn) ? $ssn : ' ',
+                        'ssn'     => !empty($ssn) ? $ssn : '   -   ',
                         'name'    => $ae->formatName($rec['firstname'], $rec['lastname'], $rec['title']),
                         'address' => !empty($addr) ? $addr : ' ',
                         1         => '',
