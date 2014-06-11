@@ -186,7 +186,7 @@ class ClosingService
         $closing->setSummary($this->summary);
         $closing->setStatus(MonthlyClosing::SUCCESS);
         $em->flush();
-        
+
         return $closing;
     }
 
@@ -206,19 +206,22 @@ class ClosingService
     public function export()
     {
         $em = $this->container->get('doctrine')->getManager();
-        $user = $this->ds->getUser();
         $company_id = $this->ds->getCompanyId();
         $invocie_service = $this->container->get('jcs.invoice');
 
         $result = 0;
 
         // find the unsent invocies in batches
-        $offset = 0;
-        $limit = 10;
         $invoices = $invocie_service->getInvoices($company_id);
         // process the invoce
         foreach ($invoices as $invoice) {
-            $result += $this->exportInvoice($invoice);
+            // only export invoices with amount to pay
+            if ($invoice->getAmount() != 0) {
+                $result += $this->exportInvoice($invoice);
+            }
+            else {
+                $invoice->setStatus(Invoice::CLOSED);
+            }
         }
         $em->flush();
 
@@ -299,8 +302,8 @@ class ClosingService
         $res = $this->addExportLine($data);
 
         if ($res) {
-            // set the invoice status to open or closed depending on the amount (data exported to EcoSTAT)
-            $invoice->setStatus($invoice->getAmount() == 0 ? Invoice::CLOSED : Invoice::OPEN);
+            // set the invoice status to open (data exported to EcoSTAT)
+            $invoice->setStatus(Invoice::OPEN);
         }
 
         return $res;
