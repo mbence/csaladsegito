@@ -243,8 +243,8 @@ class ClosingService
         $vat = $this->ds->getVat();
 
         // deadline is the 5th day of next month
-        $deadline = clone $invoice->getEndDate();
-        $deadline = $deadline->modify('first day of next month')->modify('+4 days')->format('Ymd');
+        $deadline = clone $invoice->getStartDate();
+        $deadline = $deadline->modify('+4 days')->format('Ymd');
 
         $comment = sprintf('%s. havi étkeztetés', $invoice->getEndDate()->format('n'));
 
