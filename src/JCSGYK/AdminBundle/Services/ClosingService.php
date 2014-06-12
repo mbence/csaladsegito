@@ -99,7 +99,13 @@ class ClosingService
         else {
             // actual month
             $start = new \DateTime('+1 day');
-            $end = new \DateTime('last day of this month');
+            // after the monthly closing, the daily closing also must create the orders and invoice for the next month
+            if (date('j') < 25) {
+                $end = new \DateTime('last day of this month');
+            }
+            else {
+                $end = new \DateTime('last day of next month');
+            }
         }
         $created_at = new \DateTime();
 
