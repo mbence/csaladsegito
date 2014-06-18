@@ -1,0 +1,20 @@
+<h1>{{ data['ca.cim'] }} {{ data['ca.klub'] }}</h1>
+<table class="reports-table">
+    <tr>
+        <th>Név</th>
+        <th>Hónap</th>
+        <th>Számlaszám</th>
+        <th>Fizetendő</th>
+    </tr>
+    {% for catering in data.blocks.catering %}
+    <tr>
+        <td>
+            <strong>{{ catering.name }}</strong>
+            {{ catering.address }}
+        </td>
+        <td> {{ catering.month }} </td>
+        <td> {{ catering.invoice_number }} </td>
+        <td> <strong>{{ catering.amount }}</strong> </td>
+    </tr>
+    {% endfor %}
+</table>

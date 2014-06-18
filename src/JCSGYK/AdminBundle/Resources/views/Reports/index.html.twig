@@ -16,6 +16,7 @@
             </div>
         {% else %}
             <div class="reports-header">
+                {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
                 <form action="{{ path('reports', {'report': report}) }}" id="report_download" novalidate method="post" {{ form_enctype(form) }}>
                     {{ form_errors(form) }}
                     {{ form_widget(form) }}

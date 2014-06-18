@@ -3214,6 +3214,11 @@ h2.menu-section {
     font-weight: bold;
     padding: 7px 0 1px;
 }
+#report_download .datepicker {
+    width: 100px;
+    padding: 2px 4px;
+    vertical-align: middle;
+}
 /* Caternig */
 .day-of-week {
     float: left;

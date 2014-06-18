@@ -127,8 +127,8 @@ class ReportsController extends Controller
             $this->getCateringWeeks($form_builder);
         }
         elseif ('catering_cashbook' == $report) {
-            // month
-            $this->getInvoiceMonths($form_builder);
+            // day
+            $this->getDayInput($form_builder);
         }
         elseif (in_array($report, ['catering_summary', 'catering_datacheck', 'catering_summary_detailed', 'catering_stats'])) {
             // month
@@ -192,6 +192,17 @@ class ReportsController extends Controller
         ]);
     }
 
+    private function getDayInput(&$form_builder)
+    {
+        $form_builder->add('day', 'date', [
+            'label'    => 'Dátum',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker', 'type' => 'text'),
+            'required' => true,
+            'data'     => new \DateTime('today'),
+        ]);
+    }
+
     private function getWeeks()
     {
         $re       = [];
@@ -235,11 +246,14 @@ class ReportsController extends Controller
         elseif ('catering_orders' == $report) {
             return $this->getCateringOrderReport($form_data, $download);
         }
-        elseif (in_array($report, ['catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck'])) {
+        elseif (in_array($report, ['catering_summary', 'catering_summary_detailed', 'catering_datacheck'])) {
             return $this->getCateringReport($form_data, $report, $download);
         }
         elseif ('catering_stats' == $report) {
             return $this->getCateringStats($form_data, $download);
+        }
+        elseif ('catering_cashbook' == $report) {
+            return $this->getCateringCashBookReport($form_data, $download);
         }
 
         return false;
@@ -271,7 +285,7 @@ class ReportsController extends Controller
         if ($catering_on) {
             $menu['Étkeztetés'] = [
                 ['slug' => 'catering_orders', 'label' => 'Heti ebédrendelések'],
-    //            ['slug' => 'catering_cashbook', 'label' => 'Pénztárkönyv'],
+                ['slug' => 'catering_cashbook', 'label' => 'Pénztárkönyv'],
                 ['slug' => 'catering_summary', 'label' => 'Havi ebédösszesítő'],
                 ['slug' => 'catering_summary_detailed', 'label' => 'Részletes ebédösszesítő'],
                 ['slug' => 'catering_datacheck', 'label' => 'Adategyeztető'],
@@ -607,6 +621,115 @@ class ReportsController extends Controller
         }
         else {
 
+            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $twig_tpl, ['data' => $data]);
+        }
+    }
+
+    private function getCateringCashBookReport($form_data, $download)
+    {
+        $form_fields = [
+            'day'   => null,
+            'club'  => null,
+        ];
+        // make sure we have all required fields
+        // 'club' => Club entity or null for all
+        $form_data   = array_merge($form_fields, $form_data);
+
+        // check for user roles and set the params accordingly
+        $sec        = $this->container->get('security.context');
+        $ae         = $this->container->get('jcs.twig.adminextension');
+        $company_id = $this->ds->getCompanyId();
+        $em         = $this->container->get('doctrine')->getManager();
+
+        // non admins not get all clubs
+        if (!$sec->isGranted('ROLE_ADMIN') && empty($form_data['club'])) {
+            throw new AccessDeniedHttpException();
+        }
+        // get the period
+        if (empty($form_data['day'])) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $date = $form_data['day']->format('Y-m-d');
+
+        // get the payments for this date
+        $sql = "SELECT i, c FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
+                . "WHERE i.companyId = :company_id AND i.payments LIKE :date ";
+        if (!empty($form_data['club'])) {
+            $sql .= ' AND a.club = :club ';
+        }
+        $sql .=  " ORDER BY c.lastname, c.firstname ";
+
+
+        $q = $em->createQuery($sql)
+            ->setParameter('company_id', $company_id)
+            ->setParameter('date', "%$date%")
+        ;
+        if (!empty($form_data['club'])) {
+            $q->setParameter('club', $form_data['club']);
+        }
+        $res = $q->getResult();
+
+        $sums        = [
+            'id'             => '',
+            'name'           => 'ÖSSZESEN',
+            'address'        => '',
+            'month'        => '',
+            'invoice_number' => '',
+            'amount'         => 0,
+        ];
+        $report_data = [];
+        foreach ($res as $invoice) {
+            $client = $invoice->getClient();
+
+            // process items
+            $amount = 0;
+
+            foreach ($invoice->getPayments() as $payment) {
+                if ($date == $payment[0]) {
+                    $amount += $payment[1];
+                }
+            }
+
+            $data_row = [
+                'id'             => $client->getCaseLabel(),
+                'name'           => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
+                'address'        => sprintf('(%s)', $ae->formatAddress('', '', $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber())),
+                'month'          => $this->ds->getMonth($invoice->getStartdate()->format('n')),
+                'invoice_number' => 'SZ-' . $invoice->getId(),
+                //'balance'       => $ae->formatCurrency2($catering->getBalance()),
+                'amount'         => $ae->formatCurrency2($amount),
+            ];
+
+            $report_data[] = $data_row;
+
+            $sums['amount']    += $amount;
+        }
+
+        // format the summary
+        $sums['amount'] = $ae->formatCurrency2($sums['amount']);
+        // add the summary to the end of the report
+        $report_data[] = $sums;
+
+        $title = sprintf('EBÉD Pénztárkönyv %s', $ae->formatDate($date));
+        $template_file = __DIR__ . '/../Resources/public/reports/catering_cashbook.xlsx';
+        $twig_tpl = '_catering_cashbook.html.twig';
+
+        $data = [
+            'ca.cim'   => $title,
+            'ca.klub'  => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
+            'sp.datum' => $ae->formatDate(new \DateTime('today')),
+            'blocks'   => [
+                'catering' => $report_data,
+            ]
+        ];
+
+        $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
+
+        if ($download) {
+            return $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+        }
+        else {
             return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $twig_tpl, ['data' => $data]);
         }
     }

@@ -32,6 +32,10 @@ $ ->
     if $(".daychart").length
         JcsChart.init()
 
+    # reports
+    if $("#report_download").length
+        JcsReports.init()
+
     # tasks autorefresh
     if $(".tasks > div").length
         window.setInterval ->
