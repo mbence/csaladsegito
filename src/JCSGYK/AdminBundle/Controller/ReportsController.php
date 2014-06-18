@@ -711,7 +711,7 @@ class ReportsController extends Controller
         // add the summary to the end of the report
         $report_data[] = $sums;
 
-        $title = sprintf('EBÉD Pénztárkönyv %s', $ae->formatDate($date));
+        $title = sprintf('EBÉD Pénztárkönyv %s', $ae->formatDate($form_data['day']));
         $template_file = __DIR__ . '/../Resources/public/reports/catering_cashbook.xlsx';
         $twig_tpl = '_catering_cashbook.html.twig';
 
