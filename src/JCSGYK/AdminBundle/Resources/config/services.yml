@@ -50,6 +50,9 @@ services:
         arguments:    ['@doctrine']
         tags:
             - { name: validator.constraint_validator, alias: client_validator }
+    jcs.reports.ksh:
+        class:        JCSGYK\AdminBundle\Services\Reports\Ksh
+        arguments:    ["@service_container"]
 
     kenyszi:
         class: JCSGYK\AdminBundle\Services\Kenyszi

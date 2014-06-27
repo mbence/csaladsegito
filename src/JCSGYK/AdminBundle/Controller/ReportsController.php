@@ -134,6 +134,9 @@ class ReportsController extends Controller
             // month
             $this->getInvoiceMonths($form_builder);
         }
+        elseif ('ksh' == $report) {
+            $this->container->get('jcs.reports.ksh')->getForm($form_builder);
+        }
 
         // club select for all catering reports
         if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck', 'catering_stats'])) {
@@ -255,6 +258,9 @@ class ReportsController extends Controller
         elseif ('catering_cashbook' == $report) {
             return $this->getCateringCashBookReport($form_data, $download);
         }
+        elseif ('ksh' == $report) {
+            return $this->container->get('jcs.reports.ksh')->run($form_data, $download);
+        }
 
         return false;
     }
@@ -274,6 +280,7 @@ class ReportsController extends Controller
             $menu['Családsegítő'] = [
                 ['slug' => 'clients', 'label' => 'Ügyfelek'],
                 ['slug' => 'casecounts', 'label' => 'Esetszámok'],
+                ['slug' => 'ksh', 'label' => 'KSH statisztika'],
             ];
         }
         if ($child_welfare_on) {
@@ -308,7 +315,7 @@ class ReportsController extends Controller
         // check for user roles and set the params accordingly
         $em               = $this->getDoctrine();
         $sec              = $this->container->get('security.context');
-        $ae               = $this->container->get('jcs.twig.adminextension');
+        //$ae               = $this->container->get('jcs.twig.adminextension');
         $client_type_list = $this->ds->getClientTypes();
         $client_type_keys = array_keys($client_type_list);
         $company_id       = $this->ds->getCompanyId();
