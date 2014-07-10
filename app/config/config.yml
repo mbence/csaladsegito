@@ -82,6 +82,8 @@ doctrine:
         dql:
             datetime_functions:
                 date_format: JCSGYK\AdminBundle\DQL\DateFormat
+            string_functions:
+                group_concat: JCSGYK\AdminBundle\DQL\GroupConcat
 
 # Swiftmailer Configuration
 swiftmailer:
