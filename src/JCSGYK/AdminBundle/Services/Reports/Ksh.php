@@ -468,6 +468,9 @@ class Ksh
      */
     public function output($download)
     {
+        // temp fix
+        $download = true;
+                
         if ($download) {
             return $this->container->get('jcs.docx')->make($this->template, $this->data, $this->output);
         }
