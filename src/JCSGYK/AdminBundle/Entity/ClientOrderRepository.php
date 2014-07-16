@@ -156,16 +156,51 @@ class ClientOrderRepository extends EntityRepository
             $end_date = $end_date->format('Y-m-d');
         }
 
-        return $this->getEntityManager()
-            ->createQuery("SELECT b.id, o.menu, COUNT(o) as orders "
+        // we need separte counts for the weekdays and the weekends
+        // so we list the weekend dates first
+        $sd = new \DateTime($date);
+        $ed = new \DateTime($end_date);
+
+        $weekends = [];
+
+        while ($sd <= $ed) {
+            // is this a weekday or a weekend?
+            if ($sd->format('N') > 5) {
+                $weekends[] = $sd->format('Y-m-d');
+            }
+            $sd->modify('+1 day');
+        }
+
+        $results = [];
+        $results['weekdays'] = $this->getEntityManager()
+            ->createQuery("SELECT b.id, o.menu, COUNT(o) as orders, 0 as weekend "
                     . "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
                     . "WHERE o.companyId = :company_id AND o.order = 1 AND o.cancel = 0 "
                     . "AND o.date >= :date AND o.date <= :end_date "
+                    . "AND o.date NOT IN (:weekends) "
                     . "GROUP BY a.club, o.menu")
             ->setParameter('company_id', $company_id)
             ->setParameter('date', $date)
             ->setParameter('end_date', $end_date)
+            ->setParameter('weekends', $weekends)
             ->getResult();
+
+        $results['weekends'] = $this->getEntityManager()
+            ->createQuery("SELECT b.id, o.menu, COUNT(o) as orders, 1 as weekend "
+                    . "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
+                    . "WHERE o.companyId = :company_id AND o.order = 1 AND o.cancel = 0 "
+                    . "AND o.date >= :date AND o.date <= :end_date "
+                    . "AND o.date IN (:weekends) "
+                    . "GROUP BY a.club, o.menu")
+            ->setParameter('company_id', $company_id)
+            ->setParameter('date', $date)
+            ->setParameter('end_date', $end_date)
+            ->setParameter('weekends', $weekends)
+            ->getResult();
+
+        // merge the weekday / weekend results arrays
+        
+        return array_merge($results['weekdays'], $results['weekends']);
     }
 
     /**

@@ -36,6 +36,9 @@ class DailyOrdersService
     /** Data array of the daily orders */
     private $orders = [];
 
+    /** Data array of the daily order totalss */
+    private $totals = [];
+
     /** cost of 1 lunch */
     private $menuCost;
 
@@ -211,9 +214,23 @@ class DailyOrdersService
         // get the orders grouped by club and menu
         $orders = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->getDailyOrders($company_id, $date, $end_date);
 
+        $weekdays_sum = 0;
+        $weekdays_amount = 0;
+
+        $weekend_sum = 0;
+        $weekend_amount = 0;
+
         // fill the orders matrix
         foreach ($orders as $order) {
-            $this->orders[$order['id']][$order['menu']] = $order['orders'];
+            $this->orders[$order['id']][$order['menu']] += $order['orders'];
+
+            // and the weekend / weekday counts
+            if (!empty($order['weekend'])) {
+                $weekend_sum += $order['orders'];
+            }
+            else {
+                $weekdays_sum += $order['orders'];
+            }
         }
 
         $sums = [];
@@ -222,6 +239,7 @@ class DailyOrdersService
             // but skip the info header
             if (is_numeric($club_id)) {
                 $club_sum = 0;
+
                 foreach ($menus as $menu_id => $menu) {
                     if (empty($sums[$menu_id])) {
                         $sums[$menu_id] = 0;
@@ -246,6 +264,13 @@ class DailyOrdersService
         }
         $this->orders['total']['sum'] = $total;
         $this->orders['total']['amount'] = $ae->formatCurrency($total * $this->menuCost);
+
+        $this->totals['weekdays']['sum'] = $weekdays_sum;
+        $this->totals['weekdays']['amount'] = $ae->formatCurrency($weekdays_sum * $this->menuCost);
+
+        $this->totals['weekend']['sum'] = $weekend_sum;
+        $this->totals['weekend']['amount'] = $ae->formatCurrency($weekend_sum * $this->menuCost);
+
     }
 
     /**
@@ -255,22 +280,25 @@ class DailyOrdersService
     {
         $ae = $this->container->get('jcs.twig.adminextension');
         $data = [
-            'et.cim'        => empty($end_date) ? 'MEGRENDELŐ' : 'HETI SZÁMLA ÖSSZESÍTŐ',
-            'sp.datum'      => $ae->formatDate(new \DateTime('today')),
-            'et.het'        => $date->format('W'),
-            'et.datum'      =>  empty($end_date) ?
-                    $ae->formatDate($date, 'fd')
-                    :
+            'et.cim'           => empty($end_date) ? 'MEGRENDELŐ' : 'HETI SZÁMLA ÖSSZESÍTŐ',
+            'sp.datum'         => $ae->formatDate(new \DateTime('today')),
+            'et.het'           => $date->format('W'),
+            'et.datum'         => empty($end_date) ?
+                    $ae->formatDate($date, 'fd') :
                     sprintf("%s - %s", $ae->formatDate($date, 'fd'), $ae->formatDate($end_date, 'fd')),
-            'et.adagszam'   => $this->orders['total']['sum'],
-            'et.fizetendo'  => $this->orders['total']['amount'],
-            'et.egysegar'   => $ae->formatCurrency($this->menuCost),
-            'blocks'    => [
+            'et.adagszam_hp'   => $this->totals['weekdays']['sum'],
+            'et.fizetendo_hp'  => $this->totals['weekdays']['amount'],
+            'et.adagszam_szv'  => $this->totals['weekend']['sum'],
+            'et.fizetendo_szv' => $this->totals['weekend']['amount'],
+            'et.adagszam'      => $this->orders['total']['sum'],
+            'et.fizetendo'     => $this->orders['total']['amount'],
+            'et.egysegar'      => $ae->formatCurrency($this->menuCost),
+            'blocks'           => [
                 // column names
-                'columns'       => $this->colunms,
+                'columns'     => $this->colunms,
                 // col keys, except the first two (name and address)
-                'cols'          => array_slice(array_keys($this->colunms), 2, count($this->colunms)-3),
-                'dailyorders'   => $this->orders,
+                'cols'        => array_slice(array_keys($this->colunms), 2, count($this->colunms) - 3),
+                'dailyorders' => $this->orders,
             ],
         ];
 
