@@ -461,7 +461,7 @@ class InvoiceService
      * @param string $report slug of the report (summary or datacheck)
      * @return array
      */
-    public function getCateringReport($company_id, \DateTime $month, Club $club = null, $report = null)
+    public function getCateringReport($company_id, \DateTime $month, Club $club = null, $report = null, $only_debts = false)
     {
         // clear the time part
         $month_end = $month->format('Y-m-t');
@@ -477,6 +477,11 @@ class InvoiceService
         if (!empty($club)) {
             $sql .= "AND a.club = :club ";
         }
+
+        if ($only_debts) {
+            $sql .= "AND i.amount > i.balance ";
+        }
+
         $sql .= "ORDER BY c.lastname, c.firstname";
 
         $q = $em->createQuery($sql)
@@ -489,14 +494,14 @@ class InvoiceService
 
         $res = $q->getResult();
 
-        // balance, invoice items, workday / weekend
+        // debt, invoice items, workday / weekend
         if (!empty($res)) {
             // summary
             $sums = [
                 'id'            => '',
                 'name'          => 'ÖSSZESEN',
                 'address'       => '',
-                'balance'       => 0,
+                'debt'          => 0,
                 'amount'        => 0,
                 'discount_days' => 0,
                 'days'          => 0,
@@ -539,7 +544,7 @@ class InvoiceService
                     'id'            => $client->getCaseLabel(),
                     'name'          => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
                     'address'       => sprintf('(%s)', $ae->formatAddress('', '', $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber())),
-                    'balance'       => $ae->formatCurrency2($catering->getBalance()),
+                    'debt'          => $invoice->getAmount() - $invoice->getBalance() > 0 ? $ae->formatCurrency2($invoice->getAmount() - $invoice->getBalance()) : '',
                     'amount'        => $ae->formatCurrency2($invoice->getAmount()),
                     'discount_days' => empty($discount) ? 0 : $discount['quantity'],
                     'days'          => empty($costs) ? 0 : $costs['quantity'],
@@ -565,14 +570,16 @@ class InvoiceService
 
                 $data[] = $data_row;
 
-                $sums['balance']    += $catering->getBalance();
+                if ($invoice->getAmount() - $invoice->getBalance() > 0 ) {
+                    $sums['debt']   += $invoice->getAmount() - $invoice->getBalance();
+                }
                 $sums['amount']     += $invoice->getAmount();
                 $sums['discount_days'] += empty($discount) ? 0 : $discount['quantity'];
                 $sums['days']       += empty($costs) ? 0 : $costs['quantity'];
                 $sums['weekdays']   += empty($costs) ? 0 : $costs['weekday_quantity'];
             }
-            // format the summary balance
-            $sums['balance'] = $ae->formatCurrency2($sums['balance']);
+            // format the summary debt
+            $sums['debt'] = $ae->formatCurrency2($sums['debt']);
             $sums['amount'] = $ae->formatCurrency2($sums['amount']);
             // add the summary to the end of the report
             $data[] = $sums;

@@ -2168,6 +2168,9 @@ a {
 .floatright {
     float: right;
 }
+.red {
+    color: red;
+}
 .inblock {
     display: inline-block;
 }
@@ -3151,6 +3154,8 @@ table.task-list tr:hover td {
 }
 #reports-content .reports-header {
     border-bottom: 1px solid #DDDDDD;
+    font-size: 13px;
+    line-height: 17px;
 }
 .reports-table td {
     font-size: 13px;

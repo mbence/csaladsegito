@@ -149,6 +149,15 @@ class ReportsController extends Controller
             }
         }
 
+        // show only debts for catering summary
+        if (in_array($report, ['catering_summary'])) {
+            $form_builder->add('only_debts', 'checkbox', [
+                'label'       => 'Csak tartozások',
+                'required'    => false,
+                'label_attr'  => ['style' => 'float:right;margin:2px 0 0 2px;'],
+            ]);
+        }
+
         return $form_builder->getForm();
     }
 
@@ -568,6 +577,7 @@ class ReportsController extends Controller
         $form_fields = [
             'month' => null,
             'club'  => null,
+            'only_debts' => false,
         ];
         // make sure we have all required fields
         // 'club' => Club entity or null for all
@@ -590,7 +600,7 @@ class ReportsController extends Controller
 
         $month = new \DateTime($form_data['month']);
 
-            $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $month, $form_data['club'], $report);
+        $report_data = $this->container->get('jcs.invoice')->getCateringReport($company_id, $month, $form_data['club'], $report, $form_data['only_debts']);
 
         if ('catering_datacheck' == $report) {
             $title = sprintf('%s havi adategyeztető', $ae->formatDate($month, 'ym'));

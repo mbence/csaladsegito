@@ -2,7 +2,7 @@
 <table class="reports-table">
     <tr>
         <th>Név</th>
-        <th>Egyenleg</th>
+        <th>Tartozás</th>
         <th>Fizetendő</th>
         <th>Étkezési<br>napok<br>száma</th>
         <th>Térítési<br>díj /<br>adag</th>
@@ -14,7 +14,7 @@
             <strong>{{ catering.name }}</strong>
             {{ catering.address }}
         </td>
-        <td> {{ catering.balance }} </td>
+        <td {% if catering.debt %}class="red"{% endif %}> {{ catering.debt }} </td>
         <td> <strong>{{ catering.amount }}</strong> </td>
         <td> {{ catering.days }} </td>
         <td> {{ catering.unit_price }} </td>
