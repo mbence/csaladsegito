@@ -128,7 +128,9 @@ class ReportsController extends Controller
         }
         elseif ('catering_cashbook' == $report) {
             // day
-            $this->getDayInput($form_builder);
+            $this->getDayInput($form_builder, false, 'Nap');
+            // months
+            $this->getInvoiceMonths($form_builder, false, 'Hónap');
         }
         elseif (in_array($report, ['catering_summary', 'catering_datacheck', 'catering_summary_detailed', 'catering_stats'])) {
             // month
@@ -183,14 +185,14 @@ class ReportsController extends Controller
     }
 
     // list the months when we have invoice data
-    private function getInvoiceMonths(&$form_builder)
+    private function getInvoiceMonths(&$form_builder, $required = true, $label = 'Dátum')
     {
         $company_id = $this->ds->getCompanyId();
 
         $form_builder->add('month', 'choice', [
-            'label'    => 'Dátum',
+            'label'    => $label,
             'choices'  => $this->container->get('jcs.invoice')->getMonths($company_id),
-            'required' => true,
+            'required' => $required,
         ]);
     }
 
@@ -204,13 +206,13 @@ class ReportsController extends Controller
         ]);
     }
 
-    private function getDayInput(&$form_builder)
+    private function getDayInput(&$form_builder, $required = true, $label = 'Dátum')
     {
         $form_builder->add('day', 'date', [
-            'label'    => 'Dátum',
+            'label'    => $label,
             'widget'   => 'single_text',
             'attr'     => array('class' => 'datepicker', 'type' => 'text'),
-            'required' => true,
+            'required' => $required,
             'data'     => new \DateTime('today'),
         ]);
     }
@@ -646,6 +648,7 @@ class ReportsController extends Controller
     {
         $form_fields = [
             'day'   => null,
+            'month' => null,
             'club'  => null,
         ];
         // make sure we have all required fields
@@ -663,11 +666,11 @@ class ReportsController extends Controller
             throw new AccessDeniedHttpException();
         }
         // get the period
-        if (empty($form_data['day'])) {
+        if (empty($form_data['day']) && empty($form_data['month'])) {
             throw new AccessDeniedHttpException();
         }
 
-        $date = $form_data['day']->format('Y-m-d');
+        $date = !empty($form_data['day']) ? $form_data['day']->format('Y-m-d') : $form_data['month'];
 
         // get the payments for this date
         $sql = "SELECT i, c FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
@@ -701,10 +704,19 @@ class ReportsController extends Controller
 
             // process items
             $amount = 0;
+            $payment_dates = [];
 
             foreach ($invoice->getPayments() as $payment) {
-                if ($date == $payment[0]) {
+                // either the payment is on the exact day that we are looking for
+                if ($date == $payment[0] ||
+                        // or on that month, if only the month is given
+                        (empty($form_data['day']) && $date == substr($payment[0], 0, 7))) {
+
                     $amount += $payment[1];
+
+                    if (empty($payment_dates)) {
+                        $payment_dates[] = substr($payment[0], 5);
+                    }
                 }
             }
 
@@ -712,7 +724,7 @@ class ReportsController extends Controller
                 'id'             => $client->getCaseLabel(),
                 'name'           => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
                 'address'        => sprintf('(%s)', $ae->formatAddress('', '', $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber())),
-                'month'          => $this->ds->getMonth($invoice->getStartdate()->format('n')),
+                'month'          => !empty($form_data['day']) ? $this->ds->getMonth($invoice->getStartdate()->format('n')) : implode(', ', $payment_dates),
                 'invoice_number' => 'SZ-' . $invoice->getId(),
                 //'balance'       => $ae->formatCurrency2($catering->getBalance()),
                 'amount'         => $ae->formatCurrency2($amount),
@@ -728,7 +740,8 @@ class ReportsController extends Controller
         // add the summary to the end of the report
         $report_data[] = $sums;
 
-        $title = sprintf('EBÉD Pénztárkönyv %s', $ae->formatDate($form_data['day']));
+        $title_date = !empty($form_data['day']) ? $ae->formatDate($form_data['day']) : $ae->formatDate(new \DateTime($form_data['month']), 'ym');
+        $title = sprintf('EBÉD Pénztárkönyv %s', $title_date);
         $template_file = __DIR__ . '/../Resources/public/reports/catering_cashbook.xlsx';
         $twig_tpl = '_catering_cashbook.html.twig';
 
