@@ -274,7 +274,7 @@ table.search-results td {
     border-bottom: 1px solid #CCC;
     cursor: pointer;
 }
-table.search-results tr.archived-result td, table.search-results tr.archived-result td .highlight {
+table.search-results tr.archived-result td, table.search-results tr.archived-result td .highlight, table.search-results tr.archived-result td strong {
     color: #D04A37;
 }
 table.search-results tr:hover td, table.search-results tr.cursor td, .problem-list tr.cursor td {
