@@ -8,7 +8,7 @@
         <th>Rendelés</th>
         <th>Étkezési<br>napok<br>száma</th>
         <th>Jóvá-<br>írások</th>
-        <th>Egyenleg</th>
+        <th>Tartozás</th>
         <th>Fizetendő</th>
     </tr>
     {% for catering in data.blocks.catering %}
@@ -23,7 +23,7 @@
         <td> {{ catering.orders }} </td>
         <td class="right"> {{ catering.days }} </td>
         <td class="right"> {{ catering.discount_days }} </td>
-        <td class="right"> {{ catering.balance }} </td>
+        <td {% if catering.debt %}class="red"{% endif %}> {{ catering.debt }} </td>
         <td class="right"> <strong>{{ catering.amount }}</strong> </td>
     </tr>
     {% endfor %}

@@ -150,7 +150,7 @@ class ReportsController extends Controller
         }
 
         // show only debts for catering summary
-        if (in_array($report, ['catering_summary'])) {
+        if (in_array($report, ['catering_summary', 'catering_datacheck'])) {
             $form_builder->add('only_debts', 'checkbox', [
                 'label'       => 'Csak tartozások',
                 'required'    => false,
