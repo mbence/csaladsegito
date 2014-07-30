@@ -145,6 +145,11 @@ class ClientOrderRepository extends EntityRepository
 
     public function getDailyOrders($company_id, $date, $end_date = null)
     {
+        // if only 1 day, then we return the simple form
+        if (empty($end_date)) {
+            return $this->getDailyOrdersForOneDay($company_id, $date);
+        }
+
         // remove the time part of the dates
         if ($date instanceof \DateTime) {
             $date = $date->format('Y-m-d');
@@ -199,8 +204,37 @@ class ClientOrderRepository extends EntityRepository
             ->getResult();
 
         // merge the weekday / weekend results arrays
-        
+
         return array_merge($results['weekdays'], $results['weekends']);
+    }
+
+    /**
+     * Get the orders for only one day
+     *
+     * @param int $company_id
+     * @param \DateTime $date
+     * @return array
+     */
+    private function getDailyOrdersForOneDay($company_id, $date)
+    {
+        // remove the time part of the dates
+        if ($date instanceof \DateTime) {
+            $date = $date->format('Y-m-d');
+        }
+        $dd = new \DateTime($date);
+        // $weekend = 1 for weekends, or 0 for weekdays
+        $weekend = $dd->format('N') > 5 ? 1 : 0;
+
+
+        return $this->getEntityManager()
+            ->createQuery("SELECT b.id, o.menu, COUNT(o) as orders, {$weekend} as weekend "
+                    . "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
+                    . "WHERE o.companyId = :company_id AND o.order = 1 AND o.cancel = 0 "
+                    . "AND o.date = :date "
+                    . "GROUP BY a.club, o.menu")
+            ->setParameter('company_id', $company_id)
+            ->setParameter('date', $date)
+            ->getResult();
     }
 
     /**

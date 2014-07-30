@@ -451,29 +451,6 @@ class InvoiceService
     }
 
     /**
-     * Return a list of days when we have payments
-     * @param int $company_id
-     * @return array
-     */
-    public function getPaymentDays($company_id, $club_id = null)
-    {
-        $em = $this->container->get('doctrine')->getManager();
-
-        $res = $em->createQuery("SELECT DISTINCT(DATE_FORMAT(i.startDate, '%Y-%m')) as date FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id ORDER BY i.startDate DESC")
-            ->setParameter('company_id', $company_id)
-            ->setMaxResults(12)
-            ->getResult();
-
-        $re = [];
-        foreach ($res as $month) {
-            $d = new \DateTime($month['date']);
-            $re[$month['date']] = sprintf('%s %s', $d->format('Y'), $this->ds->getMonth($d->format('n')));
-        }
-
-        return $re;
-    }
-
-    /**
      * Get the monthy catering report
      *
      * @param int $company_id
