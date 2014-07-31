@@ -2737,6 +2737,18 @@ table.problem-list td {
 .admin-pane {
     display: none;
 }
+form.editform #recommended_fields div {
+    line-height: 17px;
+    font-size: 13px;
+}
+form.editform #recommended_fields label {
+    display: inline;
+    width: auto;
+}
+form.editform #recommended_fields label:after {
+    content:"\a";
+    white-space: pre;
+}
 /* parameters */
 .param-headers {
     font-size: 10px;

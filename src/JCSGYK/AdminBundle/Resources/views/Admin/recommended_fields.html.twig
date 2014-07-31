@@ -1,0 +1,29 @@
+{% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
+{% form_theme form 'JCSGYKAdminBundle:Form:errors.html.twig' %}
+
+{% block settings_content %}
+    <h1 class="client">{{ 'Ajánlott mezők'|trans }}</h1>
+
+    {% include "JCSGYKAdminBundle:Admin:ct_tabs.html.twig" %}
+
+    <form id="editform" class="editform" action="{{ path('admin_recommended_fields') }}" method="post" novalidate {{ form_enctype(form) }}>
+        {{ form_errors(form) }}
+        <div class="admin-panes" id="recommended_fields" data-ctid="{{ act }}">
+            {% for ct_id, ct in client_types %}
+                <div id="admin-pane-{{ ct_id }}" class="admin-pane" data-ctid="{{ ct_id }}">
+                    <br>
+                    {{ form_errors(attribute(form, 'fields_' ~ ct_id)) }}
+                    {{ form_widget(attribute(form, 'fields_' ~ ct_id)) }}
+
+                </div>
+            {% endfor %}
+        </div>
+        {{ form_rest(form) }}
+        
+        <div class="formbuttons">
+            <button data-url="{{ path('admin_recommended_fields') }}" type="reset" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
+            <button type="submit" class="usersave button" name="usersave" value="save"><span>{{ 'mentés'|trans }}</span></button>
+        </div>
+
+    </form>
+{% endblock %}

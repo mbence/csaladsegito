@@ -19,12 +19,16 @@ JcsSettings =
             @setupTemplates()
 
         # companies
-        if $('#company_types').length
+        if $("#company_types").length
             @setupCompanies()
 
         # table editor
-        if $('#handsontable').length
+        if $("#handsontable").length
             @initTableEditor()
+
+        # Recommended Fields
+        if $("#recommended_fields").length
+            @setupRecFields()
 
     ###
         setup the company editor
@@ -202,3 +206,11 @@ JcsSettings =
 
         # discount datepicker
         $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
+
+    setupRecFields: ->
+        # find the initial tab
+        $(".admin-ct-tabs").tabs(".admin-panes > div", {
+            "initialIndex": parseInt($("#form_act_tab").val()),
+            "onClick": ->
+                $("#form_act_tab").val(this.getIndex())
+        });

@@ -1139,4 +1139,61 @@ class AdminController extends Controller
             }
         }
     }
+
+    public function recommendedFieldsAction($tab = 0)
+    {
+        $request = $this->getRequest();
+
+        $em = $this->getDoctrine()->getManager();
+        $ds = $this->container->get('jcs.ds');
+        $co = $ds->getCompanyId();
+
+        $client_types = $ds->getClientTypeNames(true);
+        if (empty($type)) {
+            reset($client_types);
+            $type = key($client_types);
+        }
+
+        $fields = [
+            'mother_lastname'        => 'Anyja vezetékneve',
+            'mother_firstname'       => 'Anyja keresztneve',
+            'city'                   => 'Város',
+            'street'                 => 'Utca',
+            'street_type'            => 'Közterület jellege',
+            'street_number'          => 'Házszám',
+            'social_security_number' => 'Taj szám',
+        ];
+
+        $form_builder = $this->createFormBuilder();
+        foreach ($client_types as $ct => $ct_label) {
+            $form_builder->add('fields_' . $ct, 'choice', [
+                'choices'  => $fields,
+                'multiple' => true,
+                'expanded' => true,
+            ]);
+        }
+        $form_builder->add('act_tab', 'hidden', [
+            'data' => $tab,
+        ]);
+        $form = $form_builder->getForm();
+
+        // save the current param group
+        if ($request->isMethod('POST')) {
+            $form->bind($request);
+            if ($form->isValid()) {
+                $data = $data = $form->getData();
+
+                $this->get('session')->getFlashBag()->add('notice', 'Ajánlott mezők elmentve');
+
+                return $this->redirect($this->generateUrl('admin_recommended_fields', ['tab' => $data['act_tab']]));
+            }
+        }
+
+        return $this->render('JCSGYKAdminBundle:Admin:recommended_fields.html.twig', [
+                    'act'          => $type,
+                    'types'        => $ds->getGroupTypes(0),
+                    'client_types' => $client_types,
+                    'form'         => $form->createView(),
+        ]);
+    }
 }
