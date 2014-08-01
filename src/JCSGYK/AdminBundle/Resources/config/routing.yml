@@ -175,7 +175,7 @@ admin_dailyorders:
     pattern:  /admin/dailyorders/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:dailyorders, id: null }
 admin_recommended_fields:
-    pattern:  /admin/recommended_fields/{tab}
+    pattern:  /admin/fields_to_fill/{tab}
     defaults: { _controller: JCSGYKAdminBundle:Admin:recommendedFields, tab: 0 }
 
 login_redirector:

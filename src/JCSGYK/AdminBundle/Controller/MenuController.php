@@ -59,7 +59,7 @@ class MenuController extends Controller
             ['route' => 'admin_params', 'label' => 'Paraméterek', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_providers', 'label' => 'Szolgáltatók', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_templates', 'label' => 'Nyomtatványok', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_recommended_fields', 'label' => 'Ajánlott mezők', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_recommended_fields', 'label' => 'Kitöltendő mezők', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
         ];
 

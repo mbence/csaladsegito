@@ -2,7 +2,7 @@
 {% form_theme form 'JCSGYKAdminBundle:Form:errors.html.twig' %}
 
 {% block settings_content %}
-    <h1 class="client">{{ 'Ajánlott mezők'|trans }}</h1>
+    <h1 class="client">{{ 'Kitöltendő mezők'|trans }}</h1>
 
     {% include "JCSGYKAdminBundle:Admin:ct_tabs.html.twig" %}
 
@@ -19,7 +19,7 @@
             {% endfor %}
         </div>
         {{ form_rest(form) }}
-        
+
         <div class="formbuttons">
             <button data-url="{{ path('admin_recommended_fields') }}" type="reset" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
             <button type="submit" class="usersave button" name="usersave" value="save"><span>{{ 'mentés'|trans }}</span></button>
