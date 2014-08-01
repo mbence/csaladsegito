@@ -987,7 +987,7 @@ g .menuitems a {
 
 /* Tasks */
 .tasks {
-    width: 600px;
+    width: 620px;
     float: left;
 }
 table.task-list, table.task-list-readonly  {
@@ -1014,7 +1014,11 @@ table.task-list td {
 table.task-list tr:hover td {
     background-color: #f5f5f5;
 }
-
+.task-scroller {
+    max-height: 300px;
+    overflow: auto;
+    margin: 0 0 10px;
+}
 /* Agreement */
 .agreement-date > div {
     float: left;

@@ -1,6 +1,6 @@
 {# Problems waiting confirmation #}
 <div class="client-sub">{{ 'jóváhagyásra váró lezárt problémák (%db% db)'|trans({'%db%': tasks|length}) }}</div>
-<div>
+<div class="task-scroller">
     {% if tasks is defined and tasks|length %}
 
         <table id="confirm-list" class="task-list{% if readonly %}-readonly{% endif %}" cellspacing="0" border="0">

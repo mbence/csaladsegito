@@ -20,6 +20,12 @@
             {% render(controller('JCSGYKAdminBundle:Task:list', {'type': 3})) %}
         </div>
 
+        <h1 class="client">{{ 'Hiányos adatlapok'|trans }}</h1>
+
+        <div class="tasks-visits">
+            {% render(controller('JCSGYKAdminBundle:Task:Incomplete')) %}
+        </div>
+
     </div>
     {% endif %}
 

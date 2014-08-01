@@ -49,12 +49,18 @@ class ClientType extends AbstractType
             'label' => 'Nem',
             'choices'   => ['1' => 'Férfi', '2' => 'Nő'],
         ]);
-        $builder->add('birth_date', 'birthday', [
+        /*$builder->add('birth_date', 'birthday', [
             'label' => 'Születési idő',
             'widget' => 'choice',
             'format' => 'yMMdd',
             'required' => false,
             'years' => range(1920, date('Y'))
+        ]);*/
+        $builder->add('birth_date', 'date', [
+            'label' => 'Vége',
+            'widget' => 'single_text',
+            'attr' => array('class' => 'datepicker'),
+            'required' => false,
         ]);
         $builder->add('birth_place', 'text', ['label' => 'Születési hely', 'required' => false]);
         $builder->add('birth_title', 'text', ['label' => 'Titulus', 'required' => false]);

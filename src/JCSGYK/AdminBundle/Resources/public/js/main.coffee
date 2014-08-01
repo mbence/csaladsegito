@@ -45,7 +45,7 @@ $ ->
                         $(this).html(data)
                         JcsTask.init($(this))
                     )
-        , 10000
+        , 60000
 
     JcsWebDebug.init()
 

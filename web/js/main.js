@@ -15848,6 +15848,9 @@ JcsClient = {
   },
   initForm: function() {
     JcsToggle.multiselect($("#client_edit"));
+    $('#client_edit .datepicker').datepicker({
+      dateFormat: 'yy-mm-dd'
+    });
     $(".utilityproviders").data('index', $(".utilityproviders").find('tr').length);
     $(".add_utilityprovider").on('click', (function(_this) {
       return function(e) {
@@ -17488,7 +17491,7 @@ $(function() {
           })(this));
         }
       });
-    }, 10000);
+    }, 60000);
   }
   return JcsWebDebug.init();
 });

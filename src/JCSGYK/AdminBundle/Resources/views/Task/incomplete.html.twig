@@ -1,0 +1,37 @@
+{# Problems waiting confirmation #}
+<div class="client-sub">{{ 'részlegesen kitöltött ügyfél adatlapok (%db% db)'|trans({'%db%': clients|length}) }}</div>
+<div class="task-scroller">
+    {% if clients is defined and clients|length %}
+
+        <table id="confirm-list" class="task-list{% if readonly %}-readonly{% endif %}" cellspacing="0" border="0">
+            <tr>
+                <th>{{ '#'|trans }}</th>
+                <th>{{ 'ÜSZ'|trans }}</th>
+                <th>{{ 'Név'|trans }}</th>
+                <th>{{ 'Státus'|trans }}</th>
+                <th>{{ 'Létrehozva'|trans }}</th>
+                <th>{{ 'Felelős'|trans }}</th>
+            </tr>
+            <tbody class="walkable">
+            {% for client in clients %}
+            <tr {% if not readonly %}data-clientid="{{ client.id }}" data-url="{{ path('clients', {'client_id': client.id, 'client_type': client.type|ctmap}) }}" tabindex="{{ loop.index + 200 }}"{% endif %}>
+                <td>{{ clients|length - loop.index + 1 }}</td>
+                <td>{{ client.caseLabel }}</td>
+                <td><strong>{{ fname(client.firstname, client.lastname, client.title) }}</strong></td>
+                <td>{% if client.isArchived %}archiválva{% else %}aktív{% endif %}</td>
+                <td>{{ client.createdAt|fdate }}</td>
+                <td>
+                    {% if client.caseAdmin %}
+                        {{ fname(client.caseAdmin.firstname, client.caseAdmin.lastname) }}
+                    {% else %}
+                       -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="noinfo">{{ 'Gratulálunk! Nincsen hiányos adatlap.'|trans }}</div>
+    {% endif %}
+</div>

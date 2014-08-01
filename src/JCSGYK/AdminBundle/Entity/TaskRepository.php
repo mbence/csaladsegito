@@ -39,7 +39,7 @@ class TaskRepository extends EntityRepository
 
         if ($type == Task::TYPE_VISIT || $type == Task::TYPE_DISPATCH) {
             return $this->getEntityManager()
-                ->createQuery("SELECT t FROM JCSGYKAdminBundle:Task t WHERE t.type=:type AND t.assignee=:user AND t.status!=:status ORDER BY t.createdAt DESC")
+                ->createQuery("SELECT t, c FROM JCSGYKAdminBundle:Task t LEFT JOIN t.client c WHERE t.type=:type AND t.assignee=:user AND t.status!=:status ORDER BY t.createdAt DESC")
                 ->setParameter('type', $type)
                 ->setParameter('user', $user)
                 ->setParameter('status', Task::STATUS_DONE)
@@ -49,7 +49,7 @@ class TaskRepository extends EntityRepository
             if (!$sec->isGranted('ROLE_ADMIN')) {
                 // non admins see only their own closed-problem tasks
                 return $this->getEntityManager()
-                    ->createQuery("SELECT t FROM JCSGYKAdminBundle:Task t WHERE t.type=:type AND t.creator=:user AND t.status!=:status ORDER BY t.createdAt DESC")
+                    ->createQuery("SELECT t, c, p, u, a FROM JCSGYKAdminBundle:Task t LEFT JOIN t.client c LEFT JOIN t.problem p LEFT JOIN t.assignee u LEFT JOIN c.catering a WHERE t.type=:type AND t.creator=:user AND t.status!=:status ORDER BY t.createdAt DESC")
                     ->setParameter('type', $type)
                     ->setParameter('user', $user)
                     ->setParameter('status', Task::STATUS_DONE)
@@ -58,7 +58,7 @@ class TaskRepository extends EntityRepository
             else {
                 // admins see all closed-problem tasks that are their own or have no assignee yet
                 return $this->getEntityManager()
-                    ->createQuery("SELECT t FROM JCSGYKAdminBundle:Task t WHERE t.type=:type AND (t.assignee IS NULL OR t.assignee=:user) AND t.status!=:status ORDER BY t.createdAt DESC")
+                    ->createQuery("SELECT t, c, p, u, a FROM JCSGYKAdminBundle:Task t LEFT JOIN t.client c LEFT JOIN t.problem p LEFT JOIN t.assignee u LEFT JOIN c.catering a WHERE t.type=:type AND (t.assignee IS NULL OR t.assignee=:user) AND t.status!=:status ORDER BY t.createdAt DESC")
                     ->setParameter('type', $type)
                     ->setParameter('user', $user)
                     ->setParameter('status', Task::STATUS_DONE)

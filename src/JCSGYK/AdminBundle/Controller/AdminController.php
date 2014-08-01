@@ -1155,6 +1155,8 @@ class AdminController extends Controller
         }
 
         $fields = [
+            'birth_place'            => 'Születési hely',
+            'birth_date'             => 'Születési idő',
             'mother_lastname'        => 'Anyja vezetékneve',
             'mother_firstname'       => 'Anyja keresztneve',
             'city'                   => 'Város',

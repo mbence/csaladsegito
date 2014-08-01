@@ -34,6 +34,8 @@ JcsClient =
     initForm: ->
         # multiselect
         JcsToggle.multiselect($("#client_edit"))
+        # datepicker
+        $('#client_edit .datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
 
         # count the current utilityproviders we have (e.g. 2), use that as the new
         # index when inserting a new item (e.g. 2)
