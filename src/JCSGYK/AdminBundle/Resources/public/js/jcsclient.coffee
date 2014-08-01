@@ -57,6 +57,10 @@ JcsClient =
 
         # client edit
         $("#client_edit").submit ->
+            # check recommended fields
+            if !JcsClient.recFieldCheck()
+                return false
+
             $(".save_client").addClass('animbutton')
             $.post($(this).attr("action"), $(this).serialize(), (data) ->
                 $("#clientblock .clientcontent").html(data).show()
@@ -379,3 +383,22 @@ JcsClient =
 
             false
         )
+
+    recFieldCheck: ->
+        # see if we have recommended fields
+        if not recommended_fields? or recommended_fields.length == 0
+            return true
+
+        ok = true
+        prefix = "#client_"
+        for rf in recommended_fields
+            if $(prefix + rf).val() == ''
+                # focus the first missing field
+                if ok
+                    $(prefix + rf).focus()
+                $(prefix + rf).addClass("error")
+                ok = false
+            else
+                $(prefix + rf).removeClass("error")
+
+        return ok or confirm('Biztosan továbblép az adatlap teljes kitöltése nélkül?')

@@ -869,6 +869,9 @@ class ClientController extends Controller
         }
 
         if (!empty($client)) {
+            if (empty($client_type)) {
+                $client_type = $client->getType();
+            }
             // Global security check for client type
             $this->get('jcs.ds')->userRoleCheck($client->getType());
 
@@ -1035,15 +1038,20 @@ class ClientController extends Controller
                 }
             }
 
+            // get the recommended fields
+            $all_rec_fields = $this->container->get('jcs.ds')->getOption('recommended_fields');
+            $rec_fields = isset($all_rec_fields[$client_type]) ? $all_rec_fields[$client_type] : [];
+
             $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
 
             return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', [
-                'client' => $client,
-                'problems' => $problems,
-                'form' => $form->createView(),
-                'relatives' => $relatives,
-                'new_relations' => $relation_types,
-                'client_type' => $client_type
+                        'client'             => $client,
+                        'problems'           => $problems,
+                        'form'               => $form->createView(),
+                        'relatives'          => $relatives,
+                        'new_relations'      => $relation_types,
+                        'client_type'        => $client_type,
+                        'recommended_fields' => json_encode($rec_fields),
             ]);
         }
         else {

@@ -842,7 +842,7 @@ class DataStore
         }
 
         $em = $this->container->get('doctrine')->getManager();
-        $table = $em->createQuery("SELECT o FROM JCSGYKAdminBundle:Option o WHERE o.companyId = :company_id AND o.name = :name AND o.isActive = 1 AND o.validFrom < :now ORDER BY o.validFrom DESC")
+        $table = $em->createQuery("SELECT o FROM JCSGYKAdminBundle:Option o WHERE o.companyId = :company_id AND o.name = :name AND o.isActive = 1 AND o.validFrom <= :now ORDER BY o.validFrom DESC")
             ->setParameter('company_id', $this->getCompanyId())
             ->setParameter('name', $name)
             ->setParameter('now', $date)

@@ -875,7 +875,8 @@ form.editform #recommended_fields label:after {
 .errors + input[type=text], .errors + input[type=text]:hover, .errors + input[type=text]:focus,
 .errors + input[type=password], .errors + input[type=password]:hover, .errors + input[type=password]:focus,
 .errors + textarea, .errors + textarea:hover, .errors + textarea:focus,
-.errors + table > tbody > tr:first-child > td > input[type=text]
+.errors + table > tbody > tr:first-child > td > input[type=text],
+input[type=text].error, input[type=text].error:hover, input[type=text].error:focus
 {
     border-color: red;
 }

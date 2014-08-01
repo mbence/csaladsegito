@@ -1207,6 +1207,7 @@ class AdminController extends Controller
                     $option->setName('recommended_fields');
                     $option->setCompanyId($co);
                     $option->setIsActive(true);
+                    $option->setValidFrom(new \DateTime());
                     $em->persist($option);
                 }
                 $option->setValue(json_encode($opt_save));

@@ -15865,6 +15865,9 @@ JcsClient = {
       };
     })(this));
     $("#client_edit").submit(function() {
+      if (!JcsClient.recFieldCheck()) {
+        return false;
+      }
       $(".save_client").addClass('animbutton');
       $.post($(this).attr("action"), $(this).serialize(), function(data) {
         var msg_container;
@@ -16179,6 +16182,27 @@ JcsClient = {
       }
       return false;
     });
+  },
+  recFieldCheck: function() {
+    var ok, prefix, rf, _i, _len;
+    if ((typeof recommended_fields === "undefined" || recommended_fields === null) || recommended_fields.length === 0) {
+      return true;
+    }
+    ok = true;
+    prefix = "#client_";
+    for (_i = 0, _len = recommended_fields.length; _i < _len; _i++) {
+      rf = recommended_fields[_i];
+      if ($(prefix + rf).val() === '') {
+        if (ok) {
+          $(prefix + rf).focus();
+        }
+        $(prefix + rf).addClass("error");
+        ok = false;
+      } else {
+        $(prefix + rf).removeClass("error");
+      }
+    }
+    return ok || confirm('Biztosan továbblép az adatlap teljes kitöltése nélkül?');
   }
 };
 
