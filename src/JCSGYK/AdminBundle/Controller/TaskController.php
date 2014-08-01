@@ -78,40 +78,17 @@ class TaskController extends Controller
     }
 
     /**
- * Translates a camel case string into a string with
- * underscores (e.g. firstName -> first_name)
- *
- * @param string $str String in camel case format
- * @return string $str Translated into underscore format
- */
-function from_camel_case($str) {
-  $str[0] = strtolower($str[0]);
-  $func = create_function('$c', 'return "_" . strtolower($c[1]);');
-  return preg_replace_callback('/([A-Z])/', $func, $str);
-}
-
-/**
- * Translates a string with underscores
- * into camel case (e.g. first_name -> firstName)
- *
- * @param string $str String in underscore format
- * @param bool $capitalise_first_char If true, capitalise the first char in $str
- * @return string $str translated into camel caps
- */
-function to_camel_case($str, $capitalise_first_char = false) {
-  if($capitalise_first_char) {
-    $str[0] = strtoupper($str[0]);
-  }
-  $func = create_function('$c', 'return strtoupper($c[1]);');
-  return preg_replace_callback('/_([a-z])/', $func, $str);
-}
-
+     * List the incomplete client records
+     * 
+     * @return type
+     */
     public function incompleteAction()
     {
         $clients = [];
-        $ds      = $this->get('jcs.ds');
-        $em      = $this->getDoctrine()->getManager();
-        $sec     = $this->get('security.context');
+        $ds      = $this->container->get('jcs.ds');
+        $ae      = $this->container->get('jcs.twig.adminextension');
+        $em      = $this->container->get('doctrine')->getManager();
+        $sec     = $this->container->get('security.context');
         $user    = $sec->getToken()->getUser();
 
         // get the recommended fields
@@ -130,7 +107,7 @@ function to_camel_case($str, $capitalise_first_char = false) {
             $tmp = [];
             if (!empty($all_rec_fields[$ct])) {
                 foreach ($all_rec_fields[$ct] as $field) {
-                    $fn = $this->to_camel_case($field);
+                    $fn = $ae->toCamelCase($field);
                     $tmp[] = "c.{$fn} = ''";
                 }
             }
