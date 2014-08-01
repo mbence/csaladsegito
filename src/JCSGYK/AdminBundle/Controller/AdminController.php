@@ -1164,12 +1164,24 @@ class AdminController extends Controller
             'social_security_number' => 'Taj szám',
         ];
 
+        // get recommended fields from the Options table
+        $options = $em->createQuery("SELECT o FROM JCSGYKAdminBundle:Option o WHERE o.companyId = :company_id AND o.name = :name AND o.isActive = 1 ORDER BY o.validFrom DESC")
+            ->setParameter('company_id', $co)
+            ->setParameter('name', 'recommended_fields')
+            ->setMaxResults(1)
+            ->getResult();
+        if (!empty($options[0])) {
+            $option = $options[0];
+            $ofields = json_decode($option->getValue(), true);
+        }
+
         $form_builder = $this->createFormBuilder();
         foreach ($client_types as $ct => $ct_label) {
             $form_builder->add('fields_' . $ct, 'choice', [
                 'choices'  => $fields,
                 'multiple' => true,
                 'expanded' => true,
+                'data'     => isset($ofields[$ct]) ? $ofields[$ct] : [],
             ]);
         }
         $form_builder->add('act_tab', 'hidden', [
@@ -1182,6 +1194,23 @@ class AdminController extends Controller
             $form->bind($request);
             if ($form->isValid()) {
                 $data = $data = $form->getData();
+
+                // build the options array
+                $opt_save = [];
+                foreach ($client_types as $ct => $ct_label) {
+                    $opt_save[$ct] = $data['fields_' . $ct];
+                }
+
+                // save the option
+                if (!isset($option)) {
+                    $option = new Option();
+                    $option->setName('recommended_fields');
+                    $option->setCompanyId($co);
+                    $option->setIsActive(true);
+                    $em->persist($option);
+                }
+                $option->setValue(json_encode($opt_save));
+                $em->flush();
 
                 $this->get('session')->getFlashBag()->add('notice', 'Ajánlott mezők elmentve');
 
