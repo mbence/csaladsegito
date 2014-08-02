@@ -1739,6 +1739,7 @@ class Client
      * - she is the case admin of this client
      *
      * - CATERING users who are coordinators of a club can also edit everyone in that club
+     * - USERS who have a problem with the client, can also edit
      *
      * @param SecurityContext $sec
      */
@@ -1760,6 +1761,16 @@ class Client
                 $coordinators = $club->getUsers();
                 if (is_array($coordinators) && in_array($sec->getToken()->getUser()->getId(), $coordinators)) {
                     $re = true;
+                }
+            }
+        }
+        
+        // check the problems
+        if (false == $re && $this->isArchived == 0 && !$sec->isGranted('ROLE_ADMIN')) {
+            foreach ($this->problems as $problem) {
+                if ($user_id == $problem->getAssignee()->getId()) {
+                    $re = true;
+                    break;
                 }
             }
         }
