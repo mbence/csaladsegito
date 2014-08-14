@@ -1764,11 +1764,11 @@ class Client
                 }
             }
         }
-        
+
         // check the problems
         if (false == $re && $this->isArchived == 0 && !$sec->isGranted('ROLE_ADMIN')) {
             foreach ($this->problems as $problem) {
-                if ($user_id == $problem->getAssignee()->getId()) {
+                if (!empty($problem->getAssignee()) && $user_id == $problem->getAssignee()->getId()) {
                     $re = true;
                     break;
                 }
