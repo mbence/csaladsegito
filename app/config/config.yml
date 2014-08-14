@@ -19,7 +19,7 @@ framework:
     trusted_proxies: ~
     session:
         save_path: null
-        cookie_lifetime: 14400
+        cookie_lifetime: 0
 
 # Twig Configuration
 twig:
