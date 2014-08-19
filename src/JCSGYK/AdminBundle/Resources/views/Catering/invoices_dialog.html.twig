@@ -37,13 +37,18 @@
                             <td>{{ invoice.id }}:</td>
                             <td>{{ invoice.startDate|fdate('sd') }} - {{ invoice.endDate|fdate('sd') }}</td>
                             <td><strong>{{ invoice.amount|fcurr }}</strong></td>
-                            <td>{{ invoice.status|invoice_status }}</td>
+                            <td>{{ invoice|invoice_status }}</td>
                             <td>{{ invoice.balance|fcurr  }}</td>
                         </tr>
                         {% if invoice.isOpen %}
+                            {% set field = form['i' ~ invoice.id] %}
                             <tr>
-                                <td colspan="5" class="right">
-                                    {% set field = form['i' ~ invoice.id] %}
+                                <td colspan="2">
+                                    {% if invoice.cancellable and form['c' ~ invoice.id] is defined %}
+                                        {{ form_widget(form['c' ~ invoice.id]) }}
+                                    {% endif %}
+                                </td>
+                                <td colspan="3" class="right">
                                     {{ form_errors(field) }}
                                     <div class="right">
                                         {{ form_label(field) }}
@@ -76,6 +81,7 @@
                 {% endif %}
             </div>
 
+            {{ form_widget(form.cancel_id) }}
             {{ form_widget(form._token) }}
         </form>
         {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}

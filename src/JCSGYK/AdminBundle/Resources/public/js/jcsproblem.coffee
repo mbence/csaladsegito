@@ -386,7 +386,7 @@ JcsProblem =
 
                 return false
             src = $(this).attr("action") + "?" + $(this).serialize()
-            console.log src
+            #console.log src
             $("#template-dl-frame").attr("src", src)
 
             false

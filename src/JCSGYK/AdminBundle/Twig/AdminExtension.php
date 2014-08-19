@@ -8,6 +8,7 @@ use JCSGYK\DbimportBundle\Entity\Client as DbClient;
 use JCSGYK\AdminBundle\Entity\Problem;
 use JCSGYK\AdminBundle\Entity\Paramgroup;
 use JCSGYK\AdminBundle\Services\DataStore;
+use JCSGYK\AdminBundle\Entity\Invoice;
 
 class AdminExtension extends \Twig_Extension
 {
@@ -69,9 +70,9 @@ class AdminExtension extends \Twig_Extension
         return $this->ds->getClosingStatus($status);
     }
 
-    public function invoiceStatus($status)
+    public function invoiceStatus(Invoice $invoice)
     {
-        return $this->ds->getInvoiceStatus($status);
+        return $this->ds->getInvoiceStatus($invoice);
     }
 
     public function dailyOrderStatus($status)

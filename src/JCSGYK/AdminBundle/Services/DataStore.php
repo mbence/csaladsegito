@@ -82,7 +82,7 @@ class DataStore
         Invoice::READY_TO_SEND   => 'Kiküldésre vár',
         Invoice::OPEN            => 'Befizetésre vár',
         Invoice::CLOSED          => 'Kiegyenlítve',
-        Invoice::CANCELLED       => 'Törölt',
+        Invoice::CANCELLED       => 'Sztornózva',
     ];
 
     private $vat = 0.27;
@@ -128,9 +128,18 @@ class DataStore
         return isset($this->dailyorderStatuses[$status]) ? $this->dailyorderStatuses[$status] : false;
     }
 
-    public function getInvoiceStatus($status)
+    public function getInvoiceStatus(Invoice $invoice)
     {
-        return isset($this->invoiceStatuses[$status]) ? $this->invoiceStatuses[$status] : false;
+        $re = false;
+        if (empty($invoice->getCancelId())) {
+            $status = $invoice->getStatus();
+            $re = isset($this->invoiceStatuses[$status]) ? $this->invoiceStatuses[$status] : false;
+        }
+        else {
+            $re = 'Sztornó számla';
+        }
+
+        return $re;
     }
 
     public function getRoles()

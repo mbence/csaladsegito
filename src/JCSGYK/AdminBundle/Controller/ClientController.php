@@ -668,8 +668,18 @@ class ClientController extends Controller
                             ]
                         ]);
                     }
+                    if ($open_amount && $invoice->cancellable()) {
+                        $form_builder->add('c' . $invoice->getId(), 'button', [
+                            'label' => 'sztornózás',
+                            'attr'  => [
+                                'class' => 'greybutton smallbutton invoice_cancel',
+                                'data-id' => $invoice->getId(),
+                            ]
+                        ]);
+                    }
                 }
             }
+            $form_builder->add('cancel_id', 'hidden');
 
             $form = $form_builder->getForm();
 
@@ -678,18 +688,41 @@ class ClientController extends Controller
 
                 if ($form->isValid()) {
                     $data = $form->getData();
-                    foreach ($invoices as $invoice) {
-                        if (Invoice::OPEN == $invoice->getStatus()) {
-                            $field = 'i' . $invoice->getId();
-                            if (!empty($data[$field])) {
-                                $res = $invoice->addPayment($data['i' . $invoice->getId()]);
-                                if (-1 == $res) {
-                                    $form->get($field)->addError(new FormError('Túlfizetés nem lehetséges! Adjon be pontos összeget!'));
+
+                    if (empty($data['cancel_id'])) {
+                        // normal payments
+                        foreach ($invoices as $invoice) {
+                            if (Invoice::OPEN == $invoice->getStatus()) {
+                                $field = 'i' . $invoice->getId();
+                                if (!empty($data[$field])) {
+                                    $res = $invoice->addPayment($data['i' . $invoice->getId()]);
+                                    if (-1 == $res) {
+                                        $form->get($field)->addError(new FormError('Túlfizetés nem lehetséges! Adjon be pontos összeget!'));
+                                    }
                                 }
+                                // run the update even if no data was sent
+                                $invoice->updateStatus();
                             }
-                            // run the update even if no data was sent
-                            $invoice->updateStatus();
                         }
+                    }
+                    else {
+                        // invoice cancel
+
+                        $cancelled_invoice = null;
+                        // check for valid invoice id
+                        foreach ($invoices as $invoice) {
+                            if ($invoice->getId() == $data['cancel_id']) {
+                                $cancelled_invocie = $invoice;
+                                break;
+                            }
+                        }
+                        if (empty($cancelled_invocie)) {
+                            $form->get('cancel_id')->addError(new FormError('Hibás számla azonosító'));
+                        }
+                        else {
+                            $this->container->get('jcs.invoice')->cancelInvoice($invoice);
+                        }
+
                     }
 
                     // validate the form again
@@ -699,7 +732,13 @@ class ClientController extends Controller
                         // update the client global balance too
                         $this->get('jcs.invoice')->updateBalance($client->getCatering());
 
-                        $this->get('session')->getFlashBag()->add('notice', 'Befizetés elmentve');
+                        if (empty($data['cancel_id'])) {
+                            $message = 'Befizetés elmentve';
+                        }
+                        else {
+                            $message = 'Számla szotrnózva';
+                        }
+                        $this->get('session')->getFlashBag()->add('notice', $message);
 
                         return $this->render('JCSGYKAdminBundle:Catering:invoices_dialog.html.twig', [
                             'success' => true,

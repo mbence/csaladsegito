@@ -48,8 +48,6 @@ class InvoiceService
         $user = $this->ds->getUser();
         $orders_repo = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder');
 
-        //$logger = $this->container->get('logger');
-
         // check the clients catering settings
         $catering = $client->getCatering();
 
@@ -97,9 +95,6 @@ class InvoiceService
 
         // close the used cancel records
         $orders_repo->closeOrders($orders);
-//        foreach ($orders as $order) {
-//            $order->setClosed(true);
-//        }
 
         $em->flush();
 
@@ -421,9 +416,9 @@ class InvoiceService
     {
         $em = $this->container->get('doctrine')->getManager();
         // calculate the balance of the open invoices
-        $res = $em->createQuery("UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status = :status)")
+        $em->createQuery("UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status = :status)")
             ->setParameter('status', Invoice::OPEN)
-            ->getSingleResult();
+            ->execute();
         $em->flush();
     }
 
@@ -585,4 +580,62 @@ class InvoiceService
 
         return $data;
     }
+
+    /**
+     * Cancel an invoice
+     * @param \JCSGYK\AdminBundle\Entity\Invoice $invoice
+     */
+    public function cancelInvoice(Invoice $invoice)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user = $this->ds->getUser();
+
+        // reset the involved client order days
+        $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->resetOrders($invoice);
+
+        // set the invoice status to CANCELLED
+        $invoice->setStatus(Invoice::CANCELLED);
+
+        $items = $this->cancelItems($invoice->getItems());
+
+        // create a new, negative invoice
+        $new_inv = new Invoice();
+        $new_inv->setCompanyId($invoice->getCompanyId());
+        $new_inv->setClient($invoice->getClient());
+        $new_inv->setStartDate($invoice->getStartDate());
+        $new_inv->setEndDate($invoice->getEndDate());
+        $new_inv->setCancelId($invoice->getId());
+        $new_inv->setItems($items);
+        $new_inv->setAmount(-1 * $invoice->getAmount());
+        $new_inv->setStatus(Invoice::READY_TO_SEND);
+        $new_inv->setCreator($user);
+        $new_inv->setCreatedAt(new \DateTime());
+
+        $em->persist($new_inv);
+
+    }
+
+
+    /**
+     * Cancel items for cancelling invoices
+     * @param json encoded array $items
+     * @return json encoded array
+     */
+    private function cancelItems($items)
+    {
+        $items = json_decode($items, true);
+
+        if (!empty($items)) {
+            foreach ($items as $k => $i) {
+                // {"680":{"name":"Eb\u00e9d rendel\u00e9s","quantity":31,"net_price":"535.4331","unit_price":680,"value":21080,"net_value":16598.4261,"weekday_quantity":21}}
+                $items[$k]['quantity']         = -1 * $items[$k]['quantity'];
+                $items[$k]['value']            = -1 * $items[$k]['value'];
+                $items[$k]['net_value']        = -1 * $items[$k]['net_value'];
+                $items[$k]['weekday_quantity'] = -1 * $items[$k]['weekday_quantity'];
+            }
+        }
+
+        return json_encode($items);
+    }
+
 }

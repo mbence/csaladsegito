@@ -252,7 +252,12 @@ class ClosingService
         $deadline = clone $invoice->getStartDate();
         $deadline = $deadline->modify('+4 days')->format('Ymd');
 
-        $comment = sprintf('%s. havi étkeztetés', $invoice->getEndDate()->format('n'));
+        if (empty($invoice->getCancelId())) {
+            $comment = sprintf('%s. havi étkeztetés', $invoice->getEndDate()->format('n'));
+        }
+        else {
+            $comment = sprintf('%s számla sztornó (%s. hó)', $invoice->getCancelId(), $invoice->getEndDate()->format('n'));
+        }
 
         $gross_amount = $invoice->getAmount();
         $net_amount = round($gross_amount / (1 + $vat));
@@ -273,6 +278,12 @@ class ClosingService
             'szlaatt.txt'   => [],
             'vevo.txt'      => [],
         ];
+
+        // cancelling invoices
+        if (!empty($invoice->getCancelId())) {
+            $data['szlaatf.txt']['EREDETI']    = 'S';
+            $data['szlaatf.txt']['HELYESBITO'] = $invoice->getCancelId();
+        }
 
         if (!in_array($client->getId(), $this->clients_added)) {
             $data['vevo.txt'] = [
@@ -309,7 +320,8 @@ class ClosingService
 
         if ($res) {
             // set the invoice status to open (data exported to EcoSTAT)
-            $invoice->setStatus(Invoice::OPEN);
+            $new_status = empty($invoice->getCancelId()) ? Invoice::OPEN : Invoice::CLOSED;
+            $invoice->setStatus($new_status);
         }
 
         return $res;
@@ -494,7 +506,7 @@ class ClosingService
                 18 => ['VEGOSSZEG',		13,	0,      '0'],     // Formátuma: 9999999999999
                 19 => ['BELSO',                 11,	0,      ''],     // Üresen kell hagyni.
                 20 => ['AFA1',                  9,	0,      '0'],     // üres​       5%-os áfa. Formátuma: 999999999
-                21 => ['EREDETI',		1,	0,      ''],     // üres​         Értéke T vagy F
+                21 => ['EREDETI',		1,	0,      ''],     // üres​         Értéke T vagy F (S - sztornó)
                 22 => ['HELYESBITO',		11,	0,      ''],     // üres​          A másik számla (helyesbítő pár) BSZAM mezője.
                 23 => ['KULCSSZO',		60,	0,      'Étkeztetés'],       // A számlához eltárolt kulcsszó.
                 24 => ['GAZDKOD',		20,	0,      '300'],              // A gazdálkodó kódja.

@@ -25,11 +25,11 @@ JcsModal =
         $(".modal").css
             "height": "auto"
             "width":  "auto"
-        
+
         $(".modal").overlay().load()
         # restrict modal window height
         winH = $(window).innerHeight()
-        console.log winH, parseInt($(".modal").css("top")) + $(".modal").innerHeight()
+        #console.log winH, parseInt($(".modal").css("top")) + $(".modal").innerHeight()
         if parseInt($(".modal").css("top")) + $(".modal").innerHeight() > winH
             $(".modal").height(winH - 60)
             $(".modal").css("top", 10)

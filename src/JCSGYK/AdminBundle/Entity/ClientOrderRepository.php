@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
+use JCSGYK\AdminBundle\Entity\Invoice;
 
 /**
  * ClientOrderRepository
@@ -238,7 +239,7 @@ class ClientOrderRepository extends EntityRepository
     }
 
     /**
-     * Closes all the give orders with one update query
+     * Closes all the given orders with one update query
      * @param array of Order $orders
      * @return affected rows
      */
@@ -249,4 +250,40 @@ class ClientOrderRepository extends EntityRepository
             ->execute();
     }
 
+    /**
+     * Resets the orders belonging to an invoice
+     * @param \JCSGYK\AdminBundle\Entity\Invoice $invoice
+     */
+    public function resetOrders(Invoice $invoice)
+    {
+        $days = json_decode($invoice->getDays(), true);
+        if (!empty($days)) {
+            $dates = array_keys($days);
+            $n = 0;
+
+            // select all canelled but open days
+            $cancelled_days = $this->getEntityManager()->createQuery('SELECT o.id FROM JCSGYKAdminBundle:ClientOrder o WHERE '
+                    . 'o.order = 1 AND o.cancel = 1 AND o.closed = 0 AND '
+                    . 'o.client = :client AND o.date IN (:dates)')
+                ->setParameter('dates', $dates)
+                ->setParameter('client', $invoice->getClient())
+                ->getResult();
+
+            // reopen the rest
+            $n += $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o '
+                    . 'SET o.closed = 0 '
+                    . 'WHERE o.client = :client AND o.date IN (:dates)')
+                ->setParameter('client', $invoice->getClient())
+                ->setParameter('dates', $dates)
+                ->execute();
+
+            // close all 110
+            $n += $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o '
+                    . 'SET o.closed = 1 '
+                    . 'WHERE o.client = :client AND o.id IN (:orders)')
+                ->setParameter('client', $invoice->getClient())
+                ->setParameter('orders', $cancelled_days)
+                ->execute();
+        }
+    }
 }

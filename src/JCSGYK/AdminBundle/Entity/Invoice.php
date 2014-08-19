@@ -63,6 +63,13 @@ class Invoice
     private $endDate;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="cancel_id", type="integer", nullable=false)
+     */
+    private $cancelId;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="items", type="text", nullable=true)
@@ -486,5 +493,37 @@ class Invoice
                 $this->setStatus(self::CLOSED);
             }
         }
+    }
+
+    /**
+     * Check if this invoice can be cancelled
+     */
+    public function cancellable()
+    {
+        return  $this->status == self::OPEN && empty($this->payments);
+    }
+
+    /**
+     * Set cancelId
+     *
+     * @param integer $cancelId
+     *
+     * @return Invoice
+     */
+    public function setCancelId($cancelId)
+    {
+        $this->cancelId = $cancelId;
+
+        return $this;
+    }
+
+    /**
+     * Get cancelId
+     *
+     * @return integer 
+     */
+    public function getCancelId()
+    {
+        return $this->cancelId;
     }
 }

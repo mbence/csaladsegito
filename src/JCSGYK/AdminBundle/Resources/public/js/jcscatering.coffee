@@ -74,6 +74,9 @@ JcsCatering =
         $("#archive_type").focus()
 
     initInvoices: ->
+        # always clear the cancel_id
+        $("#form_cancel_id").val("")
+
         $("button.invoice_full_amount").on "click", ->
             amount = $(this).data("amount")
             $('input[type=text]', $(this).parent()).val(amount)
@@ -87,6 +90,12 @@ JcsCatering =
         $(".catering-invoice").each ->
             if 3 == $(this).data("status")
                 $(this).click()
+        $(".invoice_cancel").on "click", ->
+            if confirm("Biztos benne?")
+                id = $(this).data("id")
+                $("#form_cancel_id").val(id)
+                $("#catering_form").submit()
+
 
     initButtonRow: ->
         # archive
