@@ -1176,7 +1176,7 @@ class ClientController extends Controller
     /**
      * Archive clients
      *
-     * @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ASSISTANCE')")
+     * @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ASSISTANCE') or hasRole('ROLE_CATERING')")
      */
     public function archiveAction($id)
     {

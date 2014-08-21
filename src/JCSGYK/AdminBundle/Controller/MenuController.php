@@ -112,7 +112,7 @@ class MenuController extends Controller
                 'title' => 'Ügyfél archiválása',
                 'class' => 'archive_client',
                 'more'  => true,
-                'role'  => 'ROLE_ADMIN',
+                'role'  => new Expression('hasRole("ROLE_ADMIN") or hasRole("ROLE_CATERING")'),
                 'requirement' => $client->getIsArchived() == 0
             ],
             // reopen_client - Client:archive
@@ -122,7 +122,7 @@ class MenuController extends Controller
                 'title' => 'Ügyfél újranyitása',
                 'class' => 'archive_client',
                 'more'  => true,
-                'role'  => new Expression('hasRole("ROLE_ADMIN") or hasRole("ROLE_ASSISTANCE")'),
+                'role'  => new Expression('hasRole("ROLE_ADMIN") or hasRole("ROLE_ASSISTANCE") or hasRole("ROLE_CATERING")'),
                 'requirement' => $client->getIsArchived() == 1
             ],
             // edit_client - Client:edit
