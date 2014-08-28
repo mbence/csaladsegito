@@ -7,9 +7,11 @@
         {% render(controller('JCSGYKAdminBundle:Menu:settings')) %}
 
         {% if is_granted(['ROLE_ADMIN']) %}
-            <br>
-            <h1 class="client">{{ 'Étkeztetés'|trans }}</h1>
-            {% render(controller('JCSGYKAdminBundle:Menu:cateringSettings')) %}
+            {% if is_granted(['ROLE_CATERING']) %}
+                <br>
+                <h1 class="client">{{ 'Étkeztetés'|trans }}</h1>
+                {% render(controller('JCSGYKAdminBundle:Menu:cateringSettings')) %}
+            {% endif %}
             <br>
             <h1 class="client">{{ 'Admin beállítások'|trans }}</h1>
             {% render(controller('JCSGYKAdminBundle:Menu:adminSettings')) %}
