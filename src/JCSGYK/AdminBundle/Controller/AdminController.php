@@ -847,7 +847,7 @@ class AdminController extends Controller
         $response = new Response();
 
         $response->headers->set('Content-Type', $content_type);
-        $response->headers->set('Content-Disposition', 'attachment;filename="' . $file_name);
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $file_name . '"');
 
         $response->setContent($file_contents);
 

@@ -944,4 +944,20 @@ class DataStore
     {
         return $this->menuCost;
     }
+
+    /**
+     * Returns a list of the available statistics for a given client type
+     * @param int $type Client Type
+     * @return array
+     */
+    public function getStatsForType($type)
+    {
+        $stats = [
+            4 => [
+                401 => 'Ebéd Statisztika'
+            ]
+        ];
+
+        return isset($stats[$type]) ? $stats[$type] : [];
+    }
 }

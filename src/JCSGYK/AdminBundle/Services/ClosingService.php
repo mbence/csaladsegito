@@ -31,12 +31,12 @@ class ClosingService
     /** where to store tmp files */
     private $tmp_folder;
 
-    /** Command output Interface*/
-    private $output;
-
-    /** Process summary text
+    /** Command output Interface
      * @var Symfony\Component\Console\Output\OutputInterface
      */
+    private $output;
+
+    /** Process summary text */
     private $summary = '';
 
 
@@ -78,6 +78,7 @@ class ClosingService
     /**
      * Start the monthly closing process
      * @param int $period 1 = normal run (next month), 0 = actual month (daily closing)
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
      * @return \JCSGYK\AdminBundle\Entity\MonthlyClosing
      */
     public function run($period = 1, OutputInterface $output = null)

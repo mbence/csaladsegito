@@ -36,6 +36,10 @@ services:
         class:        JCSGYK\AdminBundle\Services\DailyOrdersService
         arguments:    ["@service_container"]
 
+    jcs.stat_archive:
+        class:        JCSGYK\AdminBundle\Services\StatArchiveService
+        arguments:    ["@service_container"]
+
     jcs.twig.adminextension:
         class:        JCSGYK\AdminBundle\Twig\AdminExtension
         arguments:    ["@translator", "@jcs.ds"]

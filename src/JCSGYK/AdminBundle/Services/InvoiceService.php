@@ -28,7 +28,7 @@ class InvoiceService
     }
 
     /**
-     * Create an invoice record for the Client in the give timespan
+     * Create an invoice record for the Client in the given timespan
      *
      * @param \JCSGYK\AdminBundle\Entity\Client $client
      * @param \DateTime $start_date
@@ -288,7 +288,7 @@ class InvoiceService
      * @param array $table CateringCost table (0: from, 1: to, 2: cost, 3: is single)
      * @return int or null on failure
      */
-    private function getCostForADay(Catering $catering, $table)
+    public function getCostForADay(Catering $catering, $table)
     {
         $income = $catering->getIncome();
         $is_single = $catering->getIsSingle();
@@ -430,16 +430,17 @@ class InvoiceService
     public function getMonths($company_id)
     {
         $em = $this->container->get('doctrine')->getManager();
+        $ae = $this->container->get('jcs.twig.adminextension');
 
         $res = $em->createQuery("SELECT DISTINCT(DATE_FORMAT(i.startDate, '%Y-%m')) as date FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id ORDER BY i.startDate DESC")
-            ->setParameter('company_id', $company_id)
-            ->setMaxResults(12)
-            ->getResult();
+                ->setParameter('company_id', $company_id)
+                ->setMaxResults(12)
+                ->getResult();
 
         $re = [];
         foreach ($res as $month) {
-            $d = new \DateTime($month['date']);
-            $re[$month['date']] = sprintf('%s %s', $d->format('Y'), $this->ds->getMonth($d->format('n')));
+            $d                  = new \DateTime($month['date']);
+            $re[$month['date']] = $ae->formatDate($d, 'ym');
         }
 
         return $re;
