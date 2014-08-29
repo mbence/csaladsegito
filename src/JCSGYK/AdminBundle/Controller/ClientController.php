@@ -996,7 +996,6 @@ class ClientController extends Controller
                         $catering->setClient($client);
                         $em->persist($catering);
                     }
-                    $em->flush();
 
                     // set the visible case number
                     $client->setCaseLabel($this->container->get('jcs.twig.adminextension')->formatCaseNumber($client));
@@ -1016,6 +1015,8 @@ class ClientController extends Controller
                             $em->persist($up);
                         }
                     }
+
+                    $em->flush();
 
                     // handle/save the addresses
                     foreach ($client->getAddresses() as $adr) {
