@@ -467,7 +467,7 @@ class InvoiceService
         $data = [];
         // find all the invoices and clients of the given month
         $sql = "SELECT i, c, a FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
-                . "WHERE i.companyId = :company_id AND i.startDate >= :month_start AND i.endDate <= :month_end ";
+                . "WHERE i.companyId = :company_id AND i.endDate >= :month_start AND i.endDate <= :month_end ";
         if (!empty($club)) {
             $sql .= "AND a.club = :club ";
         }
@@ -476,7 +476,7 @@ class InvoiceService
             $sql .= "AND i.amount > i.balance ";
         }
 
-        $sql .= "ORDER BY c.lastname, c.firstname";
+        $sql .= "ORDER BY c.lastname, c.firstname, i.createdAt";
 
         $q = $em->createQuery($sql)
             ->setParameter('company_id', $company_id)
@@ -501,6 +501,7 @@ class InvoiceService
                 'days'          => 0,
                 'unit_price'    => '',
                 'weekdays'      => 0,
+                'cancel_id'     => '',
             ];
             // add extra fields to datacheck report
             if ('catering_datacheck' == $report) {
@@ -519,6 +520,12 @@ class InvoiceService
             }
 
             foreach ($res as $invoice) {
+                // we can skip cancelled and cancelling invoices for the catering_summary_detailed and catering_datacheck reports
+                if (in_array($report, ['catering_summary_detailed', 'catering_datacheck']) &&
+                        (!empty($invoice->getCancelId()) || Invoice::CANCELLED == $invoice->getStatus())) {
+                    continue;
+                }
+
                 $client = $invoice->getClient();
                 $catering = $client->getCatering();
                 $items = json_decode($invoice->getItems(), true);
@@ -526,7 +533,7 @@ class InvoiceService
                 $discount = [];
                 $costs = [];
                 foreach ($items as $item) {
-                    if ($item['value'] >= 0) {
+                    if ($item['unit_price'] >= 0) {
                         $costs = $item;
                     }
                     else {
@@ -534,17 +541,29 @@ class InvoiceService
                     }
                 }
 
+                // normal invoices
                 $data_row = [
                     'id'            => $client->getCaseLabel(),
                     'name'          => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
                     'address'       => sprintf('(%s)', $ae->formatAddress('', '', $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber())),
-                    'debt'          => $invoice->getAmount() - $invoice->getBalance() > 0 ? $ae->formatCurrency2($invoice->getAmount() - $invoice->getBalance()) : '',
+                    'debt'          => $invoice->getStatus() == Invoice::OPEN && ($invoice->getAmount() - $invoice->getBalance() > 0) ? $invoice->getAmount() - $invoice->getBalance() : '',
                     'amount'        => $ae->formatCurrency2($invoice->getAmount()),
                     'discount_days' => empty($discount) ? 0 : $discount['quantity'],
                     'days'          => empty($costs) ? 0 : $costs['quantity'],
                     'unit_price'    => $ae->formatCurrency2(empty($costs) ? 0 : $costs['unit_price']),
                     'weekdays'      => empty($costs) ? 0 : $costs['weekday_quantity'],
+                    'cancel_id'     => $invoice->getCancelId(),
                 ];
+
+                // cancel invoices
+                if (!empty($data_row['cancel_id'])) {
+                    $data_row['debt']          = 'sztornó számla';
+                }
+
+                // cancelled invoices
+                if ($invoice->getStatus() == Invoice::CANCELLED) {
+                    $data_row['debt'] = 'sztornózva';
+                }
 
                 // add extra fields to datacheck report
                 if ('catering_datacheck' == $report) {
@@ -556,21 +575,25 @@ class InvoiceService
                 if ('catering_summary_detailed' == $report) {
                     $data_row['calendar'] = $empty_month;
                     $days = json_decode($invoice->getDays(), true);
-                    foreach ($days as $day => $o) {
-                        $n = (new \DateTime($day))->format('j');
-                        $data_row['calendar'][$n] = $o > 0 ? 'X' : '-';
+                    if (is_array($days)) {
+                        foreach ($days as $day => $o) {
+                            $n = (new \DateTime($day))->format('j');
+                            $data_row['calendar'][$n] = $o > 0 ? 'X' : '-';
+                        }
                     }
                 }
 
+                // debt depends on some factors above
+                if (is_numeric($data_row['debt'])) {
+                    $sums['debt']   += $data_row['debt'];
+                    $data_row['debt'] = $ae->formatCurrency2($data_row['debt']);
+                }
                 $data[] = $data_row;
 
-                if ($invoice->getAmount() - $invoice->getBalance() > 0 ) {
-                    $sums['debt']   += $invoice->getAmount() - $invoice->getBalance();
-                }
                 $sums['amount']     += $invoice->getAmount();
-                $sums['discount_days'] += empty($discount) ? 0 : $discount['quantity'];
-                $sums['days']       += empty($costs) ? 0 : $costs['quantity'];
-                $sums['weekdays']   += empty($costs) ? 0 : $costs['weekday_quantity'];
+                $sums['discount_days'] += $data_row['discount_days'];
+                $sums['days']       += $data_row['days'];
+                $sums['weekdays']   += $data_row['weekdays'];
             }
             // format the summary debt
             $sums['debt'] = $ae->formatCurrency2($sums['debt']);
