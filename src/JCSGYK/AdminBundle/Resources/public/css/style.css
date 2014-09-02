@@ -573,19 +573,17 @@ table.problem-list td {
 .editform #user_roles {
     display: inline-block;
     line-height: 16px;
-    padding: 3px 10px 2px;
+    padding: 3px 0px 2px;
     border: 1px solid #ccc;
     width: 190px;
 }
 .editform #user_roles label {
-    clear: right;
     text-align: left;
     margin: 0;
-    width: 170px;
+    width: auto;
 }
-.editform #user_roles input[type=checkbox] {
-    clear: left;
-    margin: 3px 4px 3px 0;
+.editform #user_roles div {
+    line-height: 17px;
 }
 .editform .formbuttons {
     margin: 20px 0 0 0;
@@ -898,14 +896,10 @@ table.client-edit tr.multirow td {
     min-height: 17px;
     width: 100%;
 }
-table.client-edit div.multiselect input[type=checkbox] {
-    float:left;
-    clear: left;
+div.multiselect input[type=checkbox] {
     margin: 1px 4px 2px 8px;
 }
-table.client-edit div.multiselect label {
-    display: block;
-    padding: 1px 14px 2px 20px;
+div.multiselect label {
     cursor: pointer;
     color: #222;
 }

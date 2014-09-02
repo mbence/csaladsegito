@@ -1,3 +1,13 @@
+## 1.2.11 (2014.09.02)
+
+Fejlesztések:
+
+  - Hozzátartozók törlése
+
+Javítások:
+
+  - Choice widget expanded
+
 ## 1.2.10 (2014.09.02)
 
 Fejlesztések:

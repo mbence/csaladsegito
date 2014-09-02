@@ -35,8 +35,10 @@
     <div class="multiselect" {{ block('widget_container_attributes') }}>
         <div class="multihead">{{ 'Válasszon!'|trans }}</div>
     {% for child in form %}
-        {{ form_widget(child) }}
-        {{ form_label(child) }}
+        <div>
+            {{ form_widget(child) }}
+            {{ form_label(child) }}
+        </div>
     {% endfor %}
     </div>
 {% endspaceless %}
