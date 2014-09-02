@@ -295,7 +295,7 @@ JcsClient =
             false
 
         # archive
-        $(".archive_client").add(".client_visit").add(".edit_parent").off('click').on "click", (event) ->
+        $(".archive_client").add(".client_visit").add(".edit_parent").add(".delete_parent").off('click').on "click", (event) ->
             event.stopPropagation()
 
             if !$(this).hasClass('animbutton')
@@ -309,7 +309,7 @@ JcsClient =
                         JcsClient.initVisit()
                     if $(this).hasClass('archive_client')
                         JcsClient.initArchive()
-                    if $(this).hasClass('edit_parent')
+                    if $(this).hasClass('edit_parent') or $(this).hasClass('delete_parent')
                         JcsClient.initRelatives()
                     # hide the submenu
                     if $(this).parent().hasClass('sub-vertical')

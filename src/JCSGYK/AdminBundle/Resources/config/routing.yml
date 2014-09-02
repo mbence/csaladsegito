@@ -65,6 +65,9 @@ client_invoices:
 relative_edit:
     pattern:  /relative/edit/{id}/{relation_id}
     defaults: { _controller: JCSGYKAdminBundle:Client:relativeEdit }
+relative_delete:
+    pattern:  /relative/delete/{id}/{relation_id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:relativeDelete }
 
 # Templates #
 templates:

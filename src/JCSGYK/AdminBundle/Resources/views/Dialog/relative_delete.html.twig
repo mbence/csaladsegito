@@ -1,0 +1,20 @@
+{# Parent #}
+
+{# if all went well, we just need to close the popup #}
+{% if success is defined and success %}
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% else %}
+    <div class="modal-wide">
+        <form action="{{ path('relative_delete', {'id': relation.childId, 'relation_id': relation.id}) }}" id="parent_form" method="post" {{ form_enctype(form) }}>
+            <h1 class="client">Hozzátartozó törlése</h1>
+            {{ form_errors(form) }}
+            {% include "JCSGYKAdminBundle:Client:_relative_box.html.twig" with {'relative': relation.parent(), 'edit': false} %}
+
+            <div class="toppad10">
+                {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_parent redtext', title:'Hozzátartozó törlése', label:'törlés'}] } %}
+                <div class="clear"></div>
+            </div>
+            {{ form_rest(form) }}
+        </form>
+    </div>
+{% endif %}

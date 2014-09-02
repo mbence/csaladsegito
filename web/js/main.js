@@ -16092,7 +16092,7 @@ JcsClient = {
       HBlocks.closeBlock(3);
       return false;
     });
-    $(".archive_client").add(".client_visit").add(".edit_parent").off('click').on("click", function(event) {
+    $(".archive_client").add(".client_visit").add(".edit_parent").add(".delete_parent").off('click').on("click", function(event) {
       event.stopPropagation();
       if (!$(this).hasClass('animbutton')) {
         $(this).addClass('animbutton');
@@ -16106,7 +16106,7 @@ JcsClient = {
             if ($(_this).hasClass('archive_client')) {
               JcsClient.initArchive();
             }
-            if ($(_this).hasClass('edit_parent')) {
+            if ($(_this).hasClass('edit_parent') || $(_this).hasClass('delete_parent')) {
               JcsClient.initRelatives();
             }
             if ($(_this).parent().hasClass('sub-vertical')) {

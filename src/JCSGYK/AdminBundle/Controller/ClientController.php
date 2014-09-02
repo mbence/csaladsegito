@@ -785,6 +785,13 @@ class ClientController extends Controller
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
         $client = $this->getClient($id);
+
+        // security check
+        $sec = $this->get('security.context');
+        if (!empty($id) && !$client->canEdit($sec)) {
+            throw new AccessDeniedHttpException('Access Denied');
+        }
+
         if ($relation_id != 'new') {
             $relation = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id, $relation_id);
         }
@@ -797,14 +804,6 @@ class ClientController extends Controller
             $new_client->setType(Client::PARENT);
             $new_client->setCreator($user);
             $new_client->setIsArchived(false);
-            /*
-            // set gender
-            if (Relation::MOTHER == $type) {
-                $new_client->setGender(2);
-            } elseif (Relation::FATHER == $type) {
-                $new_client->setGender(1);
-            }
-             */
 
             // set case admin and numbers
             $new_client->setCaseYear($client->getCaseYear());
@@ -870,6 +869,72 @@ class ClientController extends Controller
         ]);
     }
 
+    public function relativeDeleteAction($id, $relation_id)
+    {
+        $request = $this->getRequest();
+        $user= $this->get('security.context')->getToken()->getUser();
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+
+        $client = $this->getClient($id);
+        $relation = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id, $relation_id);
+
+        if (!empty($relation[0])) {
+            $relation = $relation[0];
+        }
+
+        if (empty($relation)) {
+            throw new BadRequestHttpException('Invalid relative id');
+        }
+        // security check
+        $sec = $this->get('security.context');
+        if (!empty($id) && !$client->canEdit($sec)) {
+            throw new AccessDeniedHttpException('Access Denied');
+        }
+
+        $form = $this->createFormBuilder()
+            ->add('delete', 'hidden', [
+                'data' => true
+            ])
+            ->getForm();
+
+
+        // save
+        if ($request->isMethod('POST')) {
+            $form->bind($request);
+
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $data = $form->getData();
+                if (!empty($data['delete'])) {
+                    $parent = $relation->getParent();
+
+                    // see if this relative has any other child record
+                    $children = $em->createQuery("SELECT r FROM JCSGYKAdminBundle:Relation r WHERE r.parent = :parent AND r.childId != :child")
+                        ->setParameter('parent', $parent)
+                        ->setParameter('child', $client->getId())
+                        ->getResult();
+
+                    // no more children, we can remove the parent record too
+                    if (empty($children)) {
+                        $em->remove($parent);
+                    }
+                    $em->remove($relation);
+                    $em->flush();
+
+                    $this->get('session')->getFlashBag()->add('notice', 'Hozzátartozó törölve');
+                }
+
+                return $this->render('JCSGYKAdminBundle:Dialog:relative_delete.html.twig', [
+                    'success' => true
+                ]);
+            }
+        }
+        return $this->render('JCSGYKAdminBundle:Dialog:relative_delete.html.twig', [
+            'form' => $form->createView(),
+            'relation' => $relation,
+        ]);
+    }
+
     /**
      * Edits the client data
      *
@@ -931,17 +996,12 @@ class ClientController extends Controller
                 }
             }
 
-            // get the catering form
-//            if ($client->getType() == Client::CA) {
-//                $catering_form = $this->createForm(new CateringType($this->container->get('jcs.ds')), $client->getCatering());
-//            }
-
             $form = $this->createForm(new ClientType($this->container->get('jcs.ds'), $client), $client);
 
             $orig_year = $client->getCaseYear();
             $orig_casenum = $client->getCaseNumber();
 
-            // save the user
+            // save the client
             if ($request->isMethod('POST')) {
                 $form->bind($request);
 
@@ -951,7 +1011,7 @@ class ClientController extends Controller
                     $client->setModifiedAt(new \DateTime());
                     $case_num = $client->getCaseNumber();
 
-                    // save the new user data
+                    // save the new client data
                     if (is_null($client->getId())) {
                         if (empty($case_num)) {
                             // if not defined, get the next case number from the ClientSequence Service
@@ -978,6 +1038,7 @@ class ClientController extends Controller
                         $client->setType($client_type);
 
                         $em->persist($client);
+                        $em->flush();
 
                         // if case number given, we must copy over a few fields from that case
                         if (!empty($copy_case)) {
@@ -1041,9 +1102,9 @@ class ClientController extends Controller
                     }
 
                     // copy the mothers name from the relatives record
-                    $mother = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($client->getId(), Relation::MOTHER);
-                    if (!empty($mother[0])) {
-                        $mother = $mother[0]->getParent();
+                    $mother_relation = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelationByType($client->getId(), Relation::MOTHER);
+                    if (!empty($mother_relation)) {
+                        $mother = $mother_relation->getParent();
                         // if the birthname is set, then we use that, otherwise the name
                         if ($mother->getBirthFirstname() || $mother->getBirthLastname()) {
                             $client->setMotherFirstname($mother->getBirthFirstname());

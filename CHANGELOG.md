@@ -6,6 +6,7 @@ Fejlesztések:
 
 Javítások:
 
+  - Anyja neve elmentése GYK ügyfeleknél
   - Choice widget expanded
 
 ## 1.2.10 (2014.09.02)
