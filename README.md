@@ -6,14 +6,14 @@ Administration system of family help and child welfare services
 
 ## Requirements
 
-* PHP 5.4
+* PHP 5.5
 * Symfony 2.2
 * Node.js / Coffeescript
 
 To recompile the coffee assets during development, run the assetic compiler:
 
 ```
-php app/console assetic:dump --watch
+php app/console assetic:watch
 ```
 
 ### Mysql fulltext search settings
