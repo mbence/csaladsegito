@@ -7,9 +7,10 @@
             <td class="parent">
                 {% if edit is defined and edit %}
                 <div class="button-row" style="margin: -4px -6px -6px;">
+                    {% if 1 != relation.type %}
+                        <a href="{{ path('relative_delete', {'id': client.id, 'relation_id': relation.id})}}" class="greybutton redtext delete_parent"><span>{{ 'töröl'|trans }}</span></a>
+                    {% endif %}
                     <a href="{{ path('relative_edit', {'id': client.id, 'relation_id': relation.id})}}" class="greybutton edit_parent"><span>{{ 'szerkeszt'|trans }}</span></a>
-
-                    <a href="{{ path('relative_delete', {'id': client.id, 'relation_id': relation.id})}}" class="greybutton redtext delete_parent"><span>{{ 'töröl'|trans }}</span></a>
                 </div>
                 <div class="clear"></div>
                 {% endif %}

@@ -79,9 +79,10 @@ class ClientRepository extends EntityRepository
         $yop = is_null($year) ? 'IS NULL' : '=:year';
 
         $q = $this->getEntityManager()
-            ->createQuery("SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.companyId=:co AND c.caseYear {$yop} AND c.caseNumber=:num")
+            ->createQuery("SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.companyId=:co AND c.caseYear {$yop} AND c.caseNumber=:num AND c.type != :relative")
             ->setParameter('co', $client->getCompanyId())
-            ->setParameter('num', $client->getCaseNumber());
+            ->setParameter('num', $client->getCaseNumber())
+            ->setParameter('relative', Client::PARENT);
 
         if (!is_null($year)) {
             $q->setParameter('year', $year);

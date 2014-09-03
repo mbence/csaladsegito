@@ -1,3 +1,9 @@
+## 1.2.12 (2014.09.03)
+
+Fejlesztések:
+
+  - Hozzátartozók ügyiratszám szintű mentése
+
 ## 1.2.11 (2014.09.02)
 
 Fejlesztések:

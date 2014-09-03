@@ -794,6 +794,10 @@ class ClientController extends Controller
 
         if ($relation_id != 'new') {
             $relation = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id, $relation_id);
+
+            if (empty($relation)) {
+                throw new BadRequestHttpException('Invalid relative id');
+            }
         }
 
         if (empty($relation[0])) {
@@ -818,10 +822,6 @@ class ClientController extends Controller
             $relation = $relation[0];
         }
 
-        if (empty($relation)) {
-            throw new BadRequestHttpException('Invalid relative id');
-        }
-
         $form = $this->createForm(new RelativeType($this->container->get('jcs.ds'), $relation->getType(), $client->getType()), $relation->getParent());
 
         // save
@@ -840,17 +840,46 @@ class ClientController extends Controller
                     $em->persist($relation->getParent());
                     $em->persist($relation);
                 }
-                // if its a mother, we must update any related client record too
-                if ($relation->getId() && $relation->getType() == Relation::MOTHER) {
+
+                if ($relation->getId()) {
                     // get the related clients
-                    $mother = $relation->getParent();
-                    $siblings = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getChildren($mother);
-                    // update the mothers name fields
-                    foreach ($siblings as $sibling_rel) {
-                        $sibling = $this->getClient($sibling_rel->getChildId());
-                        $sibling->setMotherTitle($mother->getTitle());
-                        $sibling->setMotherFirstname($mother->getFirstname());
-                        $sibling->setMotherLastname($mother->getLastname());
+                    $relative = $relation->getParent();
+
+                    // if its a mother, we must update any related client record too
+                    if ($relation->getType() == Relation::MOTHER) {
+                        $siblings = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getChildren($relative);
+
+                        // if the birthname is set, then we use that, otherwise the name
+                        if ($relative->getBirthFirstname() || $relative->getBirthLastname()) {
+                            $mother_title = $relative->getBirthTitle();
+                            $mother_firstname = $relative->getBirthFirstname();
+                            $mother_lastname = $relative->getBirthLastname();
+                        }
+                        else {
+                            $mother_title = $relative->getTitle();
+                            $mother_firstname = $relative->getFirstname();
+                            $mother_lastname = $relative->getLastname();
+                        }
+
+                        // update the mothers name fields
+                        foreach ($siblings as $sibling_rel) {
+                            $sibling = $this->getClient($sibling_rel->getChildId());
+                            $sibling->setMotherTitle($mother_title);
+                            $sibling->setMotherFirstname($mother_firstname);
+                            $sibling->setMotherLastname($mother_lastname);
+                        }
+                    }
+                    // or if save_to_all is checked, we must copy the relative's data to all other sibling
+                    elseif (!empty($form->get('save_to_all')->getData())) {
+                        // find all clients of this case
+                        $case = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getCase($client);
+                        foreach ($case as $copy_client) {
+                            // only work with the remaining siblings
+                            if ($copy_client->getId() != $client->getId()) {
+                                // update or create the relation
+                                $this->copyRelations($client, $copy_client, $relation);
+                            }
+                        }
                     }
                 }
 
@@ -863,6 +892,7 @@ class ClientController extends Controller
                 ]);
             }
         }
+
         return $this->render('JCSGYKAdminBundle:Dialog:relative.html.twig', [
             'form' => $form->createView(),
             'relative' => $relation,
@@ -1101,6 +1131,7 @@ class ClientController extends Controller
                         }
                     }
 
+                    /*
                     // copy the mothers name from the relatives record
                     $mother_relation = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelationByType($client->getId(), Relation::MOTHER);
                     if (!empty($mother_relation)) {
@@ -1116,6 +1147,7 @@ class ClientController extends Controller
                         }
                         $client->setMotherTitle($mother->getTitle());
                     }
+                    */
 
                     // save the parameters
                     $pgroups = $this->container->get('jcs.ds')->getParamGroup(1, false, $client->getType());
@@ -1162,6 +1194,7 @@ class ClientController extends Controller
 
     /**
      * Copies over a few fields from the given case
+     * called when new client is saved
      *
      * @param \JCSGYK\AdminBundle\Entity\Client $client
      */
@@ -1179,14 +1212,14 @@ class ClientController extends Controller
                 $client->setCaseAdmin($sibling->getCaseAdmin());
 
                 // mothers data
-                $this->copyFields($client, $sibling, ['MotherTitle', 'MotherFirstname', 'MotherLastname']);
+                $this->copyFields($sibling, $client, ['MotherTitle', 'MotherFirstname', 'MotherLastname']);
 
                 // save the location data if empty
                 if (!$client->getCity() || !$client->getStreet()) {
-                    $this->copyFields($client, $sibling, ['Country', 'ZipCode', 'City', 'Street', 'StreetType', 'StreetNumber', 'FlatNumber']);
+                    $this->copyFields($sibling, $client, ['Country', 'ZipCode', 'City', 'Street', 'StreetType', 'StreetNumber', 'FlatNumber']);
                 }
                 if (!$client->getLocationCity() || !$client->getLocationStreet()) {
-                    $this->copyFields($client, $sibling, ['LocationCountry', 'LocationZipCode', 'LocationCity', 'LocationStreet', 'LocationStreetType', 'LocationStreetNumber', 'LocationFlatNumber']);
+                    $this->copyFields($sibling, $client, ['LocationCountry', 'LocationZipCode', 'LocationCity', 'LocationStreet', 'LocationStreetType', 'LocationStreetNumber', 'LocationFlatNumber']);
                 }
                 // clone the last address of the case
                 $addresses = $sibling->getAddresses();
@@ -1197,26 +1230,9 @@ class ClientController extends Controller
                     $em->persist($new_addr);
                 }
 
-                // copy over the relations
-                $rels = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($sibling->getId());
-                foreach ($rels as $rel) {
-                    $relative = new Relation();
-                    $relative->setType($rel->getType());
-                    $relative->setChildId($client->getId());
-                    if ($rel->getType() == Relation::MOTHER) {
-                        // we only link to the mother,
-                        $relative->setParent($rel->getParent());
-                    }
-                    else {
-                        // but clone the other relations
-                        $old_parent = $rel->getParent();
-                        $new_parent = clone $old_parent;
-                        $em->persist($new_parent);
-                        $relative->setParent($new_parent);
-                    }
+                // copy all the relations
+                $this->copyRelations($sibling, $client);
 
-                    $em->persist($relative);
-                }
                 $em->flush();
 
                 return true;
@@ -1226,12 +1242,75 @@ class ClientController extends Controller
         }
     }
 
-    private function copyFields(Client &$client, Client &$sibling, array $fields)
+    /**
+     * Copy the relations from a client to another
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $from
+     * @param \JCSGYK\AdminBundle\Entity\Client $to
+     * @param \JCSGYK\AdminBundle\Entity\Relation $relation optional
+     */
+    private function copyRelations(Client $from, Client $to, Relation $relation = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        // find all the relations of this client if not provided
+        if (empty($relation)) {
+            $rels = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($from->getId());
+        }
+        else {
+            $rels = [$relation];
+        }
+
+        foreach ($rels as $rel) {
+            // check if the new client has a relation of this type
+            $existing_relation = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelationByType($to->getId(), $rel->getType());
+
+            // only create a new relation if necessary
+            if (empty($existing_relation)) {
+                $relative = new Relation();
+                $relative->setType($rel->getType());
+                $relative->setChildId($to->getId());
+
+                if ($rel->getType() == Relation::MOTHER) {
+                    // we only link to the mother,
+                    $relative->setParent($rel->getParent());
+                }
+                else {
+                    // but clone the other relations
+                    $from_parent = $rel->getParent();
+                    $new_parent = clone $from_parent;
+                    $em->persist($new_parent);
+                    $relative->setParent($new_parent);
+                }
+                $em->persist($relative);
+            }
+            // if there is an old relation of this type, then overwrite the relatives data
+            else {
+                $from_parent = $rel->getParent();
+                $to_parent = $existing_relation->getParent();
+
+                $this->copyFields($from_parent, $to_parent, ['Title', 'Firstname', 'Lastname', 'Gender', 'BirthFirstname', 'BirthLastname', 'BirthPlace', 'BirthDate']);
+                $this->copyFields($from_parent, $to_parent, ['MotherTitle', 'MotherFirstname', 'MotherLastname', 'Citizenship', 'CitizenshipStatus']);
+                $this->copyFields($from_parent, $to_parent, ['Phone', 'Mobile', 'Fax', 'Email', 'CitizenshipStatus', 'Note']);
+                $this->copyFields($from_parent, $to_parent, ['Country', 'ZipCode', 'City', 'Street', 'StreetType', 'StreetNumber', 'FlatNumber']);
+                $this->copyFields($from_parent, $to_parent, ['LocationCountry', 'LocationZipCode', 'LocationCity', 'LocationStreet', 'LocationStreetType', 'LocationStreetNumber', 'LocationFlatNumber']);
+            }
+        }  // end foreach
+    }
+
+    /**
+     * Copy a listo of fields from one client to an other
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $to_client
+     * @param \JCSGYK\AdminBundle\Entity\Client $from_client
+     * @param array $fields
+     */
+    private function copyFields(Client $from_client, Client $to_client, array $fields)
     {
         foreach ($fields as $field) {
             $setter = 'set' . $field;
             $getter = 'get' . $field;
-            $client->$setter($sibling->$getter());
+            $to_client->$setter($from_client->$getter());
         }
     }
 

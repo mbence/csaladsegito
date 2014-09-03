@@ -6,6 +6,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use JCSGYK\AdminBundle\Services\DataStore;
+use JCSGYK\AdminBundle\Entity\Client;
+use JCSGYK\AdminBundle\Entity\Relation;
 
 /**
  * A subset of the ClientType with only the personal data
@@ -94,6 +96,15 @@ class RelativeType extends AbstractType
         $builder->add('location_flat_number', 'text', ['label' => 'Ajtó', 'required' => false]);
 
         $builder->add('note', 'textarea', ['label' => 'Megjegyzés', 'required' => false]);
+
+        // add multi save checkbox only to Child Welfare forms
+        if (Client::CW == $this->client_type) {
+            $builder->add('save_to_all', 'checkbox', [
+                'label'    => 'Mentés az ügyirat minden adatlapjához',
+                'mapped'   => false,
+                'required' => false,
+            ]);
+        }
     }
 
     public function getName()

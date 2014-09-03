@@ -20,6 +20,16 @@
             {% include "JCSGYKAdminBundle:Client:_edit_addresses.html.twig" with {client: relative.parent} %}
             {% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: relative.parent} %}
 
+            {% if form.save_to_all is defined %}
+            <table class="client-edit toppad10" cellspacing="0" border="0">
+                <tr>
+                    <td class="right noborder">
+                        {{ form_widget(form.save_to_all) }}
+                        {{ form_label(form.save_to_all) }}
+                    </td>
+                </tr>
+            </table>
+            {% endif %}
 
             <div class="toppad10">
                 {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'save_parent', title:'Szülő mentése', label:'mentés'}] } %}
@@ -27,5 +37,6 @@
             </div>
             {{ form_widget(form._token) }}
         </form>
+        <br>
     </div>
 {% endif %}
