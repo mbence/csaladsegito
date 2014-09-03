@@ -870,7 +870,7 @@ class ClientController extends Controller
                         }
                     }
                     // or if save_to_all is checked, we must copy the relative's data to all other sibling
-                    elseif (!empty($form->get('save_to_all')->getData())) {
+                    elseif (!empty($form['save_to_all']) && !empty($form['save_to_all']->getData())) {
                         // find all clients of this case
                         $case = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getCase($client);
                         foreach ($case as $copy_client) {
