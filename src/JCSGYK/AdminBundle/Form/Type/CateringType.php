@@ -40,7 +40,6 @@ class CateringType extends AbstractType
         $builder->add('club', 'entity', [
             'label' => 'Klub',
             'class' => 'JCSGYKAdminBundle:Club',
-            // 'choices'   => $this->ds->getClubs(),
             'choices'   => $this->clubs,
             'required' => true,
         ]);

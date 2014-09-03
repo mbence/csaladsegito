@@ -1,3 +1,9 @@
+## 1.2.13 (2014.09.04)
+
+Fejlesztések:
+
+  - Admin user is lássa a saját ügyfeleit
+
 ## 1.2.12 (2014.09.03)
 
 Fejlesztések:

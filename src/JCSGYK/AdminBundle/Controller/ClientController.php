@@ -1131,7 +1131,6 @@ class ClientController extends Controller
                         }
                     }
 
-                    /*
                     // copy the mothers name from the relatives record
                     $mother_relation = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelationByType($client->getId(), Relation::MOTHER);
                     if (!empty($mother_relation)) {
@@ -1147,7 +1146,6 @@ class ClientController extends Controller
                         }
                         $client->setMotherTitle($mother->getTitle());
                     }
-                    */
 
                     // save the parameters
                     $pgroups = $this->container->get('jcs.ds')->getParamGroup(1, false, $client->getType());
@@ -1553,9 +1551,9 @@ class ClientController extends Controller
             $user= $sec->getToken()->getUser();
             $ds = $this->container->get('jcs.ds');
 
-            // list all the clients for the catering users
-            if (!$sec->isGranted('ROLE_ADMIN') && $sec->isGranted('ROLE_CATERING')) {
-                $clubs = $ds->getClubs();
+            // list all the active clients owned by this user for the catering users
+            if ($sec->isGranted('ROLE_CATERING')) {
+                $clubs = $ds->getMyClubs();
                 $club_list = [];
                 foreach ($clubs as $club) {
                     $club_list[] = $club->getId();
@@ -1564,16 +1562,16 @@ class ClientController extends Controller
                 if (!empty($clubs)) {
                     $sql = "SELECT c.id, c.type, c.case_year, c.case_number, c.case_label, c.company_id, c.title, c.firstname, c.lastname, c.mother_firstname, c.mother_lastname, c.zip_code, c.city, c.street, c.street_type, c.street_number, c.flat_number, c.is_archived "
                         . " FROM client c LEFT JOIN catering a ON c.id = a.client_id WHERE"
-                        . " a.club_id IN ($club_list) AND c.is_archived = 0"
+                        . " a.club_id IN ($club_list) AND c.is_archived = 0 AND c.type = {$client_type}"
                         . " ORDER BY c.lastname, c.firstname LIMIT " . $limit;
                     $re = $db->fetchAll($sql);
                 }
             }
-            // list all active clients for the FH or CW users
-            elseif (!$sec->isGranted('ROLE_ADMIN') && ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE'))) {
+            // list all the active clients owned by this user for the FH or CW users
+            elseif ($sec->isGranted('ROLE_FAMILY_HELP') || $sec->isGranted('ROLE_CHILD_WELFARE')) {
                 $user_id = $user->getId();
                 $sql = "SELECT id, type, case_year, case_number, case_label, company_id, title, firstname, lastname, mother_firstname, mother_lastname, zip_code, city, street, street_type, street_number, flat_number, is_archived FROM client WHERE"
-                    . " case_admin = {$user_id} AND is_archived = 0"
+                    . " case_admin = {$user_id} AND is_archived = 0 AND type = {$client_type}"
                     . " ORDER BY lastname, firstname LIMIT " . $limit;
                 $re = $db->fetchAll($sql);
             }
