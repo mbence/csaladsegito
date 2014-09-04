@@ -370,28 +370,22 @@ class ClientController extends Controller
                                     $last_order->setOrder(true);
                                     $last_order->setCancel(false);
                                     $last_order->setClosed(false);
-
-                                    // $em->persist($last_order);
                                 }
                                 elseif ($order['value'] == -1) {
                                     $last_order->setOrder(false);
                                     $last_order->setCancel(true);
                                     $last_order->setClosed(false);
-
-                                    // $em->persist($last_order);
                                 }
                                 elseif ($order['value'] == 2) {
                                     $last_order->setOrder(true);
                                     $last_order->setCancel(true);
                                     $last_order->setClosed(false);
-
-                                    // $em->persist($last_order);
                                 }
-                                // elseif ($order['value'] == 0) {
-                                //     $last_order->setOrder(false);
-                                //     $last_order->setCancel(false);
-                                //     $last_order->setClosed(false);
-                                // }
+                                elseif ($order['value'] == 3) {
+                                    $last_order->setOrder(true);
+                                    $last_order->setCancel(false);
+                                    $last_order->setClosed(true);
+                                }
 
                                 break;
 
@@ -456,6 +450,7 @@ class ClientController extends Controller
                     $changed_day = -1;
                 }
                 $closed = $changed_days[$day]->getClosed();
+                $ordered = $changed_days[$day]->getOrder();
             }
             // $order = (!isset($orders[$day])) ? false : $orders[$day];
             $order = (!isset($orders[$day])) ? 0 : $orders[$day];
@@ -487,21 +482,26 @@ class ClientController extends Controller
                         $new_orders[$day] = ['type' => 'update', 'value' => 1];
                     }
                     elseif ($changed_day === 1 && $order == -1) {
-                        // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva és le van zárva a rekord
-                        // rekord nullázása
+                        // ha van erre a napra rekord létrehozva rendeléssel, a naptárban nincs kipipálva és le van zárva a rekord
+                        // rendelés lemondása 110
                         $new_orders[$day] = ['type' => 'update', 'value' => 2];
                     }
                 }
                 elseif (!$closed) {
                     // rekord nincs lezárva
-                    if ($changed_day === -1 && $order == 1) {
+                    if ($changed_day === -1 && $order == 1 && $ordered == 0) {
                         // ha van erre a napra rekord létrehozva lemondással, a naptárban is ki van pipálva, a rendelési sablon erre a napra ki van pipálva, és nincs lezárva a rekord
-                        // rekord nullázása
+                        // rendelés visszaállítása 100
                         $new_orders[$day] = ['type' => 'update', 'value' => 1];
                     }
+                    if ($changed_day === -1 && $order == 1 && $ordered == 1) {
+                        // ha van erre a napra rekord létrehozva megrendeléssel és lemondással és nincs lezárva a rekord
+                        // rendelés visszaállítása lezárva 101
+                        $new_orders[$day] = ['type' => 'update', 'value' => 3];
+                    }
                     elseif ($changed_day === 1 && $order == -1) {
-                        // ha van erre a napra rekord létrehozva utánrendeléssel, a naptárban nincs kipipálva, a rendelési sablon erre a napra nincs kipipálva, és nincs lezárva a rekord
-                        // utánrendelés erre a napra
+                        // ha van erre a napra rekord létrehozva rendeléssel, a naptárban nincs kipipálva és nincs lezárva a rekord
+                        // lemondás erre a napra 010
                         $new_orders[$day] = ['type' => 'update', 'value' => -1];
                     }
                 }
