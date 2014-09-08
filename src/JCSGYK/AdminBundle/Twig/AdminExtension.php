@@ -61,9 +61,37 @@ class AdminExtension extends \Twig_Extension
             'get_pgroup_control' => new \Twig_Function_Method($this, 'getParamGroupControl'),
             'is_cw' => new \Twig_Function_Method($this, 'companyIsCW'),
             'getct' => new \Twig_Function_Method($this, 'getClientTypes'),
+            'log_data' => new \Twig_Function_Method($this, 'logData', ['is_safe' => ['html']]),
+            'log_event' => new \Twig_Function_Method($this, 'logEvent', ['is_safe' => ['html']]),
         );
     }
 
+
+    public function logData($log_data)
+    {
+        $re = '';
+        if (!empty($log_data) && is_array($log_data)) {
+            foreach($log_data as $field => $versions) {
+                $re .= sprintf('%s: %s -> %s<br>', $field, $versions[0], $versions[1]);
+            }
+        }
+
+        return $re;
+    }
+
+    public function logEvent($log_event)
+    {
+        $re = '';
+        $trans = [
+            'Client'      => 'Ügyfél',
+            'Catering'    => 'Étkeztetés',
+            'ClientOrder' => 'Megrendelés',
+            'update'      => 'módosítás',
+            'insert'      => 'létrehozás',
+        ];
+
+        return strtr($log_event, $trans);
+    }
 
     public function closingStatus($status)
     {

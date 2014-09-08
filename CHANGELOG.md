@@ -1,3 +1,9 @@
+## 1.3.0 (2014.09.10)
+
+Fejlesztések:
+
+  - Előzménynapló
+
 ## 1.2.13 (2014.09.04)
 
 Fejlesztések:

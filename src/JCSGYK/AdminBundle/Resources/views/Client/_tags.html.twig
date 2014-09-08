@@ -2,6 +2,16 @@
 <div class="client-sub {% if notoggle is not defined %}togglable{% endif %}">{{ 'előzmények'|trans }}</div>
 <div>
     <table class="client" cellspacing="0" border="0">
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.createdAt|fdate('sd') }}</td>
+            <td>{{ fname(log.user.firstname, log.user.lastname) }}</td>
+            <td>{{ log_event(log.event) }}</td>
+            <td>{{ log_data(log.data) }}</td>
+        </tr>
+        {% endfor %}
+
+            {#
         {% if item.creator %}
         <tr>
             <th>{{ 'Létrehozta'|trans }}:</th>
@@ -15,6 +25,6 @@
             <td>{{ fname(item.modifier.firstname, item.modifier.lastname) }}</td>
             <td>({{ item.modifiedAt|fdate('dt') }})</td>
         </tr>
-        {% endif %}
+        {% endif %}#}
     </table>
 </div>

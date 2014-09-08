@@ -87,6 +87,15 @@ class ClientOrder
         $this->setCreatedAt(new \DateTime());
     }
 
+    public function getHistoryInfo()
+    {
+        return [
+            'fields' => ['date', 'order', 'cancel', 'closed', 'menu'],
+            'parent'   => 'Client-' . $this->client->getId(),
+            'class' => sprintf('ClientOrder %s', $this->date->format('Y-m-d')),
+        ];
+    }
+
     /**
      * Get id
      *
@@ -306,7 +315,7 @@ class ClientOrder
     /**
      * Get menu
      *
-     * @return integer 
+     * @return integer
      */
     public function getMenu()
     {

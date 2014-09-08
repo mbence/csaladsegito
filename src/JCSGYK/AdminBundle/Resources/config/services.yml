@@ -12,6 +12,16 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 
+    history.listener:
+        class: JCSGYK\AdminBundle\Services\HistoryListener
+        tags:
+            - { name: doctrine.event_listener, event: onFlush }
+        arguments:    ["@service_container"]
+
+    history.logger:
+        class: JCSGYK\AdminBundle\Services\HistoryLogger
+        arguments:    ["@service_container"]
+
     jcs.ds:
         class:        JCSGYK\AdminBundle\Services\DataStore
         arguments:    ["@service_container"]

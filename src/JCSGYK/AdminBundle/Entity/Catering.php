@@ -98,6 +98,15 @@ class Catering
      */
     private $isActive;
 
+    public function getHistoryInfo()
+    {
+        return [
+            'fields' => ['club', 'subscriptions', 'menu', 'isSingle', 'income', 'discount', 'discountFrom', 'discountTo', 'isActive'],
+            'parent'   => 'Client-' . $this->client->getId(),
+            'class' => 'Catering',
+        ];
+    }
+
     /**
      * Get id
      *

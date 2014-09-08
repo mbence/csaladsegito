@@ -1176,13 +1176,14 @@ class ClientController extends Controller
             $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
 
             return $this->render('JCSGYKAdminBundle:Client:edit.html.twig', [
-                        'client'             => $client,
-                        'problems'           => $problems,
-                        'form'               => $form->createView(),
-                        'relatives'          => $relatives,
-                        'new_relations'      => $relation_types,
-                        'client_type'        => $client_type,
-                        'recommended_fields' => json_encode($rec_fields),
+                'client'             => $client,
+                'problems'           => $problems,
+                'form'               => $form->createView(),
+                'relatives'          => $relatives,
+                'new_relations'      => $relation_types,
+                'client_type'        => $client_type,
+                'recommended_fields' => json_encode($rec_fields),
+                'logs'               => $this->container->get('history.logger')->getLogs($client),
             ]);
         }
         else {
@@ -1430,6 +1431,7 @@ class ClientController extends Controller
                 'relatives' => $relatives,
                 'new_relations' => $relation_types,
                 'client_type' => $client->getType(),
+                'logs'  => $this->container->get('history.logger')->getLogs($client),
             ]);
         }
         else {

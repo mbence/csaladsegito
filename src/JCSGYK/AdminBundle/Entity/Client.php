@@ -455,6 +455,19 @@ class Client
         $this->setModifiedAt(new \DateTime());
     }
 
+    public function getHistoryInfo()
+    {
+
+        return [
+            'fields' => ['caseYear','caseNumber','caseLabel','title','firstname','lastname','gender','birthDate','birthPlace','birthTitle','birthFirstname','birthLastname','motherTitle',
+'motherFirstname','motherLastname','socialSecurityNumber','identityNumber','idCardNumber','mobile','phone','fax','email','country','zipCode','city','street','streetType',
+'streetNumber','flatNumber','locationCountry','locationZipCode','locationCity','locationStreet','locationStreetType','locationStreetNumber','locationFlatNumber',
+'citizenshipStatus','citizenship','note','caseAdmin','guardianFirstname','guardianLastname','isArchived','agreementExpiresAt','parameters','utilityprovidernumbers'],
+            'parent'   => 'Client-' . $this->getId(),
+            'class' => 'Client',
+        ];
+    }
+
     public function updateAgreementDate()
     {
         $new_date = null;
