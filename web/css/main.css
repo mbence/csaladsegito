@@ -2956,7 +2956,7 @@ form.editform #recommended_fields label:after {
 }
 .full-widget select {
     width: 100%;
-    box-sizing: content-box;
+    box-sizing: border-box;
 }
 .client-edit input[type=text]:hover, .client-edit input[type=text]:focus,
 .client-edit input[type=password]:hover, .client-edit input[type=password]:focus,

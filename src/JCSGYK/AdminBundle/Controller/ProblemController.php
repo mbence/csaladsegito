@@ -40,11 +40,12 @@ class ProblemController extends Controller
             $has_agreement = $problem->getAgreementExpiresAt() >= new \DateTime('today');
 
             return $this->render('JCSGYKAdminBundle:Problem:view.html.twig', [
-                'client' => $problem->getClient(),
-                'problem' => $problem,
-                'events' => $events,
-                'can_edit' => $problem->canEdit($sec),
-                'has_agreement' => $has_agreement
+                'client'        => $problem->getClient(),
+                'problem'       => $problem,
+                'events'        => $events,
+                'can_edit'      => $problem->canEdit($sec),
+                'has_agreement' => $has_agreement,
+                'logs'          => $this->container->get('history.logger')->getLogs($problem),
             ]);
         }
         else {
@@ -162,11 +163,12 @@ class ProblemController extends Controller
             $events = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')->getEventList($id);
 
             return $this->render('JCSGYKAdminBundle:Problem:edit.html.twig', [
-                'client' => $client,
-                'problem' => $problem,
-                'events' => $events,
-                'form' => $form->createView(),
+                'client'      => $client,
+                'problem'     => $problem,
+                'events'      => $events,
+                'form'        => $form->createView(),
                 'client_type' => $client->getType(),
+                'logs'        => $this->container->get('history.logger')->getLogs($problem),
             ]);
         }
         else {

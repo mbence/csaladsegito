@@ -3,7 +3,9 @@
 namespace JCSGYK\AdminBundle\Services;
 
 use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Event\PostFlushEventArgs;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\ORM\UnitOfWork;
 
 class HistoryListener
 {
@@ -20,47 +22,54 @@ class HistoryListener
         $logger = $this->container->get('history.logger');
         $em   = $eventArgs->getEntityManager();
         $uow  = $em->getUnitOfWork();
+        $ds = $this->container->get('jcs.ds');
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {
+            $action = 'insert';
+            // get entity info
+            $info = $ds->getHistoryInfo($entity, $action, $uow);
 
-            // check for entity info
-            if (method_exists($entity, 'getHistoryInfo')) {
-                $info = $entity->getHistoryInfo();
-
-                $action = sprintf('%s insert', $info['class']);
-                $log = $logger->log($info['parent'], $action, $entity->getId());
-
-                $classMetadata = $em->getClassMetadata(get_class($log));
-                $uow->computeChangeSet($classMetadata, $log);
+            if (!empty($info['hash'])) {
+                $logger->queue($entity, $action, null, $info['data']);
             }
         }
 
         foreach ($uow->getScheduledEntityUpdates() as $entity) {
-
-            // check for entity info
-            if (method_exists($entity, 'getHistoryInfo')) {
-                $info = $entity->getHistoryInfo();
+            $action = 'update';
+            // get entity info
+            $info = $ds->getHistoryInfo($entity, $action, $uow);
+            if (!empty($info['hash'])) {
                 $changeset = $uow->getEntityChangeSet($entity);
 
-                $changeset = $this->filterChanges($changeset, $info);
+                $changeset = $this->filterChanges($entity, $changeset);
 
                 if (!empty($changeset)) {
-                    $action = sprintf('%s update', $info['class']);
-                    $log = $logger->log($info['parent'], $action, $changeset);
+                    // check for soft delete events
+                    if (!empty($changeset['isDeleted'])) {
+                        $action = 'delete';
+                        // refresh the info
+                        $del_info = $ds->getHistoryInfo($entity, $action, $uow);
+                        // add an extra log for the parent
+                        $logger->queue($entity, $action, $del_info['hash'], $del_info['data']);
+                    }
 
-                    $classMetadata = $em->getClassMetadata(get_class($log));
-                    $uow->computeChangeSet($classMetadata, $log);
+                    // add the info data to the changeset
+                    if (!empty($info['data'])) {
+                        $changeset = [$info['data'] => []] + $changeset;
+                    }
+
+                    $logger->queue($entity, $action, $info['hash'], $changeset);
                 }
             }
         }
 
         foreach ($uow->getScheduledEntityDeletions() as $entity) {
-            // check for entity info
-            if (method_exists($entity, 'getHistoryInfo')) {
-                $info = $entity->getHistoryInfo();
+            $action = 'delete';
+            // get entity info
+            $info = $ds->getHistoryInfo($entity, $action, $uow);
 
-                $action = sprintf('%s delete', $this->getClassName($entity));
-                $logger->log($info['parent'], $action, $entity->getId());
+            if (!empty($info['hash'])) {
+                $logger->queue($entity, $action, $info['hash'], $info['data']);
             }
         }
 
@@ -72,20 +81,38 @@ class HistoryListener
 
         }
     }
+/*
+    private function addLog($hash, $event, $data, $em = null, $uow = null)
+    {
+        $logger = $this->container->get('history.logger');
+        $log = $logger->log($hash, $event, $data);
+        var_dump($log->getId());
 
+        if (!is_null($em) && !is_null($uow)) {
+            $classMetadata = $em->getClassMetadata(get_class($log));
+            $uow->computeChangeSet($classMetadata, $log);
+        }
+    }
+*/
     /**
      * Removes unchanged or ignore fields from the changeset
      *
      * @param array $changeset
+     * @param array $fields
      * @return array
      */
-    private function filterChanges($changeset, $info)
+    private function filterChanges($entity, $changeset)
     {
         $re = [];
+        $fields = [];
+        if (method_exists($entity, 'getHistoryFields')) {
+            $fields = $entity->getHistoryFields();
+        }
+
         if (is_array($changeset)) {
             foreach ($changeset as $field => $versions) {
                 // check the entity history info
-                if (!empty($info['fields']) && is_array($info['fields']) && in_array($field, $info['fields'])
+                if (!empty($fields) && is_array($fields) && in_array($field, $fields)
                         // check for changes without type checking
                         && $versions[0] != $versions[1]) {
 
@@ -137,15 +164,4 @@ class HistoryListener
 
         return $re;
     }
-
-    /**
-     * Returns the class name without the namespace
-     * @param object $entity
-     * @return string
-     */
-    private function getClassName($entity)
-    {
-        return join('', array_slice(explode('\\', get_class($entity)), -1));
-    }
-
 }

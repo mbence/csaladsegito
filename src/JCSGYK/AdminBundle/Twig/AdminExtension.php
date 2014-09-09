@@ -70,10 +70,18 @@ class AdminExtension extends \Twig_Extension
     public function logData($log_data)
     {
         $re = '';
-        if (!empty($log_data) && is_array($log_data)) {
+        if (is_array($log_data)) {
             foreach($log_data as $field => $versions) {
-                $re .= sprintf('%s: %s -> %s<br>', $field, $versions[0], $versions[1]);
+                if (empty($versions)) {
+                    $re .= sprintf('%s<br>', $field);
+                }
+                else {
+                    $re .= sprintf('%s: %s -> %s<br>', $field, $versions[0], $versions[1]);
+                }
             }
+        }
+        else {
+            $re .= $log_data;
         }
 
         return $re;
@@ -86,8 +94,13 @@ class AdminExtension extends \Twig_Extension
             'Client'      => 'Ügyfél',
             'Catering'    => 'Étkeztetés',
             'ClientOrder' => 'Megrendelés',
-            'update'      => 'módosítás',
-            'insert'      => 'létrehozás',
+            'update'      => 'módosítása',
+            'insert'      => 'létrehozása',
+            'Problem'     => 'Probléma',
+            'delete'      => 'törlése',
+            'Event'       => 'Esemény',
+            'Invoice'     => 'Számla',
+            'Debt'        => 'Hátralék',
         ];
 
         return strtr($log_event, $trans);

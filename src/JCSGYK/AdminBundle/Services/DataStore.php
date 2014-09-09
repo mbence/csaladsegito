@@ -5,6 +5,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Doctrine\ORM\UnitOfWork;
 
 use JCSGYK\AdminBundle\Entity\Relation;
 use JCSGYK\AdminBundle\Entity\Client;
@@ -94,6 +95,57 @@ class DataStore
     public function __construct($container)
     {
         $this->container = $container;
+    }
+
+    /**
+     * Gets the history info from the entities
+     *
+     * @param object $entity
+     * @param \Doctrine\ORM\UnitOfWork $uow
+     * @return array
+     */
+    public function getHistoryInfo($entity, $action = 'default', UnitOfWork $uow = null)
+    {
+        $info = [];
+
+        if (method_exists($entity, 'getHistoryInfo')) {
+            $info = $entity->getHistoryInfo();
+
+            // fall back to the default action if necessary
+            if (!isset($info[$action])) {
+                $action = 'default';
+            }
+
+            // do we need to log this?
+            if (false !== $info[$action]) {
+                // generate the hash
+
+                // some proxy entities cant get their id with getId(), we need to get that from the UnitOfWork
+                if (empty($info[$action]['id'])) {
+                    // get the UnitOfWork from the doctrine Entity Manager
+                    if (is_null($uow)) {
+                        $uow = $this->container->get('doctrine')->getManager()->getUnitOfWork();
+                    }
+                    // find the id of this entity
+                    $info[$action]['id'] = $uow->getSingleIdentifierValue($entity);
+                }
+                // generate the hash from the class and id
+                $info['hash'] = sprintf('%s-%s', $info[$action]['hash'], $info[$action]['id']);
+                $info['data'] = $info[$action]['data'];
+            }
+        }
+
+        return $info;
+    }
+
+    /**
+     * Returns the class name without the namespace
+     * @param object $entity
+     * @return string
+     */
+    public function getClassName($entity)
+    {
+        return join('', array_slice(explode('\\', get_class($entity)), -1));
     }
 
     /**

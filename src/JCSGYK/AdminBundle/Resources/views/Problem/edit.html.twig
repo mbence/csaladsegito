@@ -47,15 +47,15 @@
     {% include "JCSGYKAdminBundle:Problem:_events.html.twig" with {notoggle: true} %}
 </div>
 
+<div class="toppad10">
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_problem', {type:'submit', class:'save_problem', title:'Probléma mentése', label:'mentés'}] } %}
+    <div class="clear"></div>
+    <br>
+</div>
 
 {% if problem.creator %}
     {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: problem, notoggle:true} %}
 {% endif %}
-
-<div class="toppad10">
-    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_problem', {type:'submit', class:'save_problem', title:'Probléma mentése', label:'mentés'}] } %}
-    <div class="clear"></div>
-</div>
 
 {{ form_widget(form._token) }}
 </form>

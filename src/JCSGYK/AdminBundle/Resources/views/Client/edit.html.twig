@@ -49,14 +49,15 @@
 
 {% include "JCSGYKAdminBundle:Client:_edit_note.html.twig" with {item: client} %}
 
-{% if client.creator %}
-    {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: client, notoggle:true} %}
-{% endif %}
-
 <div class="toppad10">
     {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_client', {type:'submit', class:'save_client', title:'Ügyfél mentése', label:'mentés'}]} %}
     <div class="clear"></div>
+    <br>
 </div>
+
+    {% if client.creator %}
+        {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: client, notoggle:true} %}
+    {% endif %}
 
 {{ form_widget(form._token) }}
 </form>

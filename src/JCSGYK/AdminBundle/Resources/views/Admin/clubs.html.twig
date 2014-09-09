@@ -56,6 +56,13 @@
                     <button type="reset" href="{{ path('admin_clubs') }}" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
                     <button type="submit" class="button" name="clubsave" value="save"><span>{{ 'mentés'|trans }}</span></button>
                 </div>
+                <div class="clear"></div>
+                <br>
+
+                {% if act %}
+                    {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: act, notoggle:true} %}
+                {% endif %}
+
                 {{ form_widget(form._token) }}
             </form>
 {#            <div class="info">

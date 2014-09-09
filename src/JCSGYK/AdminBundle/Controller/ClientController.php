@@ -1070,6 +1070,9 @@ class ClientController extends Controller
                         $em->persist($client);
                         $em->flush();
 
+                        // turn off the logging for the rest of the process
+                        $this->container->get('history.logger')->off();
+
                         // if case number given, we must copy over a few fields from that case
                         if (!empty($copy_case)) {
                             $this->copyCaseData($client);
@@ -1107,7 +1110,8 @@ class ClientController extends Controller
                         }
                     }
 
-                    $em->flush();
+                    // Do we need this?
+                    //$em->flush();
 
                     // handle/save the addresses
                     foreach ($client->getAddresses() as $adr) {

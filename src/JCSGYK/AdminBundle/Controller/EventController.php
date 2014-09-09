@@ -31,8 +31,9 @@ class EventController extends Controller
             $client_type = $event->getProblem()->getClient()->getType();
 
             return $this->render('JCSGYKAdminBundle:Event:view.html.twig', [
-                'event' => $event,
+                'event'       => $event,
                 'client_type' => $client_type,
+                'logs'        => $this->container->get('history.logger')->getLogs($event),
             ]);
         }
         else {
@@ -111,8 +112,8 @@ class EventController extends Controller
                             }
                         }
 
-                        // save the stats
-                        $this->get('jcs.stat')->save(Stat::TYPE_FAMILY_HELP, 2);
+                        // save the stats withoout flusing doctrine (for the history)
+                        $this->get('jcs.stat')->save(Stat::TYPE_FAMILY_HELP, 2, null, false);
                     }
 
                     // save the parameters
@@ -133,9 +134,10 @@ class EventController extends Controller
             }
 
             return $this->render('JCSGYKAdminBundle:Event:edit.html.twig', [
-                'event' => $event,
+                'event'   => $event,
                 'problem' => $problem,
-                'form' => $form->createView()
+                'form'    => $form->createView(),
+                'logs'    => $this->container->get('history.logger')->getLogs($event),
             ]);
         }
         else {

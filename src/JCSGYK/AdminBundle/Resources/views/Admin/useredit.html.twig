@@ -31,5 +31,11 @@
         <button data-url="{{ path('admin_users') }}" type="reset" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
         <button type="submit" class="usersave button" name="usersave" value="save"><span>{{ 'mentés'|trans }}</span></button>
     </div>
+    <div class="clear"></div>
+    <br>
+
+    {% if user %}
+        {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: user, notoggle:true} %}
+    {% endif %}
 </form>
 <br>

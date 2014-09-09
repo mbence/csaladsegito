@@ -28,7 +28,7 @@ class StatService
      *
      * @Secure(roles="ROLE_USER")
      */
-    public function save($type, $event, $user_id = null)
+    public function save($type, $event, $user_id = null, $do_flush = true)
     {
         $em = $this->container->get('doctrine')->getManager();
         if (is_null($user_id)) {
@@ -55,7 +55,10 @@ class StatService
             // we already have a record, lets increase the counter
             $stats[0]->setCounter($stats[0]->getCounter() + 1);
         }
-        $em->flush();
+
+        if ($do_flush) {
+            $em->flush();
+        }
 
         return true;
     }

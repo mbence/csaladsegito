@@ -128,7 +128,8 @@ class AdminController extends Controller
             'form'  => $form_view,
             'user'  => $user,
             'id'    => $id,
-            'filter' => $filter->createView()
+            'filter' => $filter->createView(),
+            'logs'  => !empty($user) ? $this->container->get('history.logger')->getLogs($user) : [],
         ]);
     }
 
@@ -529,7 +530,8 @@ class AdminController extends Controller
                 'clubs' => $clubs,
                 'id' => $id,
                 'act' => $club,
-                'form' => $form_view
+                'form' => $form_view,
+                'logs' => !empty($club) ? $this->container->get('history.logger')->getLogs($club) : [],
             ]);
         }
         else {

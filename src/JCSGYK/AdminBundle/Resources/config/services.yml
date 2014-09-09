@@ -21,6 +21,9 @@ services:
     history.logger:
         class: JCSGYK\AdminBundle\Services\HistoryLogger
         arguments:    ["@service_container"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: processQueue, priority: 5 }
+            - { name: kernel.event_listener, event: command.terminate, method: processQueue }
 
     jcs.ds:
         class:        JCSGYK\AdminBundle\Services\DataStore
