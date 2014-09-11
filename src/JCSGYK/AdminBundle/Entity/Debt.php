@@ -72,11 +72,6 @@ class Debt
             'default' => [
                 'hash' => 'Problem',
                 'id'   => !empty($this->problem) ? $this->problem->getId() : null,
-                'data' => null
-            ],
-            'delete' => [
-                'hash' => 'Problem',
-                'id'   => !empty($this->problem) ? $this->problem->getId() : null,
                 'data' => $this->getUtilityprovider()->getName(),
             ],
 

@@ -1,31 +1,59 @@
 {# Tags #}
 <div class="client-sub {% if notoggle is not defined %}togglable{% endif %}">{{ 'előzmények'|trans }}</div>
 <div>
-    <table class="client" cellspacing="0" border="0">
-        {% if logs is defined %}
-            {% for log in logs %}
-            <tr>
+    <table class="client historytable" cellspacing="0" border="0">
+    {% if logs is defined %}
+        {% for log in logs %}
+            {% set log_data = log_data(log) %}
+            <tr class="log-header">
                 <td>{{ log.createdAt|fdate('sdt') }}</td>
                 <td>{{ fname(log.user.firstname, log.user.lastname) }}</td>
-                <td>{{ log_event(log.event) }}</td>
-                <td>{{ log_data(log.data) }}</td>
+                <td width="70%">
+                    <strong>
+                        {{ log_event(log.event) }}
+                        {% if log_data[0] is defined and log_data[0] is not iterable %}
+                            - {{ log_data[0] }}
+                        {% endif %}
+                    </strong>
+                </td>
             </tr>
-            {% endfor %}
-        {% else %}
-            {% if item.creator is defined and item.creator %}
-            <tr>
-                <th>{{ 'Létrehozta'|trans }}:</th>
-                <td>{{ fname(item.creator.firstname, item.creator.lastname) }}</td>
-                <td>({{ item.createdAt|fdate('dt') }})</td>
-            </tr>
+            {% if log_data[0] is iterable %}
+                <tr class="log-data">
+                    <td colspan="3">
+                        <table>
+                        {% for change in log_data %}
+                            <tr>
+                                {% if change is iterable %}
+                                    <th class="noborder">{{ change[0]|raw }}</th>
+                                    <td><strong>{{ change[1]|raw }}</strong></td>
+                                    <td>{% if change[0] %}&#8594;{% endif %}</td>
+                                    <td><strong>{{ change[2]|raw }}</strong></td>
+                                {% else %}
+                                    <th class="noborder">{{ change|raw }}</th>
+                                    <td colspan="3"></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </table>
+                    </td>
+                </tr>
             {% endif %}
-            {% if item.modifiedAt is defined and item.modifiedAt and item.modifiedAt != item.createdAt %}
-            <tr>
-                <th>{{ 'Módosította'|trans }}:</th>
-                <td>{{ fname(item.modifier.firstname, item.modifier.lastname) }}</td>
-                <td>({{ item.modifiedAt|fdate('dt') }})</td>
-            </tr>
-            {% endif %}
+        {% endfor %}
+    {% else %}
+        {% if item.creator is defined and item.creator %}
+        <tr>
+            <th>{{ 'Létrehozta'|trans }}:</th>
+            <td>{{ fname(item.creator.firstname, item.creator.lastname) }}</td>
+            <td>({{ item.createdAt|fdate('dt') }})</td>
+        </tr>
+        {% endif %}
+        {% if item.modifiedAt is defined and item.modifiedAt and item.modifiedAt != item.createdAt %}
+        <tr>
+            <th>{{ 'Módosította'|trans }}:</th>
+            <td>{{ fname(item.modifier.firstname, item.modifier.lastname) }}</td>
+            <td>({{ item.modifiedAt|fdate('dt') }})</td>
+        </tr>
+        {% endif %}
     {% endif %}
     </table>
 </div>

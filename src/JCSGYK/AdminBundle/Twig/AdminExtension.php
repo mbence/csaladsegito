@@ -6,9 +6,13 @@ use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\DbimportBundle\Entity\Client as DbClient;
 use JCSGYK\AdminBundle\Entity\Problem;
+use JCSGYK\AdminBundle\Form\Type\ProblemType;
+
 use JCSGYK\AdminBundle\Entity\Paramgroup;
 use JCSGYK\AdminBundle\Services\DataStore;
 use JCSGYK\AdminBundle\Entity\Invoice;
+
+use JCSGYK\AdminBundle\Entity\History;
 
 class AdminExtension extends \Twig_Extension
 {
@@ -66,25 +70,236 @@ class AdminExtension extends \Twig_Extension
         );
     }
 
-
-    public function logData($log_data)
+    public function logData(History $log)
     {
-        $re = '';
-        if (is_array($log_data)) {
+        $log_data = $log->getData();
+        list($class, $action) = explode(' ', $log->getEvent());
+
+        $re = [];
+        if ('ClientOrder' == $class && 'update' == $action) {
+            $re[] = $this->formatHistoryOrders($log);
+        }
+        elseif (is_array($log_data)) {
             foreach($log_data as $field => $versions) {
                 if (empty($versions)) {
-                    $re .= sprintf('%s<br>', $field);
+                    $re[] = ['', '', $field];
                 }
                 else {
-                    $re .= sprintf('%s: %s -> %s<br>', $field, $versions[0], $versions[1]);
+                    $this->logDetails($re, $class, $field, $versions);
                 }
             }
         }
         else {
-            $re .= $log_data;
+            $re[] = $log_data;
         }
 
         return $re;
+    }
+
+    public function logDetails(&$re, $class, $field, $v)
+    {
+        $orig_count = count($re);
+
+        $field_map = [
+            'title'                => 'Cím',
+            'description'          => 'Megjegyzés',
+            'assignee'             => 'Felelős',
+            'title'                => 'Cím',
+            'eventDate'            => 'Dátum',
+            'clientVisit'          => 'Ügyfélfogadás',
+            'clientCancel'         => 'Ügyfél lemondta',
+            'birthDate'            => 'Szül. idő',
+            'birthPlace'           => 'Szül. hely',
+            'firstname'            => 'Keresztnév',
+            'lastname'             => 'Vezetéknév',
+            'birthTitle'           => 'Szül. titulus',
+            'birthFirstname'       => 'Szül. Keresztnév',
+            'birthLastname'        => 'Szül. Vezetéknév',
+            'motherTitle'          => 'Anyja titulusa',
+            'motherFirstname'      => 'Anyja keresztneve',
+            'motherLastname'       => 'Anyja vezetékneve',
+            'socialSecurityNumber' => 'TAJ',
+            'identityNumber'       => 'Szem.a.j',
+            'idCardNumber'         => 'Szig.sz.',
+            'mobile'               => 'Mobil',
+            'phone'                => 'Telefon',
+            'fax'                  => 'Fax',
+            'email'                => 'Email',
+            'country'              => 'Ország',
+            'zipCode'              => 'IRSZ',
+            'city'                 => 'Város',
+            'street'               => 'Utca',
+            'streetType'           => 'Közt.jell.',
+            'streetNumber'         => 'Házszám',
+            'flatNumber'           => 'Ajtó',
+            'locationCountry'      => 'Tart. Ország',
+            'locationZipCode'      => 'Tart. IRSZ',
+            'locationCity'         => 'Tart. Város',
+            'locationStreet'       => 'Tart. Utca',
+            'locationStreetType'   => 'Tart. Közt.jell.',
+            'locationStreetNumber' => 'Tart. Házszám',
+            'locationFlatNumber'   => 'Tart. Ajtó',
+            'note'                 => 'Megjegyzés',
+            'guardianFirstname'    => 'Megbízott keresztnév',
+            'guardianLastname'     => 'Megbízott vezetéknév',
+            'isSingle'     => 'Egyedülálló',
+            'discount'     => 'Mérséklés',
+            'discountFrom'     => 'Mérséklés -tól',
+            'discountTo'     => 'Mérséklés -ig',
+            'club'     => 'Klub',
+            'income' => 'Jövedelem',
+            'utilityprovider' => 'Szolgáltató',
+            'registeredDebt' => 'Nyilvántartott',
+            'managedDebt' => 'Kezelt',
+        ];
+
+        // first lets check the simple cases, where a map is enough
+        if (isset($field_map[$field])) {
+            if (($v[0] == 0 && $v[1] == 1) || ($v[0] == 1 && $v[1] == 0)) {
+                $re[] = [$field_map[$field], '',  $this->check($v[1])];
+            }
+            else {
+                $re[] = [$field_map[$field], $v[0], $v[1]];
+            }
+        }
+        // here comes the more complex stuff, output depends on the values of $v
+        else {
+            if ('isActive' == $field) {
+                if ($v[1] == 0) {
+                    $re[] = 'lezárás';
+                }
+                else {
+                    $re[] = 'újranyitás';
+                }
+            }
+            elseif ('isArchived' == $field) {
+                if ($v[1] == 1) {
+                    $re[] = 'archiválás';
+                }
+                else {
+                    $re[] = 'újranyitás';
+                }
+            }
+            elseif ('confirmedAt' == $field) {
+                $re[] = 'jóváhagyás';
+            }
+            elseif ('isDeleted' == $field) {
+                if ($v == [0,1]) {
+                    $re[] = 'törlés';
+                }
+                else {
+                    $re[] = 'visszaállítás';
+                }
+            }
+            elseif ('agreementExpiresAt' == $field) {
+                if (empty($v[1])) {
+                    $re[] = 'megállapodás törlése';
+                }
+                else {
+                    $re[] = 'megállapodás rögzítése';
+                }
+            }
+            elseif ('parameters' == $field) {
+                $re = $re + $this->formatHistoryParameters($v);
+            }
+            elseif ('subscriptions' == $field) {
+                $re[] = $this->formatHistorySubscriptions($v);
+            }
+            elseif ('Event' == $class && 'type' == $field) {
+                $re[] = ['Megnevezés', $this->ds->get($v[0]), $this->ds->get($v[1])];
+            }
+            elseif ('menu' == $field) {
+                $re[] = ['Ebéd', $this->ds->get($v[0]), $this->ds->get($v[1])];
+            }
+//            elseif ('ClientOrder' == $class) {
+//                $re[] = 'helo';
+//            }
+        }
+
+        // still no output?
+        if (count($re) == $orig_count) {
+            $re[] = [$field, $v[0], $v[1]];
+        }
+    }
+
+    /*
+     * 2014.09.09. 17:46:59 	Mészáros Bence 	Számla módosítása
+payments 		→ 	[["2014-09-09","15300"]]
+status 	2 	→ 	3
+     *
+     */
+
+    public function formatHistoryOrders(History $log)
+    {
+        $re = '';
+        $log_data = $log->getData();
+        // first key is the date
+        $re .= array_keys($log_data)[0];
+
+        $o = isset($log_data['order']) ? $log_data['order'] : [0, 0];
+        $c = isset($log_data['cancel']) ? $log_data['cancel'] : [0, 0];
+        $x = isset($log_data['closed']) ? $log_data['closed'] : [0, 0];
+
+        //var_dump($log_data, $o, $c, $x);
+        // 100 ->010
+        if (0 == $c[0] && 1 == $c[1] ) {
+            $re .= ' - lemondás';
+        }
+        elseif (1 == $c[0] && 0 == $c[1]) {
+            $re .= ' - megrendelés';
+        }
+
+        return $re;
+    }
+
+    /**
+     * Find the parameters that are really changed, and display their label as a history change
+     * @param array of json arrays $v
+     */
+    public function formatHistoryParameters($v)
+    {
+        $re = [];
+        $v0 = json_decode($v[0], true);
+        $v1 = json_decode($v[1], true);
+
+        // check the correct array sizes
+        if (count($v0) == count($v1)) {
+            $changes = [];
+            foreach ($v0 as $group => $val) {
+                if (!isset($v1[$group]) || $v1[$group] != $val) {
+                    $grp = $this->ds->getParamgroupById($group);
+                    $re[] = [ucfirst($grp->getName()), $this->ds->get($val, $grp->getId()), $this->ds->get($v1[$group], $grp->getId())];
+                }
+            }
+        }
+
+        return $re;
+    }
+
+    /**
+     * Find the parameters that are really changed, and display their label as a history change
+     * @param array of json arrays $v
+     */
+    public function formatHistorySubscriptions($v)
+    {
+        $v0 = json_decode($v[0], true);
+        $v1 = json_decode($v[1], true);
+
+        // 7 days a week
+        $days = ['H', 'K', 'Sze', 'CS', 'P', 'Szo', 'V'];
+        for ($d = 0; $d < 7; $d++) {
+            if (empty($v0[$d])) {
+                $v0[$d] = 0;
+            }
+            $v0[$d] = sprintf('%s %s', $days[$d], $this->check($v0[$d]));
+
+            if (empty($v1[$d])) {
+                $v1[$d] = 0;
+            }
+            $v1[$d] = sprintf('%s %s', $days[$d], $this->check($v1[$d]));
+        }
+
+        return ['Heti rendelések', implode(',', $v0), implode(',', $v1)];
     }
 
     public function logEvent($log_event)

@@ -3308,6 +3308,29 @@ h2.menu-section {
     display: none;
     text-align: center;
 }
+.historytable tr td, .historytable tr td table tr td, .historytable tr td table tr th {
+    color: #444;
+}
+.historytable tr td strong {
+    color: #000;
+    font-weight: normal;
+}
+.historytable tr.log-header {
+    background-color: #eee;
+}
+.historytable tr.log-header td {
+    white-space: nowrap;
+}
+.historytable tr.log-data {
+    background-color: #f8f8f8;
+}
+.historytable tr.log-data th {
+    text-align: right;
+}
+.historytable tr.log-data table {
+    margin: 0 auto;
+}
+
 .clearfix:after {
   content: ".";
   visibility: hidden;

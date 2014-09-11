@@ -46,15 +46,15 @@
     {% endif %}
 </table>
 
+<div class="toppad10">
+    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_event', {type:'submit', class:'save_event', title:'Esemény mentése', label:'mentés'}] } %}
+    <div class="clear"></div>
+    <br>
+</div>
 {% if event.creator %}
     {% include "JCSGYKAdminBundle:Client:_tags.html.twig" with {item: event, notoggle: true} %}
 {% endif %}
 
-
-<div class="toppad10">
-    {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['back_to_event', {type:'submit', class:'save_event', title:'Esemény mentése', label:'mentés'}] } %}
-    <div class="clear"></div>
-</div>
 
 {{ form_widget(form._token) }}
 </form>
