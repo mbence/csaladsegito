@@ -201,7 +201,7 @@ class AdminExtension extends \Twig_Extension
                 }
             }
             elseif ('parameters' == $field) {
-                $re += $this->formatHistoryParameters($v);
+                $re = array_merge($re, $this->formatHistoryParameters($v));
             }
             elseif ('subscriptions' == $field) {
                 $re[] = $this->formatHistorySubscriptions($v);
@@ -213,7 +213,7 @@ class AdminExtension extends \Twig_Extension
                 $re[] = ['Ebéd', $this->ds->get($v[0]), $this->ds->get($v[1])];
             }
             elseif ('payments' == $field) {
-                $re += $this->formatHistoryPayments($v);
+                $re = array_merge($re, $this->formatHistoryPayments($v));
             }
             elseif ('Invoice' == $class && 'status' == $field) {
                 if ($v[1] == Invoice::CANCELLED) {
@@ -231,13 +231,6 @@ class AdminExtension extends \Twig_Extension
         }
     }
 
-    /*
-     * 2014.09.09. 17:46:59 	Mészáros Bence 	Számla módosítása
-payments 		→ 	[["2014-09-09","15300"]]
-status 	2 	→ 	3
-     *
-     */
-
     public function formatHistoryPayments($v)
     {
         $re = [];
@@ -245,7 +238,6 @@ status 	2 	→ 	3
         $v1 = json_decode($v[1], true);
 
         // check the correct array sizes
-        $changes = [];
         foreach ($v1 as $k => $payment) {
             if (!isset($v0[$k]) || $v0[$k] != $v1[$k]) {
                 $re[] = ['Befizetés', '', $this->formatCurrency($payment[1])];
@@ -289,13 +281,10 @@ status 	2 	→ 	3
         $v1 = json_decode($v[1], true);
 
         // check the correct array sizes
-        if (count($v0) == count($v1)) {
-            $changes = [];
-            foreach ($v0 as $group => $val) {
-                if (!isset($v1[$group]) || $v1[$group] != $val) {
-                    $grp = $this->ds->getParamgroupById($group);
-                    $re[] = [ucfirst($grp->getName()), $this->ds->get($val, $grp->getId()), $this->ds->get($v1[$group], $grp->getId())];
-                }
+        foreach ($v1 as $group => $val) {
+            if (!isset($v0[$group]) || $v0[$group] != $v1[$group]) {
+                $grp = $this->ds->getParamgroupById($group);
+                $re[] = [ucfirst($grp->getName()), $this->ds->get($v0[$group], $grp->getId()), $this->ds->get($v1[$group], $grp->getId())];
             }
         }
 
