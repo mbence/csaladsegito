@@ -99,6 +99,7 @@ class AdminExtension extends \Twig_Extension
     public function logDetails(&$re, $class, $field, $v)
     {
         $orig_count = count($re);
+        $no_output = false;
 
         $field_map = [
             'title'                => 'Cím',
@@ -142,15 +143,15 @@ class AdminExtension extends \Twig_Extension
             'note'                 => 'Megjegyzés',
             'guardianFirstname'    => 'Megbízott keresztnév',
             'guardianLastname'     => 'Megbízott vezetéknév',
-            'isSingle'     => 'Egyedülálló',
-            'discount'     => 'Mérséklés',
-            'discountFrom'     => 'Mérséklés -tól',
-            'discountTo'     => 'Mérséklés -ig',
-            'club'     => 'Klub',
-            'income' => 'Jövedelem',
-            'utilityprovider' => 'Szolgáltató',
-            'registeredDebt' => 'Nyilvántartott',
-            'managedDebt' => 'Kezelt',
+            'isSingle'             => 'Egyedülálló',
+            'discount'             => 'Mérséklés',
+            'discountFrom'         => 'Mérséklés -tól',
+            'discountTo'           => 'Mérséklés -ig',
+            'club'                 => 'Klub',
+            'income'               => 'Jövedelem',
+            'utilityprovider'      => 'Szolgáltató',
+            'registeredDebt'       => 'Nyilvántartott',
+            'managedDebt'          => 'Kezelt',
         ];
 
         // first lets check the simple cases, where a map is enough
@@ -200,7 +201,7 @@ class AdminExtension extends \Twig_Extension
                 }
             }
             elseif ('parameters' == $field) {
-                $re = $re + $this->formatHistoryParameters($v);
+                $re += $this->formatHistoryParameters($v);
             }
             elseif ('subscriptions' == $field) {
                 $re[] = $this->formatHistorySubscriptions($v);
@@ -211,13 +212,21 @@ class AdminExtension extends \Twig_Extension
             elseif ('menu' == $field) {
                 $re[] = ['Ebéd', $this->ds->get($v[0]), $this->ds->get($v[1])];
             }
-//            elseif ('ClientOrder' == $class) {
-//                $re[] = 'helo';
-//            }
+            elseif ('payments' == $field) {
+                $re += $this->formatHistoryPayments($v);
+            }
+            elseif ('Invoice' == $class && 'status' == $field) {
+                if ($v[1] == Invoice::CANCELLED) {
+                    $re[] = 'Számla sztornózása';
+                }
+                else {
+                    $no_output = true;
+                }
+            }
         }
 
         // still no output?
-        if (count($re) == $orig_count) {
+        if (!$no_output && count($re) == $orig_count) {
             $re[] = [$field, $v[0], $v[1]];
         }
     }
@@ -228,6 +237,23 @@ payments 		→ 	[["2014-09-09","15300"]]
 status 	2 	→ 	3
      *
      */
+
+    public function formatHistoryPayments($v)
+    {
+        $re = [];
+        $v0 = json_decode($v[0], true);
+        $v1 = json_decode($v[1], true);
+
+        // check the correct array sizes
+        $changes = [];
+        foreach ($v1 as $k => $payment) {
+            if (!isset($v0[$k]) || $v0[$k] != $v1[$k]) {
+                $re[] = ['Befizetés', '', $this->formatCurrency($payment[1])];
+            }
+        }
+
+        return $re;
+    }
 
     public function formatHistoryOrders(History $log)
     {
