@@ -23,7 +23,7 @@
 
                 <td>{{ task.problem.title }}</td>
                 {% set pparam = pgroup(2, true, task.client.type) %}
-                {% if pparam %}<td>{{ param(task.problem.getParam(pparam.id), pparam.id) }}</td>{% endif %}
+                <td>{% if pparam %}{{ param(task.problem.getParam(pparam.id), pparam.id) }}{% endif %}</td>
 
                 <td>{{ task.createdAt|fdate('osdt') }}</td>
                 <td>{% if task_status[task.status] is defined %}{{ task_status[task.status]|trans }}{% else %}{{ task.status }}{% endif %}</td>
