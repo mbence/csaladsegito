@@ -1,3 +1,10 @@
+## 1.4.0 (unreleased)
+
+Fejlesztések:
+
+ - Házi segítségnyújtás
+
+
 ## 1.3.0 (2014.09.12)
 
 Fejlesztések:

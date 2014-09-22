@@ -27,7 +27,7 @@ class MenuController extends Controller
             $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CW]], 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE'];
         }
         if ($ds->companyHas(Client::CA)) {
-            $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CA]], 'label' => 'Étkeztetés', 'role' => 'ROLE_CATERING'];
+            $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CA]], 'label' => 'Étkeztetés és Gondozás', 'role' => 'ROLE_CATERING'];
         }
         $items[] = ['route' => 'reports', 'label' => 'Kimutatások', 'role' => 'ROLE_USER'];
         $items[] = ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'];
@@ -77,10 +77,23 @@ class MenuController extends Controller
     {
         $items = [
             ['route' => 'admin_clubs', 'label' => 'Klubok', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_options', 'options' => ['name' => 'cateringcosts'], 'label' => 'Díjtáblázat', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_options', 'options' => ['name' => 'cateringcosts'], 'label' => 'Étkeztetés Díjtáblázat', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_options', 'options' => ['name' => 'holidays'], 'label' => 'Munkaszüneti napok', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_closings', 'label' => 'Napi és havi zárások', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_dailyorders', 'label' => 'Konyhai rendelések', 'role' => 'ROLE_ADMIN'],
+        ];
+
+        $menu = $this->checkMenu($items);
+
+        return $this->render('JCSGYKAdminBundle:Settings:menu.html.twig', ['menu' => $menu]);
+    }
+
+    public function homehelpSettingsAction()
+    {
+        $items = [
+            ['route' => 'admin_social_workers', 'label' => 'Gondozók', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_options', 'options' => ['name' => 'homehelpcosts'], 'label' => 'Gondozás Díjtáblázat', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_home_help', 'label' => 'Gondozás rögzítése', 'role' => 'ROLE_ADMIN'],
         ];
 
         $menu = $this->checkMenu($items);

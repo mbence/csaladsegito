@@ -2,7 +2,7 @@
 
 {% block settings_content %}
 
-{% if name == 'cateringcosts' %}
+{% if name == 'cateringcosts' or name == 'homehelpcosts' %}
     {% include "JCSGYKAdminBundle:Admin:cateringcosts.html.twig" with {options: options} %}
 {% endif %}
 

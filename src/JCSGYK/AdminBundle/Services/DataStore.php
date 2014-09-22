@@ -42,7 +42,7 @@ class DataStore
     private $clientTypeNames = [
         Client::FH => 'Családsegítő',
         Client::CW => 'Gyermekjólét',
-        Client::CA => 'Étkeztetés'
+        Client::CA => 'Étkeztetés és Gondozás'
     ];
 
     /** Map for client types and security roles */
@@ -57,7 +57,7 @@ class DataStore
         'ROLE_ASSISTANCE' => 'Asszisztens',
         'ROLE_FAMILY_HELP' => 'Családsegítő',
         'ROLE_CHILD_WELFARE' => 'Gyermekvédelem',
-        'ROLE_CATERING' => 'Étkeztetés',
+        'ROLE_CATERING' => 'Étkeztetés és Gondozás',
         'ROLE_ADMIN' => 'Admin',
     ];
 

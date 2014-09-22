@@ -927,9 +927,37 @@ class AdminController extends Controller
      */
     public function optionsAction($name, $id = null)
     {
-        $option_types = ['cateringcosts','holidays'];
+        $option_types = ['cateringcosts', 'holidays', 'homehelpcosts'];
         $options_default_value = [
             'cateringcosts' => [
+                'valid_from' => '',
+                'data' => [[null,null,null,null]],
+                'format' => [
+                    'colWidths' => [100,100,100,100],
+                    'colHeaders' => ['-tól', '-ig', 'díj', 'egyedülálló'],
+                    'columns' => [
+                        [
+                            'type'     => 'numeric',
+                            'format'   => '0 0[,]00 $',
+                            'language' => 'hu'
+                        ],
+                        [
+                            'type'     => 'numeric',
+                            'format'   => '0 0[,]00 $',
+                            'language' => 'hu'
+                        ],
+                        [
+                            'type'     => 'numeric',
+                            'format'   => '0 0[,]00 $',
+                            'language' => 'hu'
+                        ],
+                        [
+                            'type'     => 'checkbox'
+                        ]
+                    ]
+                ]
+            ],
+            'homehelpcosts' => [
                 'valid_from' => '',
                 'data' => [[null,null,null,null]],
                 'format' => [
