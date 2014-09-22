@@ -63,10 +63,12 @@ class MenuController extends Controller
             ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
         ];
 
+        /*
         // add the db import menu only for the dev enver
         if ('dev' == $this->container->getParameter('kernel.environment')) {
             $items[] = ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPER_ADMIN'];
         }
+         */
 
         $menu = $this->checkMenu($items);
 

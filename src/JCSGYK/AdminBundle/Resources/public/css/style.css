@@ -532,6 +532,10 @@ table.problem-list td {
     width: 50%;
     float: left;
 }
+.adminblock300 {
+    width: 300px;
+    float: left;
+}
 #userlist, #useredit {
     height: 100%;
     overflow: auto;

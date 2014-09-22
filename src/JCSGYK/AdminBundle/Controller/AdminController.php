@@ -723,27 +723,51 @@ class AdminController extends Controller
         $re = [];
         $session = $this->get('session');
 
-        if ($request->isMethod('POST') && $request->get('update')) {
-            // git pull
-            $ex[] = "git pull https://github.com/mbence/csaladsegito.git master";
-            // clear cache
-            $ex[] = "php app/console cache:clear --env=prod --no-debug";
-            // assetic dump
-            //$ex[] = "php app/console assetic:dump --env=prod --no-debug";
-            // asset install
-            //$ex[] = "php app/console assets:install";
+        if ($request->isMethod('POST')) {
 
-            // switch to symfony root dir
-            chdir($this->get('kernel')->getRootDir() . '/..');
+            $php = $this->container->getParameter('php_path', '/usr/bin/php');
+            $app_root = $this->get('kernel')->getRootDir() . '/..';
 
-            foreach ($ex as $com) {
-                $output = '';
-                $return_val = '';
-                exec($com . ' 2>&1', $output, $return_val);
-                $re [] = ['ex' => $com, 'return_val' => $return_val, 'output' => implode($output, '<br>')];
+            if ($request->get('update')) {
+                $kernel = $this->container->get('kernel');
+                $console = sprintf('%s %s/console ', $php, $kernel->getRootDir());
+
+                // git pull
+                $ex[] = 'git pull https://github.com/mbence/csaladsegito.git master';
+                if (!empty($request->get('migrate'))) {
+                    // migrations
+                    $ex[] = $console . 'doctrine:migrations:migrate --no-interaction';
+                }
+                // clear cache
+                $ex[] = $console . 'cache:clear --env=prod --no-debug';
+                // assetic dump
+                //$ex[] = $console . 'assetic:dump --env=prod --no-debug';
+                // asset install
+                //$ex[] = $console . 'assets:install';
             }
+            /*
+            elseif ($request->get('composer')) {
+                putenv("COMPOSER_HOME={$app_root}");
+                // run composer selfupdate and update
+                $ex[] = $php . ' composer.phar selfupdate';
+                // run composer selfupdate and update
+                $ex[] = $php . ' composer.phar update';
+            }
+             */
 
-            $session->set('update', $re);
+            if (!empty($ex)) {
+                // switch to symfony root dir
+                chdir($app_root);
+
+                foreach ($ex as $com) {
+                    $output = '';
+                    $return_val = '';
+                    exec($com . ' 2>&1', $output, $return_val);
+                    $re [] = ['ex' => $com, 'return_val' => $return_val, 'output' => implode($output, '<br>')];
+                }
+
+                $session->set('update', $re);
+            }
 
             return $this->redirect($this->generateUrl('admin_update'));
         }
@@ -752,6 +776,7 @@ class AdminController extends Controller
             $re = $session->get('update');
             $session->remove('update');
         }
+
         return $this->render('JCSGYKAdminBundle:Admin:update.html.twig', ['result' => $re]);
     }
 
