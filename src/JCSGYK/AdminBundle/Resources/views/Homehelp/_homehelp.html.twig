@@ -1,13 +1,14 @@
 {# Home Help Fileds #}
-<div class="client-sub first-sub togglable">{{ 'gondozás'|trans }}</div>
+<div class="client-sub togglable">{{ 'gondozás'|trans }}</div>
 <div class="toppad">
     {% render(controller('JCSGYKAdminBundle:Menu:homehelp', { 'client': client })) %}
     <div class="clear"></div>
-    {% if not homehelp or not homehelp.isActive %}
+    {% if homehelp and not homehelp.isActive %}
         <div class="catering-inactive">
             Szüneteltetve
         </div>
-    {% else %}
+    {% endif %}
+    {% if homehelp is defined and homehelp %}
     <div>
         <table class="client" cellspacing="0" border="0">
             <tr>
@@ -33,6 +34,26 @@
                 </td>
             </tr>
             {% endif %}
+            {% if homehelp.services %}
+            <tr>
+                <th>{{ 'Szolgáltatások'|trans }}:</th>
+                <td colspan="3">{{ homehelp.services|a2l }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>{{ 'Jelzőrendszer'|trans }}:</th>
+                <td colspan="3">{{ homehelp.warningSystem|check }}</td>
+            </tr>
+            {% if homehelp.handicap %}
+            <tr>
+                <th>{{ 'Fogyaték'|trans }}:</th>
+                <td colspan="3">{{ homehelp.handicap|a2l }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>{{ 'ORSZI óra'|trans }}:</th>
+                <td colspan="3">{{ homehelp.hours }}</td>
+            </tr>
             <tr>
                 <th>{{ 'Egyenleg'|trans }}:</th>
                 <td colspan="3">

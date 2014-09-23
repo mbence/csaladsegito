@@ -172,6 +172,7 @@ class MenuController extends Controller
         $sec = $this->get('security.context');
         // true if only assistance roles are present
         $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE') && !$sec->isGranted('ROLE_CATERING');
+        $has_catering = !empty($client->getCatering());
 
         $items = [
             // edit catering data
@@ -191,7 +192,7 @@ class MenuController extends Controller
                 'class' => 'greybutton catering_orders',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
-                'requirement' => $client->canEdit($sec)
+                'requirement' => $client->canEdit($sec) && $has_catering,
             ],
             [
                 'url'   => $this->generateUrl('client_invoices', ['id' => $client->getId()]),
@@ -200,7 +201,7 @@ class MenuController extends Controller
                 'class' => 'greybutton catering_invoices',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
-                'requirement' => $client->canEdit($sec)
+                'requirement' => $client->canEdit($sec) && $has_catering,
             ]
         ];
 
@@ -212,6 +213,7 @@ class MenuController extends Controller
         $sec = $this->get('security.context');
         // true if only assistance roles are present
         $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE') && !$sec->isGranted('ROLE_CATERING');
+        $has_homehelp = !empty($client->getHomehelp());
 
         $items = [
             // edit homehelp data
@@ -231,7 +233,7 @@ class MenuController extends Controller
                 'class' => 'greybutton catering_invoices',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
-                'requirement' => $client->canEdit($sec)
+                'requirement' => $client->canEdit($sec) && $has_homehelp,
             ]
         ];
 

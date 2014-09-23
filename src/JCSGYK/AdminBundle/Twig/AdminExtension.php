@@ -28,45 +28,46 @@ class AdminExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            'fdate' => new \Twig_Filter_Method($this, 'formatDate'),
-            'fdate2' => new \Twig_Filter_Method($this, 'formatDateText'),
-            'check' => new \Twig_Filter_Method($this, 'check', ['is_safe' => ['html']]),
-            'fphone' => new \Twig_Filter_Method($this, 'formatPhone'),
-            'gender' => new \Twig_Filter_Method($this, 'gender'),
-            'ctype' => new \Twig_Filter_Method($this, 'clientType'),
-            'fcurr' => new \Twig_Filter_Method($this, 'formatCurrency'),
-            'cid' => new \Twig_Filter_Method($this, 'formatId'),
-            'casenum' => new \Twig_Filter_Method($this, 'formatCaseNumber'),
-            'caselabel' => new \Twig_Filter_Method($this, 'formatCaseLabel'),
-            'adate' => new \Twig_Filter_Method($this, 'formatAgreeDate', ['is_safe' => ['html']]),
-            'ssn' => new \Twig_Filter_Method($this, 'formatSSN', ['is_safe' => ['html']]),
-            'ctmap' => new \Twig_Filter_Method($this, 'clientTypeMap'),
-            'cat_days' => new \Twig_Filter_Method($this, 'cateringDays'),
+            'fdate'          => new \Twig_Filter_Method($this, 'formatDate'),
+            'fdate2'         => new \Twig_Filter_Method($this, 'formatDateText'),
+            'check'          => new \Twig_Filter_Method($this, 'check', ['is_safe' => ['html']]),
+            'fphone'         => new \Twig_Filter_Method($this, 'formatPhone'),
+            'gender'         => new \Twig_Filter_Method($this, 'gender'),
+            'ctype'          => new \Twig_Filter_Method($this, 'clientType'),
+            'fcurr'          => new \Twig_Filter_Method($this, 'formatCurrency'),
+            'cid'            => new \Twig_Filter_Method($this, 'formatId'),
+            'casenum'        => new \Twig_Filter_Method($this, 'formatCaseNumber'),
+            'caselabel'      => new \Twig_Filter_Method($this, 'formatCaseLabel'),
+            'adate'          => new \Twig_Filter_Method($this, 'formatAgreeDate', ['is_safe' => ['html']]),
+            'ssn'            => new \Twig_Filter_Method($this, 'formatSSN', ['is_safe' => ['html']]),
+            'ctmap'          => new \Twig_Filter_Method($this, 'clientTypeMap'),
+            'cat_days'       => new \Twig_Filter_Method($this, 'cateringDays'),
             'closing_status' => new \Twig_Filter_Method($this, 'closingStatus'),
             'invoice_status' => new \Twig_Filter_Method($this, 'invoiceStatus'),
-            'order_status' => new \Twig_Filter_Method($this, 'dailyOrderStatus'),
-            'first_line' => new \Twig_Filter_Method($this, 'firstLine'),
+            'order_status'   => new \Twig_Filter_Method($this, 'dailyOrderStatus'),
+            'first_line'     => new \Twig_Filter_Method($this, 'firstLine'),
+            'a2l'            => new \Twig_Filter_Method($this, 'array2List'),
         ];
     }
 
     public function getFunctions()
     {
         return array(
-            'fname' => new \Twig_Function_Method($this, 'formatName'),
-            'param' => new \Twig_Function_Method($this, 'getParam'),
-            'pgroup' => new \Twig_Function_Method($this, 'getParamGroup'),
-            'inquiry_types' => new \Twig_Function_Method($this, 'getInquiryTypes'),
-            'faddr' => new \Twig_Function_Method($this, 'formatAddress'),
-            'pstatus' => new \Twig_Function_Method($this, 'problemStatus'),
-            'rel_types' => new \Twig_Function_Method($this, 'getRelationTypes'),
-            'casefield' => new \Twig_Function_Method($this, 'formatCaseNumberFields', ['is_safe' => ['html']]),
-            'co_short' => new \Twig_Function_Method($this, 'getCompanyShortName'),
-            'co_logo' => new \Twig_Function_Method($this, 'getCompanyLogo'),
+            'fname'              => new \Twig_Function_Method($this, 'formatName'),
+            'param'              => new \Twig_Function_Method($this, 'getParam'),
+            'pgroup'             => new \Twig_Function_Method($this, 'getParamGroup'),
+            'inquiry_types'      => new \Twig_Function_Method($this, 'getInquiryTypes'),
+            'faddr'              => new \Twig_Function_Method($this, 'formatAddress'),
+            'pstatus'            => new \Twig_Function_Method($this, 'problemStatus'),
+            'rel_types'          => new \Twig_Function_Method($this, 'getRelationTypes'),
+            'casefield'          => new \Twig_Function_Method($this, 'formatCaseNumberFields', ['is_safe' => ['html']]),
+            'co_short'           => new \Twig_Function_Method($this, 'getCompanyShortName'),
+            'co_logo'            => new \Twig_Function_Method($this, 'getCompanyLogo'),
             'get_pgroup_control' => new \Twig_Function_Method($this, 'getParamGroupControl'),
-            'is_cw' => new \Twig_Function_Method($this, 'companyIsCW'),
-            'getct' => new \Twig_Function_Method($this, 'getClientTypes'),
-            'log_data' => new \Twig_Function_Method($this, 'logData', ['is_safe' => ['html']]),
-            'log_event' => new \Twig_Function_Method($this, 'logEvent', ['is_safe' => ['html']]),
+            'is_cw'              => new \Twig_Function_Method($this, 'companyIsCW'),
+            'getct'              => new \Twig_Function_Method($this, 'getClientTypes'),
+            'log_data'           => new \Twig_Function_Method($this, 'logData', ['is_safe' => ['html']]),
+            'log_event'          => new \Twig_Function_Method($this, 'logEvent', ['is_safe' => ['html']]),
         );
     }
 
@@ -159,7 +160,8 @@ class AdminExtension extends \Twig_Extension
 
         // first lets check the simple cases, where a map is enough
         if (isset($field_map[$field])) {
-            if (($v[0] == 0 && $v[1] == 1) || ($v[0] == 1 && $v[1] == 0)) {
+            // checkmarks, except some text fields
+            if (!in_array($field, ['hours', 'discount']) && (($v[0] == 0 && $v[1] == 1) || ($v[0] == 1 && $v[1] == 0))) {
                 $re[] = [$field_map[$field], '',  $this->check($v[1])];
             }
             else {
@@ -173,7 +175,7 @@ class AdminExtension extends \Twig_Extension
                     $re[] = 'lezárás';
                 }
                 else {
-                    $re[] = 'újranyitás';
+                    $re[] = 'aktiválás';
                 }
             }
             elseif ('isArchived' == $field) {
@@ -244,7 +246,7 @@ class AdminExtension extends \Twig_Extension
     }
 
     /**
-     * Find the parameters that are really changed, and display their label as a history change
+     * Display the changes as a list
      * @param array of json arrays $v
      */
     public function formatHistoryServices($field, $v)
@@ -256,11 +258,10 @@ class AdminExtension extends \Twig_Extension
         $re = [strtr($field, $trans), [], []];
 
         foreach ($v as $k => $ver) {
-            $vals = json_decode($ver, true);
-            foreach ($vals as $val) {
-                $re[$k + 1][] = $this->ds->get($val);
-            }
-            $re[$k + 1] = implode(', ', $re[$k + 1]);
+            // empty arrays [] get auto decoded and come in as arrays instead of json
+            $vals = !is_array($ver) ? json_decode($ver, true) : $ver;
+            // get the texts
+            $re[$k + 1] = $this->array2List($vals);
         }
 
         return $re;
@@ -819,6 +820,22 @@ class AdminExtension extends \Twig_Extension
             if (!empty($subscriptions[$index])) {
                 $re[] = $day;
             }
+        }
+
+        return implode(', ', $re);
+    }
+
+    /**
+     * Return a parameter array as a list of text
+     * @param array $array
+     * @return string
+     */
+    public function array2List($array)
+    {
+        $re = [];
+
+        foreach ($array as $param) {
+            $re[] = $this->ds->get($param);
         }
 
         return implode(', ', $re);

@@ -55,7 +55,6 @@ JcsCatering =
                     AjaxBag.showNotice(JcsModal.find(".result").data("result-notice"))
                     JcsModal.close()
                     # refresh the parent block
-                    #JcsCatering.reloadCatering()
                     JcsClient.reloadClient()
                 else
                     JcsCatering.initCatering()

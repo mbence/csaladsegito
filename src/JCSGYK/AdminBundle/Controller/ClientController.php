@@ -256,6 +256,12 @@ class ClientController extends Controller
             $clubs = $ds->getClubs();
             $catering = $client->getCatering();
 
+            if (empty($catering)) {
+                $catering = new Catering();
+                $catering->setClient($client);
+                $catering->setIsActive(false);
+                $client->setCatering($catering);
+            }
             $original_catering = clone $catering;
 
             $form = $this->createForm(new CateringType($ds, $clubs), $catering);
@@ -265,6 +271,10 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
+                    // save the new Homehelp record
+                    if (empty($catering->getId())) {
+                        $em->persist($catering);
+                    }
 
                     // check if menu was changed
                     if ($original_catering->getMenu() != $catering->getMenu()) {
@@ -286,6 +296,16 @@ class ClientController extends Controller
 
                     // save
                     $em->flush();
+
+                    // turn off the logging for the rest of the process
+                    $this->container->get('history.logger')->off();
+
+                    // update Homehelp record if necessary
+                    $homehelp = $client->getHomehelp();
+                    if (!empty($homehelp)) {
+                        $homehelp->setClub($catering->getClub());
+                        $homehelp->setIncome($catering->getIncome());
+                    }
 
                     $this->get('session')->getFlashBag()->add('notice', 'Étkeztetés elmentve');
 
@@ -360,6 +380,16 @@ class ClientController extends Controller
 
                     // save
                     $em->flush();
+
+                    // turn off the logging for the rest of the process
+                    $this->container->get('history.logger')->off();
+
+                    // update Catering record if necessary
+                    $catering = $client->getCatering();
+                    if (!empty($catering)) {
+                        $catering->setClub($homehelp->getClub());
+                        $catering->setIncome($homehelp->getIncome());
+                    }
 
                     $this->get('session')->getFlashBag()->add('notice', 'Gondozás elmentve');
 
@@ -1189,13 +1219,6 @@ class ClientController extends Controller
                     elseif (empty($case_num)) {
                         $client->setCaseYear($orig_year);
                         $client->setCaseNumber($orig_casenum);
-                    }
-
-                    // create a catering record for such clients
-                    if ($client->getType() == Client::CA && empty($client->getCatering())) {
-                        $catering = new Catering();
-                        $catering->setClient($client);
-                        $em->persist($catering);
                     }
 
                     // set the visible case number

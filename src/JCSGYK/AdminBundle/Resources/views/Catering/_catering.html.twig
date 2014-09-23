@@ -1,14 +1,14 @@
 {# Catering Fileds #}
-{% if catering %}
-<div class="client-sub first-sub togglable">{{ 'étkeztetés'|trans }}</div>
+<div class="client-sub togglable">{{ 'étkeztetés'|trans }}</div>
 <div class="toppad">
     {% render(controller('JCSGYKAdminBundle:Menu:catering', { 'client': client })) %}
     <div class="clear"></div>
-    {% if not catering.isActive %}
+    {% if catering and not catering.isActive %}
         <div class="catering-inactive">
             Szüneteltetve
         </div>
     {% endif %}
+    {% if catering is defined and catering %}
     <div>
         <table class="client" cellspacing="0" border="0">
             <tr>
@@ -52,5 +52,5 @@
             </tr>
         </table>
     </div>
+    {% endif %}
 </div>
-{% endif %}
