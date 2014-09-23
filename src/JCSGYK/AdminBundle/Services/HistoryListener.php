@@ -156,6 +156,9 @@ class HistoryListener
                     $re[$k] = $ver->getId();
                 }
             }
+            elseif (is_array($ver)) {
+                $re[$k] = json_encode($ver);
+            }
             else {
 
                 $re[$k] = (string) $ver;

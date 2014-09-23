@@ -27,6 +27,8 @@ use JCSGYK\AdminBundle\Form\Type\CateringType;
 use JCSGYK\AdminBundle\Entity\ClientOrder;
 use JCSGYK\AdminBundle\Form\Type\ClientOrderType;
 use JCSGYK\AdminBundle\Entity\Invoice;
+use JCSGYK\AdminBundle\Entity\HomeHelp;
+use JCSGYK\AdminBundle\Form\Type\HomehelpType;
 
 class ClientController extends Controller
 {
@@ -197,6 +199,37 @@ class ClientController extends Controller
     }
 
     /**
+     * Get only the homehelp data of the client.
+     * Used with the refreshHomeHelp JS function
+     *
+     * @Secure(roles="ROLE_USER")
+     */
+    public function homehelpAction($id)
+    {
+        if (!empty($id)) {
+            $client = $this->getClient($id);
+        }
+
+        if (!empty($client)) {
+
+            $ds = $this->container->get('jcs.ds');
+
+            // Global security check for user type
+            $ds->userRoleCheck($client->getType());
+
+            $sec = $this->get('security.context');
+
+            return $this->render('JCSGYKAdminBundle:Homehelp:_homehelp.html.twig', [
+                'client' => $client,
+                'homehelp' => $client->getHomehelp(),
+            ]);
+        }
+        else {
+            throw new BadRequestHttpException('Invalid client id');
+        }
+    }
+
+    /**
      * Edit catering fields
      *
      * @Secure(roles="ROLE_USER")
@@ -263,6 +296,80 @@ class ClientController extends Controller
             }
 
             return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
+                'client'          => $client,
+                'form'            => $form->createView(),
+                'clubs_menu_list' => json_encode($ds->getClubsMenuList($clubs)),
+            ]);
+        }
+        else {
+            throw new BadRequestHttpException('Invalid client id');
+        }
+    }
+
+
+    /**
+     * Edit homehelp fields
+     *
+     * @Secure(roles="ROLE_USER")
+     */
+    public function homehelpEditAction($id = null)
+    {
+        $request = $this->getRequest();
+
+        if (!empty($id)) {
+            $em         = $this->getDoctrine()->getManager();
+            $ds         = $this->container->get('jcs.ds');
+            $company_id = $ds->getCompanyId();
+            $ae         = $this->container->get('jcs.twig.adminextension');
+            $sec        = $this->get('security.context');
+            $user       = $sec->getToken()->getUser();
+
+            // get the client
+            $client = $this->getClient($id);
+
+            // Global security check for user type
+            $ds->userRoleCheck($client->getType());
+
+            // get club list by user role
+            $clubs = $ds->getClubs();
+            $homehelp = $client->getHomehelp();
+
+            if (empty($homehelp)) {
+                $homehelp = new HomeHelp();
+                $homehelp->setClient($client);
+                $homehelp->setIsActive(false);
+                $client->setHomehelp($homehelp);
+            }
+
+            $form = $this->createForm(new HomehelpType($ds, $clubs), $homehelp);
+
+            // save the catering data
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+
+                    // save the new Homehelp record
+                    if (empty($homehelp->getId())) {
+                        $em->persist($homehelp);
+                    }
+
+                    // save homehelp modifier
+                    $homehelp->setModifier($user);
+                    $homehelp->setModifiedAt(new \DateTime());
+
+                    // save
+                    $em->flush();
+
+                    $this->get('session')->getFlashBag()->add('notice', 'Gondozás elmentve');
+
+                    return $this->render('JCSGYKAdminBundle:Homehelp:homehelp_dialog.html.twig', [
+                        'success' => true,
+                    ]);
+                }
+            }
+
+            return $this->render('JCSGYKAdminBundle:Homehelp:homehelp_dialog.html.twig', [
                 'client'          => $client,
                 'form'            => $form->createView(),
                 'clubs_menu_list' => json_encode($ds->getClubsMenuList($clubs)),

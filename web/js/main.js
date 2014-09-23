@@ -16272,7 +16272,7 @@ JcsCatering = {
         if (JcsModal.find(".result").data("result-notice")) {
           AjaxBag.showNotice(JcsModal.find(".result").data("result-notice"));
           JcsModal.close();
-          return JcsCatering.reloadCatering();
+          return JcsClient.reloadClient();
         } else {
           return JcsCatering.initCatering();
         }

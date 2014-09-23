@@ -442,6 +442,10 @@ class Client
      */
     private $invoices;
 
+    /**
+     * @ORM\OneToOne(targetEntity="Homehelp", mappedBy="client", fetch="EXTRA_LAZY")
+     */
+    private $homehelp;
 
     public function __construct()
     {
@@ -2091,5 +2095,29 @@ class Client
     public function getInvoices()
     {
         return $this->invoices;
+    }
+
+    /**
+     * Set homehelp
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Homehelp $homehelp
+     *
+     * @return Client
+     */
+    public function setHomehelp(\JCSGYK\AdminBundle\Entity\Homehelp $homehelp = null)
+    {
+        $this->homehelp = $homehelp;
+
+        return $this;
+    }
+
+    /**
+     * Get homehelp
+     *
+     * @return \JCSGYK\AdminBundle\Entity\Homehelp
+     */
+    public function getHomehelp()
+    {
+        return $this->homehelp;
     }
 }

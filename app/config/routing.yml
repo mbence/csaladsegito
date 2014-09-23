@@ -26,3 +26,9 @@ fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /profile
 
+remove_trailing_slash:
+    path: /{url}
+    defaults: { _controller: JCSGYKAdminBundle:Redirecting:removeTrailingSlash }
+    requirements:
+        url: .*/$
+    methods: [GET]

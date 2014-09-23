@@ -207,6 +207,37 @@ class MenuController extends Controller
         return $this->subMenu($items, false);
     }
 
+    public function homehelpAction(Client $client)
+    {
+        $sec = $this->get('security.context');
+        // true if only assistance roles are present
+        $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE') && !$sec->isGranted('ROLE_CATERING');
+
+        $items = [
+            // edit homehelp data
+            [
+                'url'   => $this->generateUrl('client_homehelp_edit', ['id' => $client->getId()]),
+                'label' => 'szerkesztés',
+                'title' => 'Gondozási adatok szerkesztése',
+                'class' => 'greybutton edit_catering',
+                'more'  => false,
+                'role'  => 'ROLE_CATERING',
+                'requirement' => $client->canEdit($sec)
+            ],
+            [
+                'url'   => $this->generateUrl('client_homehelp_invoices', ['id' => $client->getId()]),
+                'label' => 'befizetés',
+                'title' => 'Számlák és befizetések',
+                'class' => 'greybutton catering_invoices',
+                'more'  => false,
+                'role'  => 'ROLE_CATERING',
+                'requirement' => $client->canEdit($sec)
+            ]
+        ];
+
+        return $this->subMenu($items, false);
+    }
+
     public function problemAction(Problem $problem)
     {
         $sec = $this->get('security.context');

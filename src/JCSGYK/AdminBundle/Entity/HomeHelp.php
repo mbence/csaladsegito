@@ -22,7 +22,7 @@ class HomeHelp
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="Client", inversedBy="catering")
+     * @ORM\OneToOne(targetEntity="Client", inversedBy="homehelp")
      * @ORM\JoinColumn(name="client_id", referencedColumnName="id")
      */
     private $client;
@@ -30,7 +30,7 @@ class HomeHelp
     /**
      * @var Club
      *
-     * @ORM\ManyToOne(targetEntity="Club", inversedBy="clientcaterings")
+     * @ORM\ManyToOne(targetEntity="Club")
      * @ORM\JoinColumn(name="club_id", referencedColumnName="id")
      */
     private $club;
@@ -57,9 +57,9 @@ class HomeHelp
     private $income;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="discount", type="boolean", nullable=true)
+     * @ORM\Column(name="discount", type="integer", nullable=true)
      */
     private $discount;
 
@@ -94,7 +94,7 @@ class HomeHelp
     /**
      * @var string
      *
-     * @ORM\Column(name="services", type="text", length=65535, nullable=true)
+     * @ORM\Column(name="services", type="json_array", nullable=true)
      */
     private $services;
 
@@ -108,7 +108,7 @@ class HomeHelp
     /**
      * @var integer
      *
-     * @ORM\Column(name="handicap", type="smallint", nullable=true)
+     * @ORM\Column(name="handicap", type="json_array", nullable=true)
      */
     private $handicap;
 
@@ -122,9 +122,15 @@ class HomeHelp
     /**
      * @var integer
      *
-     * @ORM\Column(name="created_by", type="integer", nullable=true)
+     * @ORM\Column(name="balance", type="integer", nullable=true)
      */
-    private $createdBy;
+    private $balance;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
+     * @ORM\JoinColumn(name="created_by", referencedColumnName="id")
+     */
+    private $creator;
 
     /**
      * @var \DateTime
@@ -134,11 +140,10 @@ class HomeHelp
     private $createdAt;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="modified_by", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
+     * @ORM\JoinColumn(name="modified_by", referencedColumnName="id")
      */
-    private $modifiedBy;
+    private $modifier;
 
     /**
      * @var \DateTime
@@ -146,6 +151,11 @@ class HomeHelp
      * @ORM\Column(name="modified_at", type="datetime", nullable=true)
      */
     private $modifiedAt;
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTime());
+    }
 
     /**
      * Get the list of fields for change tracking
@@ -262,7 +272,7 @@ class HomeHelp
     /**
      * Set discount
      *
-     * @param boolean $discount
+     * @param integer $discount
      *
      * @return HomeHelp
      */
@@ -276,7 +286,7 @@ class HomeHelp
     /**
      * Get discount
      *
-     * @return boolean
+     * @return integer
      */
     public function getDiscount()
     {
@@ -382,7 +392,7 @@ class HomeHelp
     /**
      * Set services
      *
-     * @param string $services
+     * @param array $services
      *
      * @return HomeHelp
      */
@@ -396,7 +406,7 @@ class HomeHelp
     /**
      * Get services
      *
-     * @return string
+     * @return array
      */
     public function getServices()
     {
@@ -428,30 +438,6 @@ class HomeHelp
     }
 
     /**
-     * Set handicap
-     *
-     * @param integer $handicap
-     *
-     * @return HomeHelp
-     */
-    public function setHandicap($handicap)
-    {
-        $this->handicap = $handicap;
-
-        return $this;
-    }
-
-    /**
-     * Get handicap
-     *
-     * @return integer
-     */
-    public function getHandicap()
-    {
-        return $this->handicap;
-    }
-
-    /**
      * Set hours
      *
      * @param integer $hours
@@ -476,27 +462,26 @@ class HomeHelp
     }
 
     /**
-     * Set createdBy
+     * Set creator
      *
-     * @param integer $createdBy
-     *
-     * @return HomeHelp
+     * @param \JCSGYK\AdminBundle\Entity\User $creator
+     * @return Client
      */
-    public function setCreatedBy($createdBy)
+    public function setCreator(\JCSGYK\AdminBundle\Entity\User $creator = null)
     {
-        $this->createdBy = $createdBy;
+        $this->creator = $creator;
 
         return $this;
     }
 
     /**
-     * Get createdBy
+     * Get creator
      *
-     * @return integer
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
-    public function getCreatedBy()
+    public function getCreator()
     {
-        return $this->createdBy;
+        return $this->creator;
     }
 
     /**
@@ -524,27 +509,26 @@ class HomeHelp
     }
 
     /**
-     * Set modifiedBy
+     * Set modifier
      *
-     * @param integer $modifiedBy
-     *
-     * @return HomeHelp
+     * @param \JCSGYK\AdminBundle\Entity\User $modifier
+     * @return Client
      */
-    public function setModifiedBy($modifiedBy)
+    public function setModifier(\JCSGYK\AdminBundle\Entity\User $modifier = null)
     {
-        $this->modifiedBy = $modifiedBy;
+        $this->modifier = $modifier;
 
         return $this;
     }
 
     /**
-     * Get modifiedBy
+     * Get modifier
      *
-     * @return integer
+     * @return \JCSGYK\AdminBundle\Entity\User
      */
-    public function getModifiedBy()
+    public function getModifier()
     {
-        return $this->modifiedBy;
+        return $this->modifier;
     }
 
     /**
@@ -617,5 +601,62 @@ class HomeHelp
     public function getClub()
     {
         return $this->club;
+    }
+
+    /**
+     * Set balance
+     *
+     * @param integer $balance
+     *
+     * @return Homehelp
+     */
+    public function setBalance($balance)
+    {
+        $this->balance = $balance;
+
+        return $this;
+    }
+
+    /**
+     * Get balance
+     *
+     * @return integer
+     */
+    public function getBalance()
+    {
+        return $this->balance;
+    }
+
+    public function discountIsActive($date = null)
+    {
+        if (is_null($date)) {
+            $date = new \DateTime('today');
+        }
+
+        return !empty($this->getDiscount()) && (empty($this->getDiscountFrom()) && empty($this->getDiscountFrom()) || $this->getDiscountFrom() <= $date && $this->getDiscountTo() >= $date);
+    }
+
+    /**
+     * Set handicap
+     *
+     * @param array $handicap
+     *
+     * @return Homehelp
+     */
+    public function setHandicap($handicap)
+    {
+        $this->handicap = $handicap;
+
+        return $this;
+    }
+
+    /**
+     * Get handicap
+     *
+     * @return array
+     */
+    public function getHandicap()
+    {
+        return $this->handicap;
     }
 }

@@ -1,0 +1,42 @@
+{# Edit Catering #}
+{% form_theme form 'JCSGYKAdminBundle:Form:errors.html.twig' %}
+<div class="client-sub">{{ 'gondozás'|trans }}</div>
+<table class="client-edit" cellspacing="0" border="0">
+    <tr>
+        <th>{{ form_label(form.club) }}:</th>
+        <td>{{ form_errors(form.club) }}{{ form_widget(form.club) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.social_worker) }}:</th>
+        <td>{{ form_errors(form.social_worker) }}{{ form_widget(form.social_worker) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.income) }}:</th>
+        <td>{{ form_errors(form.income) }}{{ form_widget(form.income) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.discount) }}:</th>
+        <td>
+            <div class="inblock">{{ form_errors(form.discount) }}{{ form_widget(form.discount) }}</div>
+            <div class="inblock"> Időtartam:</div>
+            <div class="inblock">{{ form_errors(form.discount_from) }}{{ form_widget(form.discount_from) }} - </div>
+            <div class="inblock">{{ form_errors(form.discount_to) }}{{ form_widget(form.discount_to) }}</div>
+        </td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.services) }}:</th>
+        <td>{{ form_errors(form.services) }}{{ form_widget(form.services) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.warning_system) }}:</th>
+        <td>{{ form_errors(form.warning_system) }}{{ form_widget(form.warning_system) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.handicap) }}:</th>
+        <td>{{ form_errors(form.handicap) }}{{ form_widget(form.handicap) }}</td>
+    </tr>
+    <tr>
+        <th>{{ form_label(form.hours) }}:</th>
+        <td>{{ form_errors(form.hours) }}{{ form_widget(form.hours) }}</td>
+    </tr>
+</table>

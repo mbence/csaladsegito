@@ -148,10 +148,13 @@ class AdminExtension extends \Twig_Extension
             'discountFrom'         => 'Mérséklés -tól',
             'discountTo'           => 'Mérséklés -ig',
             'club'                 => 'Klub',
-            'income'               => 'Jövedelem',
             'utilityprovider'      => 'Szolgáltató',
             'registeredDebt'       => 'Nyilvántartott',
             'managedDebt'          => 'Kezelt',
+            'agreementFrom'        => 'Megállapodás kezdete',
+            'agreementto'          => 'Megállapodás vége',
+            'warningSystem'        => 'Jelzőrendszer',
+            'hours'                => 'ORSZI óra',
         ];
 
         // first lets check the simple cases, where a map is enough
@@ -212,8 +215,14 @@ class AdminExtension extends \Twig_Extension
             elseif ('menu' == $field) {
                 $re[] = ['Ebéd', $this->ds->get($v[0]), $this->ds->get($v[1])];
             }
+            elseif ('socialWorker' == $field) {
+                $re[] = ['Gondozó', $this->ds->get($v[0]), $this->ds->get($v[1])];
+            }
             elseif ('payments' == $field) {
                 $re = array_merge($re, $this->formatHistoryPayments($v));
+            }
+            elseif ('income' == $field) {
+                $re[] = ['Jövedelem', $this->formatCurrency($v[0]), $this->formatCurrency($v[1])];
             }
             elseif ('Invoice' == $class && 'status' == $field) {
                 if ($v[1] == Invoice::CANCELLED) {
@@ -223,12 +232,38 @@ class AdminExtension extends \Twig_Extension
                     $no_output = true;
                 }
             }
+            elseif (in_array($field, ['services', 'handicap'])) {
+                $re[] = $this->formatHistoryServices($field, $v);
+            }
         }
 
         // still no output?
         if (!$no_output && count($re) == $orig_count) {
             $re[] = [$field, $v[0], $v[1]];
         }
+    }
+
+    /**
+     * Find the parameters that are really changed, and display their label as a history change
+     * @param array of json arrays $v
+     */
+    public function formatHistoryServices($field, $v)
+    {
+        $trans = [
+            'services' => 'Szolgáltatások',
+            'handicap' => 'Fogyaték',
+        ];
+        $re = [strtr($field, $trans), [], []];
+
+        foreach ($v as $k => $ver) {
+            $vals = json_decode($ver, true);
+            foreach ($vals as $val) {
+                $re[$k + 1][] = $this->ds->get($val);
+            }
+            $re[$k + 1] = implode(', ', $re[$k + 1]);
+        }
+
+        return $re;
     }
 
     public function formatHistoryPayments($v)
@@ -331,6 +366,7 @@ class AdminExtension extends \Twig_Extension
             'Event'       => 'Esemény',
             'Invoice'     => 'Számla',
             'Debt'        => 'Hátralék',
+            'HomeHelp'    => 'Gondozás',
         ];
 
         return strtr($log_event, $trans);

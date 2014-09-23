@@ -26,8 +26,9 @@ class Version20140922161636 extends AbstractMigration
   `agreement_to` date DEFAULT NULL,
   `services` text,
   `warning_system` tinyint(1) DEFAULT NULL,
-  `handicap` smallint(6) DEFAULT NULL,
+  `handicap` text DEFAULT NULL,
   `hours` smallint(6) DEFAULT NULL,
+  `balance` int(11) DEFAULT NULL,
   `created_by` int(11) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `modified_by` int(11) DEFAULT NULL,
@@ -60,10 +61,24 @@ class Version20140922161636 extends AbstractMigration
 [94906,99999999,790,null],
 [null,null,null,null]]', '2014-04-01', '1', '2014-09-18 18:06:44', '1', '2014-09-18 18:52:33', '1')");
 
+        $this->addSql("INSERT INTO `parameter` VALUES "
+                . "('', '1', 'handicaps', '1', 'látás', '1'), "
+                . "('', '1', 'handicaps', '2', 'hallás', '1'), "
+                . "('', '1', 'handicaps', '3', 'mozgásszervi', '1'), "
+                . "('', '1', 'handicaps', '4', 'értelmi', '1');");
+
+        $this->addSql("INSERT INTO `parameter` VALUES "
+                . "('', '1', 'homehelp_services', '1', 'gondozás', '1'), "
+                . "('', '1', 'homehelp_services', '2', 'gyógymasszázs', '1'), "
+                . "('', '1', 'homehelp_services', '3', 'gyógytorna', '1'), "
+                . "('', '1', 'homehelp_services', '4', 'pedikűr', '1'), "
+                . "('', '1', 'homehelp_services', '5', 'takarítás', '1');");
     }
 
     public function down(Schema $schema)
     {
+        $this->addSql("DELETE FROM `parameter` WHERE company_id=1 AND group_id='homehelp_services';");
+        $this->addSql("DELETE FROM `parameter` WHERE company_id=1 AND group_id='handicaps';");
         $this->addSql("DELETE FROM `option` WHERE company_id=1 AND name='homehelpcosts';");
         $this->addSql('DROP TABLE IF EXISTS `home_help`;');
     }
