@@ -1042,4 +1042,19 @@ class DataStore
 
         return isset($stats[$type]) ? $stats[$type] : [];
     }
+
+    /**
+     * Get a list of social workers or an empty array
+     * @return array
+     */
+    public function getSocialWorkers()
+    {
+        // list of Social Workers form the parameter table
+        $social_workers = $this->getGroup('social_workers');
+        if (empty($social_workers)) {
+            $social_workers = [];
+        }
+
+        return $social_workers;
+    }
 }

@@ -44,10 +44,7 @@ class HomehelpType extends AbstractType
             'required' => true,
         ]);
 
-        $social_workers = $this->ds->getGroup('social_workers');
-        if (empty($social_workers)) {
-            $social_workers = [];
-        }
+        $social_workers = $this->ds->getSocialWorkers();
         $builder->add('social_worker', 'choice', [
             'label'   => 'Gondozó',
             'choices' => $social_workers,

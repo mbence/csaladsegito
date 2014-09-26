@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * HomeHelp
  *
  * @ORM\Table(name="home_help")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\HomeHelpRepository")
  */
 class HomeHelp
 {

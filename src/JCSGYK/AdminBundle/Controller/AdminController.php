@@ -32,11 +32,11 @@ class AdminController extends Controller
     */
     public function indexAction()
     {
-        $co = $this->container->get('jcs.ds')->getCompany();
+//        $co = $this->container->get('jcs.ds')->getCompany();
 
-        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
-            $this->get('logger')->info('ROLE_ADMIN');
-        }
+//        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
+//            $this->get('logger')->info('ROLE_ADMIN');
+//        }
 
         return $this->render('JCSGYKAdminBundle:Admin:index.html.twig', []);
     }
@@ -1004,9 +1004,9 @@ class AdminController extends Controller
                             'format'   => '0 0[,]00 $',
                             'language' => 'hu'
                         ],
-                        [
-                            'type'     => 'checkbox'
-                        ]
+//                        [
+//                            'type'     => 'checkbox'
+//                        ]
                     ]
                 ]
             ],
@@ -1282,5 +1282,169 @@ class AdminController extends Controller
                     'client_types' => $client_types,
                     'form'         => $form->createView(),
         ]);
+    }
+
+    /**
+    * @Secure(roles="ROLE_ADMIN")
+    */
+    public function homehelpAction($social_worker = null, $month = null)
+    {
+        $ds = $this->container->get('jcs.ds');
+        $sec = $this->container->get('security.context');
+        $co = $ds->getCompany();
+        $em = $this->container->get('doctrine')->getManager();
+        $ae = $this->container->get('jcs.twig.adminextension');
+
+        $clients = [];
+        // if no sw provided, select the first from the list
+        if (empty($social_worker)) {
+            $social_workers = $ds->getSocialWorkers();
+            reset($social_workers);
+            $social_worker = key($social_workers);
+        }
+        // find the clients of this social worker
+        if (!empty($social_worker)) {
+            $clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsBySocialWorker($social_worker, $ds->getCompanyId());
+        }
+
+        if (empty($month)) {
+            $month = 'today';
+        }
+
+        $month = new \DateTime($month);
+        $day_count = $month->format('t');
+
+        $table_data = [];
+        // get the data from db for each client
+
+        if (empty($table_data)) {
+            // build the data if empty
+            foreach ($clients as $client) {
+                $tmp = array_fill(2, $day_count, '');
+                $tmp[0] = $client->getId();
+                $tmp[1] = $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle());
+
+                $table_data[] = $tmp;
+            }
+        }
+        $table_data[0][10] = 1;
+        $table_data[0][11] = 1;
+        $table_data[1][11] = 2;
+        // add summary row
+        $tmp = ['sum', 'összesen'];
+        foreach ($table_data as $row) {
+            foreach ($row as $n => $cell) {
+                if ($n > 1 && is_numeric($cell)) {
+                    if (!empty($cell)) {
+                        if (empty($tmp[$n])) {
+                            $tmp[$n] = 0;
+                        }
+                        $tmp[$n] += $cell;
+                    }
+                }
+            }
+        }
+        $table_data[] = $tmp;
+
+        // add the additional rows below the client data
+        $table_data[] = null;
+        foreach (['közlekedés', 'vásárlás', 'ügyintézés', 'központ', 'közös gondozás'] as $task) {
+            $tmp = array_fill(2, $day_count, '');
+            $tmp[0] = '';
+            $tmp[1] = $task;
+            $table_data[] = $tmp;
+        }
+        $table_data[] = null;
+        foreach (['látogatási szám', 'ellátottak száma', 'fürdetés', 'ebédes lát.', 'egyéb lát.', 'köz.gond.lát'] as $task) {
+            $tmp = array_fill(2, $day_count, '');
+            $tmp[0] = '';
+            $tmp[1] = $task;
+            $table_data[] = $tmp;
+        }
+//        var_dump($table_data);
+
+        return $this->render('JCSGYKAdminBundle:Admin:homehelp.html.twig', [
+            'form'           => $this->homeHelpForm($table_data)->createview(),
+            'filter_form'    => $this->homeHelpFilter($social_worker, $month)->createView(),
+            'clients'        => $clients,
+            'table_defaults' => $this->getHomehelpDefaults($month)
+        ]);
+    }
+
+    private function homeHelpFilter($social_worker, \DateTime $month)
+    {
+        $ds = $this->container->get('jcs.ds');
+        $ae = $this->container->get('jcs.twig.adminextension');
+
+        // build the filter form
+        $form_builder = $this->createFormBuilder(['social_worker' => $social_worker, 'month' => $month->format('Y-m')]);
+
+        // add the social workers
+        $form_builder->add('social_worker', 'choice', [
+            'label'   => 'Gondozó',
+            'choices' => $ds->getSocialWorkers(),
+        ]);
+
+        // add the months for a year before
+        $months = [];
+        $m = new \DateTime('-11 months');
+        for ($i = 0; $i < 12; $i++) {
+            $months[$m->format('Y-m')] = $ae->formatDate($m, 'ym');
+            $m->modify('+1 month');
+        }
+
+        $form_builder->add('month', 'choice', [
+            'label'   => 'Hónap',
+            'choices' => $months,
+        ]);
+
+        // ok button
+        $form_builder->add('filter_button', 'submit', [
+            'label' => 'ok',
+        ]);
+
+        return $form_builder->getForm();
+    }
+
+    private function homeHelpForm($table_data)
+    {
+        // build the form
+        $form_builder = $this->createFormBuilder(['value' => json_encode($table_data)]);
+        $form_builder->add('value', 'hidden');
+
+        return $form_builder->getForm();
+    }
+
+    private function getHomehelpDefaults(\DateTime $month)
+    {
+        $day_count = $month->format('t');
+
+        $re = [
+//            'stretchH' => 'all',
+            'minSpareRows' => 0,
+            'cells' => 'cells',
+            'readOnlyCellClassName' => 'hh-readonly',
+            'colWidths' => [180],
+            'colHeaders' => ['név'],
+            'columns' => [
+                [
+                    'data'     => 1,
+                    'type'     => 'text',
+                    'language' => 'hu',
+                    'readOnly' => true
+                ],
+            ]
+        ];
+        for ($d = 1; $d <= $day_count; $d++) {
+            $re['columns'][] = [
+                'data'     => $d + 1,
+                'type'     => 'text',
+                'language' => 'hu',
+            ];
+            $re['colHeaders'][] = $d;
+            $re['colWidths'][] = 24;
+        }
+
+        return json_encode($re);
     }
 }

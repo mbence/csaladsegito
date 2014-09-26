@@ -30,6 +30,20 @@ JcsSettings =
         if $("#recommended_fields").length
             @setupRecFields()
 
+        # home help
+        if $("#homehelpfilter").length
+            @setupHomehelp()
+
+    ###
+        setup the homehelp admin
+    ###
+    setupHomehelp: ->
+        $("#homehelpfilter").submit ->
+            url = $(this).attr('action') + '/' + $("#form_social_worker").val() + '/' + $("#form_month").val()
+            document.location = url
+
+            return false
+
     ###
         setup the company editor
     ###
@@ -194,13 +208,17 @@ JcsSettings =
         # load language settings
         @registerLanguage()
 
-        tableData = JSON.parse($("#options_value").val())
+        data_field = if $("#options_value").length then "#options_value" else "#form_value"
+
+        tableData = if $(data_field).val() then JSON.parse($(data_field).val()) else {}
         options = $.extend(true,{},@tableDefaults,tableDefaultOptions)
         afterChange = (changes, source) ->
             if changes != null
-                $("#options_value").val(JSON.stringify(tableData))
+                $(data_field).val(JSON.stringify(tableData))
         options.data = tableData
         options.afterChange = afterChange
+        if options.cells?
+            options.cells = @cells
 
         $("#handsontable").handsontable(options)
 
@@ -214,3 +232,11 @@ JcsSettings =
             "onClick": ->
                 $("#form_act_tab").val(this.getIndex())
         });
+
+    cells: (row, col, prop) ->
+        cellProperties = {}
+        if row? and col? and $("#handsontable").handsontable('getData')[row] == null
+            cellProperties.readOnly = true
+            cellProperties.className = "hh-separator"
+
+        return cellProperties

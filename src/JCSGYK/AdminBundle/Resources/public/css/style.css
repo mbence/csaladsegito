@@ -1,4 +1,4 @@
-search@charset "utf-8";
+@charset "UTF-8";
 @font-face {
 	font-family: "Optima Regular";
 	src: url("../images/font/optimah_regular-webfont.ttf");
@@ -1222,4 +1222,24 @@ h2.menu-section {
 }
 .historytable tr.log-data table {
     margin: 0 auto;
+}
+
+/* handsontable */
+.handsontable td.hh-readonly {
+    background-color: #fafafa;
+    color: #444;
+    font-size: 13px;
+}
+.handsontable td.currentRow, .handsontable td.currentCol {
+    background-color: #F5F5FF;
+}
+.handsontable tr td {
+    font-size: 11px;
+}
+.handsontable .colHeader {
+    font-size: 13px;
+}
+.handsontable tr td.hh-separator {
+    height: 15px;
+    border-top: 1px solid #aaa;
 }

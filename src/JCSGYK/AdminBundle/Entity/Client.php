@@ -443,7 +443,7 @@ class Client
     private $invoices;
 
     /**
-     * @ORM\OneToOne(targetEntity="Homehelp", mappedBy="client", fetch="EXTRA_LAZY")
+     * @ORM\OneToOne(targetEntity="HomeHelp", mappedBy="client", fetch="EXTRA_LAZY")
      */
     private $homehelp;
 

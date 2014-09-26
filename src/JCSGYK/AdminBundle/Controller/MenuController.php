@@ -214,6 +214,7 @@ class MenuController extends Controller
         // true if only assistance roles are present
         $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE') && !$sec->isGranted('ROLE_CATERING');
         $has_homehelp = !empty($client->getHomehelp());
+        $sw = $has_homehelp ? $client->getHomehelp()->getSocialWorker() : null;
 
         $items = [
             // edit homehelp data
@@ -225,6 +226,15 @@ class MenuController extends Controller
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
                 'requirement' => $client->canEdit($sec)
+            ],
+            [
+                'url'   => $this->generateUrl('admin_home_help', ['social_worker' => $sw]),
+                'label' => 'gondozás rögzítése',
+                'title' => 'Gondozás rögzítése',
+                'class' => 'greybutton admin_homehelp',
+                'more'  => false,
+                'role'  => 'ROLE_CATERING',
+                'requirement' => $client->canEdit($sec) && $has_homehelp,
             ],
             [
                 'url'   => $this->generateUrl('client_homehelp_invoices', ['id' => $client->getId()]),
