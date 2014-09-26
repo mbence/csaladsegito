@@ -3360,7 +3360,9 @@ h2.menu-section {
 .homehelp-table .htCore col.rowHeader {
     width: 180px;
 }
-
+.homehelp-table tr td.hh-weekend {
+    background-color: #fcc;
+}
 .clearfix:after {
   content: ".";
   visibility: hidden;

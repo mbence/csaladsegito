@@ -1403,7 +1403,8 @@ class AdminController extends Controller
             'form'           => $this->homeHelpForm($table_data)->createview(),
             'filter_form'    => $this->homeHelpFilter($social_worker, $month)->createView(),
             'clients'        => $clients,
-            'table_defaults' => $this->getHomehelpDefaults($month, $rowHeaders)
+            'table_defaults' => $this->getHomehelpDefaults($month, $rowHeaders),
+            'hh_weekends'    => $this->getHomehelpWeekends($month),
         ]);
     }
 
@@ -1487,4 +1488,26 @@ class AdminController extends Controller
         return json_encode($re);
     }
 
+    private function getHomehelpWeekends(\DateTime $month)
+    {
+        $weekends = [];
+        $day = new \DateTime($month->format('Y-m-01'));
+        $end = new \DateTime($month->format('Y-m-t'));
+        $holidays = $this->container->get('jcs.ds')->getHolidays($day->format('Y-m-d'), $end->format('Y-m-d'));
+
+        while ($day <= $end) {
+            if ($day->format('N') > 5) {
+                $weekends[] = (int) $day->format('d');
+            }
+            $day->modify('+1 day');
+        }
+        // add the holidays
+        foreach ($holidays as $date => $type) {
+            if ($type != 2) {
+                $weekends[] = (int) substr($date, 8);
+            }
+        }
+
+        return json_encode($weekends);
+    }
 }

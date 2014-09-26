@@ -2,6 +2,7 @@ JcsSettings =
     hhSumCol: 0,
     hhSumRows: [],
     hhLastRow: 0,
+    hhWeekends: [],
 
     init: ->
         # users
@@ -212,6 +213,9 @@ JcsSettings =
         # load language settings
         @registerLanguage()
 
+        if hh_weekends?
+            @hhWeekends = JSON.parse(hh_weekends)
+
         data_field = if $("#options_value").length then "#options_value" else "#form_value"
 
         tableData = if $(data_field).val() then JSON.parse($(data_field).val()) else {}
@@ -255,6 +259,8 @@ JcsSettings =
         else if table_data[row][0] == 'sum' or !table_data[row][col + 2]?
             cellProperties.readOnly = true
             cellProperties.className = "hh-sum"
+        else if (col + 1) in JcsSettings.hhWeekends
+            cellProperties.className = "hh-weekend"
 
         return cellProperties
 
