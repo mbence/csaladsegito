@@ -3336,24 +3336,31 @@ h2.menu-section {
 }
 
 /* handsontable */
-.handsontable td.hh-readonly {
+.homehelp-table td.hh-readonly {
     background-color: #fafafa;
     color: #444;
-    font-size: 13px;
 }
-.handsontable td.currentRow, .handsontable td.currentCol {
+.homehelp-table td.currentRow, .homehelp-table td.currentCol, .homehelp-table th.currentRow  {
     background-color: #F5F5FF;
 }
-.handsontable tr td {
+.homehelp-table tr td {
     font-size: 11px;
+    text-align: right;
 }
-.handsontable .colHeader {
+.homehelp-table .colHeader, .homehelp-table .rowHeader {
     font-size: 13px;
 }
-.handsontable tr td.hh-separator {
-    height: 15px;
-    border-top: 1px solid #aaa;
+.homehelp-table tr td.hh-separator {
+    background-color: #ccc;
 }
+.homehelp-table tr td.hh-sum {
+    font-weight: bold;
+    background-color: #f2f2f2;
+}
+.homehelp-table .htCore col.rowHeader {
+    width: 180px;
+}
+
 .clearfix:after {
   content: ".";
   visibility: hidden;

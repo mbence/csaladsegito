@@ -784,6 +784,9 @@ JcsOpt = {
 var JcsSettings;
 
 JcsSettings = {
+  hhSumCol: 0,
+  hhSumRows: [],
+  hhLastRow: 0,
   init: function() {
     if ($("#userlist").length) {
       this.setupUsers();
@@ -1006,12 +1009,16 @@ JcsSettings = {
     options = $.extend(true, {}, this.tableDefaults, tableDefaultOptions);
     afterChange = function(changes, source) {
       if (changes !== null) {
+        if ((options.sums != null) && options.sums) {
+          JcsSettings.decFix(changes, source);
+          JcsSettings.sums(changes, source);
+        }
         return $(data_field).val(JSON.stringify(tableData));
       }
     };
     options.data = tableData;
     options.afterChange = afterChange;
-    if (options.cells != null) {
+    if ((options.cells != null) && options.cells) {
       options.cells = this.cells;
     }
     $("#handsontable").handsontable(options);
@@ -1028,13 +1035,93 @@ JcsSettings = {
     });
   },
   cells: function(row, col, prop) {
-    var cellProperties;
+    var cellProperties, table_data;
     cellProperties = {};
-    if ((row != null) && (col != null) && $("#handsontable").handsontable('getData')[row] === null) {
+    table_data = $("#handsontable").handsontable('getData');
+    if (table_data[row] === null) {
       cellProperties.readOnly = true;
       cellProperties.className = "hh-separator";
+    } else if (table_data[row][0] === 'sum' || (table_data[row][col + 2] == null)) {
+      cellProperties.readOnly = true;
+      cellProperties.className = "hh-sum";
     }
     return cellProperties;
+  },
+
+  /*
+      Changes decimals from , to .
+   */
+  decFix: function(changes, source) {
+    return $("#handsontable").handsontable('getData')[changes[0][0]][changes[0][1]] = changes[0][3].replace(/\,/, '.');
+  },
+  sums: function(changes, source) {
+    var end_row, k, r, section_start, start_row, sum_row, table_data, v, _i, _ref, _ref1, _ref2, _ref3, _ref4;
+    table_data = $("#handsontable").handsontable('getData');
+    if (!this.hhSumCol) {
+      if (table_data[0][0] != null) {
+        _ref = table_data[0];
+        for (k in _ref) {
+          v = _ref[k];
+          if (table_data[0][k + 1] == null) {
+            this.hhSumCol = k;
+          }
+        }
+      }
+    }
+    if (!this.hhSumRows.length) {
+      for (k in table_data) {
+        v = table_data[k];
+        if ((v != null) && v[0] === 'sum') {
+          this.hhSumRows.push(k * 1);
+        }
+      }
+      this.hhLastRow = k * 1;
+    }
+    section_start = 0;
+    _ref1 = this.hhSumRows;
+    for (k in _ref1) {
+      v = _ref1[k];
+      if ((section_start <= (_ref2 = changes[0][0]) && _ref2 < v)) {
+        start_row = section_start;
+        end_row = v - 1;
+        sum_row = v;
+        break;
+      } else {
+        section_start = v + 2;
+      }
+    }
+    if (start_row == null) {
+      start_row = section_start;
+      end_row = this.hhLastRow;
+    }
+    if ((sum_row != null) && (table_data[sum_row] != null)) {
+      _ref3 = table_data[sum_row];
+      for (k in _ref3) {
+        v = _ref3[k];
+        table_data[sum_row][k] = 0;
+      }
+    }
+    for (r = _i = start_row; _i <= end_row; r = _i += 1) {
+      table_data[r][this.hhSumCol] = 0;
+      _ref4 = table_data[r];
+      for (k in _ref4) {
+        v = _ref4[k];
+        k = k * 1;
+        if ((0 < k) && v) {
+          v = v * 1;
+          if (this.hhSumCol > k) {
+            table_data[r][this.hhSumCol] += v;
+          }
+          if (sum_row != null) {
+            if (table_data[sum_row][k] == null) {
+              table_data[sum_row][k] = 0;
+            }
+            table_data[sum_row][k] += v;
+          }
+        }
+      }
+    }
+    return $("#handsontable").handsontable('render');
   }
 };
 

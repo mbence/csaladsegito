@@ -1,4 +1,8 @@
 JcsSettings =
+    hhSumCol: 0,
+    hhSumRows: [],
+    hhLastRow: 0,
+
     init: ->
         # users
         if $("#userlist").length
@@ -211,15 +215,24 @@ JcsSettings =
         data_field = if $("#options_value").length then "#options_value" else "#form_value"
 
         tableData = if $(data_field).val() then JSON.parse($(data_field).val()) else {}
+        # merge the options
         options = $.extend(true,{},@tableDefaults,tableDefaultOptions)
+        # after change event
         afterChange = (changes, source) ->
             if changes != null
+                if options.sums? and options.sums
+                    JcsSettings.decFix(changes, source)
+                    JcsSettings.sums(changes, source)
                 $(data_field).val(JSON.stringify(tableData))
+
         options.data = tableData
         options.afterChange = afterChange
-        if options.cells?
+
+        # use the cells formatting function?
+        if options.cells? and options.cells
             options.cells = @cells
 
+        # fire up the table!
         $("#handsontable").handsontable(options)
 
         # discount datepicker
@@ -235,8 +248,76 @@ JcsSettings =
 
     cells: (row, col, prop) ->
         cellProperties = {}
-        if row? and col? and $("#handsontable").handsontable('getData')[row] == null
+        table_data = $("#handsontable").handsontable('getData')
+        if table_data[row] == null
             cellProperties.readOnly = true
             cellProperties.className = "hh-separator"
+        else if table_data[row][0] == 'sum' or !table_data[row][col + 2]?
+            cellProperties.readOnly = true
+            cellProperties.className = "hh-sum"
 
         return cellProperties
+
+    ###
+        Changes decimals from , to .
+    ###
+    decFix: (changes, source) ->
+        $("#handsontable").handsontable('getData')[changes[0][0]][changes[0][1]] = changes[0][3].replace /\,/, '.'
+
+    sums: (changes, source) ->
+        # hello
+        table_data = $("#handsontable").handsontable('getData')
+        # get the last sum col
+        if !@hhSumCol
+          if table_data[0][0]?
+              for k, v of table_data[0]
+                  if !table_data[0][k + 1]?
+                      @hhSumCol = k
+        # get the sum rows
+        if !@hhSumRows.length
+            for k, v of table_data
+                if v? and v[0] == 'sum'
+                    @hhSumRows.push (k * 1)
+            @hhLastRow = k * 1
+
+        # only update the right section
+        section_start = 0
+        for k, v of @hhSumRows
+            if section_start <= changes[0][0] < v
+                start_row = section_start
+                end_row = v - 1
+                sum_row = v
+                break
+            else
+                section_start = v + 2
+        # change is in the last section
+        if !start_row?
+            start_row = section_start
+            end_row = @hhLastRow
+
+        # reset the sum row
+        if sum_row? and table_data[sum_row]?
+            for k, v of table_data[sum_row]
+                table_data[sum_row][k] = 0
+
+        # do the sums
+        for r in [start_row .. end_row] by 1
+            # reset the sum col
+            table_data[r][@hhSumCol] = 0
+            # loop over the row
+            for k, v of table_data[r]
+                k = k * 1
+                # skip the first col, and check if we have a value
+                if (0 < k) and v
+                    # make sure v is a number
+                    v = v * 1
+                    # sum col
+                    if @hhSumCol > k
+                        table_data[r][@hhSumCol] += v
+                    # sum row
+                    if sum_row?
+                        if !table_data[sum_row][k]?
+                            table_data[sum_row][k] = 0
+                        table_data[sum_row][k] += v
+
+        $("#handsontable").handsontable('render')

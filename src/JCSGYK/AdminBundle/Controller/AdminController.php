@@ -1315,6 +1315,7 @@ class AdminController extends Controller
         $day_count = $month->format('t');
 
         $table_data = [];
+        $rowHeaders = [];
         // get the data from db for each client
 
         if (empty($table_data)) {
@@ -1322,19 +1323,16 @@ class AdminController extends Controller
             foreach ($clients as $client) {
                 $tmp = array_fill(2, $day_count, '');
                 $tmp[0] = $client->getId();
-                $tmp[1] = $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle());
 
                 $table_data[] = $tmp;
+                $rowHeaders[] = $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle());
             }
         }
-        $table_data[0][10] = 1;
-        $table_data[0][11] = 1;
-        $table_data[1][11] = 2;
         // add summary row
-        $tmp = ['sum', 'összesen'];
+        $tmp = ['sum'];
         foreach ($table_data as $row) {
             foreach ($row as $n => $cell) {
-                if ($n > 1 && is_numeric($cell)) {
+                if ($n > 0 && is_numeric($cell)) {
                     if (!empty($cell)) {
                         if (empty($tmp[$n])) {
                             $tmp[$n] = 0;
@@ -1345,29 +1343,67 @@ class AdminController extends Controller
             }
         }
         $table_data[] = $tmp;
+        $rowHeaders[] = 'összesen';
 
         // add the additional rows below the client data
         $table_data[] = null;
+        $rowHeaders[] = '';
         foreach (['közlekedés', 'vásárlás', 'ügyintézés', 'központ', 'közös gondozás'] as $task) {
             $tmp = array_fill(2, $day_count, '');
             $tmp[0] = '';
-            $tmp[1] = $task;
             $table_data[] = $tmp;
+            $rowHeaders[] = $task;
         }
+
+        // add summary row
+        $tmp = ['sum'];
+        for ($r = count($clients) + 2; $r < count($table_data); $r++) {
+            foreach ($table_data[$r] as $n => $cell) {
+                if ($n > 0 && is_numeric($cell)) {
+                    if (!empty($cell)) {
+                        if (empty($tmp[$n])) {
+                            $tmp[$n] = 0;
+                        }
+                        $tmp[$n] += $cell;
+                    }
+                }
+            }
+        }
+        $table_data[] = $tmp;
+        $rowHeaders[] = 'összesen';
+
         $table_data[] = null;
+        $rowHeaders[] = '';
         foreach (['látogatási szám', 'ellátottak száma', 'fürdetés', 'ebédes lát.', 'egyéb lát.', 'köz.gond.lát'] as $task) {
             $tmp = array_fill(2, $day_count, '');
             $tmp[0] = '';
-            $tmp[1] = $task;
             $table_data[] = $tmp;
+            $rowHeaders[] = $task;
         }
+
+        // add total counts
+        foreach ($table_data as $r => $row) {
+            if (is_array($row) && !empty($row)) {
+                $sum = 0;
+
+                foreach ($row as $n => $cell) {
+                    if ($n > 0 && is_numeric($cell)) {
+                        if (!empty($cell)) {
+                            $sum += $cell;
+                        }
+                    }
+                }
+                $table_data[$r][$day_count + 1] = $sum;
+            }
+        }
+
 //        var_dump($table_data);
 
         return $this->render('JCSGYKAdminBundle:Admin:homehelp.html.twig', [
             'form'           => $this->homeHelpForm($table_data)->createview(),
             'filter_form'    => $this->homeHelpFilter($social_worker, $month)->createView(),
             'clients'        => $clients,
-            'table_defaults' => $this->getHomehelpDefaults($month)
+            'table_defaults' => $this->getHomehelpDefaults($month, $rowHeaders)
         ]);
     }
 
@@ -1415,36 +1451,40 @@ class AdminController extends Controller
         return $form_builder->getForm();
     }
 
-    private function getHomehelpDefaults(\DateTime $month)
+    private function getHomehelpDefaults(\DateTime $month, array $rowHeaders)
     {
         $day_count = $month->format('t');
 
         $re = [
 //            'stretchH' => 'all',
-            'minSpareRows' => 0,
-            'cells' => 'cells',
+            'minSpareRows'          => 0,
+            'cells'                 => true, // use the cells function in Jcssettings to format the table nicely
+            'sums'                  => true, // use the sums function in Jcssettings to refresh the sums
             'readOnlyCellClassName' => 'hh-readonly',
-            'colWidths' => [180],
-            'colHeaders' => ['név'],
-            'columns' => [
-                [
-                    'data'     => 1,
-                    'type'     => 'text',
-                    'language' => 'hu',
-                    'readOnly' => true
-                ],
-            ]
+            'colWidths'             => [],
+            'colHeaders'            => [],
+            'rowHeaders'            => $rowHeaders,
+            'columns'               => [],
         ];
         for ($d = 1; $d <= $day_count; $d++) {
-            $re['columns'][] = [
-                'data'     => $d + 1,
+            $re['columns'][]    = [
+                'data'     => $d,
                 'type'     => 'text',
                 'language' => 'hu',
             ];
             $re['colHeaders'][] = $d;
-            $re['colWidths'][] = 24;
+            $re['colWidths'][]  = 24;
         }
+        // add totals column
+        $re['colHeaders'][] = 'Össz';
+        $re['colWidths'][]  = 50;
+        $re['columns'][]    = [
+            'data'     => $d,
+            'type'     => 'text',
+            'language' => 'hu',
+        ];
 
         return json_encode($re);
     }
+
 }
