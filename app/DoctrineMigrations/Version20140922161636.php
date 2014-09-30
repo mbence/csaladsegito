@@ -16,7 +16,7 @@ class Version20140922161636 extends AbstractMigration
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `client_id` int(11) NOT NULL,
   `club_id` int(11) DEFAULT NULL,
-  `social_worker` int(11) DEFAULT NULL,
+  `social_worker` int(11|) DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT NULL,
   `income` int(11) DEFAULT NULL,
   `discount` tinyint(4) DEFAULT NULL,

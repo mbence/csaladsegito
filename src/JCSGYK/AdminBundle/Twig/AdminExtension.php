@@ -591,6 +591,7 @@ class AdminExtension extends \Twig_Extension
      * Returns a parameter by it's id
      *
      * @param integer $id Parameter id
+     * @return string
      */
     public function getParam($id, $paramGroup = null)
     {
@@ -599,6 +600,13 @@ class AdminExtension extends \Twig_Extension
         return $param ? $param : 'Nincs megadva';
     }
 
+    /**
+     * Format a name
+     * @param $firstname
+     * @param $lastname
+     * @param string $title
+     * @return string
+     */
     public function formatName($firstname, $lastname, $title = '')
     {
         $re = '';
@@ -606,6 +614,16 @@ class AdminExtension extends \Twig_Extension
         $re .= $lastname . ' ' . $firstname;
 
         return $re;
+    }
+
+    /**
+     * Format a clients name
+     * @param Client $client
+     * @return string
+     */
+    public function formatClientName(Client $client)
+    {
+        return $this->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle());
     }
 
     /**

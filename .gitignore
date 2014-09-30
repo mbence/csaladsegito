@@ -14,7 +14,7 @@ web/uploads/*
 composer.phar
 composer.lock
 /nbproject
-/.idea
+.idea
 
 # Configuration files
 /app/config/parameters.yml

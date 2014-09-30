@@ -113,6 +113,13 @@ class HomeHelp
     private $handicap;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="inpatient", type="boolean", nullable=true)
+     */
+    private $inpatient;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="hours", type="smallint", nullable=true)
@@ -656,5 +663,29 @@ class HomeHelp
     public function getHandicap()
     {
         return $this->handicap;
+    }
+
+    /**
+     * Set inpatient
+     *
+     * @param boolean $inpatient
+     *
+     * @return HomeHelp
+     */
+    public function setInpatient($inpatient)
+    {
+        $this->inpatient = $inpatient;
+
+        return $this;
+    }
+
+    /**
+     * Get inpatient
+     *
+     * @return boolean
+     */
+    public function getInpatient()
+    {
+        return $this->inpatient;
     }
 }
