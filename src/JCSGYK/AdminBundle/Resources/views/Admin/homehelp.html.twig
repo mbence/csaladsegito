@@ -19,7 +19,9 @@
     </form>
 
     <div id="handsontable" class="homehelp-table"></div>
-
+    <div class="hh-legend smalltext">
+        M - gyógymasszázs, T - gyógytorna
+    </div>
     <form id="homehelpform" class="homehelpform editform" action="{{ path('admin_home_help') }}" method="POST" novalidate {{ form_enctype(form) }}>
 
         {{ form_widget(form.value) }}

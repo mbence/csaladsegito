@@ -1383,12 +1383,22 @@ class AdminController extends Controller
             $re['colWidths'][]  = 24;
         }
         // add totals column
-        $re['colHeaders'][] = 'Össz';
-        $re['colWidths'][]  = 50;
+        $re['colHeaders'][] = 'Össz.';
+        $re['colWidths'][]  = 35;
         $re['columns'][]    = [
             'data'     => $d,
             'type'     => 'text',
             'language' => 'hu',
+            'readonly' => true,
+        ];
+        // add visits col
+        $re['colHeaders'][] = 'Lát.';
+        $re['colWidths'][]  = 35;
+        $re['columns'][]    = [
+            'data'     => $d + 1,
+            'type'     => 'text',
+            'language' => 'hu',
+            'readonly' => true,
         ];
 
         return json_encode($re);
@@ -1455,6 +1465,7 @@ class AdminController extends Controller
     {
         $ae = $this->container->get('jcs.twig.adminextension');
         $day_count = (int) $month->format('t');
+        $client_count = count($clients);
 
         // get the data from db for each client
         if (empty($table_data)) {
@@ -1467,6 +1478,11 @@ class AdminController extends Controller
                 $rowHeaders[] = $ae->formatClientName($client);
             }
         }
+        $table_data[0][1] = 1;
+//        $table_data[0][2] = 1;
+//        $table_data[1][2] = 'T';
+//        $table_data[1][3] = 'G';
+
         // add summary row
         $tmp = ['sum'];
         foreach ($table_data as $row) {
@@ -1494,9 +1510,11 @@ class AdminController extends Controller
             $rowHeaders[] = $task;
         }
 
+        $table_data[8][1] = 1;
+
         // add summary row
         $tmp = ['sum'];
-        for ($r = count($clients) + 2; $r < count($table_data); $r++) {
+        for ($r = $client_count + 2; $r < count($table_data); $r++) {
             foreach ($table_data[$r] as $n => $cell) {
                 if ($n > 0 && is_numeric($cell)) {
                     if (!empty($cell)) {
@@ -1520,19 +1538,44 @@ class AdminController extends Controller
             $rowHeaders[] = $task;
         }
 
-        // add total counts
+        // add total counts and visit count
+        $total_visits = 0;
         foreach ($table_data as $r => $row) {
             if (is_array($row) && !empty($row)) {
                 $sum = 0;
+                $visits = 0;
 
                 foreach ($row as $n => $cell) {
-                    if ($n > 0 && is_numeric($cell)) {
-                        if (!empty($cell)) {
+                    // skip the first row (client ids), and also skip the empty rows
+                    if ($n > 0 && !empty($cell)) {
+                        // calculate the summary column
+                        if (is_numeric($cell)) {
                             $sum += $cell;
+                        }
+                        // calculate the visits col
+                        if ($r <= $client_count) {
+                            $visits ++;
                         }
                     }
                 }
-                $table_data[$r][$day_count + 1] = $sum;
+                // total number of visits unless it's the summary row
+                if ($row[0] != 'sum') {
+                    $total_visits += $visits;
+                }
+
+                $table_data[$r][$day_count + 1] = $sum ?: '';
+
+                // add visit count
+                if (!empty($visits)) {
+                    // normal rows get the visit numbers
+                    if ($row[0] != 'sum') {
+                        $table_data[$r][$day_count + 2] = $visits;
+                    }
+                    // summary row gets total visits
+                    else {
+                        $table_data[$r][$day_count + 2] = $total_visits;
+                    }
+                }
             }
         }
     }
