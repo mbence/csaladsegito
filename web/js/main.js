@@ -1049,8 +1049,9 @@ JcsSettings = {
     } else if (table_data[row][0] === 'sum' || (table_data[row][col + 2] == null)) {
       cellProperties.readOnly = true;
       cellProperties.className = "hh-sum";
-    } else if (_ref = col + 1, __indexOf.call(JcsSettings.hhWeekends, _ref) >= 0) {
-      cellProperties.className = "hh-weekend";
+    }
+    if (_ref = col + 1, __indexOf.call(JcsSettings.hhWeekends, _ref) >= 0) {
+      cellProperties.className = " hh-weekend";
     }
     return cellProperties;
   },

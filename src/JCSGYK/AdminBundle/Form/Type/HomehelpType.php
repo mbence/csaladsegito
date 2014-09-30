@@ -73,7 +73,8 @@ class HomehelpType extends AbstractType
             'expanded' => true
         ]);
 
-        $builder->add('warning_system', 'checkbox', ['label' => 'Jelzőrendszer']);
+        $builder->add('warning_system', 'checkbox', ['label' => 'jelzőrendszer']);
+        $builder->add('inpatient', 'checkbox', ['label' => 'fekvőbeteg']);
         $builder->add('hours', 'text', ['label' => 'ORSZI óra', 'required' => false]);
         $builder->add('income', 'text', ['label' => 'Jövedelem (Ft)', 'required' => false]);
         $builder->add('discount', 'text', [

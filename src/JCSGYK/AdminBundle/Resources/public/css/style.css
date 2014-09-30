@@ -1225,6 +1225,9 @@ h2.menu-section {
 }
 
 /* handsontable */
+.homehelp-table tr td.hh-weekend {
+    background-color: #fcc;
+}
 .homehelp-table td.hh-readonly {
     background-color: #fafafa;
     color: #444;
@@ -1248,7 +1251,4 @@ h2.menu-section {
 }
 .homehelp-table .htCore col.rowHeader {
     width: 180px;
-}
-.homehelp-table tr td.hh-weekend {
-    background-color: #fcc;
 }

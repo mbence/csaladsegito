@@ -170,7 +170,7 @@ class HomeHelp
      */
     public function getHistoryFields()
     {
-        return ['club', 'socialWorker', 'isActive', 'income', 'discount', 'discountFrom', 'discountTo', 'agreementFrom', 'agreementTo', 'services', 'warningSystem', 'handicap', 'hours'];
+        return ['club', 'socialWorker', 'isActive', 'income', 'discount', 'discountFrom', 'discountTo', 'agreementFrom', 'agreementTo', 'services', 'warningSystem', 'inpatient', 'handicap', 'hours'];
     }
 
     /**

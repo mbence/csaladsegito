@@ -28,8 +28,11 @@
         <td>{{ form_errors(form.services) }}{{ form_widget(form.services) }}</td>
     </tr>
     <tr>
-        <th>{{ form_label(form.warning_system) }}:</th>
-        <td>{{ form_errors(form.warning_system) }}{{ form_widget(form.warning_system) }}</td>
+        <th></th>
+        <td>
+            {{ form_errors(form.warning_system) }}{{ form_widget(form.warning_system) }} {{ form_label(form.warning_system) }}
+            {{ form_errors(form.inpatient) }}{{ form_widget(form.inpatient) }} {{ form_label(form.inpatient) }}
+        </td>
     </tr>
     <tr>
         <th>{{ form_label(form.handicap) }}:</th>

@@ -40,10 +40,18 @@
                 <td colspan="3">{{ homehelp.services|a2l }}</td>
             </tr>
             {% endif %}
+            {% if homehelp.warningSystem %}
             <tr>
                 <th>{{ 'Jelzőrendszer'|trans }}:</th>
                 <td colspan="3">{{ homehelp.warningSystem|check }}</td>
             </tr>
+            {% endif %}
+            {% if homehelp.inpatient %}
+            <tr>
+                <th>{{ 'Fekvőbeteg'|trans }}:</th>
+                <td colspan="3">{{ homehelp.inpatient|check }}</td>
+            </tr>
+            {% endif %}
             {% if homehelp.handicap %}
             <tr>
                 <th>{{ 'Fogyaték'|trans }}:</th>

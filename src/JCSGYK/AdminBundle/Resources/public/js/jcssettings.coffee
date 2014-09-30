@@ -259,8 +259,8 @@ JcsSettings =
         else if table_data[row][0] == 'sum' or !table_data[row][col + 2]?
             cellProperties.readOnly = true
             cellProperties.className = "hh-sum"
-        else if (col + 1) in JcsSettings.hhWeekends
-            cellProperties.className = "hh-weekend"
+        if (col + 1) in JcsSettings.hhWeekends
+            cellProperties.className = " hh-weekend"
 
         return cellProperties
 

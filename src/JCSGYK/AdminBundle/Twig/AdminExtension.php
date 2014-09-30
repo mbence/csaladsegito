@@ -153,8 +153,9 @@ class AdminExtension extends \Twig_Extension
             'registeredDebt'       => 'Nyilvántartott',
             'managedDebt'          => 'Kezelt',
             'agreementFrom'        => 'Megállapodás kezdete',
-            'agreementto'          => 'Megállapodás vége',
+            'agreementTo'          => 'Megállapodás vége',
             'warningSystem'        => 'Jelzőrendszer',
+            'inpatient'            => 'Fekvőbeteg',
             'hours'                => 'ORSZI óra',
         ];
 
