@@ -104,10 +104,6 @@ class StatArchiveService
      */
     private function createStat($type, \DateTime $start, \DateTime $end)
     {
-        // remove!
-        $this->truncate('stat_archive');
-        $this->truncate('stat_file');
-
         $company_id = $this->ds->getCompanyId();
 
         // save the stat
@@ -137,7 +133,9 @@ class StatArchiveService
 
     /**
      * Returns a list of the required statistic variants (Clubs) for a stat type
-     * @param type $type
+     *
+     * @param int $type
+     * @return array
      */
     private function getVariants($type)
     {
@@ -162,6 +160,7 @@ class StatArchiveService
      * @param mixed $var Variant (eg. Club)
      * @param \DateTime $start
      * @param \DateTime $end
+     * @return array
      */
     private function runStat($type, $var, \DateTime $start, \DateTime $end)
     {
@@ -191,6 +190,14 @@ class StatArchiveService
         return $sf;
     }
 
+    /**
+     * Runs the Catering stats
+     *
+     * @param Club $club
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @return array
+     */
     private function run401(Club $club, \DateTime $start, \DateTime $end)
     {
         // check for user roles and set the params accordingly
@@ -476,6 +483,12 @@ class StatArchiveService
         ];
     }
 
+    /**
+     * Searches for a value in a range and returns it's key
+     * @param $val
+     * @param $range
+     * @return bool|int|string
+     */
     private function getRangeKey($val, $range)
     {
         foreach ($range as $k => $d) {
@@ -487,17 +500,4 @@ class StatArchiveService
 
         return false;
     }
-
-    /**
-     * Truncate a table in the DB
-     *
-     * @param string $table the table name
-     */
-    protected function truncate($table)
-    {
-        $db = $this->container->get('doctrine.dbal.default_connection');
-        $db->query("TRUNCATE TABLE ". $table);
-        unset($db);
-    }
-
 }
