@@ -1,8 +1,14 @@
-## 1.3.0 (2014.09.12)
+## 1.3.0 (unreleased)
 
 Fejlesztések:
 
   - Előzménynapló
+
+## 1.2.14 (2014.10.01)
+
+Javítások:
+
+  - Ünnepnap ledolgozásakor nincs automatikus ebédrendelés
 
 ## 1.2.13 (2014.09.04)
 
