@@ -1,0 +1,327 @@
+<?php
+
+namespace JCSGYK\AdminBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+
+/**
+ * HomehelpMonth
+ *
+ * @ORM\Table(name="homehelp_month")
+ * @ORM\Entity
+ */
+class HomehelpMonth
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="company_id", type="integer", nullable=false)
+     */
+    private $companyId;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date", type="date", nullable=false)
+     */
+    private $date;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="social_worker", type="integer", nullable=true)
+     */
+    private $socialWorker;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="data", type="text", length=65535, nullable=true)
+     */
+    private $data;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="created_by", type="integer", nullable=true)
+     */
+    private $createdBy;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     */
+    private $createdAt;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="modified_by", type="integer", nullable=true)
+     */
+    private $modifiedBy;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="modified_at", type="datetime", nullable=true)
+     */
+    private $modifiedAt;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Client", inversedBy="homehelpmonths")
+     * @ORM\JoinTable(name="homehelp_months_clients")
+     **/
+    private $clients;
+
+    public function __construct() {
+        $this->clients = new ArrayCollection();
+    }
+
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set companyId
+     *
+     * @param integer $companyId
+     *
+     * @return HomehelpMonth
+     */
+    public function setCompanyId($companyId)
+    {
+        $this->companyId = $companyId;
+
+        return $this;
+    }
+
+    /**
+     * Get companyId
+     *
+     * @return integer
+     */
+    public function getCompanyId()
+    {
+        return $this->companyId;
+    }
+
+    /**
+     * Set date
+     *
+     * @param \DateTime $date
+     *
+     * @return HomehelpMonth
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * Set socialWorker
+     *
+     * @param integer $socialWorker
+     *
+     * @return HomehelpMonth
+     */
+    public function setSocialWorker($socialWorker)
+    {
+        $this->socialWorker = $socialWorker;
+
+        return $this;
+    }
+
+    /**
+     * Get socialWorker
+     *
+     * @return integer
+     */
+    public function getSocialWorker()
+    {
+        return $this->socialWorker;
+    }
+
+    /**
+     * Set data
+     *
+     * @param string $data
+     *
+     * @return HomehelpMonth
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * Get data
+     *
+     * @return string
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * Set createdBy
+     *
+     * @param integer $createdBy
+     *
+     * @return HomehelpMonth
+     */
+    public function setCreatedBy($createdBy)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return integer
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return HomehelpMonth
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set modifiedBy
+     *
+     * @param integer $modifiedBy
+     *
+     * @return HomehelpMonth
+     */
+    public function setModifiedBy($modifiedBy)
+    {
+        $this->modifiedBy = $modifiedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get modifiedBy
+     *
+     * @return integer
+     */
+    public function getModifiedBy()
+    {
+        return $this->modifiedBy;
+    }
+
+    /**
+     * Set modifiedAt
+     *
+     * @param \DateTime $modifiedAt
+     *
+     * @return HomehelpMonth
+     */
+    public function setModifiedAt($modifiedAt)
+    {
+        $this->modifiedAt = $modifiedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get modifiedAt
+     *
+     * @return \DateTime
+     */
+    public function getModifiedAt()
+    {
+        return $this->modifiedAt;
+    }
+
+    /**
+     * Add client
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $client
+     *
+     * @return HomehelpMonth
+     */
+    public function addClient(\JCSGYK\AdminBundle\Entity\Client $client)
+    {
+        $this->clients[] = $client;
+
+        return $this;
+    }
+
+    /**
+     * Remove client
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Client $client
+     */
+    public function removeClient(\JCSGYK\AdminBundle\Entity\Client $client)
+    {
+        $this->clients->removeElement($client);
+    }
+
+    /**
+     * Get clients
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getClients()
+    {
+        return $this->clients;
+    }
+}
