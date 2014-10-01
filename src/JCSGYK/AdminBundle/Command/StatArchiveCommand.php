@@ -25,7 +25,7 @@ class StatArchiveCommand extends ContainerAwareCommand
     {
         $company_id = $input->getArgument('company');
 
-        // set the companyid for the datastore
+        // set the company id for the dataStore
         $session = $this->getContainer()->get('session');
         $session->set('company_id', $company_id);
 
