@@ -3,7 +3,12 @@
 Fejlesztések:
 
  - Házi segítségnyújtás
+ 
+## 1.3.1 (2014.10.01)
 
+Javítások:
+
+  - Ünnepnap ledolgozásakor nincs automatikus ebédrendelés
 
 ## 1.3.0 (2014.09.12)
 

@@ -33,6 +33,7 @@ class InvoiceService
      * @param \JCSGYK\AdminBundle\Entity\Client $client
      * @param \DateTime $start_date
      * @param \DateTime $end_date
+     * @return bool|\JCSGYK\AdminBundle\Entity\Invoice
      */
     public function create(Client $client, \DateTime $start_date, \DateTime $end_date)
     {
@@ -164,8 +165,7 @@ class InvoiceService
             // also check for holidays
             // otherwise he won't get food on holidays and resting days, but gets foon on saturdays if its a workday
             if ($all_days             // if he orders for every days of the week, then he gets lunch even on holidays
-                    || (!empty($week[$day_of_week]) && empty($holidays[$act_iso_date])) // of if her ordered for a particular day, and it is not a holiday
-                    || (count($subs) > 0 && !empty($holidays[$act_iso_date]) && $holidays[$act_iso_date] == 2))  // or if he ordered anything for the week, and the day is an extra workday
+                    || (!empty($week[$day_of_week]) && empty($holidays[$act_iso_date]))) // of if her ordered for a particular day, and it is not a holiday
             {
                 $days[$act_date->format('Y-m-d')] = 1;
             }
@@ -181,6 +181,7 @@ class InvoiceService
      *
      * @param \JCSGYK\AdminBundle\Services\Catering $catering
      * @param array $orders (cancels have -1 value)
+     * @return array
      */
     private function calulateItems(Catering $catering, array $orders)
     {
