@@ -46,7 +46,13 @@ class HomehelpMonth
     /**
      * @var string
      *
-     * @ORM\Column(name="data", type="text", length=65535, nullable=true)
+     * @ORM\Column(name="rowheaders", type="json_array", length=65535, nullable=true)
+     */
+    private $rowheaders;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="data", type="json_array", length=65535, nullable=true)
      */
     private $data;
 
@@ -80,7 +86,7 @@ class HomehelpMonth
 
     /**
      * @ORM\ManyToMany(targetEntity="Client", inversedBy="homehelpmonths")
-     * @ORM\JoinTable(name="homehelp_months_clients")
+     * @ORM\JoinTable(name="homehelpmonths_clients")
      **/
     private $clients;
 
@@ -169,30 +175,6 @@ class HomehelpMonth
     public function getSocialWorker()
     {
         return $this->socialWorker;
-    }
-
-    /**
-     * Set data
-     *
-     * @param string $data
-     *
-     * @return HomehelpMonth
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-
-        return $this;
-    }
-
-    /**
-     * Get data
-     *
-     * @return string
-     */
-    public function getData()
-    {
-        return $this->data;
     }
 
     /**
@@ -323,5 +305,54 @@ class HomehelpMonth
     public function getClients()
     {
         return $this->clients;
+    }
+
+
+    /**
+     * Set rowheaders
+     *
+     * @param array $rowheaders
+     *
+     * @return HomehelpMonth
+     */
+    public function setRowheaders($rowheaders)
+    {
+        $this->rowheaders = $rowheaders;
+
+        return $this;
+    }
+
+    /**
+     * Get rowheaders
+     *
+     * @return array
+     */
+    public function getRowheaders()
+    {
+        return $this->rowheaders;
+    }
+
+    /**
+     * Set data
+     *
+     * @param array $data
+     *
+     * @return HomehelpMonth
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * Get data
+     *
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 }

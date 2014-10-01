@@ -24,6 +24,7 @@ use JCSGYK\AdminBundle\Entity\Paramgroup;
 use JCSGYK\AdminBundle\Entity\Option;
 use JCSGYK\AdminBundle\Form\Type\OptionType;
 use JCSGYK\AdminBundle\Entity\MonthlyClosing;
+use JCSGYK\AdminBundle\Entity\HomehelpMonth;
 
 class AdminController extends Controller
 {
@@ -48,11 +49,12 @@ class AdminController extends Controller
      * Edit user with /admin/users/:id
      *
      * @Secure(roles="ROLE_ADMIN")
+     * @param Request $request
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function usersAction($id)
+    public function usersAction(Request $request, $id)
     {
-        $request = $this->getRequest();
-
         $user = null;
         $um = $this->get('fos_user.user_manager');
         $em = $this->getDoctrine()->getManager();
@@ -202,11 +204,12 @@ class AdminController extends Controller
      * Lists the paramgroups
      *
      * @Secure(roles="ROLE_SUPER_ADMIN")
+     * @param Request $request
+     * @param $type
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function paramgroupsAction($type)
+    public function paramgroupsAction(Request $request, $type)
     {
-        $request = $this->getRequest();
-
         $em = $this->getDoctrine()->getManager();
         $ds = $this->container->get('jcs.ds');
         $co = $ds->getCompanyId();
@@ -281,12 +284,13 @@ class AdminController extends Controller
      *
      * @Secure(roles="ROLE_ADMIN")
      *
+     * @param Request $request
      * @param mixed $group selected paramgroup id
      * @param bool $sys system or normal parameters?
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function paramsAction($group, $sys = false)
+    public function paramsAction(Request $request, $group, $sys = false)
     {
-        $request = $this->getRequest();
         $route = $sys ? 'admin_systemparams' : 'admin_params';
 
         $em = $this->getDoctrine()->getManager();
@@ -366,10 +370,11 @@ class AdminController extends Controller
      * Edit the company parameters
      *
      * @Secure(roles="ROLE_SUPER_ADMIN")
+     * @param Request $request
+     * @param null $id
      */
-    public function companiesAction($id = null)
+    public function companiesAction(Request $request, $id = null)
     {
-        $request = $this->getRequest();
         $company = null;
         $form_view = null;
 
@@ -470,10 +475,11 @@ class AdminController extends Controller
      * Edit the clubs parameters
      *
      * @Secure(roles="ROLE_ADMIN")
+     * @param Request $request
+     * @param null $id
      */
-    public function clubsAction($id = null)
+    public function clubsAction(Request $request, $id = null)
     {
-        $request = $this->getRequest();
         $club = null;
         $form_view = null;
 
@@ -539,9 +545,13 @@ class AdminController extends Controller
         }
     }
 
-    public function closingsAction($id = null)
+    /**
+     * @param Request $request
+     * @param null $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function closingsAction(Request $request, $id = null)
     {
-        $request = $this->getRequest();
         $closing = null;
         $form_view = null;
         $auto_refresh = false;
@@ -629,9 +639,13 @@ class AdminController extends Controller
         ]);
     }
 
-    public function dailyordersAction($id = null)
+    /**
+     * @param Request $request
+     * @param null $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function dailyordersAction(Request $request, $id = null)
     {
-        $request = $this->getRequest();
         $order = null;
         $form_view = null;
         $auto_refresh = false;
@@ -714,11 +728,11 @@ class AdminController extends Controller
      * System update action
      *
      * @Secure(roles="ROLE_SUPER_ADMIN")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function updateAction()
+    public function updateAction(Request $request)
     {
-        $request = $this->getRequest();
-
         $ex = [];
         $re = [];
         $session = $this->get('session');
@@ -783,13 +797,13 @@ class AdminController extends Controller
 
     /**
      * Edit and upload document templates
+     * @param Request $request
+     * @param null $id
      */
-    public function templatesAction($id = null)
+    public function templatesAction(Request $request, $id = null)
     {
         $template = null;
         $form_view = null;
-
-        $request = $this->getRequest();
 
         $em = $this->getDoctrine()->getManager();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
@@ -884,14 +898,13 @@ class AdminController extends Controller
     /**
      * Utilityproviders
      *
+     * @param Request $request
      * @param int $id
      */
-    public function providersAction($id = null)
+    public function providersAction(Request $request, $id = null)
     {
         $provider = null;
         $form_view = null;
-
-        $request = $this->getRequest();
 
         $em = $this->getDoctrine()->getManager();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
@@ -949,8 +962,11 @@ class AdminController extends Controller
      * Options table
      *
      * @Secure(roles="ROLE_ADMIN")
+     * @param Request $request
+     * @param $name
+     * @param null $id
      */
-    public function optionsAction($name, $id = null)
+    public function optionsAction(Request $request, $name, $id = null)
     {
         $option_types = ['cateringcosts', 'holidays', 'homehelpcosts'];
         $options_default_value = [
@@ -1038,7 +1054,6 @@ class AdminController extends Controller
             exit();
         }
 
-        $request   = $this->getRequest();
         $option    = null;
         $form_view = null;
         $em        = $this->getDoctrine()->getManager();
@@ -1195,10 +1210,13 @@ class AdminController extends Controller
         }
     }
 
-    public function recommendedFieldsAction($tab = 0)
+    /**
+     * @param Request $request
+     * @param int $tab
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function recommendedFieldsAction(Request $request, $tab = 0)
     {
-        $request = $this->getRequest();
-
         $em = $this->getDoctrine()->getManager();
         $ds = $this->container->get('jcs.ds');
         $co = $ds->getCompanyId();
@@ -1285,33 +1303,97 @@ class AdminController extends Controller
     }
 
     /**
-    * @Secure(roles="ROLE_ADMIN")
-    */
-    public function homehelpAction($social_worker = null, $month = 'today')
+     * @Secure(roles="ROLE_ADMIN")
+     * @param Request $request
+     * @param null $social_worker
+     * @param string $month
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function homehelpAction(Request $request, $social_worker = null, $month = null)
     {
         $ds = $this->container->get('jcs.ds');
-        $sec = $this->container->get('security.context');
+        $user = $ds->getUser();
         $co = $ds->getCompany();
         $em = $this->container->get('doctrine')->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
 
         $clients = $this->getSocialWorkersClients($social_worker);
 
-        $month = new \DateTime($month);
+        if (empty($month)) {
+            $month = 'first day of this month';
+        }
+        $month = (new \DateTime($month))->setTime(0, 0, 0);
 
-        $table_data = [];
-        $rowHeaders = [];
-        $this->fillEmptyHHTable($clients, $month, $table_data, $rowHeaders);
+        $hh_month = $this->getHHMonth($social_worker, $month);
 
+        if (empty($hh_month)) {
+            $table_data = [];
+            $row_headers = [];
+            $this->fillEmptyHHTable($clients, $month, $table_data, $row_headers);
+            // create new record
+            $hh_month = new HomehelpMonth();
+            $hh_month->setCompanyId($ds->getCompanyId());
+            $hh_month->setSocialWorker($social_worker);
+            $hh_month->setDate($month);
+            $hh_month->setRowheaders($row_headers);
+            $hh_month->setData($table_data);
 
+            foreach ($clients as $client) {
+                $hh_month->addClient($client);
+            }
+        }
+        else {
+            $table_data = $hh_month->getData();
+            $row_headers = $hh_month->getRowheaders();
+        }
+
+        $form = $this->homeHelpForm($hh_month);
+        $form->handleRequest($request);
+
+        if ($form->isValid() && $form->get('hh_id')->getData() == $hh_month->getId()) {
+
+            $hh_month->setData(json_decode($form->get('value')->getData(), true));
+
+            if (empty($hh_month->getId())) {
+                $hh_month->setCreatedBy($user->getId());
+                $hh_month->setCreatedAt(new \DateTime());
+                $em->persist($hh_month);
+            }
+            else {
+                $hh_month->setModifiedBy($user->getId());
+                $hh_month->setModifiedAt(new \DateTime());
+            }
+
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('admin_home_help', ['social_worker' => $social_worker, 'month' => $month->format('Y-m')]));
+        }
 //        var_dump($table_data);
 
         return $this->render('JCSGYKAdminBundle:Admin:homehelp.html.twig', [
-            'form'           => $this->homeHelpForm($table_data)->createview(),
+            'form'           => $form->createview(),
             'filter_form'    => $this->homeHelpFilter($social_worker, $month)->createView(),
-            'table_defaults' => $this->getHomehelpDefaults($month, $rowHeaders),
+            'table_defaults' => $this->getHomehelpDefaults($month, $row_headers),
             'hh_weekends'    => $this->getHomehelpWeekends($month),
         ]);
+    }
+
+    /**
+     * Return the month record for this Social Worker
+     * @param $social_worker
+     * @param \DateTime $month
+     * @return HomehelpMonth
+     */
+    private function getHHMonth($social_worker, \DateTime $month)
+    {
+        $ds = $this->container->get('jcs.ds');
+        $em = $this->container->get('doctrine')->getManager();
+
+        return $em->createQuery("SELECT m FROM JCSGYKAdminBundle:HomehelpMonth m WHERE m.companyId = :company AND m.socialWorker = :sw AND m.date = :month")
+            ->SetParameter('company', $ds->getCompanyId())
+            ->SetParameter('sw', $social_worker)
+            ->SetParameter('month', $month)
+            ->getOneOrNullResult();
     }
 
     private function homeHelpFilter($social_worker, \DateTime $month)
@@ -1349,16 +1431,19 @@ class AdminController extends Controller
         return $form_builder->getForm();
     }
 
-    private function homeHelpForm($table_data)
+    private function homeHelpForm(HomehelpMonth $hh_month)
     {
         // build the form
-        $form_builder = $this->createFormBuilder(['value' => json_encode($table_data)]);
-        $form_builder->add('value', 'hidden');
+        $form_builder = $this->createFormBuilder(['hh_id' => $hh_month->getId() , 'value' => json_encode($hh_month->getData())])
+            ->add('hh_id', 'hidden')
+            ->add('value', 'hidden')
+            ->setAction($this->generateUrl('admin_home_help', ['social_worker' => $hh_month->getSocialWorker(), 'month' => $hh_month->getDate()->format('Y-m')]))
+            ->setMethod('POST');
 
         return $form_builder->getForm();
     }
 
-    private function getHomehelpDefaults(\DateTime $month, array $rowHeaders)
+    private function getHomehelpDefaults(\DateTime $month, array $row_headers)
     {
         $day_count = $month->format('t');
 
@@ -1370,7 +1455,7 @@ class AdminController extends Controller
             'readOnlyCellClassName' => 'hh-readonly',
             'colWidths'             => [],
             'colHeaders'            => [],
-            'rowHeaders'            => $rowHeaders,
+            'rowHeaders'            => $row_headers,
             'columns'               => [],
         ];
         for ($d = 1; $d <= $day_count; $d++) {
@@ -1459,9 +1544,9 @@ class AdminController extends Controller
      * @param $clients
      * @param \DateTime $month
      * @param $table_data
-     * @param $rowHeaders
+     * @param $row_headers
      */
-    private function fillEmptyHHTable($clients, \DateTime $month, &$table_data, &$rowHeaders)
+    private function fillEmptyHHTable($clients, \DateTime $month, &$table_data, &$row_headers)
     {
         $ae = $this->container->get('jcs.twig.adminextension');
         $day_count = (int) $month->format('t');
@@ -1475,13 +1560,9 @@ class AdminController extends Controller
                 $tmp[0] = $client->getId();
 
                 $table_data[] = $tmp;
-                $rowHeaders[] = $ae->formatClientName($client);
+                $row_headers[] = $ae->formatClientName($client);
             }
         }
-        $table_data[0][1] = 1;
-//        $table_data[0][2] = 1;
-//        $table_data[1][2] = 'T';
-//        $table_data[1][3] = 'G';
 
         // add summary row
         $tmp = ['sum'];
@@ -1498,19 +1579,17 @@ class AdminController extends Controller
             }
         }
         $table_data[] = $tmp;
-        $rowHeaders[] = 'összesen';
+        $row_headers[] = 'összesen';
 
         // add the additional rows below the client data
         $table_data[] = null;
-        $rowHeaders[] = '';
+        $row_headers[] = '';
         foreach (['közlekedés', 'vásárlás', 'ügyintézés', 'központ', 'közös gondozás'] as $task) {
             $tmp = array_fill(2, $day_count, '');
             $tmp[0] = '';
             $table_data[] = $tmp;
-            $rowHeaders[] = $task;
+            $row_headers[] = $task;
         }
-
-        $table_data[8][1] = 1;
 
         // add summary row
         $tmp = ['sum'];
@@ -1527,15 +1606,15 @@ class AdminController extends Controller
             }
         }
         $table_data[] = $tmp;
-        $rowHeaders[] = 'összesen';
+        $row_headers[] = 'összesen';
 
         $table_data[] = null;
-        $rowHeaders[] = '';
+        $row_headers[] = '';
         foreach (['látogatási szám', 'ellátottak száma', 'fürdetés', 'ebédes lát.', 'egyéb lát.', 'köz.gond.lát'] as $task) {
             $tmp = array_fill(2, $day_count, '');
             $tmp[0] = '';
             $table_data[] = $tmp;
-            $rowHeaders[] = $task;
+            $row_headers[] = $task;
         }
 
         // add total counts and visit count
@@ -1559,7 +1638,7 @@ class AdminController extends Controller
                     }
                 }
                 // total number of visits unless it's the summary row
-                if ($row[0] != 'sum') {
+                if (!empty($row[0]) && $row[0] != 'sum') {
                     $total_visits += $visits;
                 }
 

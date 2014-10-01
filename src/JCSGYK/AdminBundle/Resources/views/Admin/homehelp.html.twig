@@ -22,18 +22,16 @@
     <div class="hh-legend smalltext">
         M - gyógymasszázs, T - gyógytorna
     </div>
-    <form id="homehelpform" class="homehelpform editform" action="{{ path('admin_home_help') }}" method="POST" novalidate {{ form_enctype(form) }}>
+    {{ form_start(form, {"attr": {"id": "homehelpform", "class": "homehelpform editform"}}) }}
 
         {{ form_widget(form.value) }}
-
-        {{ form_rest(form) }}
 
         <div class="formbuttons">
             <button data-url="{{ path('admin_home_help') }}" type="reset" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
             <button type="submit" class="usersave button" name="usersave" value="save"><span>{{ 'mentés'|trans }}</span></button>
         </div>
 
-    </form>
+    {{ form_end(form) }}
     <script type="text/javascript">
         var tableDefaultOptions = {{ table_defaults|raw }};
         var hh_weekends = '{{ hh_weekends|raw }}';

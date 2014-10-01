@@ -1099,7 +1099,9 @@ JcsSettings = {
       _ref2 = table_data[sum_row];
       for (k in _ref2) {
         v = _ref2[k];
-        table_data[sum_row][k] = 0;
+        if (k > 0) {
+          table_data[sum_row][k] = 0;
+        }
       }
     }
     total_visits = 0;

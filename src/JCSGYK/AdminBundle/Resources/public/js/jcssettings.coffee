@@ -277,7 +277,7 @@ JcsSettings =
         table_data = $("#handsontable").handsontable('getData')
         # get the last sum col
         if !@hhSumCol
-          @hhSumCol = $("#handsontable").handsontable('countCols') - 1
+            @hhSumCol = $("#handsontable").handsontable('countCols') - 1
 
         # get the sum rows
         if !@hhSumRows.length
@@ -303,7 +303,7 @@ JcsSettings =
 
         # reset the sum row
         if sum_row? and table_data[sum_row]?
-            for k, v of table_data[sum_row]
+            for k, v of table_data[sum_row] when k > 0
                 table_data[sum_row][k] = 0
 
         # do the sums

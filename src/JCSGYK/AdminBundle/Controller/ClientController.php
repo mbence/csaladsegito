@@ -53,12 +53,13 @@ class ClientController extends Controller
      * Register a client visit
      *
      * @Secure(roles="ROLE_ASSISTANCE")
+     * @param Request $request
+     * @param null $id
      */
-    public function visitAction($id = null)
+    public function visitAction(Request $request, $id = null)
     {
         // find the users. We need the case admin first, then the assignees of the problems, and then everyone else
         // only active users will be displayed
-        $request = $this->getRequest();
 
         if (!empty($id)) {
 
@@ -233,11 +234,11 @@ class ClientController extends Controller
      * Edit catering fields
      *
      * @Secure(roles="ROLE_USER")
+     * @param Request $request
+     * @param null $id
      */
-    public function cateringEditAction($id = null)
+    public function cateringEditAction(Request $request, $id = null)
     {
-        $request = $this->getRequest();
-
         if (!empty($id)) {
             $em         = $this->getDoctrine()->getManager();
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
@@ -331,16 +332,14 @@ class ClientController extends Controller
      * Edit homehelp fields
      *
      * @Secure(roles="ROLE_USER")
+     * @param Request $request
+     * @param int $id
      */
-    public function homehelpEditAction($id = null)
+    public function homehelpEditAction(Request $request, $id = null)
     {
-        $request = $this->getRequest();
-
         if (!empty($id)) {
             $em         = $this->getDoctrine()->getManager();
             $ds         = $this->container->get('jcs.ds');
-            $company_id = $ds->getCompanyId();
-            $ae         = $this->container->get('jcs.twig.adminextension');
             $sec        = $this->get('security.context');
             $user       = $sec->getToken()->getUser();
 
@@ -364,39 +363,36 @@ class ClientController extends Controller
             $form = $this->createForm(new HomehelpType($ds, $clubs), $homehelp);
 
             // save the catering data
-            if ($request->isMethod('POST')) {
-                $form->bind($request);
+            $form->handleRequest($request);
 
-                if ($form->isValid()) {
-
-                    // save the new Homehelp record
-                    if (empty($homehelp->getId())) {
-                        $em->persist($homehelp);
-                    }
-
-                    // save homehelp modifier
-                    $homehelp->setModifier($user);
-                    $homehelp->setModifiedAt(new \DateTime());
-
-                    // save
-                    $em->flush();
-
-                    // turn off the logging for the rest of the process
-                    $this->container->get('history.logger')->off();
-
-                    // update Catering record if necessary
-                    $catering = $client->getCatering();
-                    if (!empty($catering)) {
-                        $catering->setClub($homehelp->getClub());
-                        $catering->setIncome($homehelp->getIncome());
-                    }
-
-                    $this->get('session')->getFlashBag()->add('notice', 'Gondozás elmentve');
-
-                    return $this->render('JCSGYKAdminBundle:Homehelp:homehelp_dialog.html.twig', [
-                        'success' => true,
-                    ]);
+            if ($form->isValid()) {
+                // save the new Homehelp record
+                if (empty($homehelp->getId())) {
+                    $em->persist($homehelp);
                 }
+
+                // save homehelp modifier
+                $homehelp->setModifier($user);
+                $homehelp->setModifiedAt(new \DateTime());
+
+                // save
+                $em->flush();
+
+                // turn off the logging for the rest of the process
+                $this->container->get('history.logger')->off();
+
+                // update Catering record if necessary
+                $catering = $client->getCatering();
+                if (!empty($catering)) {
+                    $catering->setClub($homehelp->getClub());
+                    $catering->setIncome($homehelp->getIncome());
+                }
+
+                $this->get('session')->getFlashBag()->add('notice', 'Gondozás elmentve');
+
+                return $this->render('JCSGYKAdminBundle:Homehelp:homehelp_dialog.html.twig', [
+                    'success' => true,
+                ]);
             }
 
             return $this->render('JCSGYKAdminBundle:Homehelp:homehelp_dialog.html.twig', [
@@ -438,11 +434,11 @@ class ClientController extends Controller
 
     /**
      * Save client orders
+     * @param Request $request
+     * @param null $id
      */
-    public function ordersEditAction($id=null)
+    public function ordersEditAction(Request $request, $id=null)
     {
-        $request = $this->getRequest();
-
         if (!empty($id)) {
 
             // $em = $this->getDoctrine()->getManager();
@@ -760,14 +756,14 @@ class ClientController extends Controller
     /**
      * List of invoices of the Client
      *
+     * @param Request $request
      * @param int $id Client id
      */
-    public function invoicesAction($id)
+    public function invoicesAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
-        $request = $this->getRequest();
 
         if (!empty($id)) {
             $client = $this->getClient($id);
@@ -820,67 +816,62 @@ class ClientController extends Controller
 
             $form = $form_builder->getForm();
 
-            if ($request->isMethod('POST')) {
-                $form->bind($request);
+            $form->handleRequest($request);
 
+            if ($form->isValid()) {
+                $data = $form->getData();
+
+                if (empty($data['cancel_id'])) {
+                    // normal payments
+                    foreach ($invoices as $invoice) {
+                        if (Invoice::OPEN == $invoice->getStatus()) {
+                            $field = 'i' . $invoice->getId();
+                            if (!empty($data[$field])) {
+                                $res = $invoice->addPayment($data['i' . $invoice->getId()]);
+                                if (-1 == $res) {
+                                    $form->get($field)->addError(new FormError('Túlfizetés nem lehetséges! Adjon be pontos összeget!'));
+                                }
+                            }
+                            // run the update even if no data was sent
+                            $invoice->updateStatus();
+                        }
+                    }
+                } else {
+                    // invoice cancel
+
+                    $cancelled_invoice = null;
+                    // check for valid invoice id
+                    foreach ($invoices as $invoice) {
+                        if ($invoice->getId() == $data['cancel_id']) {
+                            $cancelled_invocie = $invoice;
+                            break;
+                        }
+                    }
+                    if (empty($cancelled_invocie)) {
+                        $form->get('cancel_id')->addError(new FormError('Hibás számla azonosító'));
+                    } else {
+                        $this->container->get('jcs.invoice')->cancelInvoice($invoice);
+                    }
+
+                }
+
+                // validate the form again
                 if ($form->isValid()) {
-                    $data = $form->getData();
+                    $em->flush();
+
+                    // update the client global balance too
+                    $this->get('jcs.invoice')->updateBalance($client->getCatering());
 
                     if (empty($data['cancel_id'])) {
-                        // normal payments
-                        foreach ($invoices as $invoice) {
-                            if (Invoice::OPEN == $invoice->getStatus()) {
-                                $field = 'i' . $invoice->getId();
-                                if (!empty($data[$field])) {
-                                    $res = $invoice->addPayment($data['i' . $invoice->getId()]);
-                                    if (-1 == $res) {
-                                        $form->get($field)->addError(new FormError('Túlfizetés nem lehetséges! Adjon be pontos összeget!'));
-                                    }
-                                }
-                                // run the update even if no data was sent
-                                $invoice->updateStatus();
-                            }
-                        }
+                        $message = 'Befizetés elmentve';
+                    } else {
+                        $message = 'Számla szotrnózva';
                     }
-                    else {
-                        // invoice cancel
+                    $this->get('session')->getFlashBag()->add('notice', $message);
 
-                        $cancelled_invoice = null;
-                        // check for valid invoice id
-                        foreach ($invoices as $invoice) {
-                            if ($invoice->getId() == $data['cancel_id']) {
-                                $cancelled_invocie = $invoice;
-                                break;
-                            }
-                        }
-                        if (empty($cancelled_invocie)) {
-                            $form->get('cancel_id')->addError(new FormError('Hibás számla azonosító'));
-                        }
-                        else {
-                            $this->container->get('jcs.invoice')->cancelInvoice($invoice);
-                        }
-
-                    }
-
-                    // validate the form again
-                    if ($form->isValid()) {
-                        $em->flush();
-
-                        // update the client global balance too
-                        $this->get('jcs.invoice')->updateBalance($client->getCatering());
-
-                        if (empty($data['cancel_id'])) {
-                            $message = 'Befizetés elmentve';
-                        }
-                        else {
-                            $message = 'Számla szotrnózva';
-                        }
-                        $this->get('session')->getFlashBag()->add('notice', $message);
-
-                        return $this->render('JCSGYKAdminBundle:Catering:invoices_dialog.html.twig', [
-                            'success' => true,
-                        ]);
-                    }
+                    return $this->render('JCSGYKAdminBundle:Catering:invoices_dialog.html.twig', [
+                        'success' => true,
+                    ]);
                 }
             }
 
@@ -915,9 +906,15 @@ class ClientController extends Controller
         $this->get('jcs.stat')->save(Stat::TYPE_FAMILY_HELP, 1, $assignee->getId());
     }
 
-    public function relativeEditAction($id, $relation_id)
+    /**
+     * Edit relatives
+     * @param Request $request
+     * @param $id
+     * @param $relation_id
+     * @return Response
+     */
+    public function relativeEditAction(Request $request, $id, $relation_id)
     {
-        $request = $this->getRequest();
         $user= $this->get('security.context')->getToken()->getUser();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
@@ -962,83 +959,85 @@ class ClientController extends Controller
         $form = $this->createForm(new RelativeType($this->container->get('jcs.ds'), $relation->getType(), $client->getType()), $relation->getParent());
 
         // save
-        if ($request->isMethod('POST')) {
-            $form->bind($request);
+        $form->handleRequest($request);
 
-            if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                // save relation type
-                $relation->setType($form->get('relation_type')->getData());
-                // set modifier user
-                $relation->getParent()->setModifier($user);
-                $relation->getParent()->setModifiedAt(new \DateTime());
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            // save relation type
+            $relation->setType($form->get('relation_type')->getData());
+            // set modifier user
+            $relation->getParent()->setModifier($user);
+            $relation->getParent()->setModifiedAt(new \DateTime());
 
-                if (is_null($relation->getId())) {
-                    $em->persist($relation->getParent());
-                    $em->persist($relation);
-                }
-
-                if ($relation->getId()) {
-                    // get the related clients
-                    $relative = $relation->getParent();
-
-                    // if its a mother, we must update any related client record too
-                    if ($relation->getType() == Relation::MOTHER) {
-                        $siblings = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getChildren($relative);
-
-                        // if the birthname is set, then we use that, otherwise the name
-                        if ($relative->getBirthFirstname() || $relative->getBirthLastname()) {
-                            $mother_title = $relative->getBirthTitle();
-                            $mother_firstname = $relative->getBirthFirstname();
-                            $mother_lastname = $relative->getBirthLastname();
-                        }
-                        else {
-                            $mother_title = $relative->getTitle();
-                            $mother_firstname = $relative->getFirstname();
-                            $mother_lastname = $relative->getLastname();
-                        }
-
-                        // update the mothers name fields
-                        foreach ($siblings as $sibling_rel) {
-                            $sibling = $this->getClient($sibling_rel->getChildId());
-                            $sibling->setMotherTitle($mother_title);
-                            $sibling->setMotherFirstname($mother_firstname);
-                            $sibling->setMotherLastname($mother_lastname);
-                        }
-                    }
-                    // or if save_to_all is checked, we must copy the relative's data to all other sibling
-                    elseif (!empty($form['save_to_all']) && !empty($form['save_to_all']->getData())) {
-                        // find all clients of this case
-                        $case = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getCase($client);
-                        foreach ($case as $copy_client) {
-                            // only work with the remaining siblings
-                            if ($copy_client->getId() != $client->getId()) {
-                                // update or create the relation
-                                $this->copyRelations($client, $copy_client, $relation);
-                            }
-                        }
-                    }
-                }
-
-                $em->flush();
-
-                $this->get('session')->getFlashBag()->add('notice', 'Hozzátartozó elmentve');
-
-                return $this->render('JCSGYKAdminBundle:Dialog:relative.html.twig', [
-                    'success' => true
-                ]);
+            if (is_null($relation->getId())) {
+                $em->persist($relation->getParent());
+                $em->persist($relation);
             }
+
+            if ($relation->getId()) {
+                // get the related clients
+                $relative = $relation->getParent();
+
+                // if its a mother, we must update any related client record too
+                if ($relation->getType() == Relation::MOTHER) {
+                    $siblings = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getChildren($relative);
+
+                    // if the birthname is set, then we use that, otherwise the name
+                    if ($relative->getBirthFirstname() || $relative->getBirthLastname()) {
+                        $mother_title = $relative->getBirthTitle();
+                        $mother_firstname = $relative->getBirthFirstname();
+                        $mother_lastname = $relative->getBirthLastname();
+                    } else {
+                        $mother_title = $relative->getTitle();
+                        $mother_firstname = $relative->getFirstname();
+                        $mother_lastname = $relative->getLastname();
+                    }
+
+                    // update the mothers name fields
+                    foreach ($siblings as $sibling_rel) {
+                        $sibling = $this->getClient($sibling_rel->getChildId());
+                        $sibling->setMotherTitle($mother_title);
+                        $sibling->setMotherFirstname($mother_firstname);
+                        $sibling->setMotherLastname($mother_lastname);
+                    }
+                } // or if save_to_all is checked, we must copy the relative's data to all other sibling
+                elseif (!empty($form['save_to_all']) && !empty($form['save_to_all']->getData())) {
+                    // find all clients of this case
+                    $case = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getCase($client);
+                    foreach ($case as $copy_client) {
+                        // only work with the remaining siblings
+                        if ($copy_client->getId() != $client->getId()) {
+                            // update or create the relation
+                            $this->copyRelations($client, $copy_client, $relation);
+                        }
+                    }
+                }
+            }
+
+            $em->flush();
+
+            $this->get('session')->getFlashBag()->add('notice', 'Hozzátartozó elmentve');
+
+            return $this->render('JCSGYKAdminBundle:Dialog:relative.html.twig', [
+                'success' => true
+            ]);
         }
 
         return $this->render('JCSGYKAdminBundle:Dialog:relative.html.twig', [
-            'form' => $form->createView(),
+            'form'     => $form->createView(),
             'relative' => $relation,
         ]);
     }
 
-    public function relativeDeleteAction($id, $relation_id)
+    /**
+     * Delete Relatives
+     * @param Request $request
+     * @param $id
+     * @param $relation_id
+     * @return Response
+     */
+    public function relativeDeleteAction(Request $request, $id, $relation_id)
     {
-        $request = $this->getRequest();
         $user= $this->get('security.context')->getToken()->getUser();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
@@ -1066,36 +1065,35 @@ class ClientController extends Controller
 
 
         // save
-        if ($request->isMethod('POST')) {
-            $form->bind($request);
+        $form->handleRequest($request);
 
-            if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $data = $form->getData();
-                if (!empty($data['delete'])) {
-                    $parent = $relation->getParent();
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $data = $form->getData();
+            if (!empty($data['delete'])) {
+                $parent = $relation->getParent();
 
-                    // see if this relative has any other child record
-                    $children = $em->createQuery("SELECT r FROM JCSGYKAdminBundle:Relation r WHERE r.parent = :parent AND r.childId != :child")
-                        ->setParameter('parent', $parent)
-                        ->setParameter('child', $client->getId())
-                        ->getResult();
+                // see if this relative has any other child record
+                $children = $em->createQuery("SELECT r FROM JCSGYKAdminBundle:Relation r WHERE r.parent = :parent AND r.childId != :child")
+                    ->setParameter('parent', $parent)
+                    ->setParameter('child', $client->getId())
+                    ->getResult();
 
-                    // no more children, we can remove the parent record too
-                    if (empty($children)) {
-                        $em->remove($parent);
-                    }
-                    $em->remove($relation);
-                    $em->flush();
-
-                    $this->get('session')->getFlashBag()->add('notice', 'Hozzátartozó törölve');
+                // no more children, we can remove the parent record too
+                if (empty($children)) {
+                    $em->remove($parent);
                 }
+                $em->remove($relation);
+                $em->flush();
 
-                return $this->render('JCSGYKAdminBundle:Dialog:relative_delete.html.twig', [
-                    'success' => true
-                ]);
+                $this->get('session')->getFlashBag()->add('notice', 'Hozzátartozó törölve');
             }
+
+            return $this->render('JCSGYKAdminBundle:Dialog:relative_delete.html.twig', [
+                'success' => true
+            ]);
         }
+
         return $this->render('JCSGYKAdminBundle:Dialog:relative_delete.html.twig', [
             'form' => $form->createView(),
             'relation' => $relation,
@@ -1106,10 +1104,12 @@ class ClientController extends Controller
      * Edits the client data
      *
      * @Secure(roles="ROLE_USER")
+     * @param Request $request
+     * @param null $id
+     * @param null $client_type
      */
-    public function editAction($id = null, $client_type=null)
+    public function editAction(Request $request, $id = null, $client_type=null)
     {
-        $request = $this->getRequest();
 
         // TODO: utca adatbázis + ellenőrzés
 
@@ -1169,138 +1169,130 @@ class ClientController extends Controller
             $orig_casenum = $client->getCaseNumber();
 
             // save the client
-            if ($request->isMethod('POST')) {
-                $form->bind($request);
+            $form->handleRequest($request);
 
-                if ($form->isValid()) {
-                    // set modifier user
-                    $client->setModifier($user);
-                    $client->setModifiedAt(new \DateTime());
-                    $case_num = $client->getCaseNumber();
+            if ($form->isValid()) {
+                // set modifier user
+                $client->setModifier($user);
+                $client->setModifiedAt(new \DateTime());
+                $case_num = $client->getCaseNumber();
 
-                    // save the new client data
-                    if (is_null($client->getId())) {
-                        if (empty($case_num)) {
-                            // if not defined, get the next case number from the ClientSequence Service
-                            // also checks for year changes and resets the sequence for a new year if needed
-                            $nextVal = $this->get('jcs.seq')->nextVal($co, $client->getType());
-                            if (false === $nextVal) {
-                                // this is really bad
-                                throw new HttpException(500);
-                            }
-
-                            $client->setCaseYear($nextVal['year']);
-                            $client->setCaseNumber($nextVal['id']);
-                        }
-                        else {
-                            $copy_case = true;
+                // save the new client data
+                if (is_null($client->getId())) {
+                    if (empty($case_num)) {
+                        // if not defined, get the next case number from the ClientSequence Service
+                        // also checks for year changes and resets the sequence for a new year if needed
+                        $nextVal = $this->get('jcs.seq')->nextVal($co, $client->getType());
+                        if (false === $nextVal) {
+                            // this is really bad
+                            throw new HttpException(500);
                         }
 
-                        // set the creator
-                        $client->setCreator($user);
-                        $client->setCompanyId($company_id);
-                        $client->setIsArchived(false);
-
-                        // set the client type
-                        $client->setType($client_type);
-
-                        $em->persist($client);
-                        $em->flush();
-
-                        // turn off the logging for the rest of the process
-                        $this->container->get('history.logger')->off();
-
-                        // if case number given, we must copy over a few fields from that case
-                        if (!empty($copy_case)) {
-                            $this->copyCaseData($client);
-                        }
-                    }
-                    // restore the case number and year
-                    elseif (empty($case_num)) {
-                        $client->setCaseYear($orig_year);
-                        $client->setCaseNumber($orig_casenum);
+                        $client->setCaseYear($nextVal['year']);
+                        $client->setCaseNumber($nextVal['id']);
+                    } else {
+                        $copy_case = true;
                     }
 
-                    // set the visible case number
-                    $client->setCaseLabel($this->container->get('jcs.twig.adminextension')->formatCaseNumber($client));
+                    // set the creator
+                    $client->setCreator($user);
+                    $client->setCompanyId($company_id);
+                    $client->setIsArchived(false);
 
-                    // handle/save the utilityproviders
-                    foreach ($client->getUtilityprovidernumbers() as $up) {
-                        $val = $up->getValue();
-                        if (empty($val)) {
-                            // remove the empty providers
-                            $client->removeUtilityprovidernumber($up);
-                            $em->remove($up);
-                        }
-                        else {
-                            // set the client id
-                            $up->setClient($client);
-                            // save the rest
-                            $em->persist($up);
-                        }
-                    }
+                    // set the client type
+                    $client->setType($client_type);
 
-                    // Do we need this?
-                    //$em->flush();
-
-                    // handle/save the addresses
-                    foreach ($client->getAddresses() as $adr) {
-                        $val = $adr->getCity() . $adr->getStreet();
-                        if (empty($val)) {
-                            // remove the empty address
-                            $client->removeAddress($adr);
-                            $em->remove($adr);
-                        }
-                        else {
-                            $aid = $adr->getId();
-                            if (empty($aid)) {
-                                // set the client id
-                                $adr->setClient($client);
-                                $adr->setCreator($user);
-                                $em->persist($adr);
-                            }
-                            else {
-                                $adr->setModifier($user);
-                            }
-                        }
-                    }
-
-                    // copy the mothers name from the relatives record
-                    $mother_relation = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelationByType($client->getId(), Relation::MOTHER);
-                    if (!empty($mother_relation)) {
-                        $mother = $mother_relation->getParent();
-                        // if the birthname is set, then we use that, otherwise the name
-                        if ($mother->getBirthFirstname() || $mother->getBirthLastname()) {
-                            $client->setMotherFirstname($mother->getBirthFirstname());
-                            $client->setMotherLastname($mother->getBirthLastname());
-                        }
-                        else {
-                            $client->setMotherFirstname($mother->getFirstname());
-                            $client->setMotherLastname($mother->getLastname());
-                        }
-                        $client->setMotherTitle($mother->getTitle());
-                    }
-
-                    // save the parameters
-                    $pgroups = $this->container->get('jcs.ds')->getParamGroup(1, false, $client->getType());
-                    $param_data = [];
-                    foreach ($pgroups as $param) {
-                        $param_data[$param->getId()] = $form->get('param_' . $param->getId())->getData();
-                    }
-                    $client->setParams($param_data);
-
+                    $em->persist($client);
                     $em->flush();
 
-                    if (empty($id) && in_array($client->getType(), [Client::FH, Client::CW])) {
-                        // create a new visit task for the new client
-                        // only for family help or child welfare clients
-                        $this->saveVisitTask($client, $client->getCaseAdmin(), $user);
+                    // turn off the logging for the rest of the process
+                    $this->container->get('history.logger')->off();
+
+                    // if case number given, we must copy over a few fields from that case
+                    if (!empty($copy_case)) {
+                        $this->copyCaseData($client);
                     }
-
-                    $this->get('session')->getFlashBag()->add('notice', 'Ügyfél elmentve');
-
-                    return $this->redirect($this->generateUrl('client_view', ['id' => $client->getId()]));
+                } // restore the case number and year
+                elseif (empty($case_num)) {
+                    $client->setCaseYear($orig_year);
+                    $client->setCaseNumber($orig_casenum);
                 }
+
+                // set the visible case number
+                $client->setCaseLabel($this->container->get('jcs.twig.adminextension')->formatCaseNumber($client));
+
+                // handle/save the utilityproviders
+                foreach ($client->getUtilityprovidernumbers() as $up) {
+                    $val = $up->getValue();
+                    if (empty($val)) {
+                        // remove the empty providers
+                        $client->removeUtilityprovidernumber($up);
+                        $em->remove($up);
+                    } else {
+                        // set the client id
+                        $up->setClient($client);
+                        // save the rest
+                        $em->persist($up);
+                    }
+                }
+
+                // Do we need this?
+                //$em->flush();
+
+                // handle/save the addresses
+                foreach ($client->getAddresses() as $adr) {
+                    $val = $adr->getCity() . $adr->getStreet();
+                    if (empty($val)) {
+                        // remove the empty address
+                        $client->removeAddress($adr);
+                        $em->remove($adr);
+                    } else {
+                        $aid = $adr->getId();
+                        if (empty($aid)) {
+                            // set the client id
+                            $adr->setClient($client);
+                            $adr->setCreator($user);
+                            $em->persist($adr);
+                        } else {
+                            $adr->setModifier($user);
+                        }
+                    }
+                }
+
+                // copy the mothers name from the relatives record
+                $mother_relation = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelationByType($client->getId(), Relation::MOTHER);
+                if (!empty($mother_relation)) {
+                    $mother = $mother_relation->getParent();
+                    // if the birthname is set, then we use that, otherwise the name
+                    if ($mother->getBirthFirstname() || $mother->getBirthLastname()) {
+                        $client->setMotherFirstname($mother->getBirthFirstname());
+                        $client->setMotherLastname($mother->getBirthLastname());
+                    } else {
+                        $client->setMotherFirstname($mother->getFirstname());
+                        $client->setMotherLastname($mother->getLastname());
+                    }
+                    $client->setMotherTitle($mother->getTitle());
+                }
+
+                // save the parameters
+                $pgroups = $this->container->get('jcs.ds')->getParamGroup(1, false, $client->getType());
+                $param_data = [];
+                foreach ($pgroups as $param) {
+                    $param_data[$param->getId()] = $form->get('param_' . $param->getId())->getData();
+                }
+                $client->setParams($param_data);
+
+                $em->flush();
+
+                if (empty($id) && in_array($client->getType(), [Client::FH, Client::CW])) {
+                    // create a new visit task for the new client
+                    // only for family help or child welfare clients
+                    $this->saveVisitTask($client, $client->getCaseAdmin(), $user);
+                }
+
+                $this->get('session')->getFlashBag()->add('notice', 'Ügyfél elmentve');
+
+                return $this->redirect($this->generateUrl('client_view', ['id' => $client->getId()]));
             }
 
             // get the recommended fields
@@ -1330,6 +1322,7 @@ class ClientController extends Controller
      * called when new client is saved
      *
      * @param \JCSGYK\AdminBundle\Entity\Client $client
+     * @return bool
      */
     private function copyCaseData(Client &$client)
     {
@@ -1451,11 +1444,11 @@ class ClientController extends Controller
      * Archive clients
      *
      * @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ASSISTANCE') or hasRole('ROLE_CATERING')")
+     * @param Request $request
+     * @param $id
      */
-    public function archiveAction($id)
+    public function archiveAction(Request $request, $id)
     {
-        $request = $this->getRequest();
-
         if (!empty($id)) {
             // get the client
             $client = $this->getClient($id);
@@ -1487,31 +1480,29 @@ class ClientController extends Controller
             $form = $this->createForm(new ArchiveType($this->container->get('jcs.ds'), $client->getIsArchived()), $archive);
 
             // save
-            if ($request->isMethod('POST')) {
-                $form->bind($request);
+            $form->handleRequest($request);
 
+            if ($form->isValid()) {
                 $operation = $form->get('operation')->getData();
-                if ($form->isValid()) {
-                    $em = $this->getDoctrine()->getManager();
-                    $user= $this->get('security.context')->getToken()->getUser();
-                    $archive->setClient($client);
-                    // set modifier user
-                    $archive->setCreator($user);
-                    $archive->setCreatedAt(new \DateTime());
+                $em = $this->getDoctrine()->getManager();
+                $user = $this->get('security.context')->getToken()->getUser();
+                $archive->setClient($client);
+                // set modifier user
+                $archive->setCreator($user);
+                $archive->setCreatedAt(new \DateTime());
 
-                    $em->persist($archive);
+                $em->persist($archive);
 
-                    // archive the client
-                    $client->setIsArchived(1 - $operation);
+                // archive the client
+                $client->setIsArchived(1 - $operation);
 
-                    $em->flush();
+                $em->flush();
 
-                    $this->get('session')->getFlashBag()->add('notice', 'Ügyfél elmentve');
+                $this->get('session')->getFlashBag()->add('notice', 'Ügyfél elmentve');
 
-                    return $this->render('JCSGYKAdminBundle:Dialog:client_archive.html.twig', [
-                        'success' => true,
-                    ]);
-                }
+                return $this->render('JCSGYKAdminBundle:Dialog:client_archive.html.twig', [
+                    'success' => true,
+                ]);
             }
 
             return $this->render('JCSGYKAdminBundle:Dialog:client_archive.html.twig', [
@@ -1658,16 +1649,18 @@ class ClientController extends Controller
 
     /**
      * Client search
-     * @param string $q search string
+     * @param Request $request
+     * @param $client_type
+     * @internal param string $q search string
      *
+     * @return \Symfony\Component\HttpFoundation\Response
      * @Secure(roles="ROLE_USER")
      */
-    public function searchAction($client_type)
+    public function searchAction(Request $request, $client_type)
     {
         if (empty($client_type)) {
             throw new BadRequestHttpException('Invalid client type');
         }
-        $request = $this->getRequest();
         $q = $request->query->get('q');
 
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
