@@ -825,11 +825,89 @@ JcsSettings = {
       setup the homehelp admin
    */
   setupHomehelp: function() {
-    return $("#homehelpfilter").submit(function() {
+    $("#form_social_worker").add("#form_month").on("change", function() {
+      return $("#homehelpfilter").submit();
+    });
+    $("#homehelpfilter").submit(function() {
       var url;
       url = $(this).attr('action') + '/' + $("#form_social_worker").val() + '/' + $("#form_month").val();
       document.location = url;
       return false;
+    });
+    $(".add-client-dialog").off('click').on("click", function(event) {
+      var url;
+      event.stopPropagation();
+      if (!$(this).hasClass('animbutton')) {
+        $(this).addClass('animbutton');
+        url = $(this).data("href") + '/' + $("#form_social_worker").val() + '/' + $("#form_month").val();
+        $.get(url, (function(_this) {
+          return function(data) {
+            $(_this).removeClass('animbutton');
+            JcsModal.setContent(data);
+            return JcsSettings.initAddclientDialog();
+          };
+        })(this)).error((function(_this) {
+          return function(data) {
+            AjaxBag.showError(data.statusText);
+            return $(_this).removeClass('animbutton');
+          };
+        })(this));
+      }
+      return false;
+    });
+    return JcsModal.init();
+  },
+  initAddclientDialog: function() {
+    var cl_id, filter_timeout, my_cl, _i, _len;
+    JcsModal.setCloseButton();
+    filter_timeout = null;
+    $("#form_filter").on("input", function() {
+      clearTimeout(filter_timeout);
+      return filter_timeout = setTimeout(function() {
+        return JcsSettings.filterClients($("#form_filter").val());
+      }, 200);
+    });
+    $("#addclient_form").submit(function() {
+      if (!$("[name='form[clients][]']:checked").length) {
+        AjaxBag.showError($("#noclient-error").text());
+        return false;
+      }
+      $("button.add-client").addClass('animbutton');
+      $.post($(this).attr("action"), $(this).serialize(), function(data) {
+        var resdiv;
+        JcsModal.setContent(data);
+        resdiv = JcsModal.find("#addclient_results");
+        if (resdiv.length) {
+          $("#form_to_add").val(JSON.stringify(resdiv.data("to-add")));
+          $("#form_to_remove").val(JSON.stringify(resdiv.data("to-remove")));
+          return $("#homehelpform").submit();
+        } else {
+          return JcsSettings.initAddclientDialog();
+        }
+      }).error((function(_this) {
+        return function(data) {
+          AjaxBag.showError(data.statusText);
+          return $("button.add-client").removeClass('animbutton');
+        };
+      })(this));
+      return false;
+    });
+    if ($("#form_my_clients").val()) {
+      my_cl = JSON.parse($("#form_my_clients").val());
+      for (_i = 0, _len = my_cl.length; _i < _len; _i++) {
+        cl_id = my_cl[_i];
+        $("#addclient_form input[value=" + cl_id + "]").attr("disabled", true);
+      }
+    }
+    return JcsModal.load();
+  },
+  filterClients: function(input) {
+    return $(".client-template-list > div > label").each(function() {
+      if (input && -1 === $(this).html().toLocaleLowerCase().indexOf(input.toLocaleLowerCase()) && !$(this).prev().is(":checked")) {
+        return $(this).parent().hide();
+      } else {
+        return $(this).parent().show();
+      }
     });
   },
 

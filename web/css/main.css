@@ -2858,6 +2858,10 @@ form.editform #recommended_fields label:after {
 .client-template-list input:checked+label {
     background-color: #ccc;
 }
+.client-template-list input:disabled+label {
+    background-color: #ccc;
+    color: #888;
+}
 
 /* Stats */
 .stats {
@@ -3363,7 +3367,9 @@ h2.menu-section {
 .homehelp-table .htCore col.rowHeader {
     width: 180px;
 }
-
+.homehelp-admin-box {
+    width: 994px;
+}
 .clearfix:after {
   content: ".";
   visibility: hidden;

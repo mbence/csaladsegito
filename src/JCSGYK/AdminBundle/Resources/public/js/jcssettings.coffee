@@ -43,11 +43,95 @@ JcsSettings =
         setup the homehelp admin
     ###
     setupHomehelp: ->
+        $("#form_social_worker").add("#form_month").on("change", ->
+            $("#homehelpfilter").submit()
+        )
         $("#homehelpfilter").submit ->
             url = $(this).attr('action') + '/' + $("#form_social_worker").val() + '/' + $("#form_month").val()
             document.location = url
 
             return false
+
+        # init the add client button
+        $(".add-client-dialog").off('click').on "click", (event) ->
+            event.stopPropagation()
+
+            if !$(this).hasClass('animbutton')
+                $(this).addClass('animbutton')
+
+                url = $(this).data("href") + '/' + $("#form_social_worker").val() + '/' + $("#form_month").val()
+
+                $.get(url, (data) =>
+                    $(this).removeClass('animbutton')
+                    JcsModal.setContent(data)
+                    JcsSettings.initAddclientDialog()
+                ).error( (data) =>
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $(this).removeClass('animbutton')
+                )
+            return false
+
+        # modal dialog
+        JcsModal.init()
+
+    initAddclientDialog: ->
+        JcsModal.setCloseButton()
+        # filter input
+        filter_timeout = null
+        $("#form_filter").on "input", ->
+            clearTimeout(filter_timeout)
+            filter_timeout = setTimeout( ->
+                JcsSettings.filterClients($("#form_filter").val())
+            , 200)
+
+        # form submit
+        $("#addclient_form").submit ->
+            # check for selected user
+            if !$("[name='form[clients][]']:checked").length
+                # no client selected
+                AjaxBag.showError($("#noclient-error").text())
+
+                return false
+
+            $("button.add-client").addClass('animbutton')
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                JcsModal.setContent(data)
+
+                # handle the final operations
+                resdiv = JcsModal.find("#addclient_results")
+                if resdiv.length
+                    $("#form_to_add").val(JSON.stringify(resdiv.data("to-add")))
+                    $("#form_to_remove").val(JSON.stringify(resdiv.data("to-remove")))
+                    $("#homehelpform").submit()
+                else
+                    JcsSettings.initAddclientDialog()
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $("button.add-client").removeClass('animbutton')
+            )
+
+            return false
+
+        # set my clients to readonly
+        if $("#form_my_clients").val()
+            my_cl = JSON.parse($("#form_my_clients").val())
+            for cl_id in my_cl
+                $("#addclient_form input[value=" + cl_id + "]").attr("disabled", true)
+
+        JcsModal.load()
+
+    filterClients: (input) ->
+        $(".client-template-list > div > label").each ->
+            if input and
+                    -1 == $(this).html().toLocaleLowerCase().indexOf(input.toLocaleLowerCase()) and
+                    not $(this).prev().is(":checked") # dont hide checked rows
+                $(this).parent().hide()
+            else
+                $(this).parent().show()
+
 
     ###
         setup the company editor

@@ -8,11 +8,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Cocur\BackgroundProcess\BackgroundProcess;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use JCSGYK\AdminBundle\Entity\User;
 use JCSGYK\AdminBundle\Entity\Parameter;
 use JCSGYK\AdminBundle\Form\Type\UserType;
-use JCSGYK\AdminBundle\Entity\Template;
+use JCSGYK\AdminBundle\Entity\Template as DocTemplate;
 use JCSGYK\AdminBundle\Form\Type\TemplateType;
 use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
@@ -810,7 +816,7 @@ class AdminController extends Controller
 
         if ('new' == $id) {
             // new template
-            $template = new Template;
+            $template = new DocTemplate;
             $template->setCompanyId($company_id);
         }
         elseif (!is_null($id)) {
@@ -1303,17 +1309,21 @@ class AdminController extends Controller
     }
 
     /**
-     * @Secure(roles="ROLE_ADMIN")
+     * Admin Homehelp table editor
+     *
      * @param Request $request
      * @param null $social_worker
      * @param string $month
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return array|Response
+     *
+     * @Security("has_role('ROLE_ADMIN')")
+     * @Route("/admin/home_help/{social_worker}/{month}", name="admin_home_help")
+     * @Template("JCSGYKAdminBundle:Admin:homehelp.html.twig")
      */
     public function homehelpAction(Request $request, $social_worker = null, $month = null)
     {
         $ds = $this->container->get('jcs.ds');
         $user = $ds->getUser();
-        $co = $ds->getCompany();
         $em = $this->container->get('doctrine')->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
 
@@ -1351,8 +1361,58 @@ class AdminController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->get('hh_id')->getData() == $hh_month->getId()) {
+            // table data from the form field
+            $hh_data = json_decode($form->get('value')->getData(), true);
+            if (empty($hh_data)) {
+                $hh_data = [];
+            }
 
-            $hh_month->setData(json_decode($form->get('value')->getData(), true));
+            // update the clients
+            $client_repo = $em->getRepository('JCSGYKAdminBundle:Client');
+
+            $clients_to_remove = json_decode($form->get('to_remove')->getData(), true);
+            if (is_array($clients_to_remove) && !empty($clients_to_remove)) {
+                // get the clients of this social worker
+                $my_clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), true, true);
+                foreach ($clients_to_remove as $client_id) {
+                    // make sure we never remove our own clients
+                    if (!in_array($client_id, $my_clients)) {
+                        // remove the relation
+                        $hh_month->removeClient($client_repo->find($client_id));
+                        // remove the clients row from the table
+                        foreach ($hh_data as $k => $hh_row) {
+                            if ($hh_row[0] == $client_id) {
+                                array_splice ($hh_data, $k, 1);
+                                array_splice ($row_headers, $k, 1);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            $clients_to_add = json_decode($form->get('to_add')->getData(), true);
+            if (is_array($clients_to_add) and !empty($clients_to_add)) {
+                $client_count = count($hh_month->getClients());
+                $day_count = (int) $month->format('t');
+                $client_count = count($clients);
+
+                foreach ($clients_to_add as $client_id) {
+                    // add the relation
+                    $nc = $client_repo->find($client_id);
+                    $hh_month->addClient($nc);
+                    // add the new row to the table
+                    $tmp = array_fill(1, $day_count, '');
+                    $tmp[0] = $client_id;
+                    array_splice($hh_data, $client_count, 0, [$tmp]);
+                    array_splice($row_headers, $client_count, 0, [$ae->formatClientName($nc)]);
+                    $client_count++;
+                }
+            }
+
+            // save the table
+            $hh_month->setData($hh_data);
+            $hh_month->setRowheaders($row_headers);
 
             if (empty($hh_month->getId())) {
                 $hh_month->setCreatedBy($user->getId());
@@ -1366,16 +1426,23 @@ class AdminController extends Controller
 
             $em->flush();
 
-            return $this->redirect($this->generateUrl('admin_home_help', ['social_worker' => $social_worker, 'month' => $month->format('Y-m')]));
+            $this->get('session')->getFlashBag()->add('notice', 'Gondozás elmentve');
+
+            return $this->redirect(
+                $this->generateUrl('admin_home_help', [
+                    'social_worker' => $social_worker,
+                    'month'         => $month->format('Y-m')
+                ])
+            );
         }
 //        var_dump($table_data);
 
-        return $this->render('JCSGYKAdminBundle:Admin:homehelp.html.twig', [
+        return [
             'form'           => $form->createview(),
-            'filter_form'    => $this->homeHelpFilter($social_worker, $month)->createView(),
+            'filter_form'    => $this->homeHelpFilter($hh_month)->createView(),
             'table_defaults' => $this->getHomehelpDefaults($month, $row_headers),
             'hh_weekends'    => $this->getHomehelpWeekends($month),
-        ]);
+        ];
     }
 
     /**
@@ -1396,19 +1463,21 @@ class AdminController extends Controller
             ->getOneOrNullResult();
     }
 
-    private function homeHelpFilter($social_worker, \DateTime $month)
+    /**
+     * Filter form for the home help editor
+     *
+     * @param HomehelpMonth $hh_month
+     * @return \Symfony\Component\Form\Form
+     */
+    private function homeHelpFilter(HomehelpMonth $hh_month)
     {
         $ds = $this->container->get('jcs.ds');
         $ae = $this->container->get('jcs.twig.adminextension');
 
-        // build the filter form
-        $form_builder = $this->createFormBuilder(['social_worker' => $social_worker, 'month' => $month->format('Y-m')]);
-
-        // add the social workers
-        $form_builder->add('social_worker', 'choice', [
-            'label'   => 'Gondozó',
-            'choices' => $ds->getSocialWorkers(),
-        ]);
+        $defaults = [
+            'social_worker' => $hh_month->getSocialWorker(),
+            'month'         => $hh_month->getDate()->format('Y-m')
+        ];
 
         // add the months for a year before
         $months = [];
@@ -1418,31 +1487,57 @@ class AdminController extends Controller
             $m->modify('+1 month');
         }
 
-        $form_builder->add('month', 'choice', [
-            'label'   => 'Hónap',
-            'choices' => $months,
-        ]);
-
-        // ok button
-        $form_builder->add('filter_button', 'submit', [
-            'label' => 'ok',
-        ]);
+        // build the filter form
+        $form_builder = $this->createFormBuilder($defaults)
+            // final url will be set by the js function "setupHomehelp" in jcssettings.coffee
+            ->setAction($this->generateUrl('admin_home_help'))
+            ->setMethod('GET')
+            // add the social workers
+            ->add('social_worker', 'choice', [
+                'label'   => 'Gondozó',
+                'choices' => $ds->getSocialWorkers(),
+            ])
+            ->add('month', 'choice', [
+                'label'   => 'Hónap',
+                'choices' => $months,
+            ])
+//            // ok button
+//            ->add('filter_button', 'submit', [
+//                'label' => 'ok',
+//            ])
+        ;
 
         return $form_builder->getForm();
     }
 
+    /**
+     * Get the main form for the Home Help editor
+     *
+     * @param HomehelpMonth $hh_month
+     * @return \Symfony\Component\Form\Form
+     */
     private function homeHelpForm(HomehelpMonth $hh_month)
     {
         // build the form
         $form_builder = $this->createFormBuilder(['hh_id' => $hh_month->getId() , 'value' => json_encode($hh_month->getData())])
+            ->setAction($this->generateUrl('admin_home_help', ['social_worker' => $hh_month->getSocialWorker(), 'month' => $hh_month->getDate()->format('Y-m')]))
+            ->setMethod('POST')
             ->add('hh_id', 'hidden')
             ->add('value', 'hidden')
-            ->setAction($this->generateUrl('admin_home_help', ['social_worker' => $hh_month->getSocialWorker(), 'month' => $hh_month->getDate()->format('Y-m')]))
-            ->setMethod('POST');
+            ->add('to_add', 'hidden')
+            ->add('to_remove', 'hidden')
+        ;
 
         return $form_builder->getForm();
     }
 
+    /**
+     * Get the default settings for the home help handsontable
+     *
+     * @param \DateTime $month
+     * @param array $row_headers
+     * @return string  json encoded array
+     */
     private function getHomehelpDefaults(\DateTime $month, array $row_headers)
     {
         $day_count = $month->format('t');
@@ -1489,6 +1584,12 @@ class AdminController extends Controller
         return json_encode($re);
     }
 
+    /**
+     * Find the weekends of this month
+     *
+     * @param \DateTime $month
+     * @return string json encoded array
+     */
     private function getHomehelpWeekends(\DateTime $month)
     {
         $weekends = [];
@@ -1515,6 +1616,7 @@ class AdminController extends Controller
     /**
      * Find the clients of the selected social worker
      * Also update the $social_worker to the first of the list if none selected
+     *
      * @param $social_worker
      * @internal param $clients
      * @return array list of clients
@@ -1541,6 +1643,7 @@ class AdminController extends Controller
 
     /**
      * Fill the required table data and headers for new months
+     *
      * @param $clients
      * @param \DateTime $month
      * @param $table_data
@@ -1556,7 +1659,7 @@ class AdminController extends Controller
         if (empty($table_data)) {
             // build the data if empty
             foreach ($clients as $client) {
-                $tmp = array_fill(2, $day_count, '');
+                $tmp = array_fill(1, $day_count, '');
                 $tmp[0] = $client->getId();
 
                 $table_data[] = $tmp;
@@ -1585,7 +1688,7 @@ class AdminController extends Controller
         $table_data[] = null;
         $row_headers[] = '';
         foreach (['közlekedés', 'vásárlás', 'ügyintézés', 'központ', 'közös gondozás'] as $task) {
-            $tmp = array_fill(2, $day_count, '');
+            $tmp = array_fill(1, $day_count, '');
             $tmp[0] = '';
             $table_data[] = $tmp;
             $row_headers[] = $task;
@@ -1611,7 +1714,7 @@ class AdminController extends Controller
         $table_data[] = null;
         $row_headers[] = '';
         foreach (['látogatási szám', 'ellátottak száma', 'fürdetés', 'ebédes lát.', 'egyéb lát.', 'köz.gond.lát'] as $task) {
-            $tmp = array_fill(2, $day_count, '');
+            $tmp = array_fill(1, $day_count, '');
             $tmp[0] = '';
             $table_data[] = $tmp;
             $row_headers[] = $task;
@@ -1657,6 +1760,134 @@ class AdminController extends Controller
                 }
             }
         }
+    }
+
+    /**
+     * Add Client action
+     *
+     * @param Request $request
+     * @param $social_worker
+     * @param $month
+     * @return array|Response
+     *
+     * @Security("has_role('ROLE_ADMIN')")
+     * @Route("/admin/home_help_addclient/{social_worker}/{month}", name="admin_addclient")
+     * @Template("JCSGYKAdminBundle:Dialog:homehelp_addclient.html.twig")
+     */
+    public function addclientAction(Request $request, $social_worker = null, $month = null)
+    {
+        $ds = $this->container->get('jcs.ds');
+        $em = $this->container->get('doctrine')->getManager();
+        $hh_repo = $em->getRepository('JCSGYKAdminBundle:HomeHelp');
+
+        $month = (new \DateTime($month))->setTime(0, 0, 0);
+
+        // if no sw provided, exit with an exception
+        if (empty($social_worker)) {
+            throw new HttpException(400, "Bad request");
+        }
+        // get the clients of this social worker
+        $my_clients = $hh_repo->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), true, true);
+        // the the inactive clients
+        $my_inactive_clients = $hh_repo->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), false, true);
+
+        // find the clients associated with this homehelp_month record
+        $hh_month = $this->getHHMonth($social_worker, $month);
+        if (empty($hh_month)) {
+            $set_clients = $my_clients;
+        } else {
+            $hh_clients = $hh_month->getClients();
+            $set_clients = [];
+            foreach ($hh_clients as $hh_client) {
+                $set_clients[] = $hh_client->getId();
+            }
+        }
+
+        $form = $this->addClientsForm($social_worker, $month, $my_clients, $set_clients);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            // client list submitted in the form
+            $new_client_list = $form->get('clients')->getData();
+
+            // check added clients
+            $clients_to_add = [];
+            foreach ($new_client_list as $client_id) {
+                if (!in_array($client_id, $set_clients)) {
+                    $clients_to_add[] = $client_id;
+                }
+            }
+
+            // check removed clients
+            $clients_to_remove = [];
+            foreach ($set_clients as $client_id) {
+                if (!in_array($client_id, $new_client_list)
+                    && !in_array($client_id, $my_clients)
+                    && !in_array($client_id, $my_inactive_clients)
+                ) {
+                    $clients_to_remove[] = $client_id;
+                }
+            }
+
+            return [
+                'success'   => true,
+                'to_add'    => json_encode($clients_to_add),
+                'to_remove' => json_encode($clients_to_remove),
+            ];
+        }
+
+        return [
+            'form' => $form->createView(),
+        ];
+    }
+
+    /**
+     * Form of the addclient dialog
+     *
+     * @param $social_worker
+     * @param \DateTime $month
+     * @param $my_clients
+     * @param $set_clients
+     * @return \Symfony\Component\Form\Form
+     */
+    private function addClientsForm($social_worker, \DateTime $month, $my_clients, $set_clients)
+    {
+        $ds = $this->container->get('jcs.ds');
+        $em = $this->container->get('doctrine')->getManager();
+        $ae = $this->container->get('jcs.twig.adminextension');
+
+        // get all active home help clients
+        $clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getActiveClients($ds->getCompanyId());
+        $client_list = [];
+        foreach ($clients as $client) {
+            $client_list[$client->getId()] = $ae->formatClientName($client);
+        }
+
+        $defaults = [
+            'my_clients' => json_encode($my_clients),
+            'clients' => $set_clients,
+        ];
+
+        // build the form
+        $form_builder = $this->createFormBuilder($defaults)
+            ->setAction($this->generateUrl('admin_addclient', [
+                'social_worker' => $social_worker,
+                'month'         => $month->format('Y-m')
+            ]))
+            ->setMethod('POST')
+            ->add('filter', 'text', [
+                'label'    => 'Szűrő',
+                'required' => false,
+            ])
+            ->add('clients', 'choice', [
+                'label'    => 'Ügyfelek',
+                'choices'  => $client_list,
+                'expanded' => true,
+                'multiple' => true,
+            ])
+            ->add('my_clients', 'hidden');
+
+        return $form_builder->getForm();
     }
 
 }

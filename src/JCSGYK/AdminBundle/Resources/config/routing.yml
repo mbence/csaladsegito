@@ -194,10 +194,6 @@ admin_recommended_fields:
 admin_social_workers:
     pattern:  /admin/social_workers/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:clubs, id: null }
-admin_home_help:
-    pattern:  /admin/home_help/{social_worker}/{month}
-    defaults: { _controller: JCSGYKAdminBundle:Admin:homehelp, social_worker: null, month: null }
-
 
 login_redirector:
     pattern:   /loginredirector
