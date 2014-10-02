@@ -57,6 +57,9 @@ a {
 .floatright {
     float: right;
 }
+.floatleft {
+    float: left;
+}
 .red {
     color: red;
 }

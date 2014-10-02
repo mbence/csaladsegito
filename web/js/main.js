@@ -855,6 +855,9 @@ JcsSettings = {
       }
       return false;
     });
+    $("#homehelpform button.cancel").on("click", function() {
+      return document.location.reload();
+    });
     return JcsModal.init();
   },
   initAddclientDialog: function() {

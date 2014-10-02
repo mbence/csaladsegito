@@ -72,6 +72,10 @@ JcsSettings =
                 )
             return false
 
+        # form cancel button
+        $("#homehelpform button.cancel").on "click", ->
+              document.location.reload()
+
         # modal dialog
         JcsModal.init()
 

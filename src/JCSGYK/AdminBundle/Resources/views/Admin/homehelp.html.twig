@@ -13,6 +13,8 @@
             <div class="floatright">
                 <button data-href="{{ path('admin_addclient') }}" type="button" class="add-client-dialog greybutton">
                     <span>{{ 'ügyfél hozzáadása'|trans }}</span></button>
+                <button data-href="{{ path('admin_addclient') }}" type="button" class="download-homehelp greybutton">
+                    <span>{{ 'letöltés'|trans }}</span></button>
             </div>
             <div class="hh-header">
                 {{ form_errors(filter_form.social_worker) }}
@@ -24,18 +26,18 @@
         {{ form_end(filter_form) }}
 
         <div id="handsontable" class="homehelp-table"></div>
-        <div class="hh-legend smalltext">
-            M - gyógymasszázs, T - gyógytorna
-        </div>
-        {{ form_start(form, {"attr": {"id": "homehelpform", "class": "homehelpform editform" }}) }}
+        {{ form_start(form, {"attr": {"id": "homehelpform", "class": "homehelpform" }}) }}
 
             {{ form_widget(form.value) }}
 
-            <div class="formbuttons">
-                <button data-url="{{ path('admin_home_help') }}" type="reset" class="cancel greybutton">
+            <div class="formbuttons floatright">
+                <button type="reset" class="cancel greybutton">
                     <span>{{ 'mégse'|trans }}</span></button>
                 <button type="submit" class="usersave button" name="usersave" value="save"><span>{{ 'mentés'|trans }}</span>
                 </button>
+            </div>
+            <div class="hh-legend smalltext floatleft">
+                M - gyógymasszázs, T - gyógytorna
             </div>
 
         {{ form_end(form) }}
