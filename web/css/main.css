@@ -3373,6 +3373,9 @@ h2.menu-section {
 .homehelp-admin-box {
     width: 994px;
 }
+.greybutton.download-homehelp > span {
+    vertical-align: 2px;
+}
 .clearfix:after {
   content: ".";
   visibility: hidden;

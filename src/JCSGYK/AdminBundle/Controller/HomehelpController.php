@@ -48,7 +48,6 @@ class HomehelpController extends Controller
 
         // creat a new if no record found
         if (empty($hh_month)) {
-            //$this->fillEmptyHHTable($clients, $month, $table_data, $row_headers);
             // create new record
             $hh_month = (new HomehelpMonth())
                 ->setCompanyId($ds->getCompanyId())
@@ -145,7 +144,84 @@ class HomehelpController extends Controller
             'filter_form'    => $this->homeHelpFilter($hh_month)->createView(),
             'table_defaults' => $this->getHomehelpDefaults($month, $row_headers),
             'hh_weekends'    => $this->getHomehelpWeekends($month),
+            'social_worker'  => $social_worker,
+            'month'          => $month->format('Y-m'),
         ];
+    }
+
+    /**
+     * Admin Homehelp download action
+     *
+     * @param Request $request
+     * @param null $social_worker
+     * @param string $month
+     * @return array|Response
+     *
+     * @Security("has_role('ROLE_ADMIN')")
+     * @Route("/admin/home_help_download/{social_worker}/{month}", name="homehelp_download")
+     */
+    public function downloadAction(Request $request, $social_worker, $month)
+    {
+        $ds = $this->container->get('jcs.ds');
+        $ae = $this->container->get('jcs.twig.adminextension');
+        $month = (new \DateTime($month))->setTime(0, 0, 0);
+
+        // get the record from db
+        $hh_month = $this->getHHMonth($social_worker, $month);
+        if (empty($hh_month)) {
+            throw new HttpException(400, "Bad request");
+        }
+        $day_count = (int) $hh_month->getDate()->format('t');
+        $client_count = count($hh_month->getClients());
+
+        $columns = range(0, $day_count);
+        $columns[0] = '';
+
+        $table_data = $hh_month->getData();
+        $row_headers = $hh_month->getRowheaders();
+        foreach ($table_data as $k => &$row) {
+            if (!empty($row)) {
+                $row[0] = $row_headers[$k];
+            }
+        }
+        // split the table to the blocks
+        $client_block = array_splice($table_data, 0, $client_count + 2);
+        $service_block = array_splice($table_data, 0, 7);
+        $extra_block = array_splice($table_data, 0);
+
+        // remove the separator row and the sum rows
+        array_pop($client_block);
+        $client_sums = array_pop($client_block);
+        array_pop($service_block);
+        $service_sums = array_pop($service_block);
+        array_pop($extra_block);
+        $extra_sums = array_pop($extra_block);
+
+        $title = sprintf('Gondozás - %s - %s', $ds->get($social_worker), $ae->formatDate($hh_month->getDate(), 'ym'));
+        $template_file = __DIR__ . '/../Resources/public/reports/homehelp.xlsx';
+
+        $data = [
+            'hh.cim'   => $title,
+            'sp.datum' => $ae->formatDate($hh_month->getDate(), 'ym'),
+            'blocks'   => [
+                'columns'  => $columns,
+                'cols'     => range(0, $day_count + 2),
+                'cols2'     => range(0, $day_count + 2),
+                'cols3'     => range(0, $day_count + 2),
+                'clients' => $client_block,
+                'clientsum' => $client_sums,
+                'services' => $service_block,
+                'servicesum' => $service_sums,
+                'extras' => $extra_block,
+                'extrasum' => $extra_sums,
+            ]
+        ];
+
+        $output_name   = $data['hh.cim'] . '.xlsx';
+
+        return $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+
+        // [homehelp.[cols.val;block=tbs:cell]]
     }
 
     /**

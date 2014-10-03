@@ -13,8 +13,9 @@
             <div class="floatright">
                 <button data-href="{{ path('admin_addclient') }}" type="button" class="add-client-dialog greybutton">
                     <span>{{ 'ügyfelek módosítása'|trans }}</span></button>
-                <button data-href="{{ path('admin_addclient') }}" type="button" class="download-homehelp greybutton">
-                    <span>{{ 'letöltés'|trans }}</span></button>
+                <a href="{{ path('homehelp_download', {"social_worker": social_worker, "month": month}) }}" class="download-homehelp greybutton">
+                    <span>{{ 'letöltés'|trans }}</span>
+                </a>
             </div>
             <div class="hh-header">
                 {{ form_errors(filter_form.social_worker) }}
