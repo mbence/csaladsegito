@@ -10,7 +10,7 @@
     {#{% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}#}
     {#<form action="{{ path('client_archive', {'id': client.id}) }}" id="archive_form" method="post" {{ form_enctype(form) }}>#}
     {{ form_start(form, {"attr": {"id": "addclient_form", "class": "" }}) }}
-        <h1 class="client">{{ 'Ügyfél Hozzáadása'|trans }}</h1>
+        <h1 class="client">{{ 'Ügyfelek módosítása'|trans }}</h1>
 
         {{ form_errors(form) }}
         <div class="editform">{{ form_row(form.filter) }}</div>
@@ -28,7 +28,7 @@
         </div>
 
         <div class="toppad10">
-            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'add-client', title:'Hozzáadás', label:'ügyfél hozzáadása'}] } %}
+            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'add-client', title:'Ügyfelek módosítása', label:'mentés'}] } %}
             <div class="clear"></div>
         </div>
     {{ form_end(form) }}

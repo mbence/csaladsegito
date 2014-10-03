@@ -90,7 +90,9 @@ JcsSettings =
             , 200)
 
         # form submit
-        $("#addclient_form").submit ->
+        $addClientForm = $("#addclient_form");
+
+        $addClientForm.submit ->
             # check for selected user
             if !$("[name='form[clients][]']:checked").length
                 # no client selected
@@ -119,11 +121,11 @@ JcsSettings =
 
             return false
 
-        # set my clients to readonly
+        # set my clients checkboxes to disabled
         if $("#form_my_clients").val()
             my_cl = JSON.parse($("#form_my_clients").val())
-            for cl_id in my_cl
-                $("#addclient_form input[value=" + cl_id + "]").attr("disabled", true)
+            for cl_id in my_cl when $addClientForm.find("input[value=" + cl_id + "]").is(":checked")
+                $addClientForm.find("input[value=" + cl_id + "]").attr("disabled", true)
 
         JcsModal.load()
 
@@ -391,7 +393,7 @@ JcsSettings =
 
         # reset the sum row
         if sum_row? and table_data[sum_row]?
-            for k, v of table_data[sum_row] when k > 0
+            for k, v of table_data[sum_row] when k > 0 and table_data[sum_row][k]
                 table_data[sum_row][k] = 0
 
         # do the sums

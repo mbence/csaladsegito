@@ -1334,28 +1334,33 @@ class AdminController extends Controller
         }
         $month = (new \DateTime($month))->setTime(0, 0, 0);
 
+        // get the record from db
         $hh_month = $this->getHHMonth($social_worker, $month);
 
+        // creat a new if no record found
         if (empty($hh_month)) {
-            $table_data = [];
-            $row_headers = [];
-            $this->fillEmptyHHTable($clients, $month, $table_data, $row_headers);
+            //$this->fillEmptyHHTable($clients, $month, $table_data, $row_headers);
             // create new record
-            $hh_month = new HomehelpMonth();
-            $hh_month->setCompanyId($ds->getCompanyId());
-            $hh_month->setSocialWorker($social_worker);
-            $hh_month->setDate($month);
-            $hh_month->setRowheaders($row_headers);
-            $hh_month->setData($table_data);
+            $hh_month = (new HomehelpMonth())
+                ->setCompanyId($ds->getCompanyId())
+                ->setSocialWorker($social_worker)
+                ->setDate($month)
+                ->setRowheaders([])
+                ->setData([])
+            ;
 
             foreach ($clients as $client) {
                 $hh_month->addClient($client);
             }
         }
-        else {
-            $table_data = $hh_month->getData();
-            $row_headers = $hh_month->getRowheaders();
-        }
+        // check and fill the client block
+        $hh_month = $this->hhCheckClientBlock($hh_month);
+        $hh_month = $this->hhCheckServicesBlocks($hh_month);
+
+        // we need the row headers later
+        $row_headers = $hh_month->getRowheaders();
+
+
 
         $form = $this->homeHelpForm($hh_month);
         $form->handleRequest($request);
@@ -1370,6 +1375,7 @@ class AdminController extends Controller
             // update the clients
             $client_repo = $em->getRepository('JCSGYKAdminBundle:Client');
 
+            // remove clients
             $clients_to_remove = json_decode($form->get('to_remove')->getData(), true);
             if (is_array($clients_to_remove) && !empty($clients_to_remove)) {
                 // get the clients of this social worker
@@ -1379,40 +1385,28 @@ class AdminController extends Controller
                     if (!in_array($client_id, $my_clients)) {
                         // remove the relation
                         $hh_month->removeClient($client_repo->find($client_id));
-                        // remove the clients row from the table
-                        foreach ($hh_data as $k => $hh_row) {
-                            if ($hh_row[0] == $client_id) {
-                                array_splice ($hh_data, $k, 1);
-                                array_splice ($row_headers, $k, 1);
-                                break;
-                            }
-                        }
                     }
                 }
             }
 
+            // add the new clients
             $clients_to_add = json_decode($form->get('to_add')->getData(), true);
             if (is_array($clients_to_add) and !empty($clients_to_add)) {
-                $client_count = count($hh_month->getClients());
-                $day_count = (int) $month->format('t');
-                $client_count = count($clients);
-
                 foreach ($clients_to_add as $client_id) {
                     // add the relation
                     $nc = $client_repo->find($client_id);
                     $hh_month->addClient($nc);
-                    // add the new row to the table
-                    $tmp = array_fill(1, $day_count, '');
-                    $tmp[0] = $client_id;
-                    array_splice($hh_data, $client_count, 0, [$tmp]);
-                    array_splice($row_headers, $client_count, 0, [$ae->formatClientName($nc)]);
-                    $client_count++;
                 }
             }
+            // the rest of the modifications will be taken care of in the $this->hhCheckClientBlock()
 
             // save the table
             $hh_month->setData($hh_data);
             $hh_month->setRowheaders($row_headers);
+
+            // run checks again with the new records
+            $hh_month = $this->hhCheckClientBlock($hh_month);
+            $hh_month = $this->hhCheckServicesBlocks($hh_month);
 
             if (empty($hh_month->getId())) {
                 $hh_month->setCreatedBy($user->getId());
@@ -1642,128 +1636,235 @@ class AdminController extends Controller
     }
 
     /**
-     * Fill the required table data and headers for new months
+     * Check the client block in the homehelp table
+     * Fill the block if empty, reorder the clients by name, and recalculate the summary cells
      *
-     * @param $clients
-     * @param \DateTime $month
-     * @param $table_data
-     * @param $row_headers
+     * @param HomehelpMonth $hh_month
+     * @return \JCSGYK\AdminBundle\Entity\HomehelpMonth
      */
-    private function fillEmptyHHTable($clients, \DateTime $month, &$table_data, &$row_headers)
+    private function hhCheckClientBlock(HomehelpMonth $hh_month)
     {
         $ae = $this->container->get('jcs.twig.adminextension');
-        $day_count = (int) $month->format('t');
-        $client_count = count($clients);
+        $day_count = (int) $hh_month->getDate()->format('t');
 
-        // get the data from db for each client
-        if (empty($table_data)) {
-            // build the data if empty
-            foreach ($clients as $client) {
-                $tmp = array_fill(1, $day_count, '');
-                $tmp[0] = $client->getId();
+        $clients = $hh_month->getClients();
+        $table_data = $hh_month->getData();
+        $row_headers = $hh_month->getRowheaders();
 
-                $table_data[] = $tmp;
-                $row_headers[] = $ae->formatClientName($client);
+        // get the individual client rows
+        if (!empty($table_data)) {
+            // first find the client rows
+            $client_rows = [];
+            // the first few rows are the client rows followed by a sum and a null row
+            while (!empty($table_data[0][0]) && 'sum' != $table_data[0][0]) {
+                $row = array_shift($table_data);
+                $client_rows[$row[0]] = $row;
+                array_shift($row_headers);
             }
+            // now the homehelp table has no client rows, remove the summary row as well
+            if (!empty($table_data[0][0]) && 'sum' == $table_data[0][0]) {
+                array_shift($table_data);
+                array_shift($row_headers);
+            }
+            // lets clear the separator row too
+            if (is_null($table_data[0])) {
+                array_shift($table_data);
+                array_shift($row_headers);
+            }
+            // now the client block is completely removed, and the client data is in $client_rows
         }
 
-        // add summary row
-        $tmp = ['sum'];
-        foreach ($table_data as $row) {
-            foreach ($row as $n => $cell) {
-                if ($n > 0 && is_numeric($cell)) {
-                    if (!empty($cell)) {
-                        if (empty($tmp[$n])) {
-                            $tmp[$n] = 0;
+        // build the client list
+        $client_list = [];
+        foreach ($clients as $client) {
+            $client_list[$client->getId()] = $ae->formatClientName($client);
+        }
+        // order the clients by name
+        $collator = new \Collator('hu_HU');
+        $collator->asort($client_list);
+
+        // build the client rows
+        $rows = [];
+        $headers = [];
+        foreach ($client_list as $client_id => $client_name) {
+            if (isset($client_rows[$client_id])) {
+                $row = $client_rows[$client_id];
+                unset($client_rows[$client_id]);
+            } else {
+                $row = [$client_id] + array_fill(1, $day_count + 2, '');
+            }
+            $rows[] = $row;
+            $headers[] = $client_name;
+        }
+
+        // calculate the summary fields and clean the whole block
+        $this->hhSums($rows, $headers, $day_count, true);
+        $this->hhAddSeparatorRow($rows, $headers);
+
+        // done building the rows, lets insert in the table
+        $table_data = array_merge($rows, $table_data);
+        $row_headers = array_merge($headers, $row_headers);
+
+        $hh_month->setData($table_data);
+        $hh_month->setRowheaders($row_headers);
+
+        return $hh_month;
+    }
+
+    /**
+     * Add separator row;
+     *
+     * @param $rows
+     * @param $headers
+     */
+    private function hhAddSeparatorRow(&$rows, &$headers)
+    {
+        $rows[] = null;
+        $headers[] = '';
+    }
+
+    /**
+     * Cleanup the rows (remove 0-s, convert numbers to float)
+     *
+     * @param array $rows
+     * @return array
+     */
+    private function hhCleanRows($rows) {
+        foreach ($rows as &$row) {
+            foreach ($row as &$v) {
+                if (empty($v)) {
+                    $v = '';
+                }
+                elseif (is_numeric($v)) {
+                    $v = (float) $v;
+                }
+            };
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Calculate the summary fields and sum row
+     *
+     * @param array $rows
+     * @param array $headers
+     * @param int $day_count
+     * @param bool $visits
+     */
+    private function hhSums(&$rows, &$headers, $day_count, $visits = false)
+    {
+        $sum_row = ['sum'] + array_fill(1, $day_count + 2, 0);
+        $sum_col = $day_count + 1;
+        $visit_col = $day_count + 2;
+
+        foreach ($rows as &$row) {
+            // row sum and visits
+            $sum = 0;
+            $visit_sum = 0;
+            foreach ($row as $k => $v) {
+                if ($k > 0 && $k <= $day_count) {
+                    if (!empty($v)) {
+                        if ($visits) {
+                            $visit_sum++;
                         }
-                        $tmp[$n] += $cell;
+                        if (is_numeric($v)) {
+                            $sum += $v;
+                        }
                     }
+                }
+                // add the sums
+                if ($k > 0 && !empty($v) && is_numeric($v)) {
+                    $sum_row[$k] += $v;
                 }
             }
+            $row[$sum_col] = $sum;
+            $row[$visit_col] = $visit_sum;
         }
-        $table_data[] = $tmp;
-        $row_headers[] = 'összesen';
+        $rows[] = $sum_row;
 
-        // add the additional rows below the client data
-        $table_data[] = null;
-        $row_headers[] = '';
-        foreach (['közlekedés', 'vásárlás', 'ügyintézés', 'központ', 'közös gondozás'] as $task) {
-            $tmp = array_fill(1, $day_count, '');
-            $tmp[0] = '';
-            $table_data[] = $tmp;
-            $row_headers[] = $task;
-        }
+        // sums row header
+        $headers[] = 'összesen';
 
-        // add summary row
-        $tmp = ['sum'];
-        for ($r = $client_count + 2; $r < count($table_data); $r++) {
-            foreach ($table_data[$r] as $n => $cell) {
-                if ($n > 0 && is_numeric($cell)) {
-                    if (!empty($cell)) {
-                        if (empty($tmp[$n])) {
-                            $tmp[$n] = 0;
-                        }
-                        $tmp[$n] += $cell;
-                    }
-                }
+        $rows = $this->hhCleanRows($rows);
+    }
+
+    /**
+     * Check the service blocks in the homehelp table
+     * Fill the block if empty and recalculate the summary cells
+     *
+     * @param HomehelpMonth $hh_month
+     * @return HomehelpMonth
+     */
+    private function hhCheckServicesBlocks(HomehelpMonth $hh_month)
+    {
+        $client_count = count($hh_month->getClients());
+        $day_count = (int)$hh_month->getDate()->format('t');
+
+        $table_data = $hh_month->getData();
+        $row_headers = $hh_month->getRowheaders();
+
+        $rows = [];
+        $service_headers = ['közlekedés', 'vásárlás', 'ügyintézés', 'központ', 'közös gondozás'];
+        $extra_headers = ['látogatási szám', 'ellátottak száma', 'fürdetés', 'ebédes lát.', 'egyéb lát.', 'köz.gond.lát'];
+
+        // split the table to the blocks
+        $client_block = array_splice($table_data, 0, $client_count + 2);
+        $service_block = array_splice($table_data, 0, count($service_headers) + 2);
+        $extra_block = array_splice($table_data, 0);
+
+        // split the headers to the blocks
+        $client_header = array_splice($row_headers, 0, $client_count + 2);
+        $service_header = array_splice($row_headers, 0, count($service_headers) + 2);
+        $extra_header = array_splice($row_headers, 0);
+
+        // prepare the blocks
+        $this->hhPrepareBlock($service_block, $service_header, $service_headers, $day_count);
+        $this->hhPrepareBlock($extra_block, $extra_header, $extra_headers, $day_count);
+
+        // calculate the summary fields and clean the whole block
+        $this->hhSums($service_block, $service_header, $day_count);
+        $this->hhAddSeparatorRow($service_block, $service_header);
+
+        $this->hhSums($extra_block, $extra_header, $day_count);
+        $this->hhAddSeparatorRow($extra_block, $extra_header);
+
+        // done building the rows, lets insert in the table
+        $table_data = array_merge($client_block, $service_block, $extra_block);
+        $row_headers = array_merge($client_header, $service_header, $extra_header);
+
+        $hh_month->setData($table_data);
+        $hh_month->setRowheaders($row_headers);
+
+        return $hh_month;
+    }
+
+    /**
+     * Prepare the block for hhSums (remove sum rows or fill empty rows)
+     *
+     * @param $block
+     * @param $header
+     * @param $headers
+     * @param $day_count
+     */
+    private function hhPrepareBlock(&$block, &$header, $headers, $day_count)
+    {
+        if (!empty($block)) {
+            // remove the sum and the separator rows from the block
+            array_splice($block, -2);
+            array_splice($header, -2);
+        } else {
+            foreach ($headers as $h) {
+                $block[] = [''] + array_fill(1, $day_count + 2, '');
             }
-        }
-        $table_data[] = $tmp;
-        $row_headers[] = 'összesen';
-
-        $table_data[] = null;
-        $row_headers[] = '';
-        foreach (['látogatási szám', 'ellátottak száma', 'fürdetés', 'ebédes lát.', 'egyéb lát.', 'köz.gond.lát'] as $task) {
-            $tmp = array_fill(1, $day_count, '');
-            $tmp[0] = '';
-            $table_data[] = $tmp;
-            $row_headers[] = $task;
-        }
-
-        // add total counts and visit count
-        $total_visits = 0;
-        foreach ($table_data as $r => $row) {
-            if (is_array($row) && !empty($row)) {
-                $sum = 0;
-                $visits = 0;
-
-                foreach ($row as $n => $cell) {
-                    // skip the first row (client ids), and also skip the empty rows
-                    if ($n > 0 && !empty($cell)) {
-                        // calculate the summary column
-                        if (is_numeric($cell)) {
-                            $sum += $cell;
-                        }
-                        // calculate the visits col
-                        if ($r <= $client_count) {
-                            $visits ++;
-                        }
-                    }
-                }
-                // total number of visits unless it's the summary row
-                if (!empty($row[0]) && $row[0] != 'sum') {
-                    $total_visits += $visits;
-                }
-
-                $table_data[$r][$day_count + 1] = $sum ?: '';
-
-                // add visit count
-                if (!empty($visits)) {
-                    // normal rows get the visit numbers
-                    if ($row[0] != 'sum') {
-                        $table_data[$r][$day_count + 2] = $visits;
-                    }
-                    // summary row gets total visits
-                    else {
-                        $table_data[$r][$day_count + 2] = $total_visits;
-                    }
-                }
-            }
+            $header = $headers;
         }
     }
 
     /**
      * Add Client action
+     * Only displays a list of the clients, and returns the changes to the Homehelp form (via js)
+     * The actual db operations are in homehelpAction()
      *
      * @param Request $request
      * @param $social_worker
@@ -1822,8 +1923,8 @@ class AdminController extends Controller
             $clients_to_remove = [];
             foreach ($set_clients as $client_id) {
                 if (!in_array($client_id, $new_client_list)
-                    && !in_array($client_id, $my_clients)
-                    && !in_array($client_id, $my_inactive_clients)
+                    && !in_array($client_id, $my_clients)  // own clients can not be removed
+                    && !in_array($client_id, $my_inactive_clients)  // also inactive clients may wont get displayed, but still should not be removed
                 ) {
                     $clients_to_remove[] = $client_id;
                 }

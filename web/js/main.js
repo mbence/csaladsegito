@@ -861,7 +861,7 @@ JcsSettings = {
     return JcsModal.init();
   },
   initAddclientDialog: function() {
-    var cl_id, filter_timeout, my_cl, _i, _len;
+    var $addClientForm, cl_id, filter_timeout, my_cl, _i, _len;
     JcsModal.setCloseButton();
     filter_timeout = null;
     $("#form_filter").on("input", function() {
@@ -870,7 +870,8 @@ JcsSettings = {
         return JcsSettings.filterClients($("#form_filter").val());
       }, 200);
     });
-    $("#addclient_form").submit(function() {
+    $addClientForm = $("#addclient_form");
+    $addClientForm.submit(function() {
       if (!$("[name='form[clients][]']:checked").length) {
         AjaxBag.showError($("#noclient-error").text());
         return false;
@@ -899,7 +900,9 @@ JcsSettings = {
       my_cl = JSON.parse($("#form_my_clients").val());
       for (_i = 0, _len = my_cl.length; _i < _len; _i++) {
         cl_id = my_cl[_i];
-        $("#addclient_form input[value=" + cl_id + "]").attr("disabled", true);
+        if ($addClientForm.find("input[value=" + cl_id + "]").is(":checked")) {
+          $addClientForm.find("input[value=" + cl_id + "]").attr("disabled", true);
+        }
       }
     }
     return JcsModal.load();
@@ -1180,7 +1183,7 @@ JcsSettings = {
       _ref2 = table_data[sum_row];
       for (k in _ref2) {
         v = _ref2[k];
-        if (k > 0) {
+        if (k > 0 && table_data[sum_row][k]) {
           table_data[sum_row][k] = 0;
         }
       }
