@@ -4,6 +4,12 @@ Fejlesztések:
 
  - Házi segítségnyújtás
  
+## 1.3.2 (2014.10.07)
+
+Fejlesztések:
+
+  - Ebéd statisztika visszamenőleges generálása (jcs:stat)
+
 ## 1.3.1 (2014.10.01)
 
 Javítások:

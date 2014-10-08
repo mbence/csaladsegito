@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Container;
 
 use JCSGYK\AdminBundle\Entity\StatArchive;
 use JCSGYK\AdminBundle\Entity\StatFile;
@@ -17,11 +18,17 @@ class StatArchiveService
     /** Service container */
     private $container;
 
-    /** Datastore */
+    /**
+     * @var JCSGYK\AdminBundle\Services\DataStore;
+     */
     private $ds;
-    /** Doctrine Entity Manager */
+    /**
+     * @var Doctrine\ORM\EntityManager
+     */
     private $em;
-    /** Twig Admin Extension */
+    /**
+     * @var JCSGYK\AdminBundle\Twig\AdminExtension
+     */
     private $ae;
 
     /** Command output Interface
@@ -29,12 +36,13 @@ class StatArchiveService
      */
     private $output;
 
-    /** Process summary text
-     */
+    /** Process summary text */
     private $summary = '';
 
-    /** Constructor */
-    public function __construct($container)
+    /** Constructor
+     * @param Container $container
+     */
+    public function __construct(Container $container)
     {
         $this->container = $container;
         $this->ds        = $this->container->get('jcs.ds');
@@ -42,6 +50,10 @@ class StatArchiveService
         $this->ae        = $this->container->get('jcs.twig.adminextension');
     }
 
+    /**
+     * Output text
+     * @param $text
+     */
     private function output($text)
     {
         $this->summary .= $text . "\n";
@@ -55,14 +67,22 @@ class StatArchiveService
      * Start the stat process
      *
      * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param text $month
      */
-    public function run(OutputInterface $output = null)
+    public function run(OutputInterface $output = null, $month = null)
     {
         $this->output = $output;
 
         // set the start / end dates
-        $start = new \DateTime('first day of last month');
-        $end = new \DateTime('last day of last month');
+        if (is_null($month)) {
+            $start = new \DateTime('first day of last month');
+            $end = new \DateTime('last day of last month');
+        } else {
+            $m = new \DateTime($month);
+            $start = new \DateTime($m->format('Y-m-01'));
+            $end = new \DateTime($m->format('Y-m-t'));
+        }
+
         $created_at = new \DateTime();
 
         $this->output('Statisztika');
