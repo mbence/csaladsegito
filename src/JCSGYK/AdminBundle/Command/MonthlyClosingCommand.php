@@ -10,6 +10,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Console\Input\ArrayInput;
 
+use JCSGYK\AdminBundle\Services\ClosingService;
+use JCSGYK\AdminBundle\Entity\MonthlyClosing;
+
 class MonthlyClosingCommand extends ContainerAwareCommand
 {
     protected function configure()
@@ -20,6 +23,7 @@ class MonthlyClosingCommand extends ContainerAwareCommand
             ->addArgument('company', InputArgument::REQUIRED, 'Company ID')
             ->addOption('user', 'u', InputOption::VALUE_REQUIRED, 'Set the user id of the closing')
             ->addOption('actual-month', 'a', InputOption::VALUE_NONE, 'If set, the closing will run for the actual month')
+            ->addOption('home-help', 'p', InputOption::VALUE_NONE, 'If set, the closing will run for the home-help clients')
         ;
     }
 
@@ -28,6 +32,23 @@ class MonthlyClosingCommand extends ContainerAwareCommand
         $mode = ! $input->getOption('actual-month');
         $company_id = $input->getArgument('company');
         $user_id = $input->getOption('user');
+        $home_help = $input->getOption('home-help');
+
+        // check options
+        if ($home_help && !$mode) {
+            $output->writeln("<error>Invalid options, can't use --home-help and --actual-month together</error>");
+
+            return false;
+        }
+
+        // get the closing type
+        if ($home_help) {
+            $closing_type = MonthlyClosing::HOMEHELP;
+        } elseif ($mode) {
+            $closing_type = MonthlyClosing::MONTHLY;
+        } else {
+            $closing_type = MonthlyClosing::DAILY;
+        }
 
         // set the companyid for the datastore
         $session = $this->getContainer()->get('session');
@@ -37,13 +58,14 @@ class MonthlyClosingCommand extends ContainerAwareCommand
         }
 
         // get the service
+        /** @var ClosingService $closing_service */
         $closing_service = $this->getContainer()->get('jcs.closing');
 
         // run the closing
-        $closing = $closing_service->run($mode, $output);
+        $closing_service->run($closing_type, $output);
 
         // start the daily orders after the daily closing
-        if (0 == $mode) {
+        if (MonthlyClosing::DAILY == $closing_type) {
             $command = $this->getApplication()->find('jcs:orders');
 
             $arguments = array(

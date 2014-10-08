@@ -4,9 +4,12 @@ namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\ORM\EntityManager;
 
 use JCSGYK\AdminBundle\Entity\MonthlyClosing;
 use JCSGYK\AdminBundle\Entity\Invoice;
+use JCSGYK\AdminBundle\Services\DataStore;
+use JCSGYK\AdminBundle\Services\InvoiceService;
 
 /**
  * Monthly Closing Service
@@ -77,40 +80,26 @@ class ClosingService
 
     /**
      * Start the monthly closing process
-     * @param int $period 1 = normal run (next month), 0 = actual month (daily closing)
+     * @param $closing_type 1 monthly, 2 daily or 3 home-help
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      * @return \JCSGYK\AdminBundle\Entity\MonthlyClosing
      */
-    public function run($period = 1, OutputInterface $output = null)
+    public function run($closing_type, OutputInterface $output = null)
     {
         $this->output = $output;
 
+        /** @var EntityManager $em */
         $em = $this->container->get('doctrine')->getManager();
+        /** @var DataStore $ds */
         $ds = $this->container->get('jcs.ds');
         $user = $ds->getUser();
         $company_id = $ds->getCompanyId();
 
-        // set the start / end dates
-        // start date is next months first day
-        if (1 == $period) {
-            // next month
-            $start = new \DateTime('first day of next month');
-            $end = new \DateTime('last day of next month');
-        }
-        else {
-            // actual month
-            $start = new \DateTime('+1 day');
-            // after the monthly closing, the daily closing also must create the orders and invoice for the next month
-            if (date('j') < 25) {
-                $end = new \DateTime('last day of this month');
-            }
-            else {
-                $end = new \DateTime('last day of next month');
-            }
-        }
+        // get the start / end dates and the title
+        list($start, $end, $process_title) = $this->getPeriod($closing_type);
         $created_at = new \DateTime();
 
-        $this->output(1 == $period ? 'Havi zárás' : 'Napi zárás');
+        $this->output($process_title);
         $this->output(sprintf("%s - %s \n", $start->format('Y-m-d'), $end->format('Y-m-d')));
         $this->output(sprintf("%s: Indítva", $created_at->format('H:i:s')));
 
@@ -123,29 +112,31 @@ class ClosingService
         $closing->setStartDate($start);
         $closing->setEndDate($end);
         $closing->setSummary($this->summary);
+        $closing->setClosingtype($closing_type);
 
         $em->persist($closing);
         $em->flush();
 
         // find all clients that have active subscriptions
         // for daily closing only select the clients that are new and dont have an invoice yet
-        $clients = $em->getRepository('JCSGYKAdminBundle:Client')->getForClosing($company_id, $period);
+        $clients = $em->getRepository('JCSGYKAdminBundle:Client')->getForClosing($company_id, $closing_type);
         $this->output(sprintf("%s: %s ügyfél lekérdezve", date('H:i:s'), count($clients)));
         $closing->setSummary($this->summary);
         $em->flush();
 
         // create the invoices
-        $client_clount = 0;
+        $client_count = 0;
         $invoice_count = 0;
-        $invocie_service = $this->container->get('jcs.invoice');
+        /** @var InvoiceService $invoice_service */
+        $invoice_service = $this->container->get('jcs.invoice');
         foreach ($clients as $client) {
-            $invoice = $invocie_service->create($client, clone $start, clone $end);
+            $invoice = $invoice_service->create($client, clone $start, clone $end, $closing_type);
             if (!empty($invoice)) {
                 $invoice_count ++;
             }
-            $client_clount++;
-            if ($client_clount % 100 == 0) {
-                $this->output(sprintf("%s: %s ügyfél feldolgozva", date('H:i:s'), $client_clount));
+            $client_count++;
+            if ($client_count % 100 == 0) {
+                $this->output(sprintf("%s: %s ügyfél feldolgozva", date('H:i:s'), $client_count));
                 $closing->setSummary($this->summary);
             }
         }
@@ -184,7 +175,7 @@ class ClosingService
             }
 
             // update the client balances
-            $invocie_service->bulkUpdateBalance();
+            $invoice_service->bulkUpdateBalance();
         }
 
         // update the closing record
@@ -200,10 +191,10 @@ class ClosingService
 
     private function updateBalances($clients)
     {
-        $invocie_service = $this->container->get('jcs.invoice');
+        $invoice_service = $this->container->get('jcs.invoice');
         foreach ($clients as $client) {
             // update the client balance
-            $invocie_service->updateBalance($client->getCatering());
+            $invoice_service->updateBalance($client->getCatering());
         }
     }
 
@@ -214,13 +205,13 @@ class ClosingService
     {
         $em = $this->container->get('doctrine')->getManager();
         $company_id = $this->ds->getCompanyId();
-        $invocie_service = $this->container->get('jcs.invoice');
+        $invoice_service = $this->container->get('jcs.invoice');
 
         $result = 0;
 
         // find the unsent invocies in batches
-        $invoices = $invocie_service->getInvoices($company_id);
-        // process the invoce
+        $invoices = $invoice_service->getInvoices($company_id);
+        // process the invoice
         foreach ($invoices as $invoice) {
             // only export invoices with amount to pay
             if ($invoice->getAmount() != 0) {
@@ -253,8 +244,9 @@ class ClosingService
         $deadline = clone $invoice->getStartDate();
         $deadline = $deadline->modify('+4 days')->format('Ymd');
 
+        $title = MonthlyClosing::HOMEHELP == $invoice->getInvoicetype() ? 'gondozás' : 'étkeztetés';
         if (empty($invoice->getCancelId())) {
-            $comment = sprintf('%s. havi étkeztetés', $invoice->getEndDate()->format('n'));
+            $comment = sprintf('%s. havi %s', $invoice->getEndDate()->format('n'), $title);
         }
         else {
             $comment = sprintf('%s számla sztornó (%s. hó)', $invoice->getCancelId(), $invoice->getEndDate()->format('n'));
@@ -275,6 +267,7 @@ class ClosingService
                 'NETTO3'        => $net_amount,
                 'AFA3'          => $gross_amount - $net_amount,
                 'VEGOSSZEG'     => $gross_amount,
+                'KULCSSZO'      => ucfirst($title),
             ],
             'szlaatt.txt'   => [],
             'vevo.txt'      => [],
@@ -577,7 +570,7 @@ class ClosingService
 
             $subject = sprintf('Havi számla import: %s - %s', $ae->formatDate($start_date), $ae->formatDate($end_date));
             $mailer_from = 'oszirozsaebed@gmail.com';
-            $mailer_from_name = 'JSZSZGYK Szociális étkeztetés';
+            $mailer_from_name = 'JSzSzGyK-Hsz';
 
             $message = \Swift_Message::newInstance()
             ->setSubject($subject)
@@ -598,6 +591,39 @@ class ClosingService
         else {
             return false;
         }
+    }
+
+    /**
+     * Returns the start and end dates of the period depending of the close type (daily, monthly or home-help)
+     * @param $closing_type
+     * @return array ($start, $end, $process_title)
+     */
+    private function getPeriod($closing_type)
+    {
+        // home help is always the previous month
+        if (MonthlyClosing::HOMEHELP == $closing_type) {
+            $start = new \DateTime('first day of last month');
+            $end = new \DateTime('last day of last month');
+            $process_title = 'Gondozás zárás';
+        }
+        elseif (MonthlyClosing::MONTHLY == $closing_type) {
+            // next month
+            $start = new \DateTime('first day of next month');
+            $end = new \DateTime('last day of next month');
+            $process_title = 'Havi zárás';
+        } else {
+            // actual month
+            $start = new \DateTime('+1 day');
+            $process_title = 'Napi zárás';
+            // after the monthly closing, the daily closing also must create the orders and invoice for the next month
+            if (date('j') < 25) {
+                $end = new \DateTime('last day of this month');
+            } else {
+                $end = new \DateTime('last day of next month');
+            }
+        }
+
+        return array($start, $end, $process_title);
     }
 }
 

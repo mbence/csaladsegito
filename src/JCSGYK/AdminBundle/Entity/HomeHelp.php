@@ -632,7 +632,12 @@ class HomeHelp
         return $this->balance;
     }
 
-    public function discountIsActive($date = null)
+    /**
+     * Check if this client has an active discount
+     * @param \DateTime $date
+     * @return bool
+     */
+    public function discountIsActive(\DateTime $date = null)
     {
         if (is_null($date)) {
             $date = new \DateTime('today');

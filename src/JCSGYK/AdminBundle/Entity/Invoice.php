@@ -13,9 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 class Invoice
 {
     /**
-     * Invocie status constants
+     * Invoice status constants
      */
-    /** Just created the record, witing for the transfer to EcoSTAT */
+    /** Just created the record, writing for the transfer to EcoSTAT */
     const READY_TO_SEND = 1;
     /** Invoice is sent, and printed, open for payments */
     const OPEN = 2;
@@ -23,6 +23,11 @@ class Invoice
     const CLOSED = 3;
     /** Invoice cancelled */
     const CANCELLED = -1;
+
+    /** Closing Types */
+    const MONTHLY  = 1;
+    const DAILY    = 2;
+    const HOMEHELP = 3;
 
     /**
      * @var integer
@@ -131,6 +136,12 @@ class Invoice
      */
     private $createdAt;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="invoicetype", type="integer", nullable=true)
+     */
+    private $invoicetype;
 
     /**
      * Get the list of fields for change tracking
@@ -552,5 +563,29 @@ class Invoice
     public function getCancelId()
     {
         return $this->cancelId;
+    }
+
+    /**
+     * Set invoicetype
+     *
+     * @param integer $invoicetype
+     *
+     * @return Invoice
+     */
+    public function setInvoicetype($invoicetype)
+    {
+        $this->invoicetype = $invoicetype;
+
+        return $this;
+    }
+
+    /**
+     * Get invoicetype
+     *
+     * @return integer
+     */
+    public function getInvoicetype()
+    {
+        return $this->invoicetype;
     }
 }
