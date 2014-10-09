@@ -2,6 +2,7 @@
 
 namespace JCSGYK\AdminBundle\Controller;
 
+use JCSGYK\AdminBundle\Entity\Invoice;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -713,7 +714,7 @@ class ReportsController extends Controller
 
         // get the payments for this date
         $sql = "SELECT i, c FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
-                . "WHERE i.companyId = :company_id AND i.payments LIKE :date ";
+                . "WHERE i.companyId = :company_id AND i.payments LIKE :date AND i.invoicetype IN (:types)";
         if (!empty($form_data['club'])) {
             $sql .= ' AND a.club = :club ';
         }
@@ -723,6 +724,7 @@ class ReportsController extends Controller
         $q = $em->createQuery($sql)
             ->setParameter('company_id', $company_id)
             ->setParameter('date', "%$date%")
+            ->setParameter('types', [Invoice::MONTHLY, Invoice::DAILY])
         ;
         if (!empty($form_data['club'])) {
             $q->setParameter('club', $form_data['club']);

@@ -672,7 +672,7 @@ class InvoiceService
         $data = [];
         // find all the invoices and clients of the given month
         $sql = "SELECT i, c, a FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
-                . "WHERE i.companyId = :company_id AND i.endDate >= :month_start AND i.endDate <= :month_end ";
+                . "WHERE i.companyId = :company_id AND i.endDate >= :month_start AND i.endDate <= :month_end AND i.invoicetype IN (:types)";
         if (!empty($club)) {
             $sql .= "AND a.club = :club ";
         }
@@ -686,7 +686,9 @@ class InvoiceService
         $q = $em->createQuery($sql)
             ->setParameter('company_id', $company_id)
             ->setParameter('month_start', $month_start)
-            ->setParameter('month_end', $month_end);
+            ->setParameter('month_end', $month_end)
+            ->setParameter('types', [Invoice::MONTHLY, Invoice::DAILY])
+        ;
         if (!empty($club)) {
             $q->setParameter('club', $club);
         }

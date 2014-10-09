@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\Container;
 use JCSGYK\AdminBundle\Entity\StatArchive;
 use JCSGYK\AdminBundle\Entity\StatFile;
 use JCSGYK\AdminBundle\Entity\Club;
+use JCSGYK\AdminBundle\Entity\Invoice;
 
 /**
  * Statistics Service
@@ -222,6 +223,7 @@ class StatArchiveService
     {
         // check for user roles and set the params accordingly
         $company_id = $this->ds->getCompanyId();
+        /** @var InvoiceService $invoice_service */
         $invoice_service = $this->container->get('jcs.invoice');
 
         $month = $start;
@@ -311,7 +313,7 @@ class StatArchiveService
 
         // get the invoices
         $sql0 = "SELECT c, a, i FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
-                . "WHERE c.companyId = :company_id AND i.startDate >= :month_start AND i.endDate <= :month_end ";
+                . "WHERE c.companyId = :company_id AND i.startDate >= :month_start AND i.endDate <= :month_end AND i.invoicetype IN (:types)";
         if (!empty($club)) {
             $sql0 .= ' AND a.club = :club';
         }
@@ -319,7 +321,9 @@ class StatArchiveService
         $q0 = $this->em->createQuery($sql0)
             ->setParameter('company_id', $company_id)
             ->setParameter('month_start', $start_date)
-            ->setParameter('month_end', $end_date);
+            ->setParameter('month_end', $end_date)
+            ->setParameter('types', [Invoice::MONTHLY, Invoice::DAILY])
+        ;
         if (!empty($club)) {
             $q0->setParameter('club', $club);
         }
