@@ -63,7 +63,7 @@ class InvoiceService
         if (MonthlyClosing::HOMEHELP == $closing_type) {
             list($days, $hm_clients) = $this->getHomeHelpDays($client, $start_date, $end_date);
             // calculate the invoice items
-            $items = $this->calculateHomehelpItems($client, $days);
+            $items = $this->calculateHomehelpItems($client, $days, $start_date, $end_date);
 
         } else {
             list($orders, $days) = $this->getCateringOrders($client, $start_date, $end_date);
@@ -225,7 +225,7 @@ class InvoiceService
 
                 if (!is_null($daily_cost)) {
                     // this is a gross cost, so we must reduce it to net
-                    $net_cost = number_format($daily_cost / (1 + $vat), 4);
+                    $net_cost = number_format($daily_cost / (1 + $vat), 4, '.', '');
 
                     // check if he has discount for this day
                     $discount_is_active = $catering->discountIsActive($order->getDate());
@@ -301,10 +301,13 @@ class InvoiceService
      *
      * @param Client $client
      * @param array $days (date => hours)
+     * @param \DateTime $start
+     * @param \DateTime $end
      * @return array
      */
-    private function calculateHomehelpItems(Client $client, array $days)
+    private function calculateHomehelpItems(Client $client, array $days, \DateTime $start, \DateTime $end)
     {
+        $sum = 0;
         $items = [];
 
         if (!empty($days)) {
@@ -333,7 +336,7 @@ class InvoiceService
 
                 if (!is_null($daily_cost) && !empty($hours) && is_numeric($hours)) {
                     // this is a gross cost, so we must reduce it to net
-                    $net_cost = number_format($daily_cost / (1 + $vat), 4);
+                    $net_cost = number_format($daily_cost / (1 + $vat), 4, '.', '');
 
                     // check if he has discount for this day
                     $discount_is_active = $homehelp->discountIsActive($d);
@@ -360,6 +363,7 @@ class InvoiceService
                             $items['discount']['net_value'] += $discount_net;
                             $items['discount']['net_price'] += $discount_net;
                         }
+                        $sum += $discount_gross;
                     }
 
                     if (!isset($items[$daily_cost])) {
@@ -378,11 +382,62 @@ class InvoiceService
                         $items[$daily_cost]['value'] += $daily_cost * $hours;
                         $items[$daily_cost]['net_value'] += $net_cost * $hours;
                     }
+                    $sum += $daily_cost * $hours;
                     if ($weekday) {
                         $items[$daily_cost]['weekday_quantity']++;
                     }
                 } else {
                     // no match in the catering cost tables, now what?
+                }
+            }
+
+            // if we have an amount lets check the global limit with the catering costs of this month
+            if ($sum) {
+                // homehelp-only clients' invoice can not exceed 25% of the income
+                // catering + homehelp clients combined invoices can not exceed 30% of the income
+                $income = $homehelp->getIncome();
+                $hh_discount = 0;
+                $ca_discount = 0;
+
+                // check the homehelp-only limit
+                if ($sum > $income * 0.25) {
+                    $hh_discount = ceil($income * 0.25) - $sum;
+                }
+
+                // check if this client has catering
+                $catering = $client->getCatering();
+                if (!empty($catering)) {
+                    // find the catering invoices for this month
+                    $invoices = $this->getClientInvoices($client->getId(), $start, $end, [Invoice::MONTHLY, Invoice::DAILY]);
+                    if (!empty($invoices)) {
+                        $cat_sum = $sum;
+                        foreach ($invoices as $invoice) {
+                            if ($invoice->getStatus() != Invoice::CANCELLED && $invoice->getAmount() > 0) {
+                                $cat_sum += $invoice->getAmount();
+                            }
+                        }
+                        // check the limit
+                        if ($cat_sum > $income * 0.3) {
+                            $ca_discount = ceil($income * 0.3) - $cat_sum;
+                        }
+                    }
+                }
+
+                if ($hh_discount || $ca_discount) {
+                    // use the bigger discount (these are negative numbers!)
+                    $final_discount = $hh_discount < $ca_discount ? $hh_discount : $ca_discount;
+                    $final_net_discount = number_format($final_discount / (1 + $vat), 4, '.', '');
+
+                    // add the discount item
+                    $items['discount2'] = [
+                        'name'       => sprintf('Törvényi mérséklés'),
+                        'quantity'   => 1,
+                        'unit'       => 'db',
+                        'net_price'  => $final_net_discount,
+                        'unit_price' => $final_discount,
+                        'value'      => $final_discount,
+                        'net_value'  => $final_net_discount,
+                    ];
                 }
             }
         }
@@ -500,25 +555,48 @@ class InvoiceService
     }
 
     /**
+     * Returns the invoices of the company
+     * @param int $client_id
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param array $types
+     * @return array of JCSGYK\AdminBundle\Entity\Invoice
+     */
+    public function getClientInvoices($client_id, \DateTime $start, \DateTime $end, array $types)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        return $em->createQuery("SELECT i FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client_id AND i.endDate >= :start AND i.endDate <= :end AND i.invoicetype IN (:types)")
+            ->setParameter('client_id', $client_id)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('types', $types)
+            ->getResult();
+    }
+
+    /**
      * Update client balance
-     * @param Catering $catering
+     * @param Catering|Homehelp $source
      * @return int
      */
-    public function updateBalance(Catering $catering)
+    public function updateBalance($source)
     {
         $balance = 0;
 
+        // the invoice type depends on the input entity
+        $types = $source instanceof Catering ? [Invoice::MONTHLY, Invoice::DAILY] : [Invoice::HOMEHELP];
+
         $em = $this->container->get('doctrine')->getManager();
         // calculate the balance of the open invoices
-        $res = $em->createQuery("SELECT SUM(i.amount - i.balance) as balance FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client AND i.status = :status")
-            ->setParameter('client', $catering->getClient())
+        $res = $em->createQuery("SELECT SUM(i.amount - i.balance) as balance FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client AND i.status = :status AND i.invoicetype IN (:types)")
+            ->setParameter('client', $source->getClient())
             ->setParameter('status', Invoice::OPEN)
+            ->setParameter('types', $types)
             ->getSingleResult();
 
         if (isset($res['balance'])) {
             $balance = $res['balance'];
         }
-        $catering->setBalance($res['balance']);
+        $source->setBalance($res['balance']);
         $em->flush();
 
         return $balance;
@@ -527,13 +605,24 @@ class InvoiceService
 
     /**
      * Update client balances
+     * @param $closing_type
      */
-    public function bulkUpdateBalance()
+    public function bulkUpdateBalance($closing_type)
     {
         $em = $this->container->get('doctrine')->getManager();
+
+        if (MonthlyClosing::HOMEHELP == $closing_type) {
+            $types = [Invoice::HOMEHELP];
+            $dql = "UPDATE JCSGYKAdminBundle:Homehelp h SET h.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = h.client AND i.status = :status AND i.invoicetype IN (:types))";
+        } else {
+            $types = [Invoice::MONTHLY, Invoice::DAILY];
+            $dql = "UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status = :status AND i.invoicetype IN (:types))";
+        }
+
         // calculate the balance of the open invoices
-        $em->createQuery("UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status = :status)")
+        $em->createQuery($dql)
             ->setParameter('status', Invoice::OPEN)
+            ->setParameter('types', $types)
             ->execute();
         $em->flush();
     }

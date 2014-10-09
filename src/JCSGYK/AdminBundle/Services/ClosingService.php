@@ -175,7 +175,7 @@ class ClosingService
             }
 
             // update the client balances
-            $invoice_service->bulkUpdateBalance();
+            $invoice_service->bulkUpdateBalance($closing_type);
         }
 
         // update the closing record
