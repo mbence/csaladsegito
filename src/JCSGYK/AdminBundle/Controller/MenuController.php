@@ -93,8 +93,8 @@ class MenuController extends Controller
     public function homehelpSettingsAction()
     {
         $items = [
-            ['route' => 'admin_options', 'options' => ['name' => 'homehelpcosts'], 'label' => 'Gondozás Díjtáblázat', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_home_help', 'label' => 'Gondozás rögzítése', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_options', 'options' => ['name' => 'homehelpcosts'], 'label' => 'Gondozás Díjtáblázat', 'role' => 'ROLE_ADMIN'],
         ];
 
         $menu = $this->checkMenu($items);

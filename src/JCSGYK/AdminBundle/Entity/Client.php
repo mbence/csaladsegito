@@ -447,11 +447,6 @@ class Client
      */
     private $homehelp;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="HomehelpMonth", mappedBy="clients")
-     **/
-    private $homehelpmonths;
-
     public function __construct()
     {
         $this->utilityprovidernumbers = new ArrayCollection();
@@ -463,7 +458,6 @@ class Client
         $this->setCreatedAt(new \DateTime());
         $this->setModifiedAt(new \DateTime());
     }
-
 
     /**
      * Get the list of fields for change tracking
@@ -2125,39 +2119,5 @@ class Client
     public function getHomehelp()
     {
         return $this->homehelp;
-    }
-
-    /**
-     * Add homehelpmonth
-     *
-     * @param \JCSGYK\AdminBundle\Entity\HomehelpMonth $homehelpmonth
-     *
-     * @return Client
-     */
-    public function addHomehelpmonth(\JCSGYK\AdminBundle\Entity\HomehelpMonth $homehelpmonth)
-    {
-        $this->homehelpmonths[] = $homehelpmonth;
-
-        return $this;
-    }
-
-    /**
-     * Remove homehelpmonth
-     *
-     * @param \JCSGYK\AdminBundle\Entity\HomehelpMonth $homehelpmonth
-     */
-    public function removeHomehelpmonth(\JCSGYK\AdminBundle\Entity\HomehelpMonth $homehelpmonth)
-    {
-        $this->homehelpmonths->removeElement($homehelpmonth);
-    }
-
-    /**
-     * Get homehelpmonths
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getHomehelpmonths()
-    {
-        return $this->homehelpmonths;
     }
 }

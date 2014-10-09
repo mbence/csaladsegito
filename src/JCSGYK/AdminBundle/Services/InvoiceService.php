@@ -61,13 +61,13 @@ class InvoiceService
         $orders_repo = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder');
 
         if (MonthlyClosing::HOMEHELP == $closing_type) {
-            $days = $this->getHomeHelpDays($client, $start_date, $end_date);
+            list($days, $hm_clients) = $this->getHomeHelpDays($client, $start_date, $end_date);
             // calculate the invoice items
             $items = $this->calculateHomehelpItems($client, $days);
 
         } else {
             list($orders, $days) = $this->getCateringOrders($client, $start_date, $end_date);
-            // calculate the invocie items
+            // calculate the invoice items
             $items = $this->calculateCateringItems($client, $orders);
         }
 
@@ -106,6 +106,11 @@ class InvoiceService
         if (MonthlyClosing::HOMEHELP != $closing_type) {
             // close the used order records
             $orders_repo->closeOrders($orders);
+        } else {
+            // close the Homhelp Month for this client
+            foreach ($hm_clients as $hm_client) {
+                $hm_client->setIsClosed(true);
+            }
         }
 
         $em->flush();
@@ -803,11 +808,13 @@ class InvoiceService
         $days = [];
 
         $client_id = $client->getId();
-        // get the HomehelpMonth records for this client
-        $hh_months = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:Homehelp')->getClientMonths($client_id, $start_date, $end_date);
+        // get the open HomehelpMonth records for this client
+        $hm_clients = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:Homehelp')->getClientMonths($client_id, $start_date, $end_date, 0);
 
-        if (!empty($hh_months)) {
-            foreach ($hh_months as $hh_month) {
+        if (!empty($hm_clients)) {
+            foreach ($hm_clients as $hm_client) {
+                $hh_month = $hm_client->getHomehelpMonth();
+
                 $month = $hh_month->getDate()->format('Y-m-');
                 $day_count = (int) $hh_month->getDate()->format('t');
 
@@ -836,7 +843,7 @@ class InvoiceService
             }
         }
 
-        return $days;
+        return [$days, $hm_clients];
     }
 
     /**

@@ -11,8 +11,10 @@
             {{ form_errors(filter_form) }}
 
             <div class="floatright">
-                <button data-href="{{ path('admin_addclient') }}" type="button" class="add-client-dialog greybutton">
-                    <span>{{ 'ügyfelek módosítása'|trans }}</span></button>
+                {% if not closed %}
+                    <button data-href="{{ path('admin_addclient') }}" type="button" class="add-client-dialog greybutton">
+                        <span>{{ 'ügyfelek módosítása'|trans }}</span></button>
+                {% endif %}
                 <a href="{{ path('homehelp_download', {"social_worker": social_worker, "month": month}) }}" class="download-homehelp greybutton">
                     <span>{{ 'letöltés'|trans }}</span>
                 </a>
@@ -22,7 +24,11 @@
                 {{ form_label(filter_form.social_worker) }}:
                 {{ form_widget(filter_form.social_worker) }}
                 {{ form_widget(filter_form.month) }}
-                {#{{ form_widget(filter_form.filter_button) }}#}
+                {% if closed %}
+                    <span class="smalltext red leftpad">
+                        Lezárt (kiszámlázott) hónap, nem módosítható!
+                    </span>
+                {% endif %}
             </div>
         {{ form_end(filter_form) }}
 
@@ -31,12 +37,14 @@
 
             {{ form_widget(form.value) }}
 
-            <div class="formbuttons floatright">
-                <button type="reset" class="cancel greybutton">
-                    <span>{{ 'mégse'|trans }}</span></button>
-                <button type="submit" class="usersave button" name="usersave" value="save"><span>{{ 'mentés'|trans }}</span>
-                </button>
-            </div>
+            {%  if not closed %}
+                <div class="formbuttons floatright">
+                    <button type="reset" class="cancel greybutton">
+                        <span>{{ 'mégse'|trans }}</span></button>
+                    <button type="submit" class="usersave button" name="usersave" value="save"><span>{{ 'mentés'|trans }}</span>
+                    </button>
+                </div>
+            {% endif %}
             <div class="hh-legend smalltext floatleft">
                 M - gyógymasszázs, T - gyógytorna
             </div>

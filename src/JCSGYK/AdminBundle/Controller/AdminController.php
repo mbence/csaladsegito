@@ -569,6 +569,7 @@ class AdminController extends Controller
         $user = $ds->getUser();
 
         if (!is_null($id)) {
+            /** @var MonthlyClosing $closing */
             $closing = $em->getRepository('JCSGYKAdminBundle:MonthlyClosing')->findBy(['id' => $id, 'companyId' => $company_id]);
             if (!empty($closing[0])) {
                 $closing = $closing[0];
@@ -576,7 +577,8 @@ class AdminController extends Controller
 
             if (!empty($closing->getFiles()) && $request->query->get('download')) {
                 // send the zip file to download
-                $fn = 'etkeztetes_import_' . $closing->getCreatedAt()->format('Ymd') . '.zip';
+                $title = MonthlyClosing::HOMEHELP == $closing->getClosingtype() ? 'gondozas' : 'etkeztetes';
+                $fn = $title . '_import_' . $closing->getCreatedAt()->format('Ymd') . '.zip';
 
                 return $this->sendDownloadResponse($fn, stream_get_contents($closing->getFiles()), 'application/zip');
             }

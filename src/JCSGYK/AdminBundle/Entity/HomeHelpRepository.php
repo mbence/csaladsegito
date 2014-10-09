@@ -54,22 +54,24 @@ class HomeHelpRepository extends EntityRepository
 
 
     /**
-     * Get the months for a client in a given period
+     * Get the open (or closed) months for a client in a given period
      * @param $client_id
      * @param \DateTime $start
      * @param \DateTime $end
+     * @param int $is_closed
      * @return array of HomehelpMonth
      */
-    public function getClientMonths($client_id, \DateTime $start, \DateTime $end)
+    public function getClientMonths($client_id, \DateTime $start, \DateTime $end, $is_closed = 0)
     {
         $start = $start->setTime(0,0,0)->format('Y-m-d');
         $end = $end->setTime(0,0,0)->format('Y-m-d');
 
         return $this->getEntityManager()
-            ->createQuery("SELECT h FROM JCSGYKAdminBundle:HomehelpMonth h JOIN h.clients c WHERE c.id = :client_id AND h.date >= :start AND h.date <= :end ORDER BY h.date")
+            ->createQuery("SELECT c, h FROM JCSGYKAdminBundle:HomehelpmonthsClients c JOIN c.homehelpmonth h WHERE c.client = :client_id AND h.date >= :start AND h.date <= :end AND c.isClosed = :closed ORDER BY h.date")
             ->setParameter('client_id', $client_id)
             ->setParameter('start', $start)
             ->setParameter('end', $end)
+            ->setParameter('closed', $is_closed)
             ->getResult();
     }
 }

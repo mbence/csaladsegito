@@ -14,6 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use JCSGYK\AdminBundle\Entity\HomehelpMonth;
+use JCSGYK\AdminBundle\Entity\HomehelpmonthsClients;
 
 class HomehelpController extends Controller
 {
@@ -46,7 +47,7 @@ class HomehelpController extends Controller
         // get the record from db
         $hh_month = $this->getHHMonth($social_worker, $month);
 
-        // creat a new if no record found
+        // create new if no record found
         if (empty($hh_month)) {
             // create new record
             $hh_month = (new HomehelpMonth())
@@ -58,7 +59,15 @@ class HomehelpController extends Controller
             ;
 
             foreach ($clients as $client) {
-                $hh_month->addClient($client);
+                // add the relations
+                $hm_client = (new HomehelpmonthsClients())
+                    ->setClient($client)
+                    ->setHomehelpmonth($hh_month)
+                    ->setIsClosed(0);
+
+                $em->persist($hm_client);
+
+                $hh_month->addHmClient($hm_client);
             }
         }
         // check and fill the client block
@@ -68,12 +77,12 @@ class HomehelpController extends Controller
         // we need the row headers later
         $row_headers = $hh_month->getRowheaders();
 
-
+        $closed_month = $this->hhCheckClosed($hh_month);
 
         $form = $this->homeHelpForm($hh_month);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->get('hh_id')->getData() == $hh_month->getId()) {
+        if (!$closed_month && $form->isValid() && $form->get('hh_id')->getData() == $hh_month->getId()) {
             // table data from the form field
             $hh_data = json_decode($form->get('value')->getData(), true);
             if (empty($hh_data)) {
@@ -88,22 +97,43 @@ class HomehelpController extends Controller
             if (is_array($clients_to_remove) && !empty($clients_to_remove)) {
                 // get the clients of this social worker
                 $my_clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), true, true);
-                foreach ($clients_to_remove as $client_id) {
+
+                $hm_clients = $hh_month->getHmClients();
+                foreach ($hm_clients as $hm_client) {
+                    $hm_client_id = $hm_client->getClient()->getId();
                     // make sure we never remove our own clients
-                    if (!in_array($client_id, $my_clients)) {
+                    if (!in_array($hm_client_id, $my_clients) && in_array($hm_client_id, $clients_to_remove)) {
                         // remove the relation
-                        $hh_month->removeClient($client_repo->find($client_id));
+                        $hh_month->removeHmClient($hm_client);
+                        $em->remove($hm_client);
                     }
+
                 }
             }
 
             // add the new clients
             $clients_to_add = json_decode($form->get('to_add')->getData(), true);
             if (is_array($clients_to_add) and !empty($clients_to_add)) {
+                // build the actual client list
+                $hm_clients = $hh_month->getHmClients();
+                $hm_client_list = [];
+                foreach ($hm_clients as $hm_client) {
+                    $hm_client_list[] = $hm_client->getClient()->getId();
+                }
                 foreach ($clients_to_add as $client_id) {
-                    // add the relation
-                    $nc = $client_repo->find($client_id);
-                    $hh_month->addClient($nc);
+                    // don't add existing clients
+                    if (!in_array($client_id, $hm_client_list)) {
+                        // add the relation
+                        $nc = $client_repo->find($client_id);
+                        $hm_client = (new HomehelpmonthsClients())
+                            ->setClient($nc)
+                            ->setHomehelpmonth($hh_month)
+                            ->setIsClosed(0);
+
+                        $em->persist($hm_client);
+
+                        $hh_month->addHmClient($hm_client);
+                    }
                 }
             }
             // the rest of the modifications will be taken care of in the $this->hhCheckClientBlock()
@@ -146,6 +176,7 @@ class HomehelpController extends Controller
             'hh_weekends'    => $this->getHomehelpWeekends($month),
             'social_worker'  => $social_worker,
             'month'          => $month->format('Y-m'),
+            'closed'         => $closed_month,
         ];
     }
 
@@ -172,7 +203,7 @@ class HomehelpController extends Controller
             throw new HttpException(400, "Bad request");
         }
         $day_count = (int) $hh_month->getDate()->format('t');
-        $client_count = count($hh_month->getClients());
+        $client_count = count($hh_month->getHmClients());
 
         $columns = range(0, $day_count);
         $columns[0] = '';
@@ -427,7 +458,7 @@ class HomehelpController extends Controller
         $ae = $this->container->get('jcs.twig.adminextension');
         $day_count = (int) $hh_month->getDate()->format('t');
 
-        $clients = $hh_month->getClients();
+        $hm_clients = $hh_month->getHmClients();
         $table_data = $hh_month->getData();
         $row_headers = $hh_month->getRowheaders();
 
@@ -456,8 +487,8 @@ class HomehelpController extends Controller
 
         // build the client list
         $client_list = [];
-        foreach ($clients as $client) {
-            $client_list[$client->getId()] = $ae->formatClientName($client);
+        foreach ($hm_clients as $hm_client) {
+            $client_list[$hm_client->getClient()->getId()] = $ae->formatClientName($hm_client->getClient());
         }
         // order the clients by name
         $collator = new \Collator('hu_HU');
@@ -578,7 +609,7 @@ class HomehelpController extends Controller
      */
     private function hhCheckServicesBlocks(HomehelpMonth $hh_month)
     {
-        $client_count = count($hh_month->getClients());
+        $client_count = count($hh_month->getHmClients());
         $day_count = (int)$hh_month->getDate()->format('t');
 
         $table_data = $hh_month->getData();
@@ -617,6 +648,26 @@ class HomehelpController extends Controller
         $hh_month->setRowheaders($row_headers);
 
         return $hh_month;
+    }
+
+    /**
+     * Check if month is closed
+     * If closed, no new changes can be made
+     * @param HomehelpMonth $hh_month
+     * @return bool
+     */
+    private function hhCheckClosed(HomehelpMonth $hh_month)
+    {
+        $closed = false;
+        $hm_clients = $hh_month->getHmClients();
+        foreach ($hm_clients as $hmc) {
+            if ($hmc->getIsClosed()) {
+                $closed = true;
+                break;
+            }
+        }
+
+        return $closed;
     }
 
     /**
@@ -677,10 +728,10 @@ class HomehelpController extends Controller
         if (empty($hh_month)) {
             $set_clients = $my_clients;
         } else {
-            $hh_clients = $hh_month->getClients();
+            $hm_clients = $hh_month->getHmClients();
             $set_clients = [];
-            foreach ($hh_clients as $hh_client) {
-                $set_clients[] = $hh_client->getId();
+            foreach ($hm_clients as $hm_client) {
+                $set_clients[] = $hm_client->getClient()->getId();
             }
         }
 

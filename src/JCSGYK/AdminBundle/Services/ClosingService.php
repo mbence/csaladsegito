@@ -104,15 +104,15 @@ class ClosingService
         $this->output(sprintf("%s: Indítva", $created_at->format('H:i:s')));
 
         // create a new closing record
-        $closing = new MonthlyClosing();
-        $closing->setCompanyId($company_id);
-        $closing->setCreator($user);
-        $closing->setCreatedAt($created_at);
-        $closing->setStatus(MonthlyClosing::RUNNING);
-        $closing->setStartDate($start);
-        $closing->setEndDate($end);
-        $closing->setSummary($this->summary);
-        $closing->setClosingtype($closing_type);
+        $closing = (new MonthlyClosing())
+            ->setCompanyId($company_id)
+            ->setCreator($user)
+            ->setCreatedAt($created_at)
+            ->setStatus(MonthlyClosing::RUNNING)
+            ->setStartDate($start)
+            ->setEndDate($end)
+            ->setSummary($this->summary)
+            ->setClosingtype($closing_type);
 
         $em->persist($closing);
         $em->flush();
@@ -155,7 +155,7 @@ class ClosingService
             // close the output files
             $this->closeFiles();
             // compress the output files
-            $zip = $this->zipFiles();
+            $zip = $this->zipFiles($closing_type);
             $zip_file_contents = file_get_contents($zip);
             $this->deleteFiles($zip);
 
@@ -413,10 +413,11 @@ class ClosingService
      * @return zip  file name
      * @throws HttpException
      */
-    private function zipFiles()
+    private function zipFiles($closing_type)
     {
+        $title = MonthlyClosing::HOMEHELP == $closing_type ? 'gondozas' : 'etkeztetes';
         $zip = new \ZipArchive();
-        $zipfilename = $this->tmp_folder . 'etkeztetes_import_' . date('Ymd') . '.zip';
+        $zipfilename = $this->tmp_folder . $title . '_import_' . date('Ymd') . '.zip';
 
         if ($zip->open($zipfilename, \ZipArchive::CREATE) === false) {
             throw new HttpException(500, 'Zip file write error');

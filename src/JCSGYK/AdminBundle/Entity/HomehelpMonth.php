@@ -85,15 +85,13 @@ class HomehelpMonth
     private $modifiedAt;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Client", inversedBy="homehelpmonths")
-     * @ORM\JoinTable(name="homehelpmonths_clients")
+     * @ORM\OneToMany(targetEntity="HomehelpmonthsClients", mappedBy="homehelpmonth")
      **/
-    private $clients;
+    private $hmClients;
 
     public function __construct() {
-        $this->clients = new ArrayCollection();
+        $this->hmClients = new ArrayCollection();
     }
-
 
     /**
      * Get id
@@ -274,41 +272,6 @@ class HomehelpMonth
     }
 
     /**
-     * Add client
-     *
-     * @param \JCSGYK\AdminBundle\Entity\Client $client
-     *
-     * @return HomehelpMonth
-     */
-    public function addClient(\JCSGYK\AdminBundle\Entity\Client $client)
-    {
-        $this->clients[] = $client;
-
-        return $this;
-    }
-
-    /**
-     * Remove client
-     *
-     * @param \JCSGYK\AdminBundle\Entity\Client $client
-     */
-    public function removeClient(\JCSGYK\AdminBundle\Entity\Client $client)
-    {
-        $this->clients->removeElement($client);
-    }
-
-    /**
-     * Get clients
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getClients()
-    {
-        return $this->clients;
-    }
-
-
-    /**
      * Set rowheaders
      *
      * @param array $rowheaders
@@ -354,5 +317,40 @@ class HomehelpMonth
     public function getData()
     {
         return $this->data;
+    }
+
+
+    /**
+     * Add hmClient
+     *
+     * @param \JCSGYK\AdminBundle\Entity\HomehelpmonthsClients $hmClient
+     *
+     * @return Homehelpmonth
+     */
+    public function addHmClient(\JCSGYK\AdminBundle\Entity\HomehelpmonthsClients $hmClient)
+    {
+        $this->hmClients[] = $hmClient;
+
+        return $this;
+    }
+
+    /**
+     * Remove hmClient
+     *
+     * @param \JCSGYK\AdminBundle\Entity\HomehelpmonthsClients $hmClient
+     */
+    public function removeHmClient(\JCSGYK\AdminBundle\Entity\HomehelpmonthsClients $hmClient)
+    {
+        $this->hmClients->removeElement($hmClient);
+    }
+
+    /**
+     * Get hmClients
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getHmClients()
+    {
+        return $this->hmClients;
     }
 }
