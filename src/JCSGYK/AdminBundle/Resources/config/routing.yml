@@ -59,18 +59,18 @@ client_orders:
     defaults: { _controller: JCSGYKAdminBundle:Client:orders }
 client_invoices:
     pattern:  /clients/invoices/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Client:invoices }
+    defaults: { _controller: JCSGYKAdminBundle:Client:invoices, invoicetype: 1 }
 
 # Home Help #
 client_homehelp_edit:
     pattern:  /clients/homehelp/edit/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:homehelpEdit }
+client_homehelp_invoices:
+    pattern:  /clients/homehelp/invoices/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:invoices, invoicetype: 3 }
 client_homehelp:
     pattern:  /clients/homehelp/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:homehelp }
-client_homehelp_invoices:
-    pattern:  /clients/homehelp/invoices/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Client:homehelpInvoices }
 
 # Relatives #
 relative_edit:

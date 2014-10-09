@@ -759,7 +759,7 @@ class ClientController extends Controller
      * @param Request $request
      * @param int $id Client id
      */
-    public function invoicesAction(Request $request, $id)
+    public function invoicesAction(Request $request, $id, $invoicetype)
     {
         $em = $this->getDoctrine()->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
@@ -770,11 +770,12 @@ class ClientController extends Controller
         }
 
         if (!empty($client)) {
+            $types = Invoice::HOMEHELP == $invoicetype ? [Invoice::HOMEHELP] : [Invoice::MONTHLY, Invoice::DAILY];
             // find the last invoices of the client
             $invoices = $em->createQuery("SELECT i FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id AND i.client= :client AND i.invoicetype IN (:types) ORDER BY i.createdAt DESC")
                 ->setParameter('company_id', $company_id)
                 ->setParameter('client', $client)
-                ->setParameter('types', [Invoice::MONTHLY, Invoice::DAILY])
+                ->setParameter('types', $types)
                 ->setMaxResults(20)
                 ->getResult();
 
@@ -802,7 +803,8 @@ class ClientController extends Controller
                             ]
                         ]);
                     }
-                    if ($open_amount && $invoice->cancellable()) {
+                    // no invoice cancelling for homehelp invoices
+                    if ($open_amount && $invoice->cancellable() &&  $invoicetype != Invoice::HOMEHELP) {
                         $form_builder->add('c' . $invoice->getId(), 'button', [
                             'label' => 'sztornózás',
                             'attr'  => [
@@ -813,7 +815,13 @@ class ClientController extends Controller
                     }
                 }
             }
-            $form_builder->add('cancel_id', 'hidden');
+            $route = Invoice::HOMEHELP == $invoicetype ? 'client_homehelp_invoices' : 'client_invoices';
+            $form_builder
+                ->add('cancel_id', 'hidden')
+                // set action depending on the invoice type
+                ->setAction($this->generateUrl($route, ['id' => $id]))
+                ->setMethod('POST')
+            ;
 
             $form = $form_builder->getForm();
 
@@ -839,7 +847,6 @@ class ClientController extends Controller
                     }
                 } else {
                     // invoice cancel
-
                     $cancelled_invoice = null;
                     // check for valid invoice id
                     foreach ($invoices as $invoice) {
@@ -853,7 +860,6 @@ class ClientController extends Controller
                     } else {
                         $this->container->get('jcs.invoice')->cancelInvoice($invoice);
                     }
-
                 }
 
                 // validate the form again
@@ -861,7 +867,8 @@ class ClientController extends Controller
                     $em->flush();
 
                     // update the client global balance too
-                    $this->get('jcs.invoice')->updateBalance($client->getCatering());
+                    $balance_source = Invoice::HOMEHELP == $invoicetype ? $client->getHomehelp() : $client->getCatering();
+                    $this->get('jcs.invoice')->updateBalance($balance_source);
 
                     if (empty($data['cancel_id'])) {
                         $message = 'Befizetés elmentve';
