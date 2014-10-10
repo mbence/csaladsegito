@@ -23,6 +23,17 @@
                 <th>{{ 'Jövedelem'|trans }}:</th>
                 <td colspan="3">{{ homehelp.income|fcurr }}</td>
             </tr>
+            <tr>
+                <th>{{ 'Megállapodás'|trans }}:</th>
+                <td colspan="3">
+                    {% if homehelp.agreementFrom %}
+                        {{ homehelp.agreementFrom|fdate }}
+                    {% endif %}
+                    {% if homehelp.agreementTo %}
+                        - {{ homehelp.agreementTo|fdate }}
+                    {% endif %}
+                </td>
+            </tr>
             {% if homehelp.discountIsActive %}
             <tr>
                 <th>{{ 'Mérséklés'|trans }}:</th>

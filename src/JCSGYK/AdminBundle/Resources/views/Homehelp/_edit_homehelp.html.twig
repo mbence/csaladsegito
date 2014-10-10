@@ -15,6 +15,13 @@
         <td>{{ form_errors(form.income) }}{{ form_widget(form.income) }}</td>
     </tr>
     <tr>
+        <th>{{ form_label(form.agreement_from) }}:</th>
+        <td>
+            <div class="inblock">{{ form_errors(form.agreement_from) }}{{ form_widget(form.agreement_from) }} - </div>
+            <div class="inblock">{{ form_errors(form.agreement_to) }}{{ form_widget(form.agreement_to) }}</div>
+        </td>
+    </tr>
+    <tr>
         <th>{{ form_label(form.discount) }}:</th>
         <td>
             <div class="inblock">{{ form_errors(form.discount) }}{{ form_widget(form.discount) }}</div>
