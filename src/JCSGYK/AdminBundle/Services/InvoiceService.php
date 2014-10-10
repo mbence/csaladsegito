@@ -376,6 +376,7 @@ class InvoiceService
                             'value'            => $daily_cost * $hours,
                             'net_value'        => $net_cost * $hours,
                             'weekday_quantity' => 0,
+                            'visits'           => 0,
                         ];
                     } else {
                         $items[$daily_cost]['quantity'] += $hours;
@@ -386,8 +387,10 @@ class InvoiceService
                     if ($weekday) {
                         $items[$daily_cost]['weekday_quantity']++;
                     }
-                } else {
-                    // no match in the catering cost tables, now what?
+                }
+                // add the visits
+                if (!is_null($daily_cost) && !empty($hours)) {
+                    $items[$daily_cost]['visits']++;
                 }
             }
 
@@ -915,14 +918,19 @@ class InvoiceService
                     // last 2 elements in the row are summary fields
                     foreach ($row as $day => $hours) {
                         if ($day > 0 && $day <= $day_count) {
-                            if (!empty($hours) && is_numeric($hours)) {
+                            if (!empty($hours)) {
                                 $date = (new \DateTime($month . $day))->format('Y-m-d');
 
                                 // add to the days array
                                 if (empty($days[$date])) {
                                     $days[$date] = 0;
                                 }
-                                $days[$date] += $hours;
+                                if (is_numeric($hours)) {
+                                    $days[$date] += $hours;
+                                } else {
+                                    $days[$date] = $hours;
+                                }
+
                             }
                         }
                     }

@@ -3207,17 +3207,13 @@ td.bigrep {
     text-align: center;
     font-size: 17px;
 }
-.reports-stats td {
-    font-size: 13px;
-    min-width: 70px;
-    text-align: right;
-}
 .reports-stats th {
     font-size: 13px;
     font-weight: normal;
     min-width: 200px;
     text-align: left;
     border: 1px solid #ccc;
+    background-color: #eee;
 }
 .reports-stats td {
     font-size: 13px;
@@ -3228,6 +3224,7 @@ td.bigrep {
     font-size: 13px;
     border: 1px solid #ccc;
     font-weight: normal;
+    background-color: #eee;
 }
 .reports-matrix th:first-child {
     font-size: 13px;

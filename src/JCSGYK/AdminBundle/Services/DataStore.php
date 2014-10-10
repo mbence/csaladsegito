@@ -1036,11 +1036,29 @@ class DataStore
     {
         $stats = [
             4 => [
-                401 => 'Ebéd Statisztika'
+                401 => 'Ebéd statisztika',
+                402 => 'Gondozás statisztika',
             ]
         ];
 
         return isset($stats[$type]) ? $stats[$type] : [];
+    }
+
+    /**
+     * Returns all stat ids
+     * @return array
+     */
+    public function getAllStatIds()
+    {
+        $stat_list = [];
+        foreach ($this->clientTypeNames as $client_type => $ctname) {
+            $stats = $this->getStatsForType($client_type);
+            if (!empty($stats)) {
+                $stat_list = array_merge($stat_list, array_keys($stats));
+            }
+        }
+
+        return $stat_list;
     }
 
     /**

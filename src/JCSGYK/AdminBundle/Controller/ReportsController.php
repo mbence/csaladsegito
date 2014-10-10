@@ -2,8 +2,8 @@
 
 namespace JCSGYK\AdminBundle\Controller;
 
-use JCSGYK\AdminBundle\Entity\Invoice;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -13,12 +13,15 @@ use JMS\SecurityExtraBundle\Annotation\Secure;
 use JCSGYK\AdminBundle\Entity\Stat;
 use JCSGYK\AdminBundle\Entity\UserRepository;
 use JCSGYK\AdminBundle\Entity\Client;
+use JCSGYK\AdminBundle\Entity\Invoice;
+use JCSGYK\AdminBundle\Entity\StatFile;
+use JCSGYK\AdminBundle\Services\DataStore;
 
 class ReportsController extends Controller
 {
     private $reports = [];
 
-    /** Datastore */
+    /** @var DataStore */
     private $ds;
 
     /**
@@ -104,9 +107,8 @@ class ReportsController extends Controller
 
         $sec              = $this->container->get('security.context');
         $client_type_list = $this->ds->getClientTypes();
-//        $company_id = $this->ds->getCompanyId();
-//        $em = $this->getDoctrine();
 
+        /** @var Formbuilder $form_builder */
         $form_builder = $this->createFormBuilder();
         //$form_builder->setData([]);
 
@@ -144,9 +146,9 @@ class ReportsController extends Controller
             // month
             $this->getInvoiceMonths($form_builder);
         }
-        elseif (in_array($report, ['catering_stats'])) {
+        elseif (in_array($report, ['catering_stats', 'homehelp_stats'])) {
             // stat months
-            $this->getStatMonths($form_builder);
+            $this->getStatMonths($form_builder, $report);
         }
         elseif ('ksh' == $report) {
             $this->container->get('jcs.reports.ksh')->getForm($form_builder);
@@ -162,7 +164,7 @@ class ReportsController extends Controller
                 $this->getClubSelect($form_builder);
             }
         }
-        elseif (in_array($report, ['catering_stats'])) {
+        elseif (in_array($report, ['catering_stats', 'homehelp_stats'])) {
             $this->getClubSelect($form_builder);
         }
 
@@ -213,17 +215,20 @@ class ReportsController extends Controller
 
     /**
      * Return the list of months when we have statistics data
-     * @param type $form_builder
-     * @param type $required
-     * @param type $label
+     * @param FormBuilder $form_builder
+     * @param $report
+     * @param bool|type $required
+     * @param type|string $label
      */
-    private function getStatMonths(&$form_builder, $required = true, $label = 'Dátum')
+    private function getStatMonths(FormBuilder &$form_builder, $report, $required = true, $label = 'Dátum')
     {
         $company_id = $this->ds->getCompanyId();
         $em         = $this->container->get('doctrine')->getManager();
         $ae         = $this->container->get('jcs.twig.adminextension');
 
-        $archs  = $em->getRepository('JCSGYKAdminBundle:StatArchive')->findBy(['companyId' => $company_id, 'type' => 401], ['createdAt' => 'DESC'], 12);
+        $stat_type = 'catering_stats' == $report ? 401 : 402;
+
+        $archs  = $em->getRepository('JCSGYKAdminBundle:StatArchive')->findBy(['companyId' => $company_id, 'type' => $stat_type], ['createdAt' => 'DESC'], 12);
         $months = [];
         foreach ($archs as $sa) {
             $months[$sa->getId()] = $ae->formatDate($sa->getStart(), 'ym');
@@ -303,8 +308,8 @@ class ReportsController extends Controller
         elseif (in_array($report, ['catering_summary', 'catering_summary_detailed', 'catering_datacheck'])) {
             return $this->getCateringReport($form_data, $report, $download);
         }
-        elseif ('catering_stats' == $report) {
-            return $this->getCateringStats($form_data, $download);
+        elseif (in_array($report, ['catering_stats', 'homehelp_stats'])) {
+            return $this->getStats($form_data, $download);
         }
         elseif ('catering_cashbook' == $report) {
             return $this->getCateringCashBookReport($form_data, $download);
@@ -322,12 +327,12 @@ class ReportsController extends Controller
         $ds  = $this->container->get('jcs.ds');
 
         // role checks
-        $famly_help_on    = $ds->companyHas(Client::FH) && $sec->isGranted('ROLE_FAMILY_HELP');
+        $family_help_on    = $ds->companyHas(Client::FH) && $sec->isGranted('ROLE_FAMILY_HELP');
         $child_welfare_on = $ds->companyHas(Client::CW) && $sec->isGranted('ROLE_CHILD_WELFARE');
         $catering_on      = $ds->companyHas(Client::CA) && $sec->isGranted('ROLE_CATERING');
 
         $menu = [];
-        if ($famly_help_on) {
+        if ($family_help_on) {
             $menu['Családsegítő'] = [
                 ['slug' => 'clients', 'label' => 'Ügyfelek'],
                 ['slug' => 'casecounts', 'label' => 'Esetszámok'],
@@ -347,7 +352,10 @@ class ReportsController extends Controller
                 ['slug' => 'catering_summary', 'label' => 'Havi ebédösszesítő'],
                 ['slug' => 'catering_summary_detailed', 'label' => 'Részletes ebédösszesítő'],
                 ['slug' => 'catering_datacheck', 'label' => 'Adategyeztető'],
-                ['slug' => 'catering_stats', 'label' => 'Statisztika'],
+                ['slug' => 'catering_stats', 'label' => 'Étkeztetés statisztika'],
+            ];
+            $menu['Gondozás'] = [
+                ['slug' => 'homehelp_stats', 'label' => 'Gondozás statisztika'],
             ];
         }
 
@@ -805,7 +813,13 @@ class ReportsController extends Controller
         }
     }
 
-    private function getCateringStats($form_data, $download)
+    /**
+     * Return the stats
+     * @param $form_data
+     * @param $download
+     * @return Response
+     */
+    private function getStats($form_data, $download)
     {
         $form_fields = [
             'stat_archive' => null,
@@ -818,22 +832,27 @@ class ReportsController extends Controller
         // check for user roles and set the params accordingly
         $em         = $this->container->get('doctrine')->getManager();
         $sec        = $this->container->get('security.context');
-        $ae         = $this->container->get('jcs.twig.adminextension');
-        $company_id = $this->ds->getCompanyId();
 
         // non admins should not get all clubs
         if (!$sec->isGranted('ROLE_ADMIN') && empty($form_data['club'])) {
             throw new AccessDeniedHttpException();
         }
         // get the club record
+        /** @var StatFile $sf */
         $sf = $em->getRepository('JCSGYKAdminBundle:StatFile')->findOneBy(['statArchive' => $form_data['stat_archive'], 'type' => $form_data['club']]);
 
         if (empty($sf)) {
             throw new BadRequestHttpException('Invalid Club Id');
         }
 
+        $stat_type = $sf->getStatArchive()->getType();
+
         $data = $sf->getData();
-        $twig_tpl = '_catering_stats.html.twig';
+        if (401 == $stat_type) {
+            $twig_tpl = '_catering_stats.html.twig';
+        } else {
+            $twig_tpl = '_homehelp_stats.html.twig';
+        }
 
         $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
 

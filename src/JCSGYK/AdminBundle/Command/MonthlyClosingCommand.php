@@ -42,13 +42,7 @@ class MonthlyClosingCommand extends ContainerAwareCommand
         }
 
         // get the closing type
-        if ($home_help) {
-            $closing_type = MonthlyClosing::HOMEHELP;
-        } elseif ($mode) {
-            $closing_type = MonthlyClosing::MONTHLY;
-        } else {
-            $closing_type = MonthlyClosing::DAILY;
-        }
+        $closing_type = $this->getClosingType($home_help, $mode);
 
         // set the companyid for the datastore
         $session = $this->getContainer()->get('session');
@@ -57,28 +51,80 @@ class MonthlyClosingCommand extends ContainerAwareCommand
             $session->set('user_id', $user_id);
         }
 
-        // get the service
-        /** @var ClosingService $closing_service */
-        $closing_service = $this->getContainer()->get('jcs.closing');
-
         // run the closing
-        $closing_service->run($closing_type, $output);
+        $this->getContainer()->get('jcs.closing')->run($closing_type, $output);
 
         // start the daily orders after the daily closing
         if (MonthlyClosing::DAILY == $closing_type) {
-            $command = $this->getApplication()->find('jcs:orders');
-
-            $arguments = array(
-                'command' => 'jcs:orders',
-                'company'    => $company_id,
-            );
-            if (!empty($user_id)) {
-                $arguments['--user'] = $user_id;
-            }
-
-            $input = new ArrayInput($arguments);
-            $returnCode = $command->run($input, $output);
+            $this->runDailyOrders($input, $output, $company_id, $user_id);
+        }
+        // or start the homehelp stat (402)
+        elseif (MonthlyClosing::HOMEHELP == $closing_type) {
+            $this->runHomehelpStats($input, $output, $company_id, $user_id);
         }
 
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param $company_id
+     * @param $user_id
+     */
+    protected function runDailyOrders(InputInterface $input, OutputInterface $output, $company_id, $user_id)
+    {
+        $command = $this->getApplication()->find('jcs:orders');
+
+        $arguments = array(
+            'command' => 'jcs:orders',
+            'company' => $company_id,
+        );
+        if (!empty($user_id)) {
+            $arguments['--user'] = $user_id;
+        }
+
+        $input = new ArrayInput($arguments);
+        $command->run($input, $output);
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param $company_id
+     * @param $user_id
+     */
+    protected function runHomehelpStats(InputInterface $input, OutputInterface $output, $company_id, $user_id)
+    {
+        $command = $this->getApplication()->find('jcs:stat');
+
+        $arguments = array(
+            'command' => 'jcs:stat',
+            'company' => $company_id,
+            '--stat'  => 402,
+        );
+        if (!empty($user_id)) {
+            $arguments['--user'] = $user_id;
+        }
+
+        $input = new ArrayInput($arguments);
+        $command->run($input, $output);
+    }
+
+    /**
+     * @param $home_help
+     * @param $mode
+     * @return int
+     */
+    private function getClosingType($home_help, $mode)
+    {
+        if ($home_help) {
+            $closing_type = MonthlyClosing::HOMEHELP;
+        } elseif ($mode) {
+            $closing_type = MonthlyClosing::MONTHLY;
+        } else {
+            $closing_type = MonthlyClosing::DAILY;
+        }
+
+        return $closing_type;
     }
 }
