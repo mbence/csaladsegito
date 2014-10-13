@@ -27,7 +27,7 @@ class MenuController extends Controller
             $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CW]], 'label' => 'Gyermekjólét', 'role' => 'ROLE_CHILD_WELFARE'];
         }
         if ($ds->companyHas(Client::CA)) {
-            $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CA]], 'label' => 'Étkeztetés', 'role' => 'ROLE_CATERING'];
+            $items[] = ['route' => 'clients', 'options' => ['client_type' => $slugs[Client::CA]], 'label' => 'Étkeztetés és Gondozás', 'role' => 'ROLE_CATERING'];
         }
         $items[] = ['route' => 'reports', 'label' => 'Kimutatások', 'role' => 'ROLE_USER'];
         $items[] = ['route' => 'settings', 'label' => 'Beállítások', 'role' => 'ROLE_USER'];
@@ -63,10 +63,12 @@ class MenuController extends Controller
             ['route' => 'admin_update', 'label' => 'Rendszerfrissítés', 'role' => 'ROLE_SUPER_ADMIN'],
         ];
 
+        /*
         // add the db import menu only for the dev enver
         if ('dev' == $this->container->getParameter('kernel.environment')) {
             $items[] = ['route' => 'jcsgyk_dbimport_homepage', 'label' => 'Adatbázis Import', 'role' => 'ROLE_SUPER_ADMIN'];
         }
+         */
 
         $menu = $this->checkMenu($items);
 
@@ -77,10 +79,22 @@ class MenuController extends Controller
     {
         $items = [
             ['route' => 'admin_clubs', 'label' => 'Klubok', 'role' => 'ROLE_ADMIN'],
-            ['route' => 'admin_options', 'options' => ['name' => 'cateringcosts'], 'label' => 'Díjtáblázat', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_options', 'options' => ['name' => 'cateringcosts'], 'label' => 'Étkeztetés Díjtáblázat', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_options', 'options' => ['name' => 'holidays'], 'label' => 'Munkaszüneti napok', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_closings', 'label' => 'Napi és havi zárások', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_dailyorders', 'label' => 'Konyhai rendelések', 'role' => 'ROLE_ADMIN'],
+        ];
+
+        $menu = $this->checkMenu($items);
+
+        return $this->render('JCSGYKAdminBundle:Settings:menu.html.twig', ['menu' => $menu]);
+    }
+
+    public function homehelpSettingsAction()
+    {
+        $items = [
+            ['route' => 'admin_home_help', 'label' => 'Gondozás rögzítése', 'role' => 'ROLE_ADMIN'],
+            ['route' => 'admin_options', 'options' => ['name' => 'homehelpcosts'], 'label' => 'Gondozás Díjtáblázat', 'role' => 'ROLE_ADMIN'],
         ];
 
         $menu = $this->checkMenu($items);
@@ -157,6 +171,7 @@ class MenuController extends Controller
         $sec = $this->get('security.context');
         // true if only assistance roles are present
         $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE') && !$sec->isGranted('ROLE_CATERING');
+        $has_catering = !empty($client->getCatering());
 
         $items = [
             // edit catering data
@@ -176,7 +191,7 @@ class MenuController extends Controller
                 'class' => 'greybutton catering_orders',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
-                'requirement' => $client->canEdit($sec)
+                'requirement' => $client->canEdit($sec) && $has_catering,
             ],
             [
                 'url'   => $this->generateUrl('client_invoices', ['id' => $client->getId()]),
@@ -185,7 +200,49 @@ class MenuController extends Controller
                 'class' => 'greybutton catering_invoices',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
+                'requirement' => $client->canEdit($sec) && $has_catering,
+            ]
+        ];
+
+        return $this->subMenu($items, false);
+    }
+
+    public function homehelpAction(Client $client)
+    {
+        $sec = $this->get('security.context');
+        // true if only assistance roles are present
+        $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE') && !$sec->isGranted('ROLE_CATERING');
+        $has_homehelp = !empty($client->getHomehelp());
+        $sw = $has_homehelp ? $client->getHomehelp()->getSocialWorker() : null;
+
+        $items = [
+            // edit homehelp data
+            [
+                'url'   => $this->generateUrl('client_homehelp_edit', ['id' => $client->getId()]),
+                'label' => 'szerkesztés',
+                'title' => 'Gondozási adatok szerkesztése',
+                'class' => 'greybutton edit_catering',
+                'more'  => false,
+                'role'  => 'ROLE_CATERING',
                 'requirement' => $client->canEdit($sec)
+            ],
+            [
+                'url'   => $this->generateUrl('admin_home_help', ['social_worker' => $sw]),
+                'label' => 'gondozás rögzítése',
+                'title' => 'Gondozás rögzítése',
+                'class' => 'greybutton admin_homehelp',
+                'more'  => false,
+                'role'  => 'ROLE_CATERING',
+                'requirement' => $client->canEdit($sec) && $has_homehelp,
+            ],
+            [
+                'url'   => $this->generateUrl('client_homehelp_invoices', ['id' => $client->getId()]),
+                'label' => 'befizetés',
+                'title' => 'Számlák és befizetések',
+                'class' => 'greybutton catering_invoices',
+                'more'  => false,
+                'role'  => 'ROLE_CATERING',
+                'requirement' => $client->canEdit($sec) && $has_homehelp,
             ]
         ];
 

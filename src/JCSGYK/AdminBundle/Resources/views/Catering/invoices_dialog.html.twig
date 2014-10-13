@@ -8,7 +8,7 @@
     <div class="modal-middle">
         <h1 class="client center">{{ 'Befizetések'|trans }}</h1>
 
-        <form id="catering_form" class="templateform" action="{{ path('client_invoices', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
+        {{ form_start(form, {"attr": {"novalidate": true, "id": "catering_form", "class": "templateform" }}) }}
             {{ form_errors(form) }}
 
             <table class="client" cellspacing="0" border="0">
@@ -83,7 +83,7 @@
 
             {{ form_widget(form.cancel_id) }}
             {{ form_widget(form._token) }}
-        </form>
+        {{  form_end(form) }}
         {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
     </div>
 {% endif %}

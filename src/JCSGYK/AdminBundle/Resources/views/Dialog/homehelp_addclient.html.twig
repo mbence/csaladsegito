@@ -1,0 +1,36 @@
+{# Homehelp Add Client Dialog #}
+
+{# if all went well, we just need to close the popup #}
+{% if success is defined and success %}
+    <p class="center">
+        mentés...
+    </p>
+    <div id="addclient_results" data-to-add="{{ to_add }}" data-to-remove="{{ to_remove }}"></div>
+{% else %}
+    {#{% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}#}
+    {#<form action="{{ path('client_archive', {'id': client.id}) }}" id="archive_form" method="post" {{ form_enctype(form) }}>#}
+    {{ form_start(form, {"attr": {"id": "addclient_form", "class": "" }}) }}
+        <h1 class="client">{{ 'Ügyfelek módosítása'|trans }}</h1>
+
+        {{ form_errors(form) }}
+        <div class="editform">{{ form_row(form.filter) }}</div>
+
+        <div class="errors center hidden" id="noclient-error">{{ 'Válasszon ki legalább egy ügyfelet!'|trans }}</div>
+        <div class="client-template-cont">
+            <div class="client-template-list">
+                {% for child in form.clients %}
+                    <div>
+                        {{ form_widget(child) }}
+                        {{ form_label(child) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="toppad10">
+            {% include "JCSGYKAdminBundle:Client:_buttons.html.twig" with {buttons: ['close_dialog', {type:'submit', class:'add-client', title:'Ügyfelek módosítása', label:'mentés'}] } %}
+            <div class="clear"></div>
+        </div>
+    {{ form_end(form) }}
+    {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
+{% endif %}

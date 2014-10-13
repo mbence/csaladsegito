@@ -1,4 +1,4 @@
-search@charset "utf-8";
+@charset "UTF-8";
 @font-face {
 	font-family: "Optima Regular";
 	src: url("../images/font/optimah_regular-webfont.ttf");
@@ -56,6 +56,9 @@ a {
 }
 .floatright {
     float: right;
+}
+.floatleft {
+    float: left;
 }
 .red {
     color: red;
@@ -532,6 +535,10 @@ table.problem-list td {
     width: 50%;
     float: left;
 }
+.adminblock300 {
+    width: 300px;
+    float: left;
+}
 #userlist, #useredit {
     height: 100%;
     overflow: auto;
@@ -742,6 +749,10 @@ form.editform #recommended_fields label:after {
 }
 .client-template-list input:checked+label {
     background-color: #ccc;
+}
+.client-template-list input:disabled+label {
+    background-color: #ccc;
+    color: #888;
 }
 
 /* Stats */
@@ -1085,17 +1096,13 @@ td.bigrep {
     text-align: center;
     font-size: 17px;
 }
-.reports-stats td {
-    font-size: 13px;
-    min-width: 70px;
-    text-align: right;
-}
 .reports-stats th {
     font-size: 13px;
     font-weight: normal;
     min-width: 200px;
     text-align: left;
     border: 1px solid #ccc;
+    background-color: #eee;
 }
 .reports-stats td {
     font-size: 13px;
@@ -1106,6 +1113,7 @@ td.bigrep {
     font-size: 13px;
     border: 1px solid #ccc;
     font-weight: normal;
+    background-color: #eee;
 }
 .reports-matrix th:first-child {
     font-size: 13px;
@@ -1218,4 +1226,39 @@ h2.menu-section {
 }
 .historytable tr.log-data table {
     margin: 0 auto;
+}
+
+/* handsontable */
+.homehelp-table tr td.hh-weekend {
+    background-color: #fdd;
+}
+.homehelp-table td.hh-readonly {
+    background-color: #fafafa;
+    color: #444;
+}
+.homehelp-table td.currentRow, .homehelp-table td.currentCol, .homehelp-table th.currentRow  {
+    background-color: #F5F5FF;
+}
+.homehelp-table tr td {
+    font-size: 11px;
+    text-align: right;
+}
+.homehelp-table .colHeader, .homehelp-table .rowHeader {
+    font-size: 13px;
+}
+.homehelp-table tr td.hh-separator {
+    background-color: #ccc;
+}
+.homehelp-table tr td.hh-sum {
+    font-weight: bold;
+    background-color: #f2f2f2;
+}
+.homehelp-table .htCore col.rowHeader {
+    width: 180px;
+}
+.homehelp-admin-box {
+    width: 994px;
+}
+.greybutton.download-homehelp > span {
+    vertical-align: 2px;
 }

@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use JCSGYK\AdminBundle\Entity\Client;
 use Doctrine\ORM\Query;
 use JCSGYK\AdminBundle\Entity\User;
+use JCSGYK\AdminBundle\Entity\MonthlyClosing;
 
 /**
  * ClientRepository
@@ -177,20 +178,26 @@ class ClientRepository extends EntityRepository
      * Returns all clients who have an active catering record
      *
      * @param int $company_id
-     * @param int $period 1 = monthly (all clients); 0 = daily (only new clients)
+     * @param int $closing_type 1 monthly, 2 daily or 3 home-help
      * @return type
      */
-    public function getForClosing($company_id, $period = 1)
+    public function getForClosing($company_id, $closing_type = 1)
     {
-        if (1 == $period) {
+        if (MonthlyClosing::HOMEHELP == $closing_type) {
+            // homehelp closing get only the homehelp clients
+            $query = $this->getEntityManager()
+                ->createQuery("SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE c.companyId = :company_id AND c.isArchived = 0 AND c.type = :client_type ORDER BY h.club, c.lastname, c.firstname")
+                ->setParameter('company_id', $company_id)
+                ->setParameter('client_type', Client::CA)
+            ;
+        } elseif (MonthlyClosing::MONTHLY == $closing_type) {
+            // monthly catering closing
             $query = $this->getEntityManager()
                 ->createQuery("SELECT c, a FROM JCSGYKAdminBundle:Client c JOIN c.catering a WHERE c.companyId = :company_id AND c.isArchived = 0 AND c.type = :client_type ORDER BY a.club, c.lastname, c.firstname")
                 ->setParameter('company_id', $company_id)
                 ->setParameter('client_type', Client::CA)
-    //            ->setMaxresults(100)
             ;
-        }
-        else {
+        } else {
             // daily closing, only select the new clients, that have no invoice for this period
             // or have a cancelled invoice
             $query = $this->getEntityManager()
@@ -201,7 +208,6 @@ class ClientRepository extends EntityRepository
                 ->setParameter('company_id', $company_id)
                 ->setParameter('client_type', Client::CA)
                 ->setParameter('created', new \DateTime('yesterday 10:00'))
-    //            ->setMaxresults(100)
             ;
         }
 

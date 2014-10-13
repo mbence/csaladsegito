@@ -17,11 +17,11 @@
                     </strong>
                 </td>
             </tr>
-            {% if log_data[0] is iterable %}
+            {% if log_data|length > 1 or log_data[0] is iterable %}
                 <tr class="log-data">
                     <td colspan="3">
                         <table>
-                        {% for change in log_data %}
+                        {% for index, change in log_data if change is iterable or index > 0 %}
                             <tr>
                                 {% if change is iterable %}
                                     <th class="noborder">{{ change[0]|raw }}</th>

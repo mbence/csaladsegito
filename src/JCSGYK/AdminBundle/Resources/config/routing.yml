@@ -59,7 +59,18 @@ client_orders:
     defaults: { _controller: JCSGYKAdminBundle:Client:orders }
 client_invoices:
     pattern:  /clients/invoices/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Client:invoices }
+    defaults: { _controller: JCSGYKAdminBundle:Client:invoices, invoicetype: 1 }
+
+# Home Help #
+client_homehelp_edit:
+    pattern:  /clients/homehelp/edit/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:homehelpEdit }
+client_homehelp_invoices:
+    pattern:  /clients/homehelp/invoices/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:invoices, invoicetype: 3 }
+client_homehelp:
+    pattern:  /clients/homehelp/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Client:homehelp }
 
 # Relatives #
 relative_edit:
@@ -180,6 +191,9 @@ admin_dailyorders:
 admin_recommended_fields:
     pattern:  /admin/fields_to_fill/{tab}
     defaults: { _controller: JCSGYKAdminBundle:Admin:recommendedFields, tab: 0 }
+admin_social_workers:
+    pattern:  /admin/social_workers/{id}
+    defaults: { _controller: JCSGYKAdminBundle:Admin:clubs, id: null }
 
 login_redirector:
     pattern:   /loginredirector

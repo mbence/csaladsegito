@@ -1,4 +1,9 @@
 JcsSettings =
+    hhSumCol: 0,
+    hhSumRows: [],
+    hhLastRow: 0,
+    hhWeekends: [],
+
     init: ->
         # users
         if $("#userlist").length
@@ -29,6 +34,110 @@ JcsSettings =
         # Recommended Fields
         if $("#recommended_fields").length
             @setupRecFields()
+
+        # home help
+        if $("#homehelpfilter").length
+            @setupHomehelp()
+
+    ###
+        setup the homehelp admin
+    ###
+    setupHomehelp: ->
+        $("#form_social_worker").add("#form_month").on("change", ->
+            $("#homehelpfilter").submit()
+        )
+        $("#homehelpfilter").submit ->
+            url = $(this).attr('action') + '/' + $("#form_social_worker").val() + '/' + $("#form_month").val()
+            document.location = url
+
+            return false
+
+        # init the add client button
+        $(".add-client-dialog").off('click').on "click", (event) ->
+            event.stopPropagation()
+
+            if !$(this).hasClass('animbutton')
+                $(this).addClass('animbutton')
+
+                url = $(this).data("href") + '/' + $("#form_social_worker").val() + '/' + $("#form_month").val()
+
+                $.get(url, (data) =>
+                    $(this).removeClass('animbutton')
+                    JcsModal.setContent(data)
+                    JcsSettings.initAddclientDialog()
+                ).error( (data) =>
+                    # there was some error :(
+                    AjaxBag.showError(data.statusText)
+                    $(this).removeClass('animbutton')
+                )
+            return false
+
+        # form cancel button
+        $("#homehelpform button.cancel").on "click", ->
+              document.location.reload()
+
+        # modal dialog
+        JcsModal.init()
+
+    initAddclientDialog: ->
+        JcsModal.setCloseButton()
+        # filter input
+        filter_timeout = null
+        $("#form_filter").on "input", ->
+            clearTimeout(filter_timeout)
+            filter_timeout = setTimeout( ->
+                JcsSettings.filterClients($("#form_filter").val())
+            , 200)
+
+        # form submit
+        $addClientForm = $("#addclient_form");
+
+        $addClientForm.submit ->
+            # check for selected user
+            if !$("[name='form[clients][]']:checked").length
+                # no client selected
+                AjaxBag.showError($("#noclient-error").text())
+
+                return false
+
+            $("button.add-client").addClass('animbutton')
+            $.post($(this).attr("action"), $(this).serialize(), (data) ->
+                JcsModal.setContent(data)
+
+                # handle the final operations
+                resdiv = JcsModal.find("#addclient_results")
+                if resdiv.length
+                    $("#form_to_add").val(JSON.stringify(resdiv.data("to-add")))
+                    $("#form_to_remove").val(JSON.stringify(resdiv.data("to-remove")))
+                    $("#homehelpform").submit()
+                else
+                    JcsSettings.initAddclientDialog()
+
+            ).error( (data) =>
+                # there was some error :(
+                AjaxBag.showError(data.statusText)
+                $("button.add-client").removeClass('animbutton')
+            )
+
+            return false
+
+        # set my clients checkboxes to disabled
+        if $("#form_my_clients").val()
+            my_cl = JSON.parse($("#form_my_clients").val())
+            for cl_id in my_cl when $addClientForm.find("input[value=" + cl_id + "]").is(":checked")
+                $addClientForm.find("input[value=" + cl_id + "]").attr("disabled", true)
+
+        JcsModal.load()
+
+    filterClients: (input) ->
+        $(".client-template-list > div > label").each ->
+            if input and
+                    -1 == $(this).html().toLocaleLowerCase().indexOf(input.toLocaleLowerCase()) and
+                    not $(this).prev().is(":checked") # dont hide checked rows
+                $(this).parent().hide()
+            else
+                $(this).parent().show()
+
 
     ###
         setup the company editor
@@ -194,14 +303,30 @@ JcsSettings =
         # load language settings
         @registerLanguage()
 
-        tableData = JSON.parse($("#options_value").val())
+        if hh_weekends?
+            @hhWeekends = JSON.parse(hh_weekends)
+
+        data_field = if $("#options_value").length then "#options_value" else "#form_value"
+
+        tableData = if $(data_field).val() then JSON.parse($(data_field).val()) else {}
+        # merge the options
         options = $.extend(true,{},@tableDefaults,tableDefaultOptions)
+        # after change event
         afterChange = (changes, source) ->
             if changes != null
-                $("#options_value").val(JSON.stringify(tableData))
+                if options.sums? and options.sums
+                    JcsSettings.decFix(changes, source)
+                    JcsSettings.sums(changes, source)
+                $(data_field).val(JSON.stringify(tableData))
+
         options.data = tableData
         options.afterChange = afterChange
 
+        # use the cells formatting function?
+        if options.cells? and options.cells
+            options.cells = @cells
+
+        # fire up the table!
         $("#handsontable").handsontable(options)
 
         # discount datepicker
@@ -214,3 +339,101 @@ JcsSettings =
             "onClick": ->
                 $("#form_act_tab").val(this.getIndex())
         });
+
+    cells: (row, col, prop) ->
+        cellProperties = {}
+        table_data = $("#handsontable").handsontable('getData')
+        sum_col = $("#handsontable").handsontable('countCols') - 2
+
+        if table_data[row] == null
+            cellProperties.readOnly = true
+            cellProperties.className = "hh-separator"
+        else if table_data[row][0] == 'sum' or col >= sum_col
+            cellProperties.readOnly = true
+            cellProperties.className = "hh-sum"
+        if (col + 1) in JcsSettings.hhWeekends
+            cellProperties.className = " hh-weekend"
+
+        return cellProperties
+
+    ###
+        Changes decimals from , to .
+    ###
+    decFix: (changes, source) ->
+        $("#handsontable").handsontable('getData')[changes[0][0]][changes[0][1]] = changes[0][3].replace /\,/, '.'
+
+    sums: (changes, source) ->
+        # hello
+        table_data = $("#handsontable").handsontable('getData')
+        # get the last sum col
+        if !@hhSumCol
+            @hhSumCol = $("#handsontable").handsontable('countCols') - 1
+
+        # get the sum rows
+        if !@hhSumRows.length
+            for k, v of table_data
+                if v? and v[0] == 'sum'
+                    @hhSumRows.push (k * 1)
+            @hhLastRow = k * 1
+
+        # only update the right section
+        section_start = 0
+        for k, v of @hhSumRows
+            if section_start <= changes[0][0] < v
+                start_row = section_start
+                end_row = v - 1
+                sum_row = v
+                break
+            else
+                section_start = v + 2
+        # change is in the last section
+        if !start_row?
+            start_row = section_start
+            end_row = @hhLastRow
+
+        # reset the sum row
+        if sum_row? and table_data[sum_row]?
+            for k, v of table_data[sum_row] when k > 0 and table_data[sum_row][k]
+                table_data[sum_row][k] = 0
+
+        # do the sums
+        total_visits = 0
+        for r in [start_row .. end_row] by 1
+            # reset the sum col
+            table_data[r][@hhSumCol] = 0
+            # reset the visits col
+            table_data[r][@hhSumCol + 1] = 0
+            # loop over the row
+            for k, v of table_data[r]
+                k = k * 1
+                # skip the first col, and check if we have a value
+                if (0 < k < @hhSumCol) and v
+                    # sum row
+                    if $.isNumeric(v)
+                        # make sure v is a number
+                        v = v * 1
+                        # sum col
+                        table_data[r][@hhSumCol] += v
+                        if sum_row?
+                            if !table_data[sum_row][k]?
+                                table_data[sum_row][k] = 0
+                            table_data[sum_row][k] += v
+                            table_data[sum_row][@hhSumCol] += v
+
+                    # visits column only for the clients section
+                    if r < @hhSumRows[0]
+                        table_data[r][@hhSumCol + 1]++
+
+            total_visits += table_data[r][@hhSumCol + 1]
+
+            # if the sum was 0, remove the cell content
+            if table_data[r][@hhSumCol] == 0
+                table_data[r][@hhSumCol] = ""
+            # if the total visits was 0, remove the cell content
+            if table_data[r][@hhSumCol + 1] == 0
+                table_data[r][@hhSumCol + 1] = ""
+
+        if sum_row?
+            table_data[sum_row][@hhSumCol + 1] = total_visits or ""
+
+        $("#handsontable").handsontable('render')

@@ -42,7 +42,7 @@ class DataStore
     private $clientTypeNames = [
         Client::FH => 'Családsegítő',
         Client::CW => 'Gyermekjólét',
-        Client::CA => 'Étkeztetés'
+        Client::CA => 'Étkeztetés és Gondozás'
     ];
 
     /** Map for client types and security roles */
@@ -57,7 +57,7 @@ class DataStore
         'ROLE_ASSISTANCE' => 'Asszisztens',
         'ROLE_FAMILY_HELP' => 'Családsegítő',
         'ROLE_CHILD_WELFARE' => 'Gyermekvédelem',
-        'ROLE_CATERING' => 'Étkeztetés',
+        'ROLE_CATERING' => 'Étkeztetés és Gondozás',
         'ROLE_ADMIN' => 'Admin',
     ];
 
@@ -1036,10 +1036,43 @@ class DataStore
     {
         $stats = [
             4 => [
-                401 => 'Ebéd Statisztika'
+                401 => 'Ebéd statisztika',
+                402 => 'Gondozás statisztika',
             ]
         ];
 
         return isset($stats[$type]) ? $stats[$type] : [];
+    }
+
+    /**
+     * Returns all stat ids
+     * @return array
+     */
+    public function getAllStatIds()
+    {
+        $stat_list = [];
+        foreach ($this->clientTypeNames as $client_type => $ctname) {
+            $stats = $this->getStatsForType($client_type);
+            if (!empty($stats)) {
+                $stat_list = array_merge($stat_list, array_keys($stats));
+            }
+        }
+
+        return $stat_list;
+    }
+
+    /**
+     * Get a list of social workers or an empty array
+     * @return array
+     */
+    public function getSocialWorkers()
+    {
+        // list of Social Workers form the parameter table
+        $social_workers = $this->getGroup('social_workers');
+        if (empty($social_workers)) {
+            $social_workers = [];
+        }
+
+        return $social_workers;
     }
 }

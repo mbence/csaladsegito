@@ -12,6 +12,9 @@
 <div class="catering_container" data-url="{{ path('client_catering', {id: client.id}) }}">
     {% include "JCSGYKAdminBundle:Catering:_catering.html.twig" with {'catering': client.catering} %}
 </div>
+<div class="homehelp_container" data-url="{{ path('client_homehelp', {id: client.id}) }}">
+    {% include "JCSGYKAdminBundle:Homehelp:_homehelp.html.twig" with {'homehelp': client.homehelp} %}
+</div>
 {% endif %}
 
 {% if client.type == 2 or client.type == 4 %} {# if (is_granted('ROLE_FAMILY_HELP') or is_granted('ROLE_CHILD_WELFARE')) and #}

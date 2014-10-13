@@ -1,13 +1,21 @@
 <?php
 
 namespace JCSGYK\AdminBundle\Services;
+
+use JCSGYK\AdminBundle\Entity\HomehelpMonth;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use Doctrine\ORM\EntityManager;
+
 use JCSGYK\AdminBundle\Entity\Invoice;
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\Catering;
 use JCSGYK\AdminBundle\Entity\ClientOrder;
 use JCSGYK\AdminBundle\Entity\Club;
+use JCSGYK\AdminBundle\Entity\ClientOrderRepository;
+use JCSGYK\AdminBundle\Entity\MonthlyClosing;
+use JCSGYK\AdminBundle\Services\DataStore;
+use JCSGYK\AdminBundle\Entity\HomeHelp;
 
 /**
  * Invoice related service
@@ -17,13 +25,14 @@ class InvoiceService
     /** Service container */
     private $container;
 
-    /** Datastore */
+    /** @var Datastore */
     private $ds;
 
     /** Constructor */
     public function __construct($container)
     {
         $this->container = $container;
+        /** @var DataStore ds */
         $this->ds = $this->container->get('jcs.ds');
     }
 
@@ -33,9 +42,10 @@ class InvoiceService
      * @param \JCSGYK\AdminBundle\Entity\Client $client
      * @param \DateTime $start_date
      * @param \DateTime $end_date
+     * @param $closing_type 1 monthly, 2 daily or 3 home-help
      * @return bool|\JCSGYK\AdminBundle\Entity\Invoice
      */
-    public function create(Client $client, \DateTime $start_date, \DateTime $end_date)
+    public function create(Client $client, \DateTime $start_date, \DateTime $end_date, $closing_type)
     {
         if (empty($client)) {
             throw new HttpException(500, 'Invalid Client');
@@ -44,27 +54,25 @@ class InvoiceService
             throw new HttpException(500, 'Invalid Start / End dates');
         }
 
-        $company_id = $this->ds->getCompanyId();
-        $em = $this->container->get('doctrine')->getManager();
         $user = $this->ds->getUser();
+        /** @var EntityManager $em */
+        $em = $this->container->get('doctrine')->getManager();
+        /** @var ClientOrderRepository $orders_repo */
         $orders_repo = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder');
 
-        // check the clients catering settings
-        $catering = $client->getCatering();
+        if (MonthlyClosing::HOMEHELP == $closing_type) {
+            list($days, $hm_clients) = $this->getHomeHelpDays($client, $start_date, $end_date);
+            // calculate the invoice items
+            $items = $this->calculateHomehelpItems($client, $days, $start_date, $end_date);
 
-        // save new order days in clientOrder
-        $this->saveDays($client, $start_date, $end_date);
-
-        // get all open orders for the given month and before
-        $orders = $orders_repo->getOrders($client->getId(), $end_date);
-        $days = $this->getOrderDays($orders);
+        } else {
+            list($orders, $days) = $this->getCateringOrders($client, $start_date, $end_date);
+            // calculate the invoice items
+            $items = $this->calculateCateringItems($client, $orders);
+        }
 
         // if we have no data, we create no invoice
-        if (!empty($orders) && !empty($days)) {
-
-            // calculate the costs
-            $items = $this->calulateItems($catering, $orders);
-
+        if (!empty($items)) {
             // sum up (discount is negative!)
             $sum = 0;
             foreach ($items as $item) {
@@ -74,18 +82,20 @@ class InvoiceService
             $sum = round($sum);
 
             // create the new invoice
-            $invoice = new Invoice();
-            $invoice->setCompanyId($company_id);
-            $invoice->setClient($client);
-            $invoice->setStartDate($start_date);
-            $invoice->setEndDate($end_date);
-            $invoice->setItems(json_encode($items));
-            $invoice->setDays(json_encode($days));
-            $invoice->setBalance(0);
-            $invoice->setStatus(Invoice::READY_TO_SEND);
-            $invoice->setAmount($sum);
-            $invoice->setCreatedAt(new \DateTime());
-            $invoice->setCreator($user);
+            $invoice = (new Invoice())
+                ->setCompanyId($client->getCompanyId())
+                ->setClient($client)
+                ->setStartDate($start_date)
+                ->setEndDate($end_date)
+                ->setItems(json_encode($items))
+                ->setDays(json_encode($days))
+                ->setBalance(0)
+                ->setStatus(Invoice::READY_TO_SEND)
+                ->setAmount($sum)
+                ->setCreatedAt(new \DateTime())
+                ->setCreator($user)
+                ->setInvoicetype($closing_type)
+            ;
 
             // save the new invoice
             $em->persist($invoice);
@@ -94,8 +104,15 @@ class InvoiceService
             $invoice = false;
         }
 
-        // close the used cancel records
-        $orders_repo->closeOrders($orders);
+        if (MonthlyClosing::HOMEHELP != $closing_type) {
+            // close the used order records
+            $orders_repo->closeOrders($orders);
+        } else {
+            // close the Homhelp Month for this client
+            foreach ($hm_clients as $hm_client) {
+                $hm_client->setIsClosed(true);
+            }
+        }
 
         $em->flush();
 
@@ -105,7 +122,6 @@ class InvoiceService
     /**
      * Return an array with the changed days
      *
-     * @param \JCSGYK\AdminBundle\Entity\Catering $catering
      * @param array of ClientOrder $changes
      * @return int
      */
@@ -113,7 +129,6 @@ class InvoiceService
     {
         $changed_days = [];
         foreach ($orders as $order) {
-            $o = 0;
             // check if ordered
             if ($order->getOrder() == true) {
                 $o = 1;
@@ -132,7 +147,7 @@ class InvoiceService
      * Returns a list of days: key is ISO date format, when food was ordered, value is 1 or -1 at cancels
      * Holidays are also taken into account
      *
-     * @param \JCSGYK\AdminBundle\Entity\Catering $catering
+     * @param Catering $catering
      * @param \DateTime $start_date
      * @param \DateTime $end_date
      * @return int
@@ -147,7 +162,6 @@ class InvoiceService
         $all_days = count($subs) == 7;
         // get the holidays
         $holidays = $this->ds->getHolidays($start_date->format('Y-m-d'), $end_date->format('Y-m-d'));
-//        var_dump($holidays);
 
         $days = [];
 
@@ -179,103 +193,256 @@ class InvoiceService
     /**
      * Calculates the costs and discounts for the client
      *
-     * @param \JCSGYK\AdminBundle\Services\Catering $catering
+     * @param Client $client
      * @param array $orders (cancels have -1 value)
      * @return array
      */
-    private function calulateItems(Catering $catering, array $orders)
+    private function calculateCateringItems(Client $client, array $orders)
     {
         $items = [];
-        $discount_ratio = 0;
-        $vat = $this->ds->getVat();
 
-        // check discount (50% - 100%)
-        if (!empty($catering->getDiscount())) {
-            $discount = $catering->getDiscount();
-            if (is_numeric($discount) && $discount >= 0 && $discount <= 100) {
-                $discount_ratio = $discount / 100;
+        if (!empty($orders)) {
+            $discount_ratio = 0;
+            $vat = $this->ds->getVat();
+            $catering = $client->getCatering();
+
+            // check discount (50% - 100%)
+            if (!empty($catering->getDiscount())) {
+                $discount = $catering->getDiscount();
+                if (is_numeric($discount) && $discount >= 0 && $discount <= 100) {
+                    $discount_ratio = $discount / 100;
+                }
+            }
+
+            foreach ($orders as $order) {
+                $date = $order->getDate()->format('Y-m-d');
+                // is it a weekday or weekend
+                $weekday = $order->getDate()->format('N') < 6;
+                // get the actual catering costs table
+                // this runs a query for every day. Maybe not necessary...
+                $table = $this->ds->getOption('cateringcosts', $date);
+                // check the cost for the day
+                $daily_cost = $this->getCostForADay($catering, $table);
+
+                if (!is_null($daily_cost)) {
+                    // this is a gross cost, so we must reduce it to net
+                    $net_cost = number_format($daily_cost / (1 + $vat), 4, '.', '');
+
+                    // check if he has discount for this day
+                    $discount_is_active = $catering->discountIsActive($order->getDate());
+
+                    // if he has ordered for this day
+                    if ($order->getOrder()) {
+
+                        // add the discount item to every day when order is set
+                        if ($discount_is_active && !$order->getCancel()) {
+                            // discount is 1 item with 50% or 100% unit price and total amount are the same
+                            $discount_net = -1 * $net_cost * $discount_ratio;
+                            $discount_gross = -1 * $daily_cost * $discount_ratio;
+
+                            if (!isset($items['discount'])) {
+                                $items['discount'] = [
+                                    'name'       => sprintf('%s mérséklés', $discount . '%'),
+                                    'quantity'   => 1,
+                                    'unit'       => 'db',
+                                    'net_price'  => $discount_net,
+                                    'unit_price' => $discount_gross,
+                                    'value'      => $discount_gross,
+                                    'net_value'  => $discount_net,
+                                ];
+                            } else {
+                                $items['discount']['value'] += $discount_gross;
+                                $items['discount']['unit_price'] += $discount_gross;
+                                $items['discount']['net_value'] += $discount_net;
+                                $items['discount']['net_price'] += $discount_net;
+                            }
+                        }
+
+                        if ($order->getCancel()) {
+                            // if ordered but later cancelled, we add it only to the discounts
+                            $daily_cost *= -1;
+                            $net_cost *= -1;
+                            // if cancelled and he had a discount for this day, we only add the real amount he actually payed before
+                            if ($discount_is_active) {
+                                $daily_cost = $daily_cost - ($daily_cost * $discount_ratio);
+                                $net_cost = $net_cost - ($net_cost * $discount_ratio);
+                            }
+                        }
+                        if (!isset($items[$daily_cost])) {
+                            $items[$daily_cost] = [
+                                'name'             => $order->getCancel() ? 'Jóváírás' : 'Ebéd rendelés',
+                                'quantity'         => 1,
+                                'net_price'        => $net_cost,
+                                'unit_price'       => $daily_cost,
+                                'value'            => $daily_cost,
+                                'net_value'        => $net_cost,
+                                'weekday_quantity' => 0,
+                            ];
+                        } else {
+                            $items[$daily_cost]['quantity']++;
+                            $items[$daily_cost]['value'] += $daily_cost;
+                            $items[$daily_cost]['net_value'] += $net_cost;
+                        }
+                        if ($weekday) {
+                            $items[$daily_cost]['weekday_quantity']++;
+                        }
+                    }
+                    // we dont deal with records at all, where there was no order
+                } else {
+                    // no match in the catering cost tables, now what?
+                }
             }
         }
 
-        foreach ($orders as $order) {
-            $date = $order->getDate()->format('Y-m-d');
-            // is it a weekday or weekend
-            $weekday = $order->getDate()->format('N') < 6;
-            // get the actual catering costs table
-            // this runs a query for every day. Maybe not necessary...
-            $table = $this->ds->getOption('cateringcosts', $date);
-            // check the cost for the day
-            $daily_cost = $this->getCostForADay($catering, $table);
+        return $items;
+    }
 
-            if (!is_null($daily_cost)) {
-                // this is a gross cost, so we must reduce it to net
-                $net_cost = number_format($daily_cost / (1 + $vat), 4);
+    /**
+     * Calculates the costs and discounts for the client for the homehelp closing
+     *
+     * @param Client $client
+     * @param array $days (date => hours)
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @return array
+     */
+    private function calculateHomehelpItems(Client $client, array $days, \DateTime $start, \DateTime $end)
+    {
+        $sum = 0;
+        $items = [];
 
-                // check if he has discount for this day
-                $discount_is_active = $catering->discountIsActive($order->getDate());
+        if (!empty($days)) {
+            $discount_ratio = 0;
+            $vat = $this->ds->getVat();
+            $homehelp = $client->getHomehelp();
 
-                // if he has ordered for this day
-                if ($order->getOrder()) {
+            // check discount (50% - 100%)
+            if (!empty($homehelp->getDiscount())) {
+                $discount = $homehelp->getDiscount();
+                if (is_numeric($discount) && $discount >= 0 && $discount <= 100) {
+                    $discount_ratio = $discount / 100;
+                }
+            }
+
+            // we neet to iterate through the days in case the daily cost would change in-between
+            foreach ($days as $date => $hours) {
+                $d = (new \DateTime($date))->setTime(0, 0, 0);
+                // is it a weekday or weekend
+                $weekday = $d->format('N') < 6;
+                // get the actual homehelp costs table
+                // this runs a query for every day. Maybe not necessary...
+                $table = $this->ds->getOption('homehelpcosts', $date);
+                // check the cost for the day
+                $daily_cost = $this->getCostForADay($homehelp, $table);
+
+                if (!is_null($daily_cost) && !empty($hours) && is_numeric($hours)) {
+                    // this is a gross cost, so we must reduce it to net
+                    $net_cost = number_format($daily_cost / (1 + $vat), 4, '.', '');
+
+                    // check if he has discount for this day
+                    $discount_is_active = $homehelp->discountIsActive($d);
 
                     // add the discount item to every day when order is set
-                    if ($discount_is_active && !$order->getCancel()) {
+                    if ($discount_is_active) {
                         // discount is 1 item with 50% or 100% unit price and total amount are the same
-                        $discount_net = -1 * $net_cost * $discount_ratio;
-                        $discount_gross = -1 * $daily_cost * $discount_ratio;
+                        $discount_net = -1 * $net_cost * $discount_ratio * $hours;
+                        $discount_gross = -1 * $daily_cost * $discount_ratio * $hours;
 
                         if (!isset($items['discount'])) {
                             $items['discount'] = [
-                                'name' => sprintf('%s mérséklés', $discount . '%'),
-                                'quantity' => 1,
-                                'unit'  => 'db',
-                                'net_price' => $discount_net,
+                                'name'       => sprintf('%s mérséklés', $discount . '%'),
+                                'quantity'   => 1,
+                                'unit'       => 'db',
+                                'net_price'  => $discount_net,
                                 'unit_price' => $discount_gross,
-                                'value' => $discount_gross,
-                                'net_value' => $discount_net,
+                                'value'      => $discount_gross,
+                                'net_value'  => $discount_net,
                             ];
-                        }
-                        else {
+                        } else {
                             $items['discount']['value'] += $discount_gross;
                             $items['discount']['unit_price'] += $discount_gross;
                             $items['discount']['net_value'] += $discount_net;
                             $items['discount']['net_price'] += $discount_net;
                         }
+                        $sum += $discount_gross;
                     }
 
-                    if ($order->getCancel()) {
-                        // if ordered but later cancelled, we add it only to the discounts
-                        $daily_cost *= -1;
-                        $net_cost *= -1;
-                        // if cancelled and he had a discount for this day, we only add the real amount he actually payed before
-                        if ($discount_is_active) {
-                            $daily_cost = $daily_cost - ($daily_cost * $discount_ratio);
-                            $net_cost = $net_cost - ($net_cost * $discount_ratio);
-                        }
-                    }
                     if (!isset($items[$daily_cost])) {
                         $items[$daily_cost] = [
-                            'name' => $order->getCancel() ? 'Jóváírás' : 'Ebéd rendelés',
-                            'quantity' => 1,
-                            'net_price' => $net_cost,
-                            'unit_price' => $daily_cost,
-                            'value' => $daily_cost,
-                            'net_value' => $net_cost,
+                            'name'             => 'Gondozás',
+                            'unit'             => 'óra',
+                            'quantity'         => $hours,
+                            'net_price'        => $net_cost,
+                            'unit_price'       => $daily_cost,
+                            'value'            => $daily_cost * $hours,
+                            'net_value'        => $net_cost * $hours,
                             'weekday_quantity' => 0,
+                            'visits'           => 0,
                         ];
+                    } else {
+                        $items[$daily_cost]['quantity'] += $hours;
+                        $items[$daily_cost]['value'] += $daily_cost * $hours;
+                        $items[$daily_cost]['net_value'] += $net_cost * $hours;
                     }
-                    else {
-                        $items[$daily_cost]['quantity']++;
-                        $items[$daily_cost]['value'] += $daily_cost;
-                        $items[$daily_cost]['net_value'] += $net_cost;
-                    }
+                    $sum += $daily_cost * $hours;
                     if ($weekday) {
                         $items[$daily_cost]['weekday_quantity']++;
                     }
                 }
-                // we dont deal with records at all, where there was no order
+                // add the visits
+                if (!is_null($daily_cost) && !empty($hours)) {
+                    $items[$daily_cost]['visits']++;
+                }
             }
-            else {
-                // no match in the catering cost tables, now what?
+
+            // if we have an amount lets check the global limit with the catering costs of this month
+            if ($sum) {
+                // homehelp-only clients' invoice can not exceed 25% of the income
+                // catering + homehelp clients combined invoices can not exceed 30% of the income
+                $income = $homehelp->getIncome();
+                $hh_discount = 0;
+                $ca_discount = 0;
+
+                // check the homehelp-only limit
+                if ($sum > $income * 0.25) {
+                    $hh_discount = ceil($income * 0.25) - $sum;
+                }
+
+                // check if this client has catering
+                $catering = $client->getCatering();
+                if (!empty($catering)) {
+                    // find the catering invoices for this month
+                    $invoices = $this->getClientInvoices($client->getId(), $start, $end, [Invoice::MONTHLY, Invoice::DAILY]);
+                    if (!empty($invoices)) {
+                        $cat_sum = $sum;
+                        foreach ($invoices as $invoice) {
+                            if ($invoice->getStatus() != Invoice::CANCELLED && $invoice->getAmount() > 0) {
+                                $cat_sum += $invoice->getAmount();
+                            }
+                        }
+                        // check the limit
+                        if ($cat_sum > $income * 0.3) {
+                            $ca_discount = ceil($income * 0.3) - $cat_sum;
+                        }
+                    }
+                }
+
+                if ($hh_discount || $ca_discount) {
+                    // use the bigger discount (these are negative numbers!)
+                    $final_discount = $hh_discount < $ca_discount ? $hh_discount : $ca_discount;
+                    $final_net_discount = number_format($final_discount / (1 + $vat), 4, '.', '');
+
+                    // add the discount item
+                    $items['discount2'] = [
+                        'name'       => sprintf('Törvényi mérséklés'),
+                        'quantity'   => 1,
+                        'unit'       => 'db',
+                        'net_price'  => $final_net_discount,
+                        'unit_price' => $final_discount,
+                        'value'      => $final_discount,
+                        'net_value'  => $final_net_discount,
+                    ];
+                }
             }
         }
 
@@ -285,19 +452,27 @@ class InvoiceService
     /**
      * Get the catering cost for one day
      *
-     * @param \JCSGYK\AdminBundle\Entity\Catering $catering record of the client
+     * @param $in Catering or Homehelp record
      * @param array $table CateringCost table (0: from, 1: to, 2: cost, 3: is single)
      * @return int or null on failure
      */
-    public function getCostForADay(Catering $catering, $table)
+    public function getCostForADay($in, $table)
     {
-        $income = $catering->getIncome();
-        $is_single = $catering->getIsSingle();
+        if ($in instanceof Catering) {
+            $income = $in->getIncome();
+            $is_single = $in->getIsSingle();
+        }
+        elseif ($in instanceof HomeHelp) {
+            $income = $in->getIncome();
+            $is_single = false;
+        }
 
-        // walk through the table and find the correct salary range
-        foreach ($table as $range) {
-            if ($range[0] <= $income && $range[1] >= $income && (empty($range[3]) || $is_single)) {
-                return $range[2];
+        if (isset($income)) {
+            // walk through the table and find the correct salary range
+            foreach ($table as $range) {
+                if ($range[0] <= $income && $range[1] >= $income && (empty($range[3]) || $is_single)) {
+                    return $range[2];
+                }
             }
         }
 
@@ -307,7 +482,8 @@ class InvoiceService
     /**
      * Save a list of days to ClientOrder
      * @param \JCSGYK\AdminBundle\Entity\Client $client
-     * @param array $days
+     * @param $start_date
+     * @param $end_date
      */
     public function saveDays(Client $client, $start_date, $end_date)
     {
@@ -370,8 +546,6 @@ class InvoiceService
     /**
      * Returns the invoices of the company
      * @param int $company_id
-     * @param int $limit
-     * @param int $offset
      * @param int $status
      * @return array of JCSGYK\AdminBundle\Entity\Invoice
      */
@@ -385,24 +559,48 @@ class InvoiceService
     }
 
     /**
-     * Update client balance
-     * @param \JCSGYK\AdminBundle\Entity\Catering $catering
+     * Returns the invoices of the company
+     * @param int $client_id
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param array $types
+     * @return array of JCSGYK\AdminBundle\Entity\Invoice
      */
-    public function updateBalance(Catering $catering)
+    public function getClientInvoices($client_id, \DateTime $start, \DateTime $end, array $types)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        return $em->createQuery("SELECT i FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client_id AND i.endDate >= :start AND i.endDate <= :end AND i.invoicetype IN (:types)")
+            ->setParameter('client_id', $client_id)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('types', $types)
+            ->getResult();
+    }
+
+    /**
+     * Update client balance
+     * @param Catering|Homehelp $source
+     * @return int
+     */
+    public function updateBalance($source)
     {
         $balance = 0;
 
+        // the invoice type depends on the input entity
+        $types = $source instanceof Catering ? [Invoice::MONTHLY, Invoice::DAILY] : [Invoice::HOMEHELP];
+
         $em = $this->container->get('doctrine')->getManager();
         // calculate the balance of the open invoices
-        $res = $em->createQuery("SELECT SUM(i.amount - i.balance) as balance FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client AND i.status = :status")
-            ->setParameter('client', $catering->getClient())
+        $res = $em->createQuery("SELECT SUM(i.amount - i.balance) as balance FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client AND i.status = :status AND i.invoicetype IN (:types)")
+            ->setParameter('client', $source->getClient())
             ->setParameter('status', Invoice::OPEN)
+            ->setParameter('types', $types)
             ->getSingleResult();
 
         if (isset($res['balance'])) {
             $balance = $res['balance'];
         }
-        $catering->setBalance($res['balance']);
+        $source->setBalance($res['balance']);
         $em->flush();
 
         return $balance;
@@ -411,14 +609,24 @@ class InvoiceService
 
     /**
      * Update client balances
-     * @param \JCSGYK\AdminBundle\Entity\Catering $catering
+     * @param $closing_type
      */
-    public function bulkUpdateBalance()
+    public function bulkUpdateBalance($closing_type)
     {
         $em = $this->container->get('doctrine')->getManager();
+
+        if (MonthlyClosing::HOMEHELP == $closing_type) {
+            $types = [Invoice::HOMEHELP];
+            $dql = "UPDATE JCSGYKAdminBundle:Homehelp h SET h.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = h.client AND i.status = :status AND i.invoicetype IN (:types))";
+        } else {
+            $types = [Invoice::MONTHLY, Invoice::DAILY];
+            $dql = "UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status = :status AND i.invoicetype IN (:types))";
+        }
+
         // calculate the balance of the open invoices
-        $em->createQuery("UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status = :status)")
+        $em->createQuery($dql)
             ->setParameter('status', Invoice::OPEN)
+            ->setParameter('types', $types)
             ->execute();
         $em->flush();
     }
@@ -468,7 +676,7 @@ class InvoiceService
         $data = [];
         // find all the invoices and clients of the given month
         $sql = "SELECT i, c, a FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
-                . "WHERE i.companyId = :company_id AND i.endDate >= :month_start AND i.endDate <= :month_end ";
+                . "WHERE i.companyId = :company_id AND i.endDate >= :month_start AND i.endDate <= :month_end AND i.invoicetype IN (:types)";
         if (!empty($club)) {
             $sql .= "AND a.club = :club ";
         }
@@ -482,7 +690,9 @@ class InvoiceService
         $q = $em->createQuery($sql)
             ->setParameter('company_id', $company_id)
             ->setParameter('month_start', $month_start)
-            ->setParameter('month_end', $month_end);
+            ->setParameter('month_end', $month_end)
+            ->setParameter('types', [Invoice::MONTHLY, Invoice::DAILY])
+        ;
         if (!empty($club)) {
             $q->setParameter('club', $club);
         }
@@ -624,17 +834,19 @@ class InvoiceService
         $items = $this->cancelItems($invoice->getItems());
 
         // create a new, negative invoice
-        $new_inv = new Invoice();
-        $new_inv->setCompanyId($invoice->getCompanyId());
-        $new_inv->setClient($invoice->getClient());
-        $new_inv->setStartDate($invoice->getStartDate());
-        $new_inv->setEndDate($invoice->getEndDate());
-        $new_inv->setCancelId($invoice->getId());
-        $new_inv->setItems($items);
-        $new_inv->setAmount(-1 * $invoice->getAmount());
-        $new_inv->setStatus(Invoice::READY_TO_SEND);
-        $new_inv->setCreator($user);
-        $new_inv->setCreatedAt(new \DateTime());
+        $new_inv = (new Invoice())
+            ->setCompanyId($invoice->getCompanyId())
+            ->setClient($invoice->getClient())
+            ->setStartDate($invoice->getStartDate())
+            ->setEndDate($invoice->getEndDate())
+            ->setCancelId($invoice->getId())
+            ->setItems($items)
+            ->setAmount(-1 * $invoice->getAmount())
+            ->setStatus(Invoice::READY_TO_SEND)
+            ->setCreator($user)
+            ->setCreatedAt(new \DateTime())
+            ->setInvoicetype($invoice->getInvoicetype())
+        ;
 
         $em->persist($new_inv);
 
@@ -662,5 +874,102 @@ class InvoiceService
 
         return json_encode($items);
     }
+
+    /**
+     * @param Client $client
+     * @param \DateTime $start_date
+     * @param \DateTime $end_date
+     * @return array
+     */
+    private function getCateringOrders(Client $client, \DateTime $start_date, \DateTime $end_date)
+    {
+        // save new order days in clientOrder
+        $this->saveDays($client, $start_date, $end_date);
+
+        // get all open orders for the given month and before
+        $orders = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->getOrders($client->getId(), $end_date);
+        $days = $this->getOrderDays($orders);
+
+        return array($orders, $days);
+    }
+
+    /**
+     * Get the days for the homehelp invoices
+     * @param Client $client
+     * @param \DateTime $start_date
+     * @param \DateTime $end_date
+     * @return array
+     */
+    private function getHomeHelpDays(Client $client, \DateTime $start_date, \DateTime $end_date)
+    {
+        $days = [];
+
+        $client_id = $client->getId();
+        // get the open HomehelpMonth records for this client
+        $hm_clients = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:Homehelp')->getClientMonths($client_id, $start_date, $end_date, 0);
+
+        if (!empty($hm_clients)) {
+            foreach ($hm_clients as $hm_client) {
+                $hh_month = $hm_client->getHomehelpMonth();
+
+                $month = $hh_month->getDate()->format('Y-m-');
+                $day_count = (int) $hh_month->getDate()->format('t');
+
+                $row = $this->getClientRow($hh_month, $client_id);
+                if (!empty($row)) {
+                    // $row[0] is the client id
+                    // last 2 elements in the row are summary fields
+                    foreach ($row as $day => $hours) {
+                        if ($day > 0 && $day <= $day_count) {
+                            if (!empty($hours)) {
+                                $date = (new \DateTime($month . $day))->format('Y-m-d');
+
+                                // add to the days array
+                                if (empty($days[$date])) {
+                                    $days[$date] = 0;
+                                }
+                                if (is_numeric($hours)) {
+                                    $days[$date] += $hours;
+                                } else {
+                                    $days[$date] = $hours;
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            // sort the arrays
+            if (!empty($days)) {
+                ksort($days);
+            }
+        }
+
+        return [$days, $hm_clients];
+    }
+
+    /**
+     * Find the client row in the homehelp table
+     * @param HomehelpMonth $hh_month
+     * @param $client_id
+     * @return array $row or null on failure
+     */
+    private function getClientRow(HomehelpMonth $hh_month, $client_id)
+    {
+        $row = null;
+        $table_data = $hh_month->getData();
+        if (!empty($table_data) && is_array($table_data)) {
+            foreach ($table_data as $r) {
+                if (!empty($r[0]) && $r[0] == $client_id) {
+                    $row = $r;
+                    break;
+                }
+            }
+        }
+
+        return $row;
+    }
+
+
 
 }

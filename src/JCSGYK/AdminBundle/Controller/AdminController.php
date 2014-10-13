@@ -8,11 +8,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Cocur\BackgroundProcess\BackgroundProcess;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use JCSGYK\AdminBundle\Entity\User;
 use JCSGYK\AdminBundle\Entity\Parameter;
 use JCSGYK\AdminBundle\Form\Type\UserType;
-use JCSGYK\AdminBundle\Entity\Template;
+use JCSGYK\AdminBundle\Entity\Template as DocTemplate;
 use JCSGYK\AdminBundle\Form\Type\TemplateType;
 use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
@@ -24,6 +30,7 @@ use JCSGYK\AdminBundle\Entity\Paramgroup;
 use JCSGYK\AdminBundle\Entity\Option;
 use JCSGYK\AdminBundle\Form\Type\OptionType;
 use JCSGYK\AdminBundle\Entity\MonthlyClosing;
+use JCSGYK\AdminBundle\Entity\HomehelpMonth;
 
 class AdminController extends Controller
 {
@@ -32,11 +39,11 @@ class AdminController extends Controller
     */
     public function indexAction()
     {
-        $co = $this->container->get('jcs.ds')->getCompany();
+//        $co = $this->container->get('jcs.ds')->getCompany();
 
-        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
-            $this->get('logger')->info('ROLE_ADMIN');
-        }
+//        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
+//            $this->get('logger')->info('ROLE_ADMIN');
+//        }
 
         return $this->render('JCSGYKAdminBundle:Admin:index.html.twig', []);
     }
@@ -48,11 +55,12 @@ class AdminController extends Controller
      * Edit user with /admin/users/:id
      *
      * @Secure(roles="ROLE_ADMIN")
+     * @param Request $request
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function usersAction($id)
+    public function usersAction(Request $request, $id)
     {
-        $request = $this->getRequest();
-
         $user = null;
         $um = $this->get('fos_user.user_manager');
         $em = $this->getDoctrine()->getManager();
@@ -202,11 +210,12 @@ class AdminController extends Controller
      * Lists the paramgroups
      *
      * @Secure(roles="ROLE_SUPER_ADMIN")
+     * @param Request $request
+     * @param $type
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function paramgroupsAction($type)
+    public function paramgroupsAction(Request $request, $type)
     {
-        $request = $this->getRequest();
-
         $em = $this->getDoctrine()->getManager();
         $ds = $this->container->get('jcs.ds');
         $co = $ds->getCompanyId();
@@ -281,12 +290,13 @@ class AdminController extends Controller
      *
      * @Secure(roles="ROLE_ADMIN")
      *
+     * @param Request $request
      * @param mixed $group selected paramgroup id
      * @param bool $sys system or normal parameters?
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function paramsAction($group, $sys = false)
+    public function paramsAction(Request $request, $group, $sys = false)
     {
-        $request = $this->getRequest();
         $route = $sys ? 'admin_systemparams' : 'admin_params';
 
         $em = $this->getDoctrine()->getManager();
@@ -366,10 +376,11 @@ class AdminController extends Controller
      * Edit the company parameters
      *
      * @Secure(roles="ROLE_SUPER_ADMIN")
+     * @param Request $request
+     * @param null $id
      */
-    public function companiesAction($id = null)
+    public function companiesAction(Request $request, $id = null)
     {
-        $request = $this->getRequest();
         $company = null;
         $form_view = null;
 
@@ -470,10 +481,11 @@ class AdminController extends Controller
      * Edit the clubs parameters
      *
      * @Secure(roles="ROLE_ADMIN")
+     * @param Request $request
+     * @param null $id
      */
-    public function clubsAction($id = null)
+    public function clubsAction(Request $request, $id = null)
     {
-        $request = $this->getRequest();
         $club = null;
         $form_view = null;
 
@@ -539,9 +551,13 @@ class AdminController extends Controller
         }
     }
 
-    public function closingsAction($id = null)
+    /**
+     * @param Request $request
+     * @param null $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function closingsAction(Request $request, $id = null)
     {
-        $request = $this->getRequest();
         $closing = null;
         $form_view = null;
         $auto_refresh = false;
@@ -553,6 +569,7 @@ class AdminController extends Controller
         $user = $ds->getUser();
 
         if (!is_null($id)) {
+            /** @var MonthlyClosing $closing */
             $closing = $em->getRepository('JCSGYKAdminBundle:MonthlyClosing')->findBy(['id' => $id, 'companyId' => $company_id]);
             if (!empty($closing[0])) {
                 $closing = $closing[0];
@@ -560,7 +577,8 @@ class AdminController extends Controller
 
             if (!empty($closing->getFiles()) && $request->query->get('download')) {
                 // send the zip file to download
-                $fn = 'etkeztetes_import_' . $closing->getCreatedAt()->format('Ymd') . '.zip';
+                $title = MonthlyClosing::HOMEHELP == $closing->getClosingtype() ? 'gondozas' : 'etkeztetes';
+                $fn = $title . '_import_' . $closing->getCreatedAt()->format('Ymd') . '.zip';
 
                 return $this->sendDownloadResponse($fn, stream_get_contents($closing->getFiles()), 'application/zip');
             }
@@ -629,9 +647,13 @@ class AdminController extends Controller
         ]);
     }
 
-    public function dailyordersAction($id = null)
+    /**
+     * @param Request $request
+     * @param null $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function dailyordersAction(Request $request, $id = null)
     {
-        $request = $this->getRequest();
         $order = null;
         $form_view = null;
         $auto_refresh = false;
@@ -714,36 +736,60 @@ class AdminController extends Controller
      * System update action
      *
      * @Secure(roles="ROLE_SUPER_ADMIN")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function updateAction()
+    public function updateAction(Request $request)
     {
-        $request = $this->getRequest();
-
         $ex = [];
         $re = [];
         $session = $this->get('session');
 
-        if ($request->isMethod('POST') && $request->get('update')) {
-            // git pull
-            $ex[] = "git pull https://github.com/mbence/csaladsegito.git master";
-            // clear cache
-            $ex[] = "php app/console cache:clear --env=prod --no-debug";
-            // assetic dump
-            //$ex[] = "php app/console assetic:dump --env=prod --no-debug";
-            // asset install
-            //$ex[] = "php app/console assets:install";
+        if ($request->isMethod('POST')) {
 
-            // switch to symfony root dir
-            chdir($this->get('kernel')->getRootDir() . '/..');
+            $php = $this->container->getParameter('php_path', '/usr/bin/php');
+            $app_root = $this->get('kernel')->getRootDir() . '/..';
 
-            foreach ($ex as $com) {
-                $output = '';
-                $return_val = '';
-                exec($com . ' 2>&1', $output, $return_val);
-                $re [] = ['ex' => $com, 'return_val' => $return_val, 'output' => implode($output, '<br>')];
+            if ($request->get('update')) {
+                $kernel = $this->container->get('kernel');
+                $console = sprintf('%s %s/console ', $php, $kernel->getRootDir());
+
+                // git pull
+                $ex[] = 'git pull https://github.com/mbence/csaladsegito.git master';
+                if (!empty($request->get('migrate'))) {
+                    // migrations
+                    $ex[] = $console . 'doctrine:migrations:migrate --no-interaction';
+                }
+                // clear cache
+                $ex[] = $console . 'cache:clear --env=prod --no-debug';
+                // assetic dump
+                //$ex[] = $console . 'assetic:dump --env=prod --no-debug';
+                // asset install
+                //$ex[] = $console . 'assets:install';
             }
+            /*
+            elseif ($request->get('composer')) {
+                putenv("COMPOSER_HOME={$app_root}");
+                // run composer selfupdate and update
+                $ex[] = $php . ' composer.phar selfupdate';
+                // run composer selfupdate and update
+                $ex[] = $php . ' composer.phar update';
+            }
+             */
 
-            $session->set('update', $re);
+            if (!empty($ex)) {
+                // switch to symfony root dir
+                chdir($app_root);
+
+                foreach ($ex as $com) {
+                    $output = '';
+                    $return_val = '';
+                    exec($com . ' 2>&1', $output, $return_val);
+                    $re [] = ['ex' => $com, 'return_val' => $return_val, 'output' => implode($output, '<br>')];
+                }
+
+                $session->set('update', $re);
+            }
 
             return $this->redirect($this->generateUrl('admin_update'));
         }
@@ -752,26 +798,27 @@ class AdminController extends Controller
             $re = $session->get('update');
             $session->remove('update');
         }
+
         return $this->render('JCSGYKAdminBundle:Admin:update.html.twig', ['result' => $re]);
     }
 
 
     /**
      * Edit and upload document templates
+     * @param Request $request
+     * @param null $id
      */
-    public function templatesAction($id = null)
+    public function templatesAction(Request $request, $id = null)
     {
         $template = null;
         $form_view = null;
-
-        $request = $this->getRequest();
 
         $em = $this->getDoctrine()->getManager();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
 
         if ('new' == $id) {
             // new template
-            $template = new Template;
+            $template = new DocTemplate;
             $template->setCompanyId($company_id);
         }
         elseif (!is_null($id)) {
@@ -859,14 +906,13 @@ class AdminController extends Controller
     /**
      * Utilityproviders
      *
+     * @param Request $request
      * @param int $id
      */
-    public function providersAction($id = null)
+    public function providersAction(Request $request, $id = null)
     {
         $provider = null;
         $form_view = null;
-
-        $request = $this->getRequest();
 
         $em = $this->getDoctrine()->getManager();
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
@@ -924,10 +970,13 @@ class AdminController extends Controller
      * Options table
      *
      * @Secure(roles="ROLE_ADMIN")
+     * @param Request $request
+     * @param $name
+     * @param null $id
      */
-    public function optionsAction($name, $id = null)
+    public function optionsAction(Request $request, $name, $id = null)
     {
-        $option_types = ['cateringcosts','holidays'];
+        $option_types = ['cateringcosts', 'holidays', 'homehelpcosts'];
         $options_default_value = [
             'cateringcosts' => [
                 'valid_from' => '',
@@ -954,6 +1003,34 @@ class AdminController extends Controller
                         [
                             'type'     => 'checkbox'
                         ]
+                    ]
+                ]
+            ],
+            'homehelpcosts' => [
+                'valid_from' => '',
+                'data' => [[null,null,null,null]],
+                'format' => [
+                    'colWidths' => [100,100,100,100],
+                    'colHeaders' => ['-tól', '-ig', 'díj', 'egyedülálló'],
+                    'columns' => [
+                        [
+                            'type'     => 'numeric',
+                            'format'   => '0 0[,]00 $',
+                            'language' => 'hu'
+                        ],
+                        [
+                            'type'     => 'numeric',
+                            'format'   => '0 0[,]00 $',
+                            'language' => 'hu'
+                        ],
+                        [
+                            'type'     => 'numeric',
+                            'format'   => '0 0[,]00 $',
+                            'language' => 'hu'
+                        ],
+//                        [
+//                            'type'     => 'checkbox'
+//                        ]
                     ]
                 ]
             ],
@@ -985,7 +1062,6 @@ class AdminController extends Controller
             exit();
         }
 
-        $request   = $this->getRequest();
         $option    = null;
         $form_view = null;
         $em        = $this->getDoctrine()->getManager();
@@ -1142,10 +1218,13 @@ class AdminController extends Controller
         }
     }
 
-    public function recommendedFieldsAction($tab = 0)
+    /**
+     * @param Request $request
+     * @param int $tab
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function recommendedFieldsAction(Request $request, $tab = 0)
     {
-        $request = $this->getRequest();
-
         $em = $this->getDoctrine()->getManager();
         $ds = $this->container->get('jcs.ds');
         $co = $ds->getCompanyId();

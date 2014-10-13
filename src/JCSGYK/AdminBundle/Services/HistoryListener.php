@@ -95,10 +95,10 @@ class HistoryListener
     }
 */
     /**
-     * Removes unchanged or ignore fields from the changeset
+     * Removes unchanged or ignored fields from the changeset
      *
+     * @param $entity
      * @param array $changeset
-     * @param array $fields
      * @return array
      */
     private function filterChanges($entity, $changeset)
@@ -117,6 +117,9 @@ class HistoryListener
                         && $versions[0] != $versions[1]) {
 
                     $re[$field] = $this->convert($versions);
+                }
+                if ('password' == $field) {
+                    $re[$field] = ['', '***'];
                 }
             }
         }
@@ -155,6 +158,9 @@ class HistoryListener
                 elseif (method_exists($ver, 'getId')) {
                     $re[$k] = $ver->getId();
                 }
+            }
+            elseif (is_array($ver)) {
+                $re[$k] = json_encode($ver);
             }
             else {
 

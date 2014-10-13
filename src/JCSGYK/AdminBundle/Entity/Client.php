@@ -442,6 +442,10 @@ class Client
      */
     private $invoices;
 
+    /**
+     * @ORM\OneToOne(targetEntity="HomeHelp", mappedBy="client", fetch="EXTRA_LAZY")
+     */
+    private $homehelp;
 
     public function __construct()
     {
@@ -454,7 +458,6 @@ class Client
         $this->setCreatedAt(new \DateTime());
         $this->setModifiedAt(new \DateTime());
     }
-
 
     /**
      * Get the list of fields for change tracking
@@ -1773,6 +1776,7 @@ class Client
      * - USERS who have a problem with the client, can also edit
      *
      * @param SecurityContext $sec
+     * @return bool
      */
     public function canEdit(SecurityContext $sec)
     {
@@ -2091,5 +2095,29 @@ class Client
     public function getInvoices()
     {
         return $this->invoices;
+    }
+
+    /**
+     * Set homehelp
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Homehelp $homehelp
+     *
+     * @return Client
+     */
+    public function setHomehelp(\JCSGYK\AdminBundle\Entity\Homehelp $homehelp = null)
+    {
+        $this->homehelp = $homehelp;
+
+        return $this;
+    }
+
+    /**
+     * Get homehelp
+     *
+     * @return \JCSGYK\AdminBundle\Entity\Homehelp
+     */
+    public function getHomehelp()
+    {
+        return $this->homehelp;
     }
 }

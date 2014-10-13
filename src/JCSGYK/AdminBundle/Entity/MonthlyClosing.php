@@ -13,9 +13,14 @@ use Doctrine\ORM\Mapping as ORM;
 class MonthlyClosing
 {
     /** Status constants */
-    const RUNNING  = 1;
+    const RUNNING   = 1;
     const SUCCESS   = 2;
     const ERROR     = -1;
+
+    /** Closing Types */
+    const MONTHLY  = 1;
+    const DAILY    = 2;
+    const HOMEHELP = 3;
 
     /**
      * @var integer
@@ -80,6 +85,13 @@ class MonthlyClosing
      * @ORM\Column(name="files", type="blob", nullable=true)
      */
     private $files;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="closingtype", type="integer", nullable=true)
+     */
+    private $closingtype;
 
 
     public function __construct()
@@ -287,5 +299,29 @@ class MonthlyClosing
     public function getFiles()
     {
         return $this->files;
+    }
+
+    /**
+     * Set closingtype
+     *
+     * @param integer $closingtype
+     *
+     * @return MonthlyClosing
+     */
+    public function setClosingtype($closingtype)
+    {
+        $this->closingtype = $closingtype;
+
+        return $this;
+    }
+
+    /**
+     * Get closingtype
+     *
+     * @return integer
+     */
+    public function getClosingtype()
+    {
+        return $this->closingtype;
     }
 }

@@ -1,0 +1,90 @@
+{# Home Help Fileds #}
+<div class="client-sub togglable">{{ 'gondozás'|trans }}</div>
+<div class="toppad">
+    {% render(controller('JCSGYKAdminBundle:Menu:homehelp', { 'client': client })) %}
+    <div class="clear"></div>
+    {% if homehelp and not homehelp.isActive %}
+        <div class="catering-inactive">
+            Szüneteltetve
+        </div>
+    {% endif %}
+    {% if homehelp is defined and homehelp %}
+    <div>
+        <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Klub'|trans }}:</th>
+                <td colspan="3">{% if homehelp.club %}{{ homehelp.club.name }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Gondozó'|trans }}:</th>
+                <td colspan="3">{{ param(homehelp.socialWorker) }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Jövedelem'|trans }}:</th>
+                <td colspan="3">{{ homehelp.income|fcurr }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Megállapodás'|trans }}:</th>
+                <td colspan="3">
+                    {% if homehelp.agreementFrom %}
+                        {{ homehelp.agreementFrom|fdate }}
+                    {% endif %}
+                    {% if homehelp.agreementTo %}
+                        - {{ homehelp.agreementTo|fdate }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% if homehelp.discountIsActive %}
+            <tr>
+                <th>{{ 'Mérséklés'|trans }}:</th>
+                <td colspan="3">
+                    {{ homehelp.discount }}%
+                    {% if homehelp.discountFrom and homehelp.discountTo %}
+                        ({{ homehelp.discountFrom|fdate }} - {{ homehelp.discountTo|fdate }})
+                    {% endif %}
+                </td>
+            </tr>
+            {% endif %}
+            {% if homehelp.services %}
+            <tr>
+                <th>{{ 'Szolgáltatások'|trans }}:</th>
+                <td colspan="3">{{ homehelp.services|a2l }}</td>
+            </tr>
+            {% endif %}
+            {% if homehelp.warningSystem %}
+            <tr>
+                <th>{{ 'Jelzőrendszer'|trans }}:</th>
+                <td colspan="3">{{ homehelp.warningSystem|check }}</td>
+            </tr>
+            {% endif %}
+            {% if homehelp.inpatient %}
+            <tr>
+                <th>{{ 'Fekvőbeteg'|trans }}:</th>
+                <td colspan="3">{{ homehelp.inpatient|check }}</td>
+            </tr>
+            {% endif %}
+            {% if homehelp.handicap %}
+            <tr>
+                <th>{{ 'Fogyaték'|trans }}:</th>
+                <td colspan="3">{{ homehelp.handicap|a2l }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>{{ 'ORSZI óra'|trans }}:</th>
+                <td colspan="3">{{ homehelp.hours }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Egyenleg'|trans }}:</th>
+                <td colspan="3">
+                    {% if homehelp.balance > 0 %}
+                        <span style="color:red;">{{ homehelp.balance|fcurr }} tartozás</span>
+                    {% endif %}
+                    {% if homehelp.balance < 0 %}
+                        <span>{{ homehelp.balance|fcurr }} jóváírás</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+</div>
