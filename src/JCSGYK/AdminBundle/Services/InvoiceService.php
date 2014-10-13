@@ -82,19 +82,20 @@ class InvoiceService
             $sum = round($sum);
 
             // create the new invoice
-            $invoice = new Invoice();
-            $invoice->setCompanyId($client->getCompanyId());
-            $invoice->setClient($client);
-            $invoice->setStartDate($start_date);
-            $invoice->setEndDate($end_date);
-            $invoice->setItems(json_encode($items));
-            $invoice->setDays(json_encode($days));
-            $invoice->setBalance(0);
-            $invoice->setStatus(Invoice::READY_TO_SEND);
-            $invoice->setAmount($sum);
-            $invoice->setCreatedAt(new \DateTime());
-            $invoice->setCreator($user);
-            $invoice->setInvoicetype($closing_type);
+            $invoice = (new Invoice())
+                ->setCompanyId($client->getCompanyId())
+                ->setClient($client)
+                ->setStartDate($start_date)
+                ->setEndDate($end_date)
+                ->setItems(json_encode($items))
+                ->setDays(json_encode($days))
+                ->setBalance(0)
+                ->setStatus(Invoice::READY_TO_SEND)
+                ->setAmount($sum)
+                ->setCreatedAt(new \DateTime())
+                ->setCreator($user)
+                ->setInvoicetype($closing_type)
+            ;
 
             // save the new invoice
             $em->persist($invoice);
@@ -833,17 +834,19 @@ class InvoiceService
         $items = $this->cancelItems($invoice->getItems());
 
         // create a new, negative invoice
-        $new_inv = new Invoice();
-        $new_inv->setCompanyId($invoice->getCompanyId());
-        $new_inv->setClient($invoice->getClient());
-        $new_inv->setStartDate($invoice->getStartDate());
-        $new_inv->setEndDate($invoice->getEndDate());
-        $new_inv->setCancelId($invoice->getId());
-        $new_inv->setItems($items);
-        $new_inv->setAmount(-1 * $invoice->getAmount());
-        $new_inv->setStatus(Invoice::READY_TO_SEND);
-        $new_inv->setCreator($user);
-        $new_inv->setCreatedAt(new \DateTime());
+        $new_inv = (new Invoice())
+            ->setCompanyId($invoice->getCompanyId())
+            ->setClient($invoice->getClient())
+            ->setStartDate($invoice->getStartDate())
+            ->setEndDate($invoice->getEndDate())
+            ->setCancelId($invoice->getId())
+            ->setItems($items)
+            ->setAmount(-1 * $invoice->getAmount())
+            ->setStatus(Invoice::READY_TO_SEND)
+            ->setCreator($user)
+            ->setCreatedAt(new \DateTime())
+            ->setInvoicetype($invoice->getInvoicetype())
+        ;
 
         $em->persist($new_inv);
 
