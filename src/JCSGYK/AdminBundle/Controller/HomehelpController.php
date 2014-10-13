@@ -291,10 +291,10 @@ class HomehelpController extends Controller
 
         // add the months for a year before
         $months = [];
-        $m = new \DateTime('-11 months');
+        $m = new \DateTime();
         for ($i = 0; $i < 12; $i++) {
             $months[$m->format('Y-m')] = $ae->formatDate($m, 'ym');
-            $m->modify('+1 month');
+            $m->modify('-1 month');
         }
 
         // build the filter form
