@@ -26,7 +26,7 @@ class Version20141010184216 extends AbstractMigration
                 . "('', '1', 'social_workers', '43', 'Fazekas Sára', '1'), "
                 . "('', '1', 'social_workers', '44', 'Mohácsi Ilona', '1'), "
                 . "('', '1', 'social_workers', '45', 'Mellen Attiláné', '1'), "
-                . "('', '1', 'social_workers', '46', 'Hirsch Tiborné', '1');");
+                . "('', '1', 'social_workers', '46', 'Hirsch Tiborné', '1'), "
                 . "('', '1', 'social_workers', '47', 'Kerepesi Gondozóház', '1');");
 
     }
