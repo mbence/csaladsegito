@@ -25,7 +25,7 @@ class HomeHelpRepository extends EntityRepository
         $selector = $only_ids ? 'c.id': 'c, h';
 
         $result = $this->getEntityManager()
-            ->createQuery("SELECT {$selector} FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE h.socialWorker = :sw AND c.companyId = :co AND h.isActive = :active ORDER BY c.lastname, c.firstname")
+            ->createQuery("SELECT {$selector} FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE h.socialWorker = :sw AND c.companyId = :co AND c.isArchived=0 AND h.isActive = :active ORDER BY c.lastname, c.firstname")
             ->setParameter('sw', $social_worker)
             ->setParameter('co', $company_id)
             ->setParameter('active', $active)
@@ -47,7 +47,7 @@ class HomeHelpRepository extends EntityRepository
     public function getActiveClients($company_id)
     {
         return $this->getEntityManager()
-            ->createQuery("SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE c.companyId = :co AND h.isActive = 1 ORDER BY c.lastname, c.firstname")
+            ->createQuery("SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE c.companyId = :co AND h.isActive = 1 AND c.isArchived=0 ORDER BY c.lastname, c.firstname")
             ->setParameter('co', $company_id)
             ->getResult();
     }
