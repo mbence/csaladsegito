@@ -1088,7 +1088,7 @@ JcsSettings = {
       Init Handsontable jQuery based table editor
    */
   initTableEditor: function() {
-    var afterChange, data_field, options, tableData;
+    var data_field, options, tableData;
     this.registerLanguage();
     if (typeof hh_weekends !== "undefined" && hh_weekends !== null) {
       this.hhWeekends = JSON.parse(hh_weekends);
@@ -1096,17 +1096,21 @@ JcsSettings = {
     data_field = $("#options_value").length ? "#options_value" : "#form_value";
     tableData = $(data_field).val() ? JSON.parse($(data_field).val()) : {};
     options = $.extend(true, {}, this.tableDefaults, tableDefaultOptions);
-    afterChange = function(changes, source) {
-      if (changes !== null) {
-        if ((options.sums != null) && options.sums) {
-          JcsSettings.decFix(changes, source);
-          JcsSettings.sums(changes, source);
+    options.beforeChange = function(changes, source) {
+      if (changes !== null && (options.sums != null) && options.sums) {
+        changes = JcsSettings.decFix(changes, source);
+        if ($.isNumeric(changes[0][3]) && changes[0][3] < 0) {
+          return false;
         }
+        return JcsSettings.sums(changes, source);
+      }
+    };
+    options.afterChange = function(changes, source) {
+      if (changes !== null) {
         return $(data_field).val(JSON.stringify(tableData));
       }
     };
     options.data = tableData;
-    options.afterChange = afterChange;
     if ((options.cells != null) && options.cells) {
       options.cells = this.cells;
     }
@@ -1145,11 +1149,30 @@ JcsSettings = {
       Changes decimals from , to .
    */
   decFix: function(changes, source) {
-    return $("#handsontable").handsontable('getData')[changes[0][0]][changes[0][1]] = changes[0][3].replace(/\,/, '.');
+    changes[0][3] = changes[0][3].replace(/\,/, '.');
+    return changes;
   },
   sums: function(changes, source) {
-    var end_row, k, r, section_start, start_row, sum_row, table_data, total_visits, v, _i, _ref, _ref1, _ref2, _ref3;
+    var change, col, from, row, table_data, to, _i, _len, _results;
     table_data = $("#handsontable").handsontable('getData');
+    this.getColNums(table_data);
+    _results = [];
+    for (_i = 0, _len = changes.length; _i < _len; _i++) {
+      change = changes[_i];
+      row = change[0], col = change[1], from = change[2], to = change[3];
+      if (from) {
+        this.calcSums(table_data, row, col, -1 * from);
+      }
+      if (to) {
+        _results.push(this.calcSums(table_data, row, col, to));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  },
+  getColNums: function(table_data) {
+    var k, v;
     if (!this.hhSumCol) {
       this.hhSumCol = $("#handsontable").handsontable('countCols') - 1;
     }
@@ -1160,71 +1183,49 @@ JcsSettings = {
           this.hhSumRows.push(k * 1);
         }
       }
-      this.hhLastRow = k * 1;
+      return this.hhLastRow = k * 1;
     }
-    section_start = 0;
-    _ref = this.hhSumRows;
-    for (k in _ref) {
-      v = _ref[k];
-      if ((section_start <= (_ref1 = changes[0][0]) && _ref1 < v)) {
-        start_row = section_start;
-        end_row = v - 1;
-        sum_row = v;
-        break;
-      } else {
-        section_start = v + 2;
+  },
+
+  /*
+      Calculate the value of the summary cells
+   */
+  calcSums: function(table_data, row, col, value) {
+    var visit;
+    visit = 0;
+    if ($.isNumeric(value)) {
+      value = parseFloat(value);
+      if (value) {
+        visit = value > 0 ? 1 : -1;
       }
+    } else {
+      visit = value ? 1 : -1;
+      value = 0;
     }
-    if (start_row == null) {
-      start_row = section_start;
-      end_row = this.hhLastRow;
+    this.addToCell(table_data, row, this.hhSumCol, value);
+    if (row < this.hhSumRows[0]) {
+      this.addToCell(table_data, this.hhSumRows[0], col, value);
+      this.addToCell(table_data, this.hhSumRows[0], this.hhSumCol, value);
+      this.addToCell(table_data, row, this.hhSumCol + 1, visit);
+      this.addToCell(table_data, this.hhSumRows[0], this.hhSumCol + 1, visit);
     }
-    if ((sum_row != null) && (table_data[sum_row] != null)) {
-      _ref2 = table_data[sum_row];
-      for (k in _ref2) {
-        v = _ref2[k];
-        if (k > 0 && table_data[sum_row][k]) {
-          table_data[sum_row][k] = 0;
-        }
-      }
+    if (row < this.hhSumRows[1]) {
+      this.addToCell(table_data, this.hhSumRows[1], col, value);
+      return this.addToCell(table_data, this.hhSumRows[1], this.hhSumCol, value);
     }
-    total_visits = 0;
-    for (r = _i = start_row; _i <= end_row; r = _i += 1) {
-      table_data[r][this.hhSumCol] = 0;
-      table_data[r][this.hhSumCol + 1] = 0;
-      _ref3 = table_data[r];
-      for (k in _ref3) {
-        v = _ref3[k];
-        k = k * 1;
-        if (((0 < k && k < this.hhSumCol)) && v) {
-          if ($.isNumeric(v)) {
-            v = v * 1;
-            table_data[r][this.hhSumCol] += v;
-            if (sum_row != null) {
-              if (table_data[sum_row][k] == null) {
-                table_data[sum_row][k] = 0;
-              }
-              table_data[sum_row][k] += v;
-              table_data[sum_row][this.hhSumCol] += v;
-            }
-          }
-          if (r < this.hhSumRows[0]) {
-            table_data[r][this.hhSumCol + 1]++;
-          }
-        }
-      }
-      total_visits += table_data[r][this.hhSumCol + 1];
-      if (table_data[r][this.hhSumCol] === 0) {
-        table_data[r][this.hhSumCol] = "";
-      }
-      if (table_data[r][this.hhSumCol + 1] === 0) {
-        table_data[r][this.hhSumCol + 1] = "";
-      }
+  },
+
+  /*
+      Reset a cell to a numeric value, and add it
+   */
+  addToCell: function(table_data, row, col, value) {
+    if (!$.isNumeric(table_data[row][col])) {
+      table_data[row][col] = 0;
     }
-    if (sum_row != null) {
-      table_data[sum_row][this.hhSumCol + 1] = total_visits || "";
+    table_data[row][col] = parseFloat(table_data[row][col]) + value;
+    if (!table_data[row][col]) {
+      return table_data[row][col] = "";
     }
-    return $("#handsontable").handsontable('render');
   }
 };
 

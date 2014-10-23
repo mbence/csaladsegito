@@ -1,4 +1,11 @@
-## 1.4.0 (unreleased)
+## 1.4.1 (2014.10.23)
+
+Javítások:
+
+ - Csak aktív ügyfelek a házi segítségnyújtás szerkesztésekor
+ - Házi segítségnyújtás táblázat összegző sorai javítva
+
+## 1.4.0 (2014.10.13)
 
 Fejlesztések:
 
