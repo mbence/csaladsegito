@@ -311,16 +311,21 @@ JcsSettings =
         tableData = if $(data_field).val() then JSON.parse($(data_field).val()) else {}
         # merge the options
         options = $.extend(true,{},@tableDefaults,tableDefaultOptions)
+
+        # before change event only for home help
+        options.beforeChange = (changes, source) ->
+            if changes != null and options.sums? and options.sums
+                changes = JcsSettings.decFix(changes, source)
+                if $.isNumeric(changes[0][3]) and changes[0][3] < 0
+                    return false
+                JcsSettings.sums(changes, source)
+
         # after change event
-        afterChange = (changes, source) ->
+        options.afterChange = (changes, source) ->
             if changes != null
-                if options.sums? and options.sums
-                    JcsSettings.decFix(changes, source)
-                    JcsSettings.sums(changes, source)
                 $(data_field).val(JSON.stringify(tableData))
 
         options.data = tableData
-        options.afterChange = afterChange
 
         # use the cells formatting function?
         if options.cells? and options.cells
@@ -360,80 +365,76 @@ JcsSettings =
         Changes decimals from , to .
     ###
     decFix: (changes, source) ->
-        $("#handsontable").handsontable('getData')[changes[0][0]][changes[0][1]] = changes[0][3].replace /\,/, '.'
+        changes[0][3] = changes[0][3].replace /\,/, '.'
+
+        return changes
 
     sums: (changes, source) ->
         # hello
         table_data = $("#handsontable").handsontable('getData')
         # get the last sum col
+        @getColNums(table_data)
+        for change in changes
+            # expand the change array
+            [row, col, from, to] = change
+
+            if from
+                @calcSums(table_data, row, col, (-1 * from))
+            if to
+                @calcSums(table_data, row, col, to)
+
+    # find the sum col and row numbers
+    getColNums: (table_data) ->
         if !@hhSumCol
             @hhSumCol = $("#handsontable").handsontable('countCols') - 1
 
-        # get the sum rows
+        # get the sum rows (first is sum, second is the total sum)
         if !@hhSumRows.length
             for k, v of table_data
                 if v? and v[0] == 'sum'
-                    @hhSumRows.push (k * 1)
+                  @hhSumRows.push (k * 1)
             @hhLastRow = k * 1
 
-        # only update the right section
-        section_start = 0
-        for k, v of @hhSumRows
-            if section_start <= changes[0][0] < v
-                start_row = section_start
-                end_row = v - 1
-                sum_row = v
-                break
-            else
-                section_start = v + 2
-        # change is in the last section
-        if !start_row?
-            start_row = section_start
-            end_row = @hhLastRow
+    ###
+        Calculate the value of the summary cells
+    ###
+    calcSums: (table_data, row, col, value) ->
+        visit = 0
+        # fix the value and visits
+        if $.isNumeric(value)
+            value = parseFloat(value)
+            if value
+                visit = if value > 0 then 1 else -1
+        else
+            visit = if value then 1 else -1
+            value = 0
 
-        # reset the sum row
-        if sum_row? and table_data[sum_row]?
-            for k, v of table_data[sum_row] when k > 0 and table_data[sum_row][k]
-                table_data[sum_row][k] = 0
+        # all rows - add to the sum col
+        @addToCell(table_data, row, @hhSumCol, value)
 
-        # do the sums
-        total_visits = 0
-        for r in [start_row .. end_row] by 1
-            # reset the sum col
-            table_data[r][@hhSumCol] = 0
-            # reset the visits col
-            table_data[r][@hhSumCol + 1] = 0
-            # loop over the row
-            for k, v of table_data[r]
-                k = k * 1
-                # skip the first col, and check if we have a value
-                if (0 < k < @hhSumCol) and v
-                    # sum row
-                    if $.isNumeric(v)
-                        # make sure v is a number
-                        v = v * 1
-                        # sum col
-                        table_data[r][@hhSumCol] += v
-                        if sum_row?
-                            if !table_data[sum_row][k]?
-                                table_data[sum_row][k] = 0
-                            table_data[sum_row][k] += v
-                            table_data[sum_row][@hhSumCol] += v
+        # first block
+        if row < @hhSumRows[0]
+            @addToCell(table_data, @hhSumRows[0], col, value)
+            # add to the total cell
+            @addToCell(table_data, @hhSumRows[0], @hhSumCol, value)
+            # visits col
+            @addToCell(table_data, row, @hhSumCol + 1, visit)
+            @addToCell(table_data, @hhSumRows[0], @hhSumCol + 1, visit)
 
-                    # visits column only for the clients section
-                    if r < @hhSumRows[0]
-                        table_data[r][@hhSumCol + 1]++
+        # second block
+        if row < @hhSumRows[1]
+            # we must add the value to the totals
+            @addToCell(table_data, @hhSumRows[1], col, value)
+            # add to the total cell
+            @addToCell(table_data, @hhSumRows[1], @hhSumCol, value)
 
-            total_visits += table_data[r][@hhSumCol + 1]
+    ###
+        Reset a cell to a numeric value, and add it
+    ###
+    addToCell: (table_data, row, col, value) ->
+        if !$.isNumeric(table_data[row][col])
+            table_data[row][col] = 0
+        table_data[row][col] = parseFloat(table_data[row][col]) + value
 
-            # if the sum was 0, remove the cell content
-            if table_data[r][@hhSumCol] == 0
-                table_data[r][@hhSumCol] = ""
-            # if the total visits was 0, remove the cell content
-            if table_data[r][@hhSumCol + 1] == 0
-                table_data[r][@hhSumCol + 1] = ""
-
-        if sum_row?
-            table_data[sum_row][@hhSumCol + 1] = total_visits or ""
-
-        $("#handsontable").handsontable('render')
+        # remove 0
+        table_data[row][col] = "" if !table_data[row][col]

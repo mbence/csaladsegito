@@ -562,12 +562,22 @@ class HomehelpController extends Controller
      * @param array $headers
      * @param int $day_count
      * @param bool $visits
+     * @param array $add_sum
      */
-    private function hhSums(&$rows, &$headers, $day_count, $visits = false)
+    private function hhSums(&$rows, &$headers, $day_count, $visits = false, $add_sum = [])
     {
-        $sum_row = ['sum'] + array_fill(1, $day_count + 2, 0);
+        if (empty($add_sum)) {
+            $sum_row = ['sum'] + array_fill(1, $day_count + 2, 0);
+        } else {
+            // for the second summary row, we add the first
+            $sum_row = $add_sum;
+        }
+
         $sum_col = $day_count + 1;
         $visit_col = $day_count + 2;
+        if (false === $visits) {
+            $sum_row[$visit_col] = 0;
+        }
 
         foreach ($rows as &$row) {
             // row sum and visits
@@ -595,7 +605,7 @@ class HomehelpController extends Controller
         $rows[] = $sum_row;
 
         // sums row header
-        $headers[] = 'összesen';
+        $headers[] = empty($add_sum) ? 'összesen': 'mindösszesen';
 
         $rows = $this->hhCleanRows($rows);
     }
@@ -623,6 +633,8 @@ class HomehelpController extends Controller
         $client_block = array_splice($table_data, 0, $client_count + 2);
         $service_block = array_splice($table_data, 0, count($service_headers) + 2);
         $extra_block = array_splice($table_data, 0);
+        // sum of the client block
+        $add_sum = $client_block[$client_count];
 
         // split the headers to the blocks
         $client_header = array_splice($row_headers, 0, $client_count + 2);
@@ -634,11 +646,14 @@ class HomehelpController extends Controller
         $this->hhPrepareBlock($extra_block, $extra_header, $extra_headers, $day_count);
 
         // calculate the summary fields and clean the whole block
-        $this->hhSums($service_block, $service_header, $day_count);
+        $this->hhSums($service_block, $service_header, $day_count, false, $add_sum);
         $this->hhAddSeparatorRow($service_block, $service_header);
 
         $this->hhSums($extra_block, $extra_header, $day_count);
-        $this->hhAddSeparatorRow($extra_block, $extra_header);
+        // remove the sum row from the bottom
+        array_pop($extra_block);
+        array_pop($extra_header);
+        //$this->hhAddSeparatorRow($extra_block, $extra_header);
 
         // done building the rows, lets insert in the table
         $table_data = array_merge($client_block, $service_block, $extra_block);
@@ -681,9 +696,11 @@ class HomehelpController extends Controller
     private function hhPrepareBlock(&$block, &$header, $headers, $day_count)
     {
         if (!empty($block)) {
-            // remove the sum and the separator rows from the block
-            array_splice($block, -2);
-            array_splice($header, -2);
+            // remove the sum and the separator rows from the block if necessary
+            while (is_null(end($block)) || 'sum' == $block[count($block)-1][0]) {
+                array_pop($block);
+                array_pop($header);
+            }
         } else {
             foreach ($headers as $h) {
                 $block[] = [''] + array_fill(1, $day_count + 2, '');
