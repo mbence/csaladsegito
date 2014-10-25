@@ -2,6 +2,7 @@
 
 namespace JCSGYK\AdminBundle\Controller;
 
+use JCSGYK\AdminBundle\Services\DataStore;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -262,6 +263,12 @@ class ClientController extends Controller
                 $catering->setClient($client);
                 $catering->setIsActive(false);
                 $client->setCatering($catering);
+                // try to set the club
+                $my_clubs = $ds->getMyClubs();
+                if (!empty($my_clubs)) {
+                    $my_first_club = reset($my_clubs);
+                    $catering->setClub($my_first_club);
+                }
             }
             $original_catering = clone $catering;
 
@@ -339,6 +346,7 @@ class ClientController extends Controller
     {
         if (!empty($id)) {
             $em         = $this->getDoctrine()->getManager();
+            /** @var DataStore $ds */
             $ds         = $this->container->get('jcs.ds');
             $sec        = $this->get('security.context');
             $user       = $sec->getToken()->getUser();
@@ -358,6 +366,12 @@ class ClientController extends Controller
                 $homehelp->setClient($client);
                 $homehelp->setIsActive(false);
                 $client->setHomehelp($homehelp);
+                // try to set the club
+                $my_clubs = $ds->getMyClubs();
+                if (!empty($my_clubs)) {
+                    $my_first_club = reset($my_clubs);
+                    $homehelp->setClub($my_first_club);
+                }
             }
 
             $form = $this->createForm(new HomehelpType($ds, $clubs), $homehelp);
