@@ -12,6 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class HomeHelp
 {
+    /** Home help type (Central) */
+    const HELP = 0;
+    /** Visit type (Clubs) */
+    const VISIT = 1;
+
     /**
      * @var integer
      *

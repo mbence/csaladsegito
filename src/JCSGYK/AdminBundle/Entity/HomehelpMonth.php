@@ -85,6 +85,21 @@ class HomehelpMonth
     private $modifiedAt;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="homehelptype", type="integer", nullable=false)
+     */
+    private $homehelptype;
+
+    /**
+     * @var Club
+     *
+     * @ORM\ManyToOne(targetEntity="Club")
+     * @ORM\JoinColumn(name="club_id", referencedColumnName="id")
+     */
+    private $club;
+
+    /**
      * @ORM\OneToMany(targetEntity="HomehelpmonthsClients", mappedBy="homehelpmonth")
      **/
     private $hmClients;
@@ -352,5 +367,53 @@ class HomehelpMonth
     public function getHmClients()
     {
         return $this->hmClients;
+    }
+
+    /**
+     * Set homehelptype
+     *
+     * @param integer $homehelptype
+     *
+     * @return HomehelpMonth
+     */
+    public function setHomehelptype($homehelptype)
+    {
+        $this->homehelptype = $homehelptype;
+
+        return $this;
+    }
+
+    /**
+     * Get homehelptype
+     *
+     * @return integer
+     */
+    public function getHomehelptype()
+    {
+        return $this->homehelptype;
+    }
+
+    /**
+     * Set club
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Club $club
+     *
+     * @return HomehelpMonth
+     */
+    public function setClub(\JCSGYK\AdminBundle\Entity\Club $club = null)
+    {
+        $this->club = $club;
+
+        return $this;
+    }
+
+    /**
+     * Get club
+     *
+     * @return \JCSGYK\AdminBundle\Entity\Club
+     */
+    public function getClub()
+    {
+        return $this->club;
     }
 }
