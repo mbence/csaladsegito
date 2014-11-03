@@ -1,0 +1,39 @@
+{% extends 'JCSGYKAdminBundle:Settings:index.html.twig' %}
+
+{% block settings_content %}
+    <div class="homehelp-admin-box">
+        <h1 class="client">
+                {{ 'Látogatás rögzítése'|trans }}
+        </h1>
+        {% form_theme filter_form 'JCSGYKAdminBundle:Form:errors.html.twig' %}
+        {{ form_start(filter_form, {"attr": {"id": "clubvisitfilter", "class": "homehelpfilter editform" }}) }}
+            {{ form_errors(filter_form) }}
+
+            <div class="hh-header">
+                {{ form_errors(filter_form.club) }}
+                {{ form_label(filter_form.club) }}:
+                {{ form_widget(filter_form.club) }}
+                {{ form_label(filter_form.date) }}:
+                {{ form_widget(filter_form.date) }}
+            </div>
+        {{ form_end(filter_form) }}
+
+        <div id="handsontable" class="homehelp-table"></div>
+        {{ form_start(form, {"attr": {"id": "homehelpform", "class": "homehelpform" }}) }}
+
+            {{ form_widget(form.value) }}
+
+            <div class="formbuttons floatright">
+                <button type="reset" class="cancel greybutton">
+                    <span>{{ 'mégse'|trans }}</span></button>
+                <button type="submit" class="usersave button" name="usersave" value="save"><span>{{ 'mentés'|trans }}</span>
+                </button>
+            </div>
+
+        {{ form_end(form) }}
+        <script type="text/javascript">
+            var tableDefaultOptions = {{ table_defaults|raw }};
+        </script>
+    </div>
+    {% include "JCSGYKAdminBundle:Dialog:container.html.twig" %}
+{% endblock %}

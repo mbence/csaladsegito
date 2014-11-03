@@ -15,7 +15,8 @@
                 <th>{{ 'Klub'|trans }}:</th>
                 <td colspan="3">{% if homehelp.club %}{{ homehelp.club.name }}{% endif %}</td>
             </tr>
-            {%  if 0 == club_type %}
+            {# Display only for home help clubs! #}
+            {% if 0 == club_type %}
             <tr>
                 <th>{{ 'Gondozó'|trans }}:</th>
                 <td colspan="3">{{ param(homehelp.socialWorker) }}</td>
@@ -24,17 +25,21 @@
                 <th>{{ 'Jövedelem'|trans }}:</th>
                 <td colspan="3">{{ homehelp.income|fcurr }}</td>
             </tr>
+            {% endif %}
             <tr>
                 <th>{{ 'Megállapodás'|trans }}:</th>
                 <td colspan="3">
                     {% if homehelp.agreementFrom %}
                         {{ homehelp.agreementFrom|fdate }}
                     {% endif %}
+                    -
                     {% if homehelp.agreementTo %}
-                        - {{ homehelp.agreementTo|fdate }}
+                        {{ homehelp.agreementTo|fdate }}
                     {% endif %}
                 </td>
             </tr>
+            {# Display only for home help clubs! #}
+            {% if 0 == club_type %}
             {% if homehelp.discountIsActive %}
             <tr>
                 <th>{{ 'Mérséklés'|trans }}:</th>

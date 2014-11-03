@@ -817,7 +817,10 @@ JcsSettings = {
       this.setupRecFields();
     }
     if ($("#homehelpfilter").length) {
-      return this.setupHomehelp();
+      this.setupHomehelp();
+    }
+    if ($("#clubvisitfilter").length) {
+      return this.setupClubvisit();
     }
   },
 
@@ -859,6 +862,27 @@ JcsSettings = {
       return document.location.reload();
     });
     return JcsModal.init();
+  },
+
+  /*
+      setup the club visit admin
+   */
+  setupClubvisit: function() {
+    $("#form_club").add("#form_date").on("change", function() {
+      return $("#clubvisitfilter").submit();
+    });
+    $("#clubvisitfilter").submit(function() {
+      var url;
+      url = $(this).attr('action') + '/' + $("#form_club").val() + '/' + $("#form_date").val();
+      document.location = url;
+      return false;
+    });
+    $("#homehelpform button.cancel").on("click", function() {
+      return document.location.reload();
+    });
+    return $('#clubvisitfilter .datepicker').datepicker({
+      dateFormat: 'yy-mm-dd'
+    });
   },
   initAddclientDialog: function() {
     var $addClientForm, cl_id, filter_timeout, my_cl, _i, _len;

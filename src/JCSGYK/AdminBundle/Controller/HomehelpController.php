@@ -2,13 +2,9 @@
 
 namespace JCSGYK\AdminBundle\Controller;
 
-use Doctrine\ORM\EntityManager;
-use JCSGYK\AdminBundle\Entity\HomeHelp;
-use JCSGYK\AdminBundle\Services\DataStore;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -27,41 +23,21 @@ class HomehelpController extends Controller
      *
      * @param Request $request
      * @param null $social_worker
-     * @param null $club
      * @param string $month
      * @return array|Response
      *
-     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_CATERING')")
+     * @Security("has_role('ROLE_ADMIN')")
      * @Route("/admin/home_help/{social_worker}/{month}", name="admin_home_help")
-     * @Route("/admin/visits/{club_id}/{month}", name="admin_visits")
      * @Template("JCSGYKAdminBundle:Admin:homehelp.html.twig")
      */
-    public function homehelpAction(Request $request, $social_worker = null, $club_id = null, $month = null)
+    public function homehelpAction(Request $request, $social_worker = null, $month = null)
     {
         $ds = $this->container->get('jcs.ds');
         $user = $ds->getUser();
-        /** @var EntityManager $em */
         $em = $this->container->get('doctrine')->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
 
-        // type depends on route (we never call this action internally, so this will work)
-        $route_name = $request->get('_route');
-        if ('admin_visits' == $route_name) {
-            $type = HomeHelp::VISIT;
-            // visit type clients depend on clubs
-            $clients = $this->getClubClients($club_id);
-            // get the club entity
-            $club = $em->getRepository('JCSGYKAdminBundle:Club')->find($club_id);
-            // check club id
-            if (empty($club)) {
-                throw new BadRequestHttpException('Invalid club id');
-            }
-        } else {
-            $type = HomeHelp::HELP;
-            // Help type clients depend on the social worker
-            $clients = $this->getSocialWorkersClients($social_worker);
-            $club = null;
-        }
+        $clients = $this->getSocialWorkersClients($social_worker);
 
         if (empty($month)) {
             $month = 'first day of this month';
@@ -80,8 +56,6 @@ class HomehelpController extends Controller
                 ->setDate($month)
                 ->setRowheaders([])
                 ->setData([])
-                ->setHomehelptype($type)
-                ->setClub($club)
             ;
 
             foreach ($clients as $client) {
@@ -203,8 +177,6 @@ class HomehelpController extends Controller
             'social_worker'  => $social_worker,
             'month'          => $month->format('Y-m'),
             'closed'         => $closed_month,
-            'club'           => $club,
-            'type'           => $type,
         ];
     }
 
@@ -314,8 +286,7 @@ class HomehelpController extends Controller
 
         $defaults = [
             'social_worker' => $hh_month->getSocialWorker(),
-            'month'         => $hh_month->getDate()->format('Y-m'),
-            'club'          => $hh_month->getClub(),
+            'month'         => $hh_month->getDate()->format('Y-m')
         ];
 
         // add the months for a year before
@@ -332,24 +303,15 @@ class HomehelpController extends Controller
             ->setAction($this->generateUrl('admin_home_help'))
             ->setMethod('GET')
             // add the social workers
+            ->add('social_worker', 'choice', [
+                'label'   => 'Gondozó',
+                'choices' => $ds->getSocialWorkers(),
+            ])
             ->add('month', 'choice', [
                 'label'   => 'Hónap',
                 'choices' => $months,
             ])
         ;
-        if (HomeHelp::HELP == $hh_month->getHomehelptype()) {
-            $form_builder->add('social_worker', 'choice', [
-                'label'   => 'Gondozó',
-                'choices' => $ds->getSocialWorkers(),
-            ]);
-        } else {
-            $form_builder->add('club', 'entity', [
-                'label' => 'Klub',
-                'class' => 'JCSGYKAdminBundle:Club',
-                'choices'   => $ds->getClubs(),
-                'required' => true,
-            ]);
-        }
 
         return $form_builder->getForm();
     }
@@ -362,14 +324,9 @@ class HomehelpController extends Controller
      */
     private function homeHelpForm(HomehelpMonth $hh_month)
     {
-        if (HomeHelp::HELP == $hh_month->getHomehelptype()) {
-            $form_action = $this->generateUrl('admin_home_help', ['social_worker' => $hh_month->getSocialWorker(), 'month' => $hh_month->getDate()->format('Y-m')]);
-        } else {
-            $form_action = $this->generateUrl('admin_visits', ['club_id' => $hh_month->getClub()->getId(), 'month' => $hh_month->getDate()->format('Y-m')]);
-        }
         // build the form
         $form_builder = $this->createFormBuilder(['hh_id' => $hh_month->getId() , 'value' => json_encode($hh_month->getData())])
-            ->setAction($form_action)
+            ->setAction($this->generateUrl('admin_home_help', ['social_worker' => $hh_month->getSocialWorker(), 'month' => $hh_month->getDate()->format('Y-m')]))
             ->setMethod('POST')
             ->add('hh_id', 'hidden')
             ->add('value', 'hidden')
@@ -466,6 +423,7 @@ class HomehelpController extends Controller
      * Also update the $social_worker to the first of the list if none selected
      *
      * @param $social_worker
+     * @internal param $clients
      * @return array list of clients
      */
     private function getSocialWorkersClients(&$social_worker)
@@ -483,34 +441,6 @@ class HomehelpController extends Controller
         $clients = [];
         if (!empty($social_worker)) {
             $clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsBySocialWorker($social_worker, $ds->getCompanyId());
-        }
-
-        return $clients;
-    }
-
-    /**
-     * Find the clients of the selected club
-     * Also update the $club to the first of the list if none selected
-     *
-     * @param $club_id
-     * @return array list of clients
-     */
-    private function getClubClients(&$club_id)
-    {
-        /** @var DataStore $ds */
-        $ds = $this->container->get('jcs.ds');
-        $em = $this->container->get('doctrine')->getManager();
-
-        // if no club provided, select the first from the list
-        if (empty($club_id)) {
-            $clubs = $ds->getMyClubs();
-            $first_club = reset($clubs);
-            $club_id = $first_club ? $first_club->getId() : false;
-        }
-        // find the clients of this club
-        $clients = [];
-        if (!empty($club_id)) {
-            $clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsByClub($club_id, $ds->getCompanyId());
         }
 
         return $clients;
@@ -908,5 +838,4 @@ class HomehelpController extends Controller
 
         return $form_builder->getForm();
     }
-
 }

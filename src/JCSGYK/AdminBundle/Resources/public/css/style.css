@@ -1262,3 +1262,14 @@ h2.menu-section {
 .greybutton.download-homehelp > span {
     vertical-align: 2px;
 }
+
+#homehelpfilter.editform label,
+#clubvisitfilter.editform label {
+    width: auto;
+    margin: 0;
+    padding-left: 10px;
+}
+#clubvisitfilter.editform input[type="text"] {
+    width: 100px;
+    z-index: 1000;
+}
