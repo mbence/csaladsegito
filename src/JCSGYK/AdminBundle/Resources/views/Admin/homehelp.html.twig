@@ -2,7 +2,13 @@
 
 {% block settings_content %}
     <div class="homehelp-admin-box">
-        <h1 class="client">{{ 'Gondozás rögzítése'|trans }}</h1>
+        <h1 class="client">
+            {% if type == 0 %}
+                {{ 'Gondozás rögzítése'|trans }}
+            {% else %}
+                {{ 'Látogatás rögzítése'|trans }}
+            {% endif %}
+        </h1>
 
         {#    {% include "JCSGYKAdminBundle:Admin:ct_tabs.html.twig" %}#}
 
@@ -15,14 +21,20 @@
                     <button data-href="{{ path('admin_addclient') }}" type="button" class="add-client-dialog greybutton">
                         <span>{{ 'ügyfelek módosítása'|trans }}</span></button>
                 {% endif %}
-                <a href="{{ path('homehelp_download', {"social_worker": social_worker, "month": month}) }}" class="download-homehelp greybutton">
-                    <span>{{ 'letöltés'|trans }}</span>
-                </a>
+                {#<a href="{{ path('homehelp_download', {"social_worker": social_worker, "month": month}) }}" class="download-homehelp greybutton">#}
+                    {#<span>{{ 'letöltés'|trans }}</span>#}
+                {#</a>#}
             </div>
             <div class="hh-header">
-                {{ form_errors(filter_form.social_worker) }}
-                {{ form_label(filter_form.social_worker) }}:
-                {{ form_widget(filter_form.social_worker) }}
+                {% if type == 0 %}
+                    {{ form_errors(filter_form.social_worker) }}
+                    {{ form_label(filter_form.social_worker) }}:
+                    {{ form_widget(filter_form.social_worker) }}
+                {% else %}
+                    {{ form_errors(filter_form.club) }}
+                    {{ form_label(filter_form.club) }}:
+                    {{ form_widget(filter_form.club) }}
+                {% endif %}
                 {{ form_widget(filter_form.month) }}
                 {% if closed %}
                     <span class="smalltext red leftpad">

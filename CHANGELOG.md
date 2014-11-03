@@ -1,3 +1,10 @@
+## 1.4.2 (2014.10.26)
+
+Fejlesztések:
+
+ - Klubos látogatások
+ - Saját kulb automatikusan kiválsztva új ügyfeleknél
+ 
 ## 1.4.1 (2014.10.23)
 
 Javítások:

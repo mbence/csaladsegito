@@ -1895,6 +1895,12 @@ JcsCatering = {
     this.initMultiDatesPicker();
     this.initInvoices();
     this.initMenuList();
+    this.initHomeHelp();
+    $("#catering_club").on("change", (function(_this) {
+      return function() {
+        return _this.initHomeHelp();
+      };
+    })(this));
     $('.inblock .datepicker').datepicker({
       dateFormat: 'yy-mm-dd'
     });
@@ -1991,6 +1997,19 @@ JcsCatering = {
       return false;
     });
     return JcsModal.init();
+  },
+  initHomeHelp: function() {
+    var selected_club;
+    if (typeof clubs_type_list !== "undefined" && clubs_type_list !== null) {
+      selected_club = $("#catering_club").val();
+      if ((clubs_type_list[selected_club] != null)) {
+        if (0 === clubs_type_list[selected_club]) {
+          return $("#catering_form .help-type").show();
+        } else {
+          return $("#catering_form .help-type").hide();
+        }
+      }
+    }
   },
   initMenuList: function() {
     if ($("#catering_menu").length && $("#catering_club").length) {
