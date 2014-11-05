@@ -18,6 +18,13 @@
                 <br>
                 <h1 class="client">{{ 'Gondozás'|trans }}</h1>
                 {% render(controller('JCSGYKAdminBundle:Menu:homehelpSettings')) %}
+                {% render(controller('JCSGYKAdminBundle:Menu:VisitsSettings')) %}
+            {% endif %}
+        {% else %}
+            {% if is_granted(['ROLE_CATERING']) %}
+                <br>
+                <h1 class="client">{{ 'Látogatások'|trans }}</h1>
+                {% render(controller('JCSGYKAdminBundle:Menu:VisitsSettings')) %}
             {% endif %}
         {% endif %}
     </div>

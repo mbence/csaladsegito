@@ -6,6 +6,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Services\DataStore;
+use JCSGYK\AdminBundle\Entity\HomeHelp;
 
 class ClubType extends AbstractType
 {
@@ -46,6 +47,16 @@ class ClubType extends AbstractType
             'multiple'  => true,
             'expanded'  => true,
         ]);
+
+        $builder->add('homehelptype', 'choice', [
+            'label' => 'Típus',
+            'choices' => [
+                HomeHelp::HELP => 'Gondozás',
+                HomeHelp::VISIT => 'Látogatás'
+            ],
+            'expanded'  => true,
+        ]);
+
         $builder->add('is_active', 'checkbox', ['label' => 'Aktív']);
     }
 

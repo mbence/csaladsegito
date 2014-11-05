@@ -1,7 +1,7 @@
 {# Home Help Fileds #}
-<div class="client-sub togglable">{{ 'gondozás'|trans }}</div>
+<div class="client-sub togglable">{{ club_type_label|trans }}</div>
 <div class="toppad">
-    {% render(controller('JCSGYKAdminBundle:Menu:homehelp', { 'client': client })) %}
+    {% render(controller('JCSGYKAdminBundle:Menu:homehelp', { 'client': client, 'label': club_type_label, 'type': club_type })) %}
     <div class="clear"></div>
     {% if homehelp and not homehelp.isActive %}
         <div class="catering-inactive">
@@ -15,6 +15,8 @@
                 <th>{{ 'Klub'|trans }}:</th>
                 <td colspan="3">{% if homehelp.club %}{{ homehelp.club.name }}{% endif %}</td>
             </tr>
+            {# Display only for home help clubs! #}
+            {% if 0 == club_type %}
             <tr>
                 <th>{{ 'Gondozó'|trans }}:</th>
                 <td colspan="3">{{ param(homehelp.socialWorker) }}</td>
@@ -23,17 +25,21 @@
                 <th>{{ 'Jövedelem'|trans }}:</th>
                 <td colspan="3">{{ homehelp.income|fcurr }}</td>
             </tr>
+            {% endif %}
             <tr>
                 <th>{{ 'Megállapodás'|trans }}:</th>
                 <td colspan="3">
                     {% if homehelp.agreementFrom %}
                         {{ homehelp.agreementFrom|fdate }}
                     {% endif %}
+                    -
                     {% if homehelp.agreementTo %}
-                        - {{ homehelp.agreementTo|fdate }}
+                        {{ homehelp.agreementTo|fdate }}
                     {% endif %}
                 </td>
             </tr>
+            {# Display only for home help clubs! #}
+            {% if 0 == club_type %}
             {% if homehelp.discountIsActive %}
             <tr>
                 <th>{{ 'Mérséklés'|trans }}:</th>
@@ -84,6 +90,7 @@
                     {% endif %}
                 </td>
             </tr>
+            {% endif %}
         </table>
     </div>
     {% endif %}

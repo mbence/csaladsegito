@@ -1,3 +1,10 @@
+## 1.4.2 (2014.11.05)
+
+Fejlesztések:
+
+ - Klubos látogatások
+ - Saját kulb automatikusan kiválsztva új ügyfeleknél
+
 ## 1.4.1 (2014.10.23)
 
 Javítások:
@@ -10,7 +17,7 @@ Javítások:
 Fejlesztések:
 
  - Házi segítségnyújtás
- 
+
 ## 1.3.2 (2014.10.07)
 
 Fejlesztések:

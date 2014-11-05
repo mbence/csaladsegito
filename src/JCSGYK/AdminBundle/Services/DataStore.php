@@ -708,7 +708,9 @@ class DataStore
     }
 
     /**
-     * Return
+     * Return the menus of the available clubs
+     * @param $clubs array of Club entities
+     * @return array
      */
     public function getClubsMenuList($clubs)
     {
@@ -738,6 +740,24 @@ class DataStore
         }
 
         return $menu_list;
+    }
+
+    /**
+     * Return the club types
+     * @param array $clubs array of Club entities
+     * @return array
+     */
+    public function getClubsTypeList(array $clubs)
+    {
+        $type_list = [];
+
+        if ($clubs) {
+            foreach ($clubs as $club) {
+                $type_list[$club->getId()] = $club->getHomehelptype();
+            }
+        }
+
+        return $type_list;
     }
 
     /**

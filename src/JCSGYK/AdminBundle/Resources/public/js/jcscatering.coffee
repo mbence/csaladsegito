@@ -24,6 +24,11 @@ JcsCatering =
         @initMultiDatesPicker()
         @initInvoices()
         @initMenuList()
+        @initHomeHelp()
+
+        # club selector
+        $("#catering_club").on "change", =>
+            @initHomeHelp()
 
         # discount datepicker
         $('.inblock .datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
@@ -128,6 +133,18 @@ JcsCatering =
 
         # modal dialog
         JcsModal.init()
+
+    initHomeHelp: ->
+        if clubs_type_list?
+            selected_club = $("#catering_club").val()
+            if (clubs_type_list[selected_club]?)
+                if 0 == clubs_type_list[selected_club]
+                    # show all fields for homehelp type
+                    $("#catering_form .help-type").show()
+                else
+                    # hide unnecessary fileds for visit type (clubs)
+                    $("#catering_form .help-type").hide()
+
 
     initMenuList: ->
         if $("#catering_menu").length and $("#catering_club").length

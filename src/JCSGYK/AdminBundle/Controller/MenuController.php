@@ -10,6 +10,7 @@ use JMS\SecurityExtraBundle\Security\Authorization\Expression\Expression;
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\Problem;
 use JCSGYK\AdminBundle\Entity\Event;
+use JCSGYK\AdminBundle\Entity\HomeHelp;
 
 class MenuController extends Controller
 {
@@ -95,6 +96,17 @@ class MenuController extends Controller
         $items = [
             ['route' => 'admin_home_help', 'label' => 'Gondozás rögzítése', 'role' => 'ROLE_ADMIN'],
             ['route' => 'admin_options', 'options' => ['name' => 'homehelpcosts'], 'label' => 'Gondozás Díjtáblázat', 'role' => 'ROLE_ADMIN'],
+        ];
+
+        $menu = $this->checkMenu($items);
+
+        return $this->render('JCSGYKAdminBundle:Settings:menu.html.twig', ['menu' => $menu]);
+    }
+
+    public function visitsSettingsAction()
+    {
+        $items = [
+            ['route' => 'admin_visits', 'label' => 'Látogatás rögzítése', 'role' => 'ROLE_CATERING'],
         ];
 
         $menu = $this->checkMenu($items);
@@ -207,29 +219,37 @@ class MenuController extends Controller
         return $this->subMenu($items, false);
     }
 
-    public function homehelpAction(Client $client)
+    public function homehelpAction(Client $client, $label = 'gondozás', $type = HomeHelp::HELP)
     {
         $sec = $this->get('security.context');
         // true if only assistance roles are present
         $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE') && !$sec->isGranted('ROLE_CATERING');
         $has_homehelp = !empty($client->getHomehelp());
         $sw = $has_homehelp ? $client->getHomehelp()->getSocialWorker() : null;
+        $club_id = $has_homehelp ? $client->getHomehelp()->getClub()->getId() : null;
+
+        // generate the proper homehelp-month url
+        if (HomeHelp::HELP == $type) {
+            $hh_url = $this->generateUrl('admin_home_help', ['social_worker' => $sw]);
+        } else {
+            $hh_url = $this->generateUrl('admin_visits', ['club_id' => $club_id]);
+        }
 
         $items = [
             // edit homehelp data
             [
                 'url'   => $this->generateUrl('client_homehelp_edit', ['id' => $client->getId()]),
                 'label' => 'szerkesztés',
-                'title' => 'Gondozási adatok szerkesztése',
+                'title' => ucfirst($label) . ' adatok szerkesztése',
                 'class' => 'greybutton edit_catering',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
                 'requirement' => $client->canEdit($sec)
             ],
             [
-                'url'   => $this->generateUrl('admin_home_help', ['social_worker' => $sw]),
-                'label' => 'gondozás rögzítése',
-                'title' => 'Gondozás rögzítése',
+                'url'   => $hh_url,
+                'label' => $label . ' rögzítése',
+                'title' => ucfirst($label) . ' rögzítése',
                 'class' => 'greybutton admin_homehelp',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',

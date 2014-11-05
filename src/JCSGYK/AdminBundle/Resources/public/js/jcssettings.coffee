@@ -39,6 +39,10 @@ JcsSettings =
         if $("#homehelpfilter").length
             @setupHomehelp()
 
+        # club visit
+        if $("#clubvisitfilter").length
+            @setupClubvisit()
+
     ###
         setup the homehelp admin
     ###
@@ -78,6 +82,30 @@ JcsSettings =
 
         # modal dialog
         JcsModal.init()
+
+    ###
+        setup the club visit admin
+    ###
+    setupClubvisit: ->
+        $("#form_club").add("#form_date").on("change", ->
+            $("#clubvisitfilter").submit()
+        )
+        $("#clubvisitfilter").submit ->
+            url = $(this).attr('action') + '/' + $("#form_club").val() + '/' + $("#form_date").val()
+            document.location = url
+
+            return false
+
+        # form cancel button
+        $("#homehelpform button.cancel").on "click", ->
+            document.location.reload()
+        # date back/next buttons
+        $("#form_back").add("#form_forward").on "click", ->
+            $(this).addClass('animbutton')
+            $("#form_date").val($(this).val())
+            $("#clubvisitfilter").submit()
+
+        $('#clubvisitfilter .datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
 
     initAddclientDialog: ->
         JcsModal.setCloseButton()
@@ -329,7 +357,7 @@ JcsSettings =
 
         # use the cells formatting function?
         if options.cells? and options.cells
-            options.cells = @cells
+                options.cells = @cells
 
         # fire up the table!
         $("#handsontable").handsontable(options)

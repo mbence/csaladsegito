@@ -817,7 +817,10 @@ JcsSettings = {
       this.setupRecFields();
     }
     if ($("#homehelpfilter").length) {
-      return this.setupHomehelp();
+      this.setupHomehelp();
+    }
+    if ($("#clubvisitfilter").length) {
+      return this.setupClubvisit();
     }
   },
 
@@ -859,6 +862,32 @@ JcsSettings = {
       return document.location.reload();
     });
     return JcsModal.init();
+  },
+
+  /*
+      setup the club visit admin
+   */
+  setupClubvisit: function() {
+    $("#form_club").add("#form_date").on("change", function() {
+      return $("#clubvisitfilter").submit();
+    });
+    $("#clubvisitfilter").submit(function() {
+      var url;
+      url = $(this).attr('action') + '/' + $("#form_club").val() + '/' + $("#form_date").val();
+      document.location = url;
+      return false;
+    });
+    $("#homehelpform button.cancel").on("click", function() {
+      return document.location.reload();
+    });
+    $("#form_back").add("#form_forward").on("click", function() {
+      $(this).addClass('animbutton');
+      $("#form_date").val($(this).val());
+      return $("#clubvisitfilter").submit();
+    });
+    return $('#clubvisitfilter .datepicker').datepicker({
+      dateFormat: 'yy-mm-dd'
+    });
   },
   initAddclientDialog: function() {
     var $addClientForm, cl_id, filter_timeout, my_cl, _i, _len;
@@ -1895,6 +1924,12 @@ JcsCatering = {
     this.initMultiDatesPicker();
     this.initInvoices();
     this.initMenuList();
+    this.initHomeHelp();
+    $("#catering_club").on("change", (function(_this) {
+      return function() {
+        return _this.initHomeHelp();
+      };
+    })(this));
     $('.inblock .datepicker').datepicker({
       dateFormat: 'yy-mm-dd'
     });
@@ -1991,6 +2026,19 @@ JcsCatering = {
       return false;
     });
     return JcsModal.init();
+  },
+  initHomeHelp: function() {
+    var selected_club;
+    if (typeof clubs_type_list !== "undefined" && clubs_type_list !== null) {
+      selected_club = $("#catering_club").val();
+      if ((clubs_type_list[selected_club] != null)) {
+        if (0 === clubs_type_list[selected_club]) {
+          return $("#catering_form .help-type").show();
+        } else {
+          return $("#catering_form .help-type").hide();
+        }
+      }
+    }
   },
   initMenuList: function() {
     if ($("#catering_menu").length && $("#catering_club").length) {
