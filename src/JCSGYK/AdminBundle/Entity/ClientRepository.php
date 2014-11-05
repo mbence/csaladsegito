@@ -7,6 +7,7 @@ use JCSGYK\AdminBundle\Entity\Client;
 use Doctrine\ORM\Query;
 use JCSGYK\AdminBundle\Entity\User;
 use JCSGYK\AdminBundle\Entity\MonthlyClosing;
+use JCSGYK\AdminBundle\Entity\HomeHelp;
 
 /**
  * ClientRepository
@@ -186,9 +187,12 @@ class ClientRepository extends EntityRepository
         if (MonthlyClosing::HOMEHELP == $closing_type) {
             // homehelp closing get only the homehelp clients
             $query = $this->getEntityManager()
-                ->createQuery("SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE c.companyId = :company_id AND c.isArchived = 0 AND c.type = :client_type ORDER BY h.club, c.lastname, c.firstname")
+                ->createQuery("SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h JOIN h.club k WHERE c.companyId = :company_id AND c.isArchived = 0 "
+                        . "AND c.type = :client_type AND k.homehelptype = :club_type"
+                        . "ORDER BY h.club, c.lastname, c.firstname")
                 ->setParameter('company_id', $company_id)
                 ->setParameter('client_type', Client::CA)
+                ->setParameter('club_type', HomeHelp::HELP)
             ;
         } elseif (MonthlyClosing::MONTHLY == $closing_type) {
             // monthly catering closing
