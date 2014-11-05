@@ -1,3 +1,9 @@
+## 1.4.3 (2014.11.06)
+
+Fejlesztések:
+
+ - Klubos látogatások statisztikái
+
 ## 1.4.2 (2014.11.05)
 
 Fejlesztések:
