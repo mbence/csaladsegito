@@ -657,18 +657,32 @@ class DataStore
 
     /**
      * Return the list of clubs related to this user, or all clubs for admins
-     * @return array
+     * @param $type filter clubs for the given type
+     * @return Club[]
      */
-    public function getClubs()
+    public function getClubs($type = null)
     {
         $sec  = $this->container->get('security.context');
 
         if ($sec->isGranted('ROLE_ADMIN')) {
-            return $this->getAllClubs();
+            $clubs = $this->getAllClubs();
         }
         else {
-            return $this->getMyClubs();
+            $clubs = $this->getMyClubs();
         }
+        if (!is_null($type)) {
+            // remove the clubs that are not the given type
+            $t_clubs = [];
+            foreach ($clubs as $club) {
+                if ($type == $club->getHomehelptype()) {
+                    $t_clubs[] = $club;
+                }
+            }
+            $clubs = $t_clubs;
+            unset($t_clubs);
+        }
+
+        return $clubs;
     }
 
     /**

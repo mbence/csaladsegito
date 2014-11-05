@@ -302,7 +302,7 @@ class ClubvisitController extends Controller
             ->add('club', 'entity', [
                 'label'    => 'Klub',
                 'class'    => 'JCSGYKAdminBundle:Club',
-                'choices'  => $ds->getClubs(),
+                'choices'  => $ds->getClubs(HomeHelp::VISIT),
                 'required' => true,
             ])
             ->add('back', 'button', [
