@@ -16,6 +16,7 @@ use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\Invoice;
 use JCSGYK\AdminBundle\Entity\StatFile;
 use JCSGYK\AdminBundle\Services\DataStore;
+use JCSGYK\AdminBundle\Entity\HomeHelp;
 
 class ReportsController extends Controller
 {
@@ -814,7 +815,7 @@ class ReportsController extends Controller
     }
 
     /**
-     * Return the stats
+     * Return the stats by either rendering a twig template, or sending a db stored file
      * @param $form_data
      * @param $download
      * @return Response
@@ -848,10 +849,19 @@ class ReportsController extends Controller
         $stat_type = $sf->getStatArchive()->getType();
 
         $data = $sf->getData();
+
         if (401 == $stat_type) {
+            // catering
             $twig_tpl = '_catering_stats.html.twig';
+        } elseif (402 == $stat_type) {
+            // homehelp
+            $club_id = $sf->getType();
+            $club = $em->getRepository('JCSGYKAdminBundle:Club')->find($club_id);
+            $club_type = $club->getHomehelptype();
+
+            $twig_tpl = HomeHelp::HELP == $club_type ? '_homehelp_stats.html.twig' : '_clubvisit_stats.html.twig';
         } else {
-            $twig_tpl = '_homehelp_stats.html.twig';
+            $twig_tpl = null;
         }
 
         $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
@@ -860,11 +870,17 @@ class ReportsController extends Controller
             return $this->sendDownloadResponse($output_name, stream_get_contents($sf->getFile()), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         }
         else {
-
             return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $twig_tpl, ['data' => $data]);
         }
     }
 
+    /**
+     * Sent download headers and the file
+     * @param string $file_name
+     * @param string $file_contents
+     * @param string $content_type
+     * @return Response
+     */
     public function sendDownloadResponse($file_name, $file_contents, $content_type)
     {
         $response = new Response();
@@ -877,6 +893,12 @@ class ReportsController extends Controller
         return $response;
     }
 
+    /**
+     * Find a value in a range (from-to) and return it's key
+     * @param mixed $val
+     * @param array $range
+     * @return int | false on failure
+     */
     private function getRangeKey($val, $range)
     {
         foreach ($range as $k => $d) {

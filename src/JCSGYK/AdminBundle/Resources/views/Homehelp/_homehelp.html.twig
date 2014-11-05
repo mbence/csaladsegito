@@ -21,11 +21,11 @@
                 <th>{{ 'Gondozó'|trans }}:</th>
                 <td colspan="3">{{ param(homehelp.socialWorker) }}</td>
             </tr>
+            {% endif %}
             <tr>
                 <th>{{ 'Jövedelem'|trans }}:</th>
                 <td colspan="3">{{ homehelp.income|fcurr }}</td>
             </tr>
-            {% endif %}
             <tr>
                 <th>{{ 'Megállapodás'|trans }}:</th>
                 <td colspan="3">
