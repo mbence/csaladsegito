@@ -1,0 +1,122 @@
+<h1>{{ data['ca.cim'] }} {{ data['ca.klub'] }}</h1>
+<table>
+    <tr>
+        <td>
+            <table class="reports-table reports-stats">
+                <tr>
+                    <th>Létszám hónap 1-én</th>
+                    <td> {{ data['cnum.start'] }} </td>
+                </tr>
+                <tr>
+                    <th>Új felvétel</th>
+                    <td> {{ data['cnum.new'] }} </td>
+                </tr>
+                <tr>
+                    <th>Teljes havi létszám</th>
+                    <td> {{ data['cnum.all'] }} </td>
+                </tr>
+                <tr>
+                    <th>Aktív ellátott</th>
+                    <td> {{ data['cnum.active'] }} </td>
+                </tr>
+                <tr>
+                    <th>Megszűntek</th>
+                    <td> {{ data['cnum.archived'] }} </td>
+                </tr>
+                <tr>
+                    <th>Létszám hónap végén</th>
+                    <td> {{ data['cnum.end'] }} </td>
+                </tr>
+            </table>
+            <br>
+            <table class="reports-table reports-stats">
+                <tr>
+                    <th>Gondozottak száma NŐ</th>
+                    <td> {{ data['cnum.woman'] }} </td>
+                </tr>
+                <tr>
+                    <th>Gondozottak száma FÉRFI</th>
+                    <td> {{ data['cnum.man'] }} </td>
+                </tr>
+            </table>
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td>
+            <table class="reports-table reports-stats">
+                <tr>
+                    <th>Látogatások száma</th>
+                    <td> {{ data['inv.visits'] }} </td>
+                </tr>
+            </table>
+            <br>
+            <table class="reports-table reports-stats">
+                <tr>
+                    {% for i, event in data.blocks.eventlab %}
+                        <th style="min-width: inherit;padding: 0 2px;text-align: center;">{{ event }}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for ec in data.blocks.eventcount %}
+                        <td style="text-align: center;"> {{ ec }} </td>
+                    {% endfor %}
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+<br>
+<table class="reports-table reports-matrix">
+    <tr>
+        <th>Kor szerinti megoszlás</th>
+        {% for ageh in data.blocks.age_headers %}
+            <th>{{ ageh }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th>NŐ</th>
+        {% for age2 in data.blocks.age_2 %}
+            <td class="bigrep">{{ age2 }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th>FÉRFI</th>
+        {% for age1 in data.blocks.age_1 %}
+            <td class="bigrep">{{ age1 }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th rowspan="2">Komfort fokozat</th>
+        {% for comh in data.blocks.comfort_headers %}
+            <th>{{ comh }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+        {% for com in data.blocks.comfort %}
+            <td class="bigrep">{{ com }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th rowspan="2">Jövedelem szerinti megoszlás</th>
+        {% for inch in data.blocks.income_headers %}
+            <th>{{ inch }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+
+        {% for inc in data.blocks.income %}
+            <td class="bigrep">{{ inc }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th rowspan="2">Lakásban tartózkodás jogcíme</th>
+        {% for ownh in data.blocks.ownership_headers %}
+            <th>{{ ownh }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+        {% for own in data.blocks.ownership %}
+            <td class="bigrep">{{ own }}</td>
+        {% endfor %}
+    </tr>
+</table>

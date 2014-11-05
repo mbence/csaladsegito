@@ -562,11 +562,13 @@ class StatArchiveService
 
         if (HomeHelp::HELP == $club->getHomehelptype()) {
             $data = $this->get402InvoiceData($club, $start, $end, $data);
+            $tpl_file = 'homehelp_stats.xlsx';
         } else {
             $data = $this->get402VisitData($club, $start, $end, $data);
+            $tpl_file = 'clubvisit_stats.xlsx';
         }
 
-        $template_file = __DIR__ . '/../Resources/public/reports/homehelp_stats.xlsx';
+        $template_file = __DIR__ . '/../Resources/public/reports/' . $tpl_file;
 
         return [
             'type' => !empty($club) ? $club->getId() : null,
@@ -631,6 +633,16 @@ class StatArchiveService
         foreach ($this->ageRanges as $k => $v) {
             $data['blocks']['age_2'][$k] = 0;
             $data['blocks']['age_1'][$k] = 0;
+        }
+
+        // event names
+        $data['blocks']['eventcount'] = [];
+        $data['blocks']['eventlab'] = [];
+//        $data['blocks']['eventmap'] = [];
+        foreach ($this->ds->getGroup('club_events') as $c => $v) {
+            $data['blocks']['eventcount'][] = 0;
+            $data['blocks']['eventlab'][] = $v;
+//            $data['blocks']['eventmap'][] = $c;
         }
 
         return $data;
@@ -764,8 +776,6 @@ class StatArchiveService
         $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'];
         $data['cnum.end'] = $data['cnum.all'] - $data['cnum.archived'];
 
-        $data['inv.sum'] = $this->ae->formatCurrency($data['inv.sum']);
-
         return $data;
     }
 
@@ -826,6 +836,8 @@ class StatArchiveService
         $data['inv.disccli'] = count($data['inv.disccli']);
         $data['inv.paycli'] = count($data['inv.paycli']);
 
+        $data['inv.sum'] = $this->ae->formatCurrency($data['inv.sum']);
+        
         return $data;
     }
 
@@ -871,8 +883,14 @@ class StatArchiveService
                 $client_id = $visit->getClient()->getId();
                 if ($visit->getVisit()) {
                     $data['inv.visits']++;
+
                     $events = $visit->getEvents();
-                    $data['inv.disccli'][$client_id] = 1;
+                    // not very nice :(
+                    foreach ($events as $i => $event) {
+                        if ($event) {
+                            $data['blocks']['eventcount'][$i]++;
+                        }
+                    }
                 }
             }
         }
