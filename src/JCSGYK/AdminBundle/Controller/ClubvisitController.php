@@ -417,7 +417,6 @@ class ClubvisitController extends Controller
             $clubs = $ds->getClubs();
             $first_club = reset($clubs);
             $club_id = $first_club ? $first_club->getId() : false;
-            var_dump($club_id);
         }
         // find the clients of this club
         $clients = [];
