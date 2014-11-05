@@ -72,6 +72,13 @@ class Club
     private $isActive;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="homehelptype", type="integer", nullable=false)
+     */
+    private $homehelptype;
+
+    /**
      * @ORM\OneToMany(targetEntity="Catering", mappedBy="club")
      */
     private $clientcaterings;
@@ -318,5 +325,29 @@ class Club
     public function getUsers()
     {
         return json_decode($this->users, true);
+    }
+
+    /**
+     * Set homehelptype
+     *
+     * @param integer $homehelptype
+     *
+     * @return Club
+     */
+    public function setHomehelptype($homehelptype)
+    {
+        $this->homehelptype = $homehelptype;
+
+        return $this;
+    }
+
+    /**
+     * Get homehelptype
+     *
+     * @return integer
+     */
+    public function getHomehelptype()
+    {
+        return $this->homehelptype;
     }
 }

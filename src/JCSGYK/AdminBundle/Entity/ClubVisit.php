@@ -3,15 +3,14 @@
 namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * HomehelpMonth
+ * ClubVisit
  *
- * @ORM\Table(name="homehelp_month")
+ * @ORM\Table(name="club_visit", uniqueConstraints={@ORM\UniqueConstraint(name="company_id", columns={"company_id", "client_id", "date"})})
  * @ORM\Entity
  */
-class HomehelpMonth
+class ClubVisit
 {
     /**
      * @var integer
@@ -30,6 +29,12 @@ class HomehelpMonth
     private $companyId;
 
     /**
+     * @ORM\OneToOne(targetEntity="Client")
+     * @ORM\JoinColumn(name="client_id", referencedColumnName="id")
+     */
+    private $client;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="date", nullable=false)
@@ -37,25 +42,18 @@ class HomehelpMonth
     private $date;
 
     /**
-     * @var integer
+     * @var boolean
      *
-     * @ORM\Column(name="social_worker", type="integer", nullable=true)
+     * @ORM\Column(name="visit", type="boolean", nullable=true)
      */
-    private $socialWorker;
+    private $visit;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="rowheaders", type="json_array", length=65535, nullable=true)
+     * @ORM\Column(name="events", type="json_array", length=100, nullable=true)
      */
-    private $rowheaders;
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="data", type="json_array", length=65535, nullable=true)
-     */
-    private $data;
+    private $events;
 
     /**
      * @var integer
@@ -86,15 +84,6 @@ class HomehelpMonth
     private $modifiedAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="HomehelpmonthsClients", mappedBy="homehelpmonth")
-     **/
-    private $hmClients;
-
-    public function __construct() {
-        $this->hmClients = new ArrayCollection();
-    }
-
-    /**
      * Get id
      *
      * @return integer
@@ -109,7 +98,7 @@ class HomehelpMonth
      *
      * @param integer $companyId
      *
-     * @return HomehelpMonth
+     * @return ClubVisit
      */
     public function setCompanyId($companyId)
     {
@@ -133,7 +122,7 @@ class HomehelpMonth
      *
      * @param \DateTime $date
      *
-     * @return HomehelpMonth
+     * @return ClubVisit
      */
     public function setDate($date)
     {
@@ -153,27 +142,51 @@ class HomehelpMonth
     }
 
     /**
-     * Set socialWorker
+     * Set visit
      *
-     * @param integer $socialWorker
+     * @param boolean $visit
      *
-     * @return HomehelpMonth
+     * @return ClubVisit
      */
-    public function setSocialWorker($socialWorker)
+    public function setVisit($visit)
     {
-        $this->socialWorker = $socialWorker;
+        $this->visit = $visit;
 
         return $this;
     }
 
     /**
-     * Get socialWorker
+     * Get visit
      *
-     * @return integer
+     * @return boolean
      */
-    public function getSocialWorker()
+    public function getVisit()
     {
-        return $this->socialWorker;
+        return $this->visit;
+    }
+
+    /**
+     * Set events
+     *
+     * @param array $events
+     *
+     * @return ClubVisit
+     */
+    public function setEvents($events)
+    {
+        $this->events = $events;
+
+        return $this;
+    }
+
+    /**
+     * Get events
+     *
+     * @return array
+     */
+    public function getEvents()
+    {
+        return $this->events;
     }
 
     /**
@@ -181,7 +194,7 @@ class HomehelpMonth
      *
      * @param integer $createdBy
      *
-     * @return HomehelpMonth
+     * @return ClubVisit
      */
     public function setCreatedBy($createdBy)
     {
@@ -205,7 +218,7 @@ class HomehelpMonth
      *
      * @param \DateTime $createdAt
      *
-     * @return HomehelpMonth
+     * @return ClubVisit
      */
     public function setCreatedAt($createdAt)
     {
@@ -229,7 +242,7 @@ class HomehelpMonth
      *
      * @param integer $modifiedBy
      *
-     * @return HomehelpMonth
+     * @return ClubVisit
      */
     public function setModifiedBy($modifiedBy)
     {
@@ -253,7 +266,7 @@ class HomehelpMonth
      *
      * @param \DateTime $modifiedAt
      *
-     * @return HomehelpMonth
+     * @return ClubVisit
      */
     public function setModifiedAt($modifiedAt)
     {
@@ -273,85 +286,26 @@ class HomehelpMonth
     }
 
     /**
-     * Set rowheaders
+     * Set client
      *
-     * @param array $rowheaders
+     * @param \JCSGYK\AdminBundle\Entity\Client $client
      *
-     * @return HomehelpMonth
+     * @return ClubVisit
      */
-    public function setRowheaders($rowheaders)
+    public function setClient(\JCSGYK\AdminBundle\Entity\Client $client = null)
     {
-        $this->rowheaders = $rowheaders;
+        $this->client = $client;
 
         return $this;
     }
 
     /**
-     * Get rowheaders
+     * Get client
      *
-     * @return array
+     * @return \JCSGYK\AdminBundle\Entity\Client
      */
-    public function getRowheaders()
+    public function getClient()
     {
-        return $this->rowheaders;
-    }
-
-    /**
-     * Set data
-     *
-     * @param array $data
-     *
-     * @return HomehelpMonth
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-
-        return $this;
-    }
-
-    /**
-     * Get data
-     *
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-
-    /**
-     * Add hmClient
-     *
-     * @param \JCSGYK\AdminBundle\Entity\HomehelpmonthsClients $hmClient
-     *
-     * @return Homehelpmonth
-     */
-    public function addHmClient(\JCSGYK\AdminBundle\Entity\HomehelpmonthsClients $hmClient)
-    {
-        $this->hmClients[] = $hmClient;
-
-        return $this;
-    }
-
-    /**
-     * Remove hmClient
-     *
-     * @param \JCSGYK\AdminBundle\Entity\HomehelpmonthsClients $hmClient
-     */
-    public function removeHmClient(\JCSGYK\AdminBundle\Entity\HomehelpmonthsClients $hmClient)
-    {
-        $this->hmClients->removeElement($hmClient);
-    }
-
-    /**
-     * Get hmClients
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getHmClients()
-    {
-        return $this->hmClients;
+        return $this->client;
     }
 }

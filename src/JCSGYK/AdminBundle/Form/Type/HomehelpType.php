@@ -8,18 +8,22 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use JCSGYK\AdminBundle\Entity\Homehelp;
 use JCSGYK\AdminBundle\Services\DataStore;
 use JCSGYK\AdminBundle\Entity\ClubRepository;
+use JCSGYK\AdminBundle\Entity\Club;
 
 class HomehelpType extends AbstractType
 {
+    /** @var DataStore */
     private $ds;
+    /** @var array clubs of the active user */
     private $clubs;
 
     /**
      * Save the Datastore for parameter retrieval
      *
-     * @param \JCSGYK\AdminBundle\Services\DataStore $ds
+     * @param DataStore $ds
+     * @param array $clubs
      */
-    public function __construct(DataStore $ds, $clubs)
+    public function __construct(DataStore $ds, array $clubs)
     {
         $this->ds = $ds;
         $this->clubs = $clubs;
@@ -48,6 +52,7 @@ class HomehelpType extends AbstractType
         $builder->add('social_worker', 'choice', [
             'label'   => 'Gondozó',
             'choices' => $social_workers,
+            'required' => false,
         ]);
 
         $handicaps = $this->ds->getGroup('handicaps');
@@ -95,7 +100,7 @@ class HomehelpType extends AbstractType
             'required' => false,
         ]);
         $builder->add('agreement_from', 'date', [
-            'label' => 'Megállapodás kezdete',
+            'label' => 'Megállapodás',
             'widget' => 'single_text',
             'attr' => array('class' => 'datepicker', 'type' => 'text'),
             'required' => false,

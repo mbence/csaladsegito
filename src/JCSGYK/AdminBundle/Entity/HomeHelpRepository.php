@@ -40,6 +40,32 @@ class HomeHelpRepository extends EntityRepository
     }
 
     /**
+     * Returns the clients of the selected Club
+     * @param int $club id
+     * @param int $company_id
+     * @param bool $active
+     * @return Client[]
+     */
+    public function getClientsByClub($club, $company_id, $active = true, $only_ids = false)
+    {
+        $selector = $only_ids ? 'c.id': 'c, h';
+
+        $result = $this->getEntityManager()
+            ->createQuery("SELECT {$selector} FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE h.club = :club AND c.companyId = :co AND c.isArchived=0 AND h.isActive = :active ORDER BY c.lastname, c.firstname")
+            ->setParameter('club', $club)
+            ->setParameter('co', $company_id)
+            ->setParameter('active', $active)
+            ->getResult();
+
+        // convert the results to a 1 dimension array
+        if ($only_ids) {
+            $result = array_map('current', $result);
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns the clients with active home help
      * @param int $company_id
      * @return Client[]
@@ -52,14 +78,13 @@ class HomeHelpRepository extends EntityRepository
             ->getResult();
     }
 
-
     /**
      * Get the open (or closed) months for a client in a given period
      * @param $client_id
      * @param \DateTime $start
      * @param \DateTime $end
      * @param int $is_closed
-     * @return array of HomehelpMonth
+     * @return HomehelpMonth[]
      */
     public function getClientMonths($client_id, \DateTime $start, \DateTime $end, $is_closed = 0)
     {

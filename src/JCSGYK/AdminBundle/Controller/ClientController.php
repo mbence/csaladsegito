@@ -2,6 +2,7 @@
 
 namespace JCSGYK\AdminBundle\Controller;
 
+use JCSGYK\AdminBundle\Services\DataStore;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -262,6 +263,12 @@ class ClientController extends Controller
                 $catering->setClient($client);
                 $catering->setIsActive(false);
                 $client->setCatering($catering);
+                // try to set the club
+                $my_clubs = $ds->getMyClubs();
+                if (!empty($my_clubs)) {
+                    $my_first_club = reset($my_clubs);
+                    $catering->setClub($my_first_club);
+                }
             }
             $original_catering = clone $catering;
 
@@ -339,6 +346,7 @@ class ClientController extends Controller
     {
         if (!empty($id)) {
             $em         = $this->getDoctrine()->getManager();
+            /** @var DataStore $ds */
             $ds         = $this->container->get('jcs.ds');
             $sec        = $this->get('security.context');
             $user       = $sec->getToken()->getUser();
@@ -358,6 +366,12 @@ class ClientController extends Controller
                 $homehelp->setClient($client);
                 $homehelp->setIsActive(false);
                 $client->setHomehelp($homehelp);
+                // try to set the club
+                $my_clubs = $ds->getMyClubs();
+                if (!empty($my_clubs)) {
+                    $my_first_club = reset($my_clubs);
+                    $homehelp->setClub($my_first_club);
+                }
             }
 
             $form = $this->createForm(new HomehelpType($ds, $clubs), $homehelp);
@@ -383,7 +397,7 @@ class ClientController extends Controller
 
                 // update Catering record if necessary
                 $catering = $client->getCatering();
-                if (!empty($catering)) {
+                if (!empty($catering) && !empty($homehelp->getIncome())) {
                     $catering->setClub($homehelp->getClub());
                     $catering->setIncome($homehelp->getIncome());
                 }
@@ -398,7 +412,7 @@ class ClientController extends Controller
             return $this->render('JCSGYKAdminBundle:Homehelp:homehelp_dialog.html.twig', [
                 'client'          => $client,
                 'form'            => $form->createView(),
-                'clubs_menu_list' => json_encode($ds->getClubsMenuList($clubs)),
+                'clubs_type_list' => json_encode($ds->getClubsTypeList($clubs)),
             ]);
         }
         else {
@@ -1555,16 +1569,29 @@ class ClientController extends Controller
                     }
                 }
             }
+            // get the users club-type for catering clients
+            $club_type = HomeHelp::VISIT;
+            if (Client::CA == $client->getType()) {
+                // check catering record
+                if ($catering = $client->getCatering()) {
+                    $club_type = $catering->getClub()->getHomehelptype();
+                } elseif ($homehelp = $client->getHomehelp()) {
+                    $club_type = $homehelp->getClub()->getHomehelptype();
+                }
+            }
+            $club_type_label = HomeHelp::HELP == $club_type ? 'gondozás' : 'látogatás';
 
             return $this->render('JCSGYKAdminBundle:Client:view.html.twig', [
-                'client' => $client,
-                'problems' => $problems,
-                'can_edit' => $client->canEdit($sec),
-                'display_type' => count($client_types) > 1,  // only display the client type if there are more then one types of this company
-                'relatives' => $relatives,
-                'new_relations' => $relation_types,
-                'client_type' => $client->getType(),
-                'logs'  => $this->container->get('history.logger')->getLogs($client),
+                'client'          => $client,
+                'problems'        => $problems,
+                'can_edit'        => $client->canEdit($sec),
+                'display_type'    => count($client_types) > 1,  // only display the client type if there are more then one types of this company
+                'relatives'       => $relatives,
+                'new_relations'   => $relation_types,
+                'client_type'     => $client->getType(),
+                'logs'            => $this->container->get('history.logger')->getLogs($client),
+                'club_type'       => $club_type,
+                'club_type_label' => $club_type_label,
             ]);
         }
         else {
