@@ -44,6 +44,43 @@ class StatArchiveService
     /** Process summary text */
     private $summary = '';
 
+    private $incomeHeaders = [
+        0 => '28 500 alatt',
+        1 => '57 000-ig',
+        2 => '85 000-ig',
+        3 => '114 000-ig',
+        4 => '114 000 felett'
+    ];
+    private $incomeRanges = [
+        0 => [0, 28500],
+        1 => [28501, 57000],
+        2 => [57001, 85000],
+        3 => [85001, 114000],
+        4 => [114001, 99999999],
+    ];
+    private $ageHeaders = [
+        0 => '18 év alatt',
+        1 => '18-39 évig',
+        2 => '40-59 évig',
+        3 => '60-64 évig',
+        4 => '65-69 évig',
+        5 => '70-74 évig',
+        6 => '75-79 évig',
+        7 => '80-89 évig',
+        8 => '90 év felett',
+    ];
+    private $ageRanges = [
+        0 =>  [0, 18],
+        1 =>  [18, 39],
+        2 =>  [40, 59],
+        3 =>  [60, 64],
+        4 =>  [65, 69],
+        5 =>  [70, 74],
+        6 =>  [75, 79],
+        7 =>  [80, 89],
+        8 =>  [90, 999],
+    ];
+
     /** Constructor
      * @param Container $container
      */
@@ -289,46 +326,12 @@ class StatArchiveService
             $data['blocks']['ownership'][$o] = 0;
         }
         // ranges
-        $data['blocks']['income_headers'] = [
-            0 => '28 500 alatt',
-            1 => '57 000-ig',
-            2 => '85 000-ig',
-            3 => '114 000-ig',
-            4 => '114 000 felett'
-        ];
-        $income_ranges = [
-            0 => [0, 28500],
-            1 => [28501, 57000],
-            2 => [57001, 85000],
-            3 => [85001, 114000],
-            4 => [114001, 99999999],
-        ];
-        foreach ($income_ranges as $k => $v) {
+        $data['blocks']['income_headers'] = $this->incomeHeaders;
+        foreach ($this->incomeRanges as $k => $v) {
             $data['blocks']['income'][$k] = 0;
         }
-        $data['blocks']['age_headers'] = [
-            0 => '18 év alatt',
-            1 => '18-39 évig',
-            2 => '40-59 évig',
-            3 => '60-64 évig',
-            4 => '65-69 évig',
-            5 => '70-74 évig',
-            6 => '75-79 évig',
-            7 => '80-89 évig',
-            8 => '90 év felett',
-        ];
-        $age_ranges = [
-            0 =>  [0, 18],
-            1 =>  [18, 39],
-            2 =>  [40, 59],
-            3 =>  [60, 64],
-            4 =>  [65, 69],
-            5 =>  [70, 74],
-            6 =>  [75, 79],
-            7 =>  [80, 89],
-            8 =>  [90, 999],
-        ];
-        foreach ($age_ranges as $k => $v) {
+        $data['blocks']['age_headers'] = $this->ageHeaders;
+        foreach ($this->ageRanges as $k => $v) {
             $data['blocks']['age_2'][$k] = 0;
             $data['blocks']['age_1'][$k] = 0;
         }
@@ -404,7 +407,7 @@ class StatArchiveService
                     $data['blocks']['ownership'][$params[204]]++;
                 }
                 // income
-                $k = $this->getRangeKey($client->getCatering()->getIncome(), $income_ranges);
+                $k = $this->getRangeKey($client->getCatering()->getIncome(), $this->incomeRanges);
                 if (false !== $k) {
                     $data['blocks']['income'][$k]++;
                 }
@@ -413,7 +416,7 @@ class StatArchiveService
                 $bday = $client->getBirthDate();
                 if (!empty($bday)) {
                     $age = $now->diff($bday)->format('%y');
-                    $k = $this->getRangeKey($age, $age_ranges);
+                    $k = $this->getRangeKey($age, $this->ageRanges);
                     if (false !== $k) {
                         $data['blocks']['age_' . $gen][$k]++;
                     }
@@ -540,18 +543,50 @@ class StatArchiveService
      */
     private function run402(Club $club, \DateTime $start, \DateTime $end)
     {
-        // check for user roles and set the params accordingly
-        $company_id = $this->ds->getCompanyId();
-        /** @var InvoiceService $invoice_service */
-        $invoice_service = $this->container->get('jcs.invoice');
+        // prepare the data array
+        $data = $this->prepare402Data($club, $start);
 
-        $month = $start;
-        $start_date = $start->format('Y-m-d');
-        $end_date   = $end->format('Y-m-d');
-        $now = new \DateTime();
+        // get all the clients for this period
+        $clients = $this->get402Clients($club, $end);
+
+        // loop through the clients
+        foreach ($clients as $client) {
+            // check if the client was active or archived in this period
+            $is_archived = $this->getArchivedState($client, $start, $end, $data);
+
+            if (!$is_archived) {
+                // calculate the base stats
+                $data = $this->get402BaseData($client, $start, $end, $data);
+            }
+        }
+
+        if (HomeHelp::HELP == $club->getHomehelptype()) {
+            $data = $this->get402InvoiceData($club, $start, $end, $data);
+        } else {
+            $data = $this->get402VisitData($club, $start, $end, $data);
+        }
+
+        $template_file = __DIR__ . '/../Resources/public/reports/homehelp_stats.xlsx';
+
+        return [
+            'type' => !empty($club) ? $club->getId() : null,
+            'data' => $data,
+            'file' => $this->container->get('jcs.docx')->make($template_file, $data, null)
+        ];
+    }
+
+    /**
+     * Prepare the data array
+     * @param Club $club
+     * @param \DateTime $month
+     * @return array
+     */
+    private function prepare402Data(Club $club, \DateTime $month)
+    {
+        $type_label = HomeHelp::HELP == $club->getHomehelptype() ? 'GONDOZÁS' : 'LÁTOGATÁS';
 
         $data = [
-            'ca.cim'          => sprintf('%s havi GONDOZÁS statisztika', $this->ae->formatDate($month, 'ym')),
+            'ca.cim'          => sprintf('%s havi %s statisztika', $this->ae->formatDate($month, 'ym'), $type_label),
             'ca.klub'         => empty($club) ? '' : sprintf(' (%s)', $club->getName()),
             'sp.datum'        => $this->ae->formatDate(new \DateTime('today')),
             'cnum.start'      => 0,
@@ -587,166 +622,167 @@ class StatArchiveService
             $data['blocks']['ownership'][$o] = 0;
         }
         // ranges
-        $data['blocks']['income_headers'] = [
-            0 => '28 500 alatt',
-            1 => '57 000-ig',
-            2 => '85 000-ig',
-            3 => '114 000-ig',
-            4 => '114 000 felett'
-        ];
-        $income_ranges = [
-            0 => [0, 28500],
-            1 => [28501, 57000],
-            2 => [57001, 85000],
-            3 => [85001, 114000],
-            4 => [114001, 99999999],
-        ];
-        foreach ($income_ranges as $k => $v) {
+        $data['blocks']['income_headers'] = $this->incomeHeaders;
+        foreach ($this->incomeRanges as $k => $v) {
             $data['blocks']['income'][$k] = 0;
         }
-        $data['blocks']['age_headers'] = [
-            0 => '18 év alatt',
-            1 => '18-39 évig',
-            2 => '40-59 évig',
-            3 => '60-64 évig',
-            4 => '65-69 évig',
-            5 => '70-74 évig',
-            6 => '75-79 évig',
-            7 => '80-89 évig',
-            8 => '90 év felett',
-        ];
-        $age_ranges = [
-            0 =>  [0, 18],
-            1 =>  [18, 39],
-            2 =>  [40, 59],
-            3 =>  [60, 64],
-            4 =>  [65, 69],
-            5 =>  [70, 74],
-            6 =>  [75, 79],
-            7 =>  [80, 89],
-            8 =>  [90, 999],
-        ];
-        foreach ($age_ranges as $k => $v) {
+        $data['blocks']['age_headers'] = $this->ageHeaders;
+
+        foreach ($this->ageRanges as $k => $v) {
             $data['blocks']['age_2'][$k] = 0;
             $data['blocks']['age_1'][$k] = 0;
         }
 
-        // get all the clients for this period
-        $sql = "SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h "
+        return $data;
+    }
+
+    /**
+     * Get the clients for this period
+     * @param Club $club
+     * @param int $company_id
+     * @param \DateTime $end_date
+     * @return Client[]
+     */
+    private function get402Clients(Club $club, \DateTime $end)
+    {
+        $dql = "SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h "
                 . "WHERE c.companyId = :company_id AND c.createdAt <= :end";
         if (!empty($club)) {
-            $sql .= ' AND h.club = :club';
+            $dql .= ' AND h.club = :club';
         }
 
-        $q = $this->em->createQuery($sql)
-            ->setParameter('company_id', $company_id)
-            ->setParameter('end', $end_date)
+        $query = $this->em->createQuery($dql)
+            ->setParameter('company_id', $this->ds->getCompanyId())
+            ->setParameter('end', $end->format('Y-m-d'))
         ;
         if (!empty($club)) {
-            $q->setParameter('club', $club);
+            $query->setParameter('club', $club);
         }
-        $res = $q->getResult();
 
-        // loop through the clients
-        foreach ($res as $client) {
+        return $query->getResult();
+    }
 
-            $params = $client->getParams();
-            // check if the client was active or archived in this period
-            $is_archived = false;
-            if ($client->getIsArchived()) {
-                // she is archived now, but when was she archived?
-                $archive_date = $this->getArchiveDate($client);
-                if (!is_null($archive_date)) {
-                    if ($start <= $archive_date && $end >= $archive_date) {
-                        // client was archived during the stat period
-                        $data['cnum.archived']++;
-                        // we don't need her data, unless she was added in this month
-                        if ($client->getCreatedAt() < $month) {
-                            $is_archived = true;
-                        }
-                    }
-                    elseif ($month > $archive_date) {
-                        // client was archived before the start
+    /**
+     * Get the archived state of the client in the given time period and increase the $data['cnum.archived'] if necessary
+     * @param Client $client
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param array &$data
+     * @return boolean
+     */
+    private function getArchivedState(Client $client, \DateTime $start, \DateTime $end, &$data)
+    {
+        $is_archived = false;
+        if ($client->getIsArchived()) {
+            // she is archived now, but when was she archived?
+            $archive_date = $this->getArchiveDate($client);
+            if (!is_null($archive_date)) {
+                if ($start <= $archive_date && $end >= $archive_date) {
+                    // client was archived during the stat period
+                    $data['cnum.archived']++;
+                    // we don't need her data, unless she was added in this month
+                    if ($client->getCreatedAt() < $start) {
                         $is_archived = true;
                     }
-                    // otherwise the client was archived after the end of the period, that means we still need her data
                 }
-            }
-
-            if (!$is_archived) {
-                /** @var HomeHelp $homehelp */
-                $homehelp = $client->getHomehelp();
-
-                if ($client->getCreatedAt() < $month) {
-                    $data['cnum.start']++;
+                elseif ($start > $archive_date) {
+                    // client was archived before the start
+                    $is_archived = true;
                 }
-                else {
-                    $data['cnum.new']++;
-                }
-                // comfort
-                if (!empty($params[200])) {
-                    if (!isset($data['blocks']['comfort'][$params[200]])) {
-                        $data['blocks']['comfort'][$params[200]] = 0;
-                    }
-                    $data['blocks']['comfort'][$params[200]]++;
-                }
-                // ownership
-                if (!empty($params[204])) {
-                    if (!isset($data['blocks']['ownership'][$params[204]])) {
-                        $data['blocks']['ownership'][$params[204]] = 0;
-                    }
-                    $data['blocks']['ownership'][$params[204]]++;
-                }
-                // income
-                $k = $this->getRangeKey($homehelp->getIncome(), $income_ranges);
-                if (false !== $k) {
-                    $data['blocks']['income'][$k]++;
-                }
-                // age
-                $gen = $client->getGender();
-                $bday = $client->getBirthDate();
-                if (!empty($bday)) {
-                    $age = $now->diff($bday)->format('%y');
-                    $k = $this->getRangeKey($age, $age_ranges);
-                    if (false !== $k) {
-                        $data['blocks']['age_' . $gen][$k]++;
-                    }
-                }
-                if ($gen == 1) {
-                    $data['cnum.man']++;
-                }
-                elseif ($gen == 2) {
-                    $data['cnum.woman']++;
-                }
-                // active homehelp
-                if ($client->getHomehelp()->getIsActive()) {
-                    $data['cnum.active']++;
-                }
-                if ($homehelp->getInpatient()) {
-                    $data['cnum.inpatient']++;
-                }
+                // otherwise the client was archived after the end of the period, that means we still need her data
             }
         }
 
-        // get the invoices
-        $sql0 = "SELECT i FROM JCSGYKAdminBundle:Invoice i JOIN i.client c JOIN c.homehelp h "
-            . "WHERE c.companyId = :company_id AND i.endDate >= :month_start AND i.endDate <= :month_end AND i.invoicetype IN (:types)";
-        if (!empty($club)) {
-            $sql0 .= ' AND h.club = :club';
+        return $is_archived;
+    }
+
+    /**
+     * Calculate the base stats from this client
+     * @param Client $client
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param array $data
+     * @return array
+     */
+    private function get402BaseData(Client $client, \DateTime $start, \DateTime $end, $data)
+    {
+        $params = $client->getParams();
+        $now = new \DateTime();
+
+        /** @var HomeHelp $homehelp */
+        $homehelp = $client->getHomehelp();
+
+        if ($client->getCreatedAt() < $start) {
+            $data['cnum.start']++;
+        }
+        else {
+            $data['cnum.new']++;
+        }
+        // comfort
+        if (!empty($params[200])) {
+            if (!isset($data['blocks']['comfort'][$params[200]])) {
+                $data['blocks']['comfort'][$params[200]] = 0;
+            }
+            $data['blocks']['comfort'][$params[200]]++;
+        }
+        // ownership
+        if (!empty($params[204])) {
+            if (!isset($data['blocks']['ownership'][$params[204]])) {
+                $data['blocks']['ownership'][$params[204]] = 0;
+            }
+            $data['blocks']['ownership'][$params[204]]++;
+        }
+        // income
+        $k = $this->getRangeKey($homehelp->getIncome(), $this->incomeRanges);
+        if (false !== $k) {
+            $data['blocks']['income'][$k]++;
+        }
+        // age
+        $gen = $client->getGender();
+        $bday = $client->getBirthDate();
+        if (!empty($bday)) {
+            $age = $now->diff($bday)->format('%y');
+            $k = $this->getRangeKey($age, $this->ageRanges);
+            if (false !== $k) {
+                $data['blocks']['age_' . $gen][$k]++;
+            }
+        }
+        if ($gen == 1) {
+            $data['cnum.man']++;
+        }
+        elseif ($gen == 2) {
+            $data['cnum.woman']++;
+        }
+        // active homehelp
+        if ($client->getHomehelp()->getIsActive()) {
+            $data['cnum.active']++;
+        }
+        if ($homehelp->getInpatient()) {
+            $data['cnum.inpatient']++;
         }
 
-        $q0 = $this->em->createQuery($sql0)
-            ->setParameter('company_id', $company_id)
-            ->setParameter('month_start', $start_date)
-            ->setParameter('month_end', $end_date)
-            ->setParameter('types', [Invoice::HOMEHELP])
-        ;
-        if (!empty($club)) {
-            $q0->setParameter('club', $club);
-        }
-        $res0 = $q0->getResult();
-        if (!empty($res0)) {
-            foreach ($res0 as $invoice) {
+        $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'];
+        $data['cnum.end'] = $data['cnum.all'] - $data['cnum.archived'];
+
+        $data['inv.sum'] = $this->ae->formatCurrency($data['inv.sum']);
+
+        return $data;
+    }
+
+    /**
+     * Get the stat data from the Home help invoices
+     * @param Club $club
+     * @param \DateTime $start_date
+     * @param \DateTime $end_date
+     * @param array $data
+     * @return array
+     */
+    private function get402InvoiceData(Club $club, \DateTime $start, \DateTime $end, $data)
+    {
+        $invoices = $this->get402InvoiceResults($club, $start, $end);
+
+        if (!empty($invoices)) {
+            foreach ($invoices as $invoice) {
                 // loop through the invoices
                 $client_id = $invoice->getClient()->getId();
                 $items = json_decode($invoice->getItems(), true);
@@ -790,19 +826,86 @@ class StatArchiveService
         $data['inv.disccli'] = count($data['inv.disccli']);
         $data['inv.paycli'] = count($data['inv.paycli']);
 
-        $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'];
-        $data['cnum.end'] = $data['cnum.all'] - $data['cnum.archived'];
-
-        $data['inv.sum'] = $this->ae->formatCurrency($data['inv.sum']);
-
-        $template_file = __DIR__ . '/../Resources/public/reports/homehelp_stats.xlsx';
-
-        return [
-            'type' => !empty($club) ? $club->getId() : null,
-            'data' => $data,
-            'file' => $this->container->get('jcs.docx')->make($template_file, $data, null)
-        ];
+        return $data;
     }
+
+    /**
+     * Get the invoices for this time period and club
+     * @param Club $club
+     * @param \DateTime $start_date
+     * @param \DateTime $end_date
+     * @return Invoice[]
+     */
+    private function get402InvoiceResults(Club $club, \DateTime $start, \DateTime $end)
+    {
+        // get the invoices
+        $dql = "SELECT i FROM JCSGYKAdminBundle:Invoice i JOIN i.client c JOIN c.homehelp h "
+            . "WHERE c.companyId = :company_id AND i.endDate >= :month_start AND i.endDate <= :month_end AND i.invoicetype IN (:types) AND h.club = :club";
+
+        $query = $this->em->createQuery($dql)
+            ->setParameter('company_id', $this->ds->getCompanyId())
+            ->setParameter('month_start', $start->format('Y-m-d'))
+            ->setParameter('month_end', $end->format('Y-m-d'))
+            ->setParameter('types', [Invoice::HOMEHELP])
+            ->setParameter('club', $club)
+        ;
+
+        return $query->getResult();
+    }
+
+    /**
+     * Get the stat data from the ClubVisit records
+     * @param Club $club
+     * @param \DateTime $start_date
+     * @param \DateTime $end_date
+     * @param array $data
+     * @return array
+     */
+    private function get402VisitData(Club $club, \DateTime $start, \DateTime $end, $data)
+    {
+        $visits = $this->get402VisitResults($club, $start, $end);
+
+        if (!empty($visits)) {
+            foreach ($visits as $visit) {
+                // loop through the visits
+                $client_id = $visit->getClient()->getId();
+                if ($visit->getVisit()) {
+                    $data['inv.visits']++;
+                    $events = $visit->getEvents();
+                    $data['inv.disccli'][$client_id] = 1;
+                }
+            }
+        }
+        // get only the client counts
+        $data['inv.disccli'] = count($data['inv.disccli']);
+        $data['inv.paycli'] = count($data['inv.paycli']);
+
+        return $data;
+    }
+
+    /**
+     * Get the invoices for this time period and club
+     * @param Club $club
+     * @param \DateTime $start_date
+     * @param \DateTime $end_date
+     * @return ClubVisit[]
+     */
+    private function get402VisitResults(Club $club, \DateTime $start, \DateTime $end)
+    {
+        // get the ClubVisits
+        $dql = "SELECT cv FROM JCSGYKAdminBundle:ClubVisit cv JOIN cv.client c JOIN c.homehelp h "
+            . "WHERE c.companyId = :company_id AND cv.date >= :month_start AND cv.date <= :month_end AND h.club = :club";
+
+        $query = $this->em->createQuery($dql)
+            ->setParameter('company_id', $this->ds->getCompanyId())
+            ->setParameter('month_start', $start->format('Y-m-d'))
+            ->setParameter('month_end', $end->format('Y-m-d'))
+            ->setParameter('club', $club)
+        ;
+
+        return $query->getResult();
+    }
+
 
     /**
      * Returns the date when the client was archived
