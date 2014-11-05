@@ -3394,7 +3394,7 @@ h2.menu-section {
     width: 100px;
 }
 .ui-datepicker {
-    z-index: 1000 !important;
+    z-index: 10000 !important;
 }
 .clearfix:after {
   content: ".";

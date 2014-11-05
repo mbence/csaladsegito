@@ -224,6 +224,7 @@ class ClientController extends Controller
             return $this->render('JCSGYKAdminBundle:Homehelp:_homehelp.html.twig', [
                 'client' => $client,
                 'homehelp' => $client->getHomehelp(),
+                'club_type_label' => $this->getClubTypeLabel($client),
             ]);
         }
         else {
@@ -413,6 +414,7 @@ class ClientController extends Controller
                 'client'          => $client,
                 'form'            => $form->createView(),
                 'clubs_type_list' => json_encode($ds->getClubsTypeList($clubs)),
+                'club_type_label' => $this->getClubTypeLabel($client),
             ]);
         }
         else {
@@ -1569,17 +1571,6 @@ class ClientController extends Controller
                     }
                 }
             }
-            // get the users club-type for catering clients
-            $club_type = HomeHelp::VISIT;
-            if (Client::CA == $client->getType()) {
-                // check catering record
-                if ($catering = $client->getCatering()) {
-                    $club_type = $catering->getClub()->getHomehelptype();
-                } elseif ($homehelp = $client->getHomehelp()) {
-                    $club_type = $homehelp->getClub()->getHomehelptype();
-                }
-            }
-            $club_type_label = HomeHelp::HELP == $club_type ? 'gondozás' : 'látogatás';
 
             return $this->render('JCSGYKAdminBundle:Client:view.html.twig', [
                 'client'          => $client,
@@ -1590,13 +1581,36 @@ class ClientController extends Controller
                 'new_relations'   => $relation_types,
                 'client_type'     => $client->getType(),
                 'logs'            => $this->container->get('history.logger')->getLogs($client),
-                'club_type'       => $club_type,
-                'club_type_label' => $club_type_label,
+                'club_type'       => $this->getClubtype($client),
+                'club_type_label' => $this->getClubTypeLabel($client),
             ]);
         }
         else {
             throw new BadRequestHttpException('Invalid client id');
         }
+    }
+
+    private function getClubTypeLabel(Client $client)
+    {
+        $club_type = $this->getClubtype($client);
+
+        return HomeHelp::HELP == $club_type ? 'gondozás' : 'látogatás';
+    }
+
+    private function getClubtype(Client $client)
+    {
+        // get the users club-type for catering clients
+        $club_type = HomeHelp::VISIT;
+        if (Client::CA == $client->getType()) {
+            // check catering record
+            if ($catering = $client->getCatering()) {
+                $club_type = $catering->getClub()->getHomehelptype();
+            } elseif ($homehelp = $client->getHomehelp()) {
+                $club_type = $homehelp->getClub()->getHomehelptype();
+            }
+        }
+
+        return $club_type;
     }
 
     /**

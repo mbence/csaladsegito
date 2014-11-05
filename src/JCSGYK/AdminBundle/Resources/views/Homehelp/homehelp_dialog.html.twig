@@ -5,7 +5,7 @@
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
 {% else %}
     <div class="modal-middle">
-        <h1 class="client center">{{ 'Gondozás'|trans }}</h1>
+        <h1 class="client center">{{ club_type_label|trans|capitalize }}</h1>
 
         <form id="catering_form" class="templateform" action="{{ path('client_homehelp_edit', {'id': client.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
             {{ form_errors(form) }}
