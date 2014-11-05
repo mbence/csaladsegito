@@ -337,30 +337,32 @@ JcsSettings =
         data_field = if $("#options_value").length then "#options_value" else "#form_value"
 
         tableData = if $(data_field).val() then JSON.parse($(data_field).val()) else {}
-        # merge the options
-        options = $.extend(true,{},@tableDefaults,tableDefaultOptions)
 
-        # before change event only for home help
-        options.beforeChange = (changes, source) ->
-            if changes != null and options.sums? and options.sums
-                changes = JcsSettings.decFix(changes, source)
-                if $.isNumeric(changes[0][3]) and changes[0][3] < 0
-                    return false
-                JcsSettings.sums(changes, source)
+        if tableData.length > 0
+            # merge the options
+            options = $.extend(true,{},@tableDefaults,tableDefaultOptions)
 
-        # after change event
-        options.afterChange = (changes, source) ->
-            if changes != null
-                $(data_field).val(JSON.stringify(tableData))
+            # before change event only for home help
+            options.beforeChange = (changes, source) ->
+                if changes != null and options.sums? and options.sums
+                    changes = JcsSettings.decFix(changes, source)
+                    if $.isNumeric(changes[0][3]) and changes[0][3] < 0
+                        return false
+                    JcsSettings.sums(changes, source)
 
-        options.data = tableData
+            # after change event
+            options.afterChange = (changes, source) ->
+                if changes != null
+                    $(data_field).val(JSON.stringify(tableData))
 
-        # use the cells formatting function?
-        if options.cells? and options.cells
-                options.cells = @cells
+            options.data = tableData
 
-        # fire up the table!
-        $("#handsontable").handsontable(options)
+            # use the cells formatting function?
+            if options.cells? and options.cells
+                    options.cells = @cells
+
+            # fire up the table!
+            $("#handsontable").handsontable(options)
 
         # discount datepicker
         $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' })

@@ -414,9 +414,10 @@ class ClubvisitController extends Controller
 
         // if no club provided, select the first from the list
         if (empty($club_id)) {
-            $clubs = $ds->getMyClubs();
+            $clubs = $ds->getClubs();
             $first_club = reset($clubs);
             $club_id = $first_club ? $first_club->getId() : false;
+            var_dump($club_id);
         }
         // find the clients of this club
         $clients = [];

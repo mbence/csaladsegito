@@ -1124,26 +1124,28 @@ JcsSettings = {
     }
     data_field = $("#options_value").length ? "#options_value" : "#form_value";
     tableData = $(data_field).val() ? JSON.parse($(data_field).val()) : {};
-    options = $.extend(true, {}, this.tableDefaults, tableDefaultOptions);
-    options.beforeChange = function(changes, source) {
-      if (changes !== null && (options.sums != null) && options.sums) {
-        changes = JcsSettings.decFix(changes, source);
-        if ($.isNumeric(changes[0][3]) && changes[0][3] < 0) {
-          return false;
+    if (tableData.length > 0) {
+      options = $.extend(true, {}, this.tableDefaults, tableDefaultOptions);
+      options.beforeChange = function(changes, source) {
+        if (changes !== null && (options.sums != null) && options.sums) {
+          changes = JcsSettings.decFix(changes, source);
+          if ($.isNumeric(changes[0][3]) && changes[0][3] < 0) {
+            return false;
+          }
+          return JcsSettings.sums(changes, source);
         }
-        return JcsSettings.sums(changes, source);
+      };
+      options.afterChange = function(changes, source) {
+        if (changes !== null) {
+          return $(data_field).val(JSON.stringify(tableData));
+        }
+      };
+      options.data = tableData;
+      if ((options.cells != null) && options.cells) {
+        options.cells = this.cells;
       }
-    };
-    options.afterChange = function(changes, source) {
-      if (changes !== null) {
-        return $(data_field).val(JSON.stringify(tableData));
-      }
-    };
-    options.data = tableData;
-    if ((options.cells != null) && options.cells) {
-      options.cells = this.cells;
+      $("#handsontable").handsontable(options);
     }
-    $("#handsontable").handsontable(options);
     return $('.datepicker').datepicker({
       dateFormat: 'yy-mm-dd'
     });
