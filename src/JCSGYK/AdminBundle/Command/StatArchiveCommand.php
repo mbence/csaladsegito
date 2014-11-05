@@ -23,7 +23,7 @@ class StatArchiveCommand extends ContainerAwareCommand
             ->setDescription('Run the Monthly Statistics')
             ->addArgument('company', InputArgument::REQUIRED, 'Company ID')
             ->addOption('month', null, InputOption::VALUE_REQUIRED, 'Month')
-            ->addOption('stat', null, InputOption::VALUE_REQUIRED, 'Id of the stat to run')
+            ->addOption('stat', null, InputOption::VALUE_REQUIRED, 'Id of the stat to run: 401 - catering, 402 - home help')
         ;
     }
 
