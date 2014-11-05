@@ -13,7 +13,7 @@ class Version20141103132510 extends AbstractMigration
     public function up(Schema $schema)
     {
         $this->addSql("INSERT INTO `parameter` VALUES ('', '1', 'club_events', '1', 'Ügyintézés', '1'), ('', '1', 'club_events', '2', 'Mentális tanácsadás', '1'), ('', '1', 'club_events', '3', 'Szabadidős program', '1'), ('', '1', 'club_events', '4', 'Egyéb', '1');");
-        $this->addSql("ALTER TABLE `homehelp_month` DROP COLUMN `homehelptype`, DROP COLUMN `club_id`;");
+//        $this->addSql("ALTER TABLE `homehelp_month` DROP COLUMN `homehelptype`, DROP COLUMN `club_id`;");
         $this->addSql("CREATE TABLE `club_visit` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `company_id` int(11) NOT NULL,
@@ -34,7 +34,7 @@ class Version20141103132510 extends AbstractMigration
     public function down(Schema $schema)
     {
         $this->addSql("DELETE FROM `parameter` WHERE company_id=1 AND group_id='club_events';");
-        $this->addSql("ALTER TABLE `homehelp_month` ADD COLUMN `homehelptype` smallint, ADD COLUMN `club_id` int;");
+//        $this->addSql("ALTER TABLE `homehelp_month` ADD COLUMN `homehelptype` smallint, ADD COLUMN `club_id` int;");
         $this->addSql("DROP TABLE IF EXISTS `club_visit`;");
     }
 }

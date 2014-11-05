@@ -9,16 +9,20 @@
         {{ form_start(filter_form, {"attr": {"id": "clubvisitfilter", "class": "homehelpfilter editform" }}) }}
             {{ form_errors(filter_form) }}
 
-            <div class="hh-header">
+            <div class="hh-header bottompad4">
                 {{ form_errors(filter_form.club) }}
                 {{ form_label(filter_form.club) }}:
                 {{ form_widget(filter_form.club) }}
                 {{ form_label(filter_form.date) }}:
+                {% spaceless %}
+                {{ form_widget(filter_form.back) }}
                 {{ form_widget(filter_form.date) }}
+                {{ form_widget(filter_form.forward) }}
+                {% endspaceless %}
             </div>
         {{ form_end(filter_form) }}
 
-        <div id="handsontable" class="homehelp-table"></div>
+        <div id="handsontable" class="homehelp-table clubvisit-table"></div>
         {{ form_start(form, {"attr": {"id": "homehelpform", "class": "homehelpform" }}) }}
 
             {{ form_widget(form.value) }}

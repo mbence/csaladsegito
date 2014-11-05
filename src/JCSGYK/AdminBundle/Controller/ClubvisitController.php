@@ -41,10 +41,6 @@ class ClubvisitController extends Controller
         $user = $ds->getUser();
         /** @var EntityManager $em */
         $em = $this->container->get('doctrine')->getManager();
-        $ae = $this->container->get('jcs.twig.adminextension');
-
-        // type depends on route (we never call this action internally, so this will work)
-        $type = HomeHelp::VISIT;
         // clients
         $clients = $this->getClubClients($club_id);
         // get the club entity
@@ -79,6 +75,7 @@ class ClubvisitController extends Controller
                 $visits[] = $visit;
             }
         }
+
         // index the visits
         $indexed_visits = [];
         foreach ($visits as $visit) {
@@ -87,11 +84,22 @@ class ClubvisitController extends Controller
         $visits = $indexed_visits;
         unset($indexed_visits);
 
-        // check and fill the client block
-//        $hh_month = $this->hhCheckClientBlock($hh_month);
+        // what if there are new clients, that are not present in the saved $visits list
+        foreach ($clients as $client) {
+            if (!isset($visits[$client->getId()])) {
+                $visit = (new ClubVisit())
+                    ->setCompanyId($ds->getCompanyId())
+                    ->setClient($client)
+                    ->setDate($date)
+                    ->setEvents([])
+                ;
+                $visits[$client->getid()] = $visit;
+            }
+            // TODO: we should reorder the visits by the client name
+        }
 
         // we need the row headers later
-        $row_headers = $this->getClientNames($clients);
+        $row_headers = $this->getClientNames($visits);
 
         $form = $this->clubVisitForm($visits, $club, $date, $events);
         $form->handleRequest($request);
@@ -108,6 +116,10 @@ class ClubvisitController extends Controller
                 if (!empty($visits[$client_id])) {
                     $visits[$client_id]->setVisit($vdata[1]);
                     $event_data = array_slice($vdata, 2);
+                    // check events
+                    foreach ($event_data as &$event) {
+                        $event = empty($event) ? false : true;
+                    }
                     $visits[$client_id]->setEvents($event_data);
                 }
             }
@@ -148,15 +160,15 @@ class ClubvisitController extends Controller
     /**
      * Return a list of formatted client names
      *
-     * @param Client[] $clients
+     * @param ClubVisit[] $visits
      * @return array
      */
-    private function getClientNames($clients)
+    private function getClientNames($visits)
     {
         $ae = $this->container->get('jcs.twig.adminextension');
         $names = [];
-        foreach ($clients as $client) {
-            $names[] = $ae->formatClientName($client);
+        foreach ($visits as $visit) {
+            $names[] = $ae->formatClientName($visit->getClient());
         }
 
         return $names;
@@ -248,7 +260,7 @@ class ClubvisitController extends Controller
         $ds = $this->container->get('jcs.ds');
         $em = $this->container->get('doctrine')->getManager();
 
-        return $em->createQuery("SELECT v FROM JCSGYKAdminBundle:ClubVisit v JOIN v.client c JOIN c.homehelp h WHERE c.companyId = :company AND h.club = :club AND v.date = :date")
+        return $em->createQuery("SELECT v FROM JCSGYKAdminBundle:ClubVisit v JOIN v.client c JOIN c.homehelp h WHERE c.companyId = :company AND h.club = :club AND v.date = :date ORDER BY c.lastname, c.firstname")
             ->SetParameter('company', $ds->getCompanyId())
             ->SetParameter('club', $club)
             ->SetParameter('date', $date)
@@ -271,6 +283,10 @@ class ClubvisitController extends Controller
             'date' => $date,
             'club' => $club,
         ];
+        $prev_day = clone $date;
+        $prev_day->modify('-1 day');
+        $next_day = clone $date;
+        $next_day->modify('+1 day');
 
         // build the filter form
         $form_builder = $this->createFormBuilder($defaults)
@@ -278,16 +294,32 @@ class ClubvisitController extends Controller
             ->setAction($this->generateUrl('admin_visits'))
             ->setMethod('GET')
             ->add('date', 'date', [
-                'label' => 'Nap',
-                'widget' => 'single_text',
-                'attr' => array('class' => 'datepicker', 'type' => 'text'),
+                'label'    => 'Nap',
+                'widget'   => 'single_text',
+                'attr'     => ['class' => 'datepicker', 'type' => 'text'],
                 'required' => false,
             ])
             ->add('club', 'entity', [
-            'label' => 'Klub',
-            'class' => 'JCSGYKAdminBundle:Club',
-            'choices'   => $ds->getClubs(),
-            'required' => true,
+                'label'    => 'Klub',
+                'class'    => 'JCSGYKAdminBundle:Club',
+                'choices'  => $ds->getClubs(),
+                'required' => true,
+            ])
+            ->add('back', 'button', [
+                'label' => '<',
+                'attr'  => [
+                    'class' => 'greybutton smallbutton',
+                    'style' => 'margin: 0 1px 2px 0;',
+                    'value'  => $prev_day->format('Y-m-d'),
+                ],
+            ])
+            ->add('forward', 'button', [
+                'label' => '>',
+                'attr'  => [
+                    'class' => 'greybutton smallbutton',
+                    'style' => 'margin: 0 0 2px 1px;',
+                    'value'  => $next_day->format('Y-m-d'),
+                ],
             ])
         ;
 
@@ -342,8 +374,8 @@ class ClubvisitController extends Controller
 
         $re = [
             'minSpareRows'          => 0,
-            'cells'                 => false, // dont use the cells function
-            'colWidths'             => [100],
+            'cells'                 => 'cellsVisit',
+            'colWidths'             => [120],
             'colHeaders'            => ['Látogatás'],
             'rowHeaders'            => $row_headers,
             'columns'               => [
@@ -360,7 +392,7 @@ class ClubvisitController extends Controller
                 'type'     => 'checkbox',
             ];
             $re['colHeaders'][] = $event;
-            $re['colWidths'][]  = 100;
+            $re['colWidths'][]  = 80;
             $n++;
         }
 

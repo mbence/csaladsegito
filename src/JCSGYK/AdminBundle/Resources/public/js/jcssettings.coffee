@@ -98,7 +98,12 @@ JcsSettings =
 
         # form cancel button
         $("#homehelpform button.cancel").on "click", ->
-              document.location.reload()
+            document.location.reload()
+        # date back/next buttons
+        $("#form_back").add("#form_forward").on "click", ->
+            $(this).addClass('animbutton')
+            $("#form_date").val($(this).val())
+            $("#clubvisitfilter").submit()
 
         $('#clubvisitfilter .datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
 
@@ -352,7 +357,7 @@ JcsSettings =
 
         # use the cells formatting function?
         if options.cells? and options.cells
-            options.cells = @cells
+                options.cells = @cells
 
         # fire up the table!
         $("#handsontable").handsontable(options)

@@ -1243,6 +1243,16 @@ h2.menu-section {
     font-size: 11px;
     text-align: right;
 }
+.clubvisit-table tr td {
+    font-size: 11px;
+    text-align: center;
+}
+.clubvisit-table tr td {
+    background-color: #f8f8f8;
+}
+.clubvisit-table tr td:nth-child(2) {
+    background-color: #fff;
+}
 .homehelp-table .colHeader, .homehelp-table .rowHeader {
     font-size: 13px;
 }
@@ -1271,5 +1281,7 @@ h2.menu-section {
 }
 #clubvisitfilter.editform input[type="text"] {
     width: 100px;
-    z-index: 1000;
+}
+.ui-datepicker {
+    z-index: 1000 !important;
 }

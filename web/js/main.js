@@ -880,6 +880,11 @@ JcsSettings = {
     $("#homehelpform button.cancel").on("click", function() {
       return document.location.reload();
     });
+    $("#form_back").add("#form_forward").on("click", function() {
+      $(this).addClass('animbutton');
+      $("#form_date").val($(this).val());
+      return $("#clubvisitfilter").submit();
+    });
     return $('#clubvisitfilter .datepicker').datepicker({
       dateFormat: 'yy-mm-dd'
     });
