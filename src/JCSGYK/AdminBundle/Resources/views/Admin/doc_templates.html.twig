@@ -20,7 +20,7 @@
 <div class="adminblock" id="template-edit">
     <div class="leftpad20 fullheight nocollapse">
         {% if form %}
-            {% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+            {% form_theme form 'JCSGYKAdminBundle:Form:errors.html.twig' %}
 
             <form action="{{ path('admin_templates', {'id': id}) }}" id="template_edit" novalidate method="post" {{ form_enctype(form) }}>
                 {{ form_errors(form) }}
@@ -31,23 +31,32 @@
                         <td>{{ form_errors(form.name) }}{{ form_widget(form.name) }}</td>
                     </tr>
                     <tr>
-                        <th>{{ 'Fájl'|trans }}:</th>
-                        <td><div class="bottompad4"><a href="{{ path('admin_templates_download', { 'id': act.id }) }}">{{ act.originalName }}</a></div></td>
+                        <th>{{ 'Fájlnév'|trans }}:</th>
+                        <td><div class="bottompad4">{{ act.originalName }}</div></td>
                     </tr>
                     <tr>
-                        <th>{{ form_label(form.upload) }}:</th>
-                        <td>{{ form_errors(form.upload) }}{{ form_widget(form.upload) }}</td>
+                        <th>{{ form_label(form.doc_type) }}:</th>
+                        <td>{{ form_errors(form.doc_type) }}{{ form_widget(form.doc_type) }}</td>
                     </tr>
                     <tr>
                         <th>{{ form_label(form.is_active) }}:</th>
                         <td>{{ form_errors(form.is_active) }}{{ form_widget(form.is_active) }}</td>
                     </tr>
+                    <tr>
+                        <th class="noborder"><br>{{ form_label(form.upload) }}:</th>
+                        <td class="noborder"><br>{{ form_errors(form.upload) }}{{ form_widget(form.upload) }}</td>
+                    </tr>
                 </table>
                 <br><br>
-                <div class="formbuttons">
+                <div class="floatright">
                     <button type="reset" href="{{ path('admin_templates') }}" class="cancel greybutton"><span>{{ 'mégse'|trans }}</span></button>
                     <button type="submit" class="etmplatesave button" name="templatesave" value="save"><span>{{ 'mentés'|trans }}</span></button>
                 </div>
+                {% if act.file %}
+                <div class="floatleft">
+                    <a href="{{ path('admin_templates_download', { 'id': act.id }) }}" class="greybutton"><span>{{ 'fájl letöltése'|trans }}</span></a>
+                </div>
+                {% endif %}
                 {{ form_widget(form._token) }}
             </form>
         {% else %}
@@ -56,7 +65,7 @@
                     {{ 'A nyomtatványok szerkesztéséhez kattintson a bal oldai listában a megfelelő sorra!'|trans }}
                 </p>
                 <p>
-                    {{ "Új nyomtatványt a narancsárga 'új nyomtatvány' gombra katttintve hozhat létre."|trans }}
+                    {{ "Új nyomtatványt az 'új nyomtatvány' gombra kattintva hozhat létre."|trans }}
                 </p>
             </div>
         {% endif %}

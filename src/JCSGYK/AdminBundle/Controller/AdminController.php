@@ -818,7 +818,11 @@ class AdminController extends Controller
         if ('new' == $id) {
             // new template
             $doc = new DocTemplate;
-            $doc->setCompanyId($company_id);
+            $doc->setCompanyId($company_id)
+                ->setDocType(DocTemplate::CLIENT)
+                ->setClientType($this->getClientType())
+            ;
+
         }
         elseif (!is_null($id)) {
             $doc = $em->getRepository('JCSGYKAdminBundle:DocTemplate')
@@ -842,7 +846,7 @@ class AdminController extends Controller
                 $em->flush();
                 $this->get('session')->getFlashBag()->add('notice', 'Nyomtatvány elmentve');
 
-                //return $this->redirect($this->generateUrl('admin_templates', ['id' => $doc->getId()]));
+                return $this->redirect($this->generateUrl('admin_templates', ['id' => $doc->getId()]));
             }
         }
 
@@ -857,31 +861,44 @@ class AdminController extends Controller
         ];
     }
 
+    private function getClientType()
+    {
+        $ds = $this->container->get('jcs.ds');
+
+        $client_types = $ds->getClientTypeNames(true);
+        reset($client_types);
+
+        return key($client_types);
+    }
+
     /**
      * Download document templates
+     * @param int $id DocTemplate id
+     * @Security("has_role('ROLE_ADMIN')")
+     * @Route("/admin/doctemplates/download/{id}", name="admin_templates_download")
+     * @return Response
      */
-    public function templatesDownloadAction($id = null)
+    public function docTemplatesDownloadAction($id = null)
     {
         if (!empty($id)) {
             $em = $this->getDoctrine()->getManager();
-            $template = $em->getRepository('JCSGYKAdminBundle:Template')->find($id);
+            $doc = $em->getRepository('JCSGYKAdminBundle:DocTemplate')->find($id);
         }
 
-        if (!empty($template)) {
-
-            $docpath = $template->getAbsolutePath();
-
-            if (!file_exists($docpath)) {
-                throw new HttpException(400, "Bad request");
-            }
-
-            return $this->sendDownloadResponse($template->getOriginalName(), file_get_contents($docpath), $template->getMimeType());
-        }
-        else {
+        if (empty($doc)) {
             throw new HttpException(400, "Bad request");
         }
+
+        return $this->sendDownloadResponse($doc->getOriginalName(), stream_get_contents($doc->getFile()), $doc->getMimeType());
     }
 
+    /**
+     * Set download headers and return a response
+     * @param string $file_name
+     * @param string $file_contents
+     * @param string $content_type
+     * @return Response
+     */
     public function sendDownloadResponse($file_name, $file_contents, $content_type)
     {
         $response = new Response();

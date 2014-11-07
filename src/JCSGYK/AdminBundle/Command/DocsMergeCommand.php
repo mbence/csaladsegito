@@ -35,9 +35,6 @@ class DocsMergeCommand extends ContainerAwareCommand
 
         $em = $this->getContainer()->get('doctrine')->getManager();
 
-        // get the client type of this company
-        $client_type = $this->getClientType();
-
         $n = 0;
         $docs = $this->getDocs($company_id);
         foreach ($docs as $doc) {
@@ -46,19 +43,31 @@ class DocsMergeCommand extends ContainerAwareCommand
             $new_doc = (new DocTemplate())
                 ->setCompanyId($doc->getCompanyId())
                 ->setName($doc->getName())
-                ->setOriginalName($doc->getOriginalName())
-                ->setMimeType($doc->getmimeType())
                 ->setIsActive($doc->getIsActive())
-                ->setDocType(DocTemplate::CLIENT)
-                ->setClientType($client_type)
-                ->setFile($this->getFile($doc))
+                ->setDocType(DocTemplate::PROBLEM)
+                ->setClientType($this->getClientType())
             ;
+            $docpath = $doc->getAbsolutePath();
+            if (file_exists($docpath)) {
+                $new_doc
+                    ->setOriginalName($doc->getOriginalName())
+                    ->setFile($this->getFile($doc))
+                    ->setMimeType($this->getMimeType($doc)) // old mimetypes are wrong
+                ;
+            }
             $em->persist($new_doc);
 
             $n ++;
         }
         $output->write(date('H:i:s: ') . $n . ' Doc merged', true);
         $em->flush();
+    }
+
+    private function getMimeType(Template $doc)
+    {
+        $finfo = new \finfo(FILEINFO_MIME);
+
+        return $finfo->file($doc->getAbsolutePath());
     }
 
     private function getFile(Template $doc)

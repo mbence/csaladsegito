@@ -4,13 +4,24 @@ namespace JCSGYK\AdminBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use JCSGYK\AdminBundle\Entity\DocTemplate;
 
 class DocTemplateType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('name', 'text', ['label' => 'Név']);
-        $builder->add('upload', 'file', ['label' => 'Fájl feltöltés']);
+        $builder->add('upload', 'file', ['label' => 'Fájl feltöltése']);
+
+        $builder->add('doc_type', 'choice', [
+            'label'    => 'Típus',
+            'choices'  => [
+                DocTemplate::CLIENT  => 'Ügyfél',
+                DocTemplate::PROBLEM => 'Probléma'
+            ],
+            'expanded' => true
+        ]);
+
         $builder->add('is_active', 'checkbox', ['label' => 'Aktív']);
     }
 

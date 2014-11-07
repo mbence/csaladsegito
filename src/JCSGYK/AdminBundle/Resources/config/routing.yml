@@ -170,9 +170,6 @@ admin_providers:
 admin_update:
     pattern:  /admin/update
     defaults: { _controller: JCSGYKAdminBundle:Admin:update }
-admin_templates_download:
-    pattern:  /admin/templates/download/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Admin:templatesDownload, id: null }
 admin_companies:
     pattern:  /admin/companies/{id}
     defaults: { _controller: JCSGYKAdminBundle:Admin:companies, id: null }

@@ -37,28 +37,28 @@ class DocTemplate
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=64, nullable=true)
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="original_name", type="string", length=64, nullable=true)
+     * @ORM\Column(name="original_name", type="string", length=255, nullable=true)
      */
     private $originalName;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="mime_type", type="string", length=32, nullable=true)
+     * @ORM\Column(name="mime_type", type="string", length=255, nullable=true)
      */
     private $mimeType;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="file", type="blob", length=65535, nullable=true)
+     * @ORM\Column(name="file", type="blob", nullable=true)
      */
     private $file;
 
@@ -327,10 +327,12 @@ class DocTemplate
     {
         $this->upload = $file;
         if (!is_null($file)) {
-            $this->setOriginalName($file->getClientOriginalName());
-            $this->setMimeType($file->getClientMimeType());
             $filename = $file->getRealPath();
             if (file_exists($filename)) {
+                $this->setOriginalName($file->getClientOriginalName());
+                // mime type
+                $finfo = new \finfo(FILEINFO_MIME);
+                $this->setMimeType($finfo->file($filename));
                 $this->setFile(file_get_contents($filename));
             }
         }
