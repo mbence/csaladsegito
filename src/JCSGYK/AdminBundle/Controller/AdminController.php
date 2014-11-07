@@ -39,12 +39,6 @@ class AdminController extends Controller
     */
     public function indexAction()
     {
-//        $co = $this->container->get('jcs.ds')->getCompany();
-
-//        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
-//            $this->get('logger')->info('ROLE_ADMIN');
-//        }
-
         return $this->render('JCSGYKAdminBundle:Admin:index.html.twig', []);
     }
 
