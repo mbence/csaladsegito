@@ -18,8 +18,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use JCSGYK\AdminBundle\Entity\User;
 use JCSGYK\AdminBundle\Entity\Parameter;
 use JCSGYK\AdminBundle\Form\Type\UserType;
-use JCSGYK\AdminBundle\Entity\Template as DocTemplate;
-use JCSGYK\AdminBundle\Form\Type\TemplateType;
+use JCSGYK\AdminBundle\Entity\DocTemplate;
+use JCSGYK\AdminBundle\Form\Type\DocTemplateType;
 use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
 use JCSGYK\AdminBundle\Entity\Company;
@@ -801,63 +801,60 @@ class AdminController extends Controller
      * Edit and upload document templates
      * @param Request $request
      * @param null $id
+     *
+     * @Security("has_role('ROLE_ADMIN')")
+     * @Route("/admin/doctemplates/{id}", name="admin_templates")
+     * @Template("JCSGYKAdminBundle:Admin:doc_templates.html.twig")
      */
-    public function templatesAction(Request $request, $id = null)
+    public function docTemplatesAction(Request $request, $id = null)
     {
-        $template = null;
-        $form_view = null;
+        $doc = null;
 
         $em = $this->getDoctrine()->getManager();
-        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $ds = $this->container->get('jcs.ds');
+
+        $company_id = $ds->getCompanyId();
 
         if ('new' == $id) {
             // new template
-            $template = new DocTemplate;
-            $template->setCompanyId($company_id);
+            $doc = new DocTemplate;
+            $doc->setCompanyId($company_id);
         }
         elseif (!is_null($id)) {
-            $template = $em->getRepository('JCSGYKAdminBundle:Template')
+            $doc = $em->getRepository('JCSGYKAdminBundle:DocTemplate')
                 ->findOneBy(['id' => $id, 'companyId' => $company_id]);
         }
 
-        if (is_null($id) || !empty($template)) {
-
-            if (!empty($template)) {
-                $form = $this->createForm(new TemplateType(), $template);
-            }
-
-            // save the template
-            if ($request->isMethod('POST')) {
-
-                $form->bind($request);
-
-                if ($form->isValid()) {
-
-                    $template->setModifiedAt(new \DateTime());
-
-                    if (is_null($template->getId())) {
-                        $em->persist($template);
-                    }
-
-                    $em->flush();
-
-                    $this->get('session')->getFlashBag()->add('notice', 'Nyomtatvány elmentve');
-
-                    return $this->redirect($this->generateUrl('admin_templates', ['id' => $template->getId()]));
-                }
-            }
-
-            if (!empty($form)) {
-                $form_view = $form->createView();
-            }
-            // get all templates
-            $templates = $em->getRepository('JCSGYKAdminBundle:Template')->findBy(['companyId' => $company_id], ['name' => 'ASC']);
-
-            return $this->render('JCSGYKAdminBundle:Admin:templates.html.twig', ['templates' => $templates, 'id' => $id, 'act' => $template, 'form' => $form_view]);
-        }
-        else {
+        if (!is_null($id) && empty($doc)) {
             throw new HttpException(400, "Bad request");
         }
+
+        if (!empty($doc)) {
+            $form = $this->createForm(new DocTemplateType(), $doc);
+            $form->handleRequest($request);
+
+            // save the template
+            if ($form->isValid()) {
+                if (is_null($doc->getId())) {
+                    $em->persist($doc);
+                }
+
+                $em->flush();
+                $this->get('session')->getFlashBag()->add('notice', 'Nyomtatvány elmentve');
+
+                //return $this->redirect($this->generateUrl('admin_templates', ['id' => $doc->getId()]));
+            }
+        }
+
+        // get all doc templates
+        $docs = $em->getRepository('JCSGYKAdminBundle:DocTemplate')->findBy(['companyId' => $company_id], ['name' => 'ASC']);
+
+        return [
+            'templates' => $docs,
+            'id'        => $id,
+            'act'       => $doc,
+            'form'      => !empty($form) ? $form->createView() : null,
+        ];
     }
 
     /**

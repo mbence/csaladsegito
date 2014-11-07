@@ -3,6 +3,8 @@
 namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * DocTemplate
@@ -80,6 +82,11 @@ class DocTemplate
      * @ORM\Column(name="client_type", type="integer", nullable=true)
      */
     private $clientType;
+
+    /**
+     * @Assert\File(maxSize="8000000")
+     */
+    private $upload;
 
     /**
      * Get the list of fields for change tracking
@@ -309,5 +316,33 @@ class DocTemplate
     public function getClientType()
     {
         return $this->clientType;
+    }
+
+    /**
+     * Sets uploaded file.
+     *
+     * @param UploadedFile $file
+     */
+    public function setUpload(UploadedFile $file = null)
+    {
+        $this->upload = $file;
+        if (!is_null($file)) {
+            $this->setOriginalName($file->getClientOriginalName());
+            $this->setMimeType($file->getClientMimeType());
+            $filename = $file->getRealPath();
+            if (file_exists($filename)) {
+                $this->setFile(file_get_contents($filename));
+            }
+        }
+    }
+
+    /**
+     * Get file.
+     *
+     * @return UploadedFile
+     */
+    public function getUpload()
+    {
+        return $this->upload;
     }
 }
