@@ -13,15 +13,8 @@ class DocTemplateType extends AbstractType
         $builder->add('name', 'text', ['label' => 'Név']);
         $builder->add('upload', 'file', ['label' => 'Fájl feltöltése']);
 
-        $builder->add('doc_type', 'choice', [
-            'label'    => 'Típus',
-            'choices'  => [
-                DocTemplate::CLIENT  => 'Ügyfél',
-                DocTemplate::PROBLEM => 'Probléma'
-            ],
-            'expanded' => true
-        ]);
-
+        $builder->add('client_template', 'checkbox', ['label' => 'ügyfél']);
+        $builder->add('problem_template', 'checkbox', ['label' => 'probléma']);
         $builder->add('is_active', 'checkbox', ['label' => 'Aktív']);
     }
 

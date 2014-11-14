@@ -20,7 +20,8 @@ class Version20141107165636 extends AbstractMigration
   `mime_type` varchar(255) DEFAULT NULL,
   `file` mediumblob,
   `is_active` tinyint(1) DEFAULT '1',
-  `doc_type` tinyint(4) DEFAULT NULL,
+  `client_template` tinyint(1) DEFAULT NULL,
+  `problem_template` tinyint(1) DEFAULT NULL,
   `client_type` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;");

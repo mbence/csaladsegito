@@ -385,9 +385,5 @@ JcsProblem =
                 AjaxBag.showError($("#template-error").text())
 
                 return false
-            src = $(this).attr("action") + "?" + $(this).serialize()
-            #console.log src
-            $("#template-dl-frame").attr("src", src)
 
-            false
         JcsModal.load()

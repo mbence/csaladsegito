@@ -819,7 +819,7 @@ class AdminController extends Controller
             // new template
             $doc = new DocTemplate;
             $doc->setCompanyId($company_id)
-                ->setDocType(DocTemplate::CLIENT)
+                ->setProblemTemplate(true)
                 ->setClientType($this->getClientType())
             ;
 

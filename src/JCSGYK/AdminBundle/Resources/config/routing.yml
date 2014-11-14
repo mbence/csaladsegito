@@ -37,9 +37,6 @@ client_problems:
 client_visit:
     pattern:  /clients/visit/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:visit, id: null }
-client_history:
-    pattern:  /clients/history/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Template:history }
 client_relatives:
     pattern:  /clients/relatives/{id}
     defaults: { _controller: JCSGYKAdminBundle:Client:relatives }
@@ -79,11 +76,6 @@ relative_edit:
 relative_delete:
     pattern:  /relative/delete/{id}/{relation_id}
     defaults: { _controller: JCSGYKAdminBundle:Client:relativeDelete }
-
-# Templates #
-templates:
-    pattern:  /templates/{id}
-    defaults: { _controller: JCSGYKAdminBundle:Template:make }
 
 # Tasks #
 task_start:

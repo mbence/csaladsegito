@@ -35,8 +35,11 @@
                         <td><div class="bottompad4">{{ act.originalName }}</div></td>
                     </tr>
                     <tr>
-                        <th>{{ form_label(form.doc_type) }}:</th>
-                        <td>{{ form_errors(form.doc_type) }}{{ form_widget(form.doc_type) }}</td>
+                        <th>{{ 'Típus'|trans }}:<br><br></th>
+                        <td>
+                            {{ form_errors(form.client_template) }}{{ form_widget(form.client_template) }}{{ form_label(form.client_template) }}<br>
+                            {{ form_errors(form.problem_template) }}{{ form_widget(form.problem_template) }}{{ form_label(form.problem_template) }}
+                        </td>
                     </tr>
                     <tr>
                         <th>{{ form_label(form.is_active) }}:</th>

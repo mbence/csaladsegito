@@ -10,14 +10,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * DocTemplate
  *
  * @ORM\Table(name="doc_template")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="JCSGYK\AdminBundle\Entity\DocTemplateRepository")
  */
 class DocTemplate
 {
-    /** doc type constants */
-    const CLIENT = 1;
-    const PROBLEM = 2;
-
     /**
      * @var integer
      *
@@ -72,9 +68,16 @@ class DocTemplate
     /**
      * @var boolean
      *
-     * @ORM\Column(name="doc_type", type="integer", nullable=true)
+     * @ORM\Column(name="client_template", type="boolean", nullable=true)
      */
-    private $docType;
+    private $clientTemplate;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="problem_template", type="boolean", nullable=true)
+     */
+    private $problemTemplate;
 
     /**
      * @var boolean
@@ -271,30 +274,6 @@ class DocTemplate
     }
 
     /**
-     * Set docType
-     *
-     * @param integer $docType
-     *
-     * @return DocTemplate
-     */
-    public function setDocType($docType)
-    {
-        $this->docType = $docType;
-
-        return $this;
-    }
-
-    /**
-     * Get docType
-     *
-     * @return integer
-     */
-    public function getDocType()
-    {
-        return $this->docType;
-    }
-
-    /**
      * Set clientType
      *
      * @param integer $clientType
@@ -346,5 +325,53 @@ class DocTemplate
     public function getUpload()
     {
         return $this->upload;
+    }
+
+    /**
+     * Set clientTemplate
+     *
+     * @param boolean $clientTemplate
+     *
+     * @return DocTemplate
+     */
+    public function setClientTemplate($clientTemplate)
+    {
+        $this->clientTemplate = $clientTemplate;
+
+        return $this;
+    }
+
+    /**
+     * Get clientTemplate
+     *
+     * @return boolean
+     */
+    public function getClientTemplate()
+    {
+        return $this->clientTemplate;
+    }
+
+    /**
+     * Set problemTemplate
+     *
+     * @param boolean $problemTemplate
+     *
+     * @return DocTemplate
+     */
+    public function setProblemTemplate($problemTemplate)
+    {
+        $this->problemTemplate = $problemTemplate;
+
+        return $this;
+    }
+
+    /**
+     * Get problemTemplate
+     *
+     * @return boolean
+     */
+    public function getProblemTemplate()
+    {
+        return $this->problemTemplate;
     }
 }

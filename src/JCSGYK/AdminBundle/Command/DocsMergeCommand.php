@@ -36,17 +36,24 @@ class DocsMergeCommand extends ContainerAwareCommand
         $em = $this->getContainer()->get('doctrine')->getManager();
 
         $n = 0;
+        $files = [];
         $docs = $this->getDocs($company_id);
         foreach ($docs as $doc) {
-
+            $output->write(sprintf('Merging %s...', $doc->getOriginalName()), true);
             // create a doctemplate
             $new_doc = (new DocTemplate())
                 ->setCompanyId($doc->getCompanyId())
                 ->setName($doc->getName())
                 ->setIsActive($doc->getIsActive())
-                ->setDocType(DocTemplate::PROBLEM)
+                ->setClientTemplate(false)
+                ->setProblemTemplate(true)
                 ->setClientType($this->getClientType())
             ;
+
+            // client history should have cients enabled
+            if ($doc->getId() == 2) {
+                $new_doc->setClientTemplate(true);
+            }
             $docpath = $doc->getAbsolutePath();
             if (file_exists($docpath)) {
                 $new_doc
@@ -54,12 +61,28 @@ class DocsMergeCommand extends ContainerAwareCommand
                     ->setFile($this->getFile($doc))
                     ->setMimeType($this->getMimeType($doc)) // old mimetypes are wrong
                 ;
+                $files[] = $docpath;
+            } else {
+                $new_doc->setIsActive(false);
             }
             $em->persist($new_doc);
 
             $n ++;
         }
         $output->write(date('H:i:s: ') . $n . ' Doc merged', true);
+        $em->flush();
+
+        // cleanup the old files
+        foreach ($files as $file) {
+            $output->write(sprintf('Deleting: %s', $file), true);
+            unlink($file);
+        }
+
+        // remove old records
+        foreach ($docs as $doc) {
+            $output->write(sprintf('Removing: %s', $doc->getOriginalName()), true);
+            $em->remove($doc);
+        }
         $em->flush();
     }
 
