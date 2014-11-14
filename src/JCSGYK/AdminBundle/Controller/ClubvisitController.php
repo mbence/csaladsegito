@@ -71,6 +71,7 @@ class ClubvisitController extends Controller
                     ->setClient($client)
                     ->setDate($date)
                     ->setEvents([])
+                    ->setVisit(true)
                 ;
                 $visits[] = $visit;
             }
@@ -92,6 +93,7 @@ class ClubvisitController extends Controller
                     ->setClient($client)
                     ->setDate($date)
                     ->setEvents([])
+                    ->setVisit(true)
                 ;
                 $visits[$client->getid()] = $visit;
             }
