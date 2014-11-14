@@ -1,3 +1,9 @@
+## 1.5.0 (2014.11.14)
+
+Fejlesztések:
+
+ - Nyomtatványok adatbázisba mentése
+
 ## 1.4.3 (2014.11.06)
 
 Fejlesztések:

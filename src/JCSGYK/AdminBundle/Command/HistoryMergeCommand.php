@@ -25,6 +25,8 @@ class HistoryMergeCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /* This must never run again!
+
         $company_id = $input->getArgument('company');
 
         // set the companyid for the datastore
@@ -109,6 +111,7 @@ class HistoryMergeCommand extends ContainerAwareCommand
         $em->clear();
 
         $output->write(date('H:i:s: ') . 'Processing finished', true);
+         */
     }
 
     private function getEvents()

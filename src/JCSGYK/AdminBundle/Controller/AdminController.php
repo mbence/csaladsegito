@@ -18,8 +18,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use JCSGYK\AdminBundle\Entity\User;
 use JCSGYK\AdminBundle\Entity\Parameter;
 use JCSGYK\AdminBundle\Form\Type\UserType;
-use JCSGYK\AdminBundle\Entity\Template as DocTemplate;
-use JCSGYK\AdminBundle\Form\Type\TemplateType;
+use JCSGYK\AdminBundle\Entity\DocTemplate;
+use JCSGYK\AdminBundle\Form\Type\DocTemplateType;
 use JCSGYK\AdminBundle\Entity\Utilityprovider;
 use JCSGYK\AdminBundle\Form\Type\UtilityproviderType;
 use JCSGYK\AdminBundle\Entity\Company;
@@ -39,12 +39,6 @@ class AdminController extends Controller
     */
     public function indexAction()
     {
-//        $co = $this->container->get('jcs.ds')->getCompany();
-
-//        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
-//            $this->get('logger')->info('ROLE_ADMIN');
-//        }
-
         return $this->render('JCSGYKAdminBundle:Admin:index.html.twig', []);
     }
 
@@ -807,90 +801,104 @@ class AdminController extends Controller
      * Edit and upload document templates
      * @param Request $request
      * @param null $id
+     *
+     * @Security("has_role('ROLE_ADMIN')")
+     * @Route("/admin/doctemplates/{id}", name="admin_templates")
+     * @Template("JCSGYKAdminBundle:Admin:doc_templates.html.twig")
      */
-    public function templatesAction(Request $request, $id = null)
+    public function docTemplatesAction(Request $request, $id = null)
     {
-        $template = null;
-        $form_view = null;
+        $doc = null;
 
         $em = $this->getDoctrine()->getManager();
-        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $ds = $this->container->get('jcs.ds');
+
+        $company_id = $ds->getCompanyId();
 
         if ('new' == $id) {
             // new template
-            $template = new DocTemplate;
-            $template->setCompanyId($company_id);
+            $doc = new DocTemplate;
+            $doc->setCompanyId($company_id)
+                ->setProblemTemplate(true)
+                ->setClientType($this->getClientType())
+            ;
+
         }
         elseif (!is_null($id)) {
-            $template = $em->getRepository('JCSGYKAdminBundle:Template')
+            $doc = $em->getRepository('JCSGYKAdminBundle:DocTemplate')
                 ->findOneBy(['id' => $id, 'companyId' => $company_id]);
         }
 
-        if (is_null($id) || !empty($template)) {
-
-            if (!empty($template)) {
-                $form = $this->createForm(new TemplateType(), $template);
-            }
-
-            // save the template
-            if ($request->isMethod('POST')) {
-
-                $form->bind($request);
-
-                if ($form->isValid()) {
-
-                    $template->setModifiedAt(new \DateTime());
-
-                    if (is_null($template->getId())) {
-                        $em->persist($template);
-                    }
-
-                    $em->flush();
-
-                    $this->get('session')->getFlashBag()->add('notice', 'Nyomtatvány elmentve');
-
-                    return $this->redirect($this->generateUrl('admin_templates', ['id' => $template->getId()]));
-                }
-            }
-
-            if (!empty($form)) {
-                $form_view = $form->createView();
-            }
-            // get all templates
-            $templates = $em->getRepository('JCSGYKAdminBundle:Template')->findBy(['companyId' => $company_id], ['name' => 'ASC']);
-
-            return $this->render('JCSGYKAdminBundle:Admin:templates.html.twig', ['templates' => $templates, 'id' => $id, 'act' => $template, 'form' => $form_view]);
-        }
-        else {
+        if (!is_null($id) && empty($doc)) {
             throw new HttpException(400, "Bad request");
         }
+
+        if (!empty($doc)) {
+            $form = $this->createForm(new DocTemplateType(), $doc);
+            $form->handleRequest($request);
+
+            // save the template
+            if ($form->isValid()) {
+                if (is_null($doc->getId())) {
+                    $em->persist($doc);
+                }
+
+                $em->flush();
+                $this->get('session')->getFlashBag()->add('notice', 'Nyomtatvány elmentve');
+
+                return $this->redirect($this->generateUrl('admin_templates', ['id' => $doc->getId()]));
+            }
+        }
+
+        // get all doc templates
+        $docs = $em->getRepository('JCSGYKAdminBundle:DocTemplate')->findBy(['companyId' => $company_id], ['name' => 'ASC']);
+
+        return [
+            'templates' => $docs,
+            'id'        => $id,
+            'act'       => $doc,
+            'form'      => !empty($form) ? $form->createView() : null,
+        ];
+    }
+
+    private function getClientType()
+    {
+        $ds = $this->container->get('jcs.ds');
+
+        $client_types = $ds->getClientTypeNames(true);
+        reset($client_types);
+
+        return key($client_types);
     }
 
     /**
      * Download document templates
+     * @param int $id DocTemplate id
+     * @Security("has_role('ROLE_ADMIN')")
+     * @Route("/admin/doctemplates/download/{id}", name="admin_templates_download")
+     * @return Response
      */
-    public function templatesDownloadAction($id = null)
+    public function docTemplatesDownloadAction($id = null)
     {
         if (!empty($id)) {
             $em = $this->getDoctrine()->getManager();
-            $template = $em->getRepository('JCSGYKAdminBundle:Template')->find($id);
+            $doc = $em->getRepository('JCSGYKAdminBundle:DocTemplate')->find($id);
         }
 
-        if (!empty($template)) {
-
-            $docpath = $template->getAbsolutePath();
-
-            if (!file_exists($docpath)) {
-                throw new HttpException(400, "Bad request");
-            }
-
-            return $this->sendDownloadResponse($template->getOriginalName(), file_get_contents($docpath), $template->getMimeType());
-        }
-        else {
+        if (empty($doc)) {
             throw new HttpException(400, "Bad request");
         }
+
+        return $this->sendDownloadResponse($doc->getOriginalName(), stream_get_contents($doc->getFile()), $doc->getMimeType());
     }
 
+    /**
+     * Set download headers and return a response
+     * @param string $file_name
+     * @param string $file_contents
+     * @param string $content_type
+     * @return Response
+     */
     public function sendDownloadResponse($file_name, $file_contents, $content_type)
     {
         $response = new Response();

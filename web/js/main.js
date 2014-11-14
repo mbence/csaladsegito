@@ -2578,14 +2578,10 @@ JcsProblem = {
   initTemplates: function() {
     JcsModal.setCloseButton();
     $("#templateform").submit(function() {
-      var src;
       if (!$("[name='form[template]']:checked").length) {
         AjaxBag.showError($("#template-error").text());
         return false;
       }
-      src = $(this).attr("action") + "?" + $(this).serialize();
-      $("#template-dl-frame").attr("src", src);
-      return false;
     });
     return JcsModal.load();
   }

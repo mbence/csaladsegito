@@ -4,6 +4,7 @@ namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use JCSGYK\AdminBundle\Entity\Client;
+use JCSGYK\AdminBundle\Entity\DocTemplate;
 
 /**
  * Service for Generatinc Docx files from templates
@@ -13,10 +14,14 @@ class Docx
     /** Service container */
     private $container;
 
+    /** Opentbs service */
+    private $tbs;
+
     /** Constructor */
     public function __construct($container)
     {
         $this->container = $container;
+        $this->tbs = $this->container->get('opentbs');
     }
 
 
@@ -105,47 +110,50 @@ class Docx
     /**
      * Generate a file from a template, merge the fields, and send the file as a download
      *
-     * @param string $template Template filename
+     * @param DocTemplate $doc entity
      * @param array $data Array of merge fields
      */
-    public function show($template_id, $data)
+    public function show(DocTemplate $doc, $data)
     {
-        $em = $this->container->get('doctrine')->getManager();
-        $template = $em->getRepository('JCSGYKAdminBundle:Template')->find($template_id);
-
-        if (empty($template)) {
+        if (empty($doc)) {
             return false;
         }
 
-        $tbs = $this->container->get('opentbs');
-        //$tbs->SetOption('noerr', true);
+        $this->tbs = $this->container->get('opentbs');
+        $ae = $this->container->get('jcs.twig.adminextension');
 
-        $tbs->LoadTemplate($template->getAbsolutePath(), OPENTBS_ALREADY_UTF8); // OPENTBS_DEFAULT, OPENTBS_ALREADY_UTF8, OPENTBS_ALREADY_XML
+        $this->tbs->SetOption('noerr', true);
+
+        $this->tbs->LoadTemplate($doc->getFile(), OPENTBS_ALREADY_UTF8); // OPENTBS_DEFAULT, OPENTBS_ALREADY_UTF8, OPENTBS_ALREADY_XML
 
         // get the field map
         $fields = $this->getMap($data);
 
+        $this->mergeBlocks($fields);
+
+        // file name is Client name + the original template file name
+        $file_name = $ae->formatName($data['client']->getFirstname(), $data['client']->getLastname(), $data['client']->getTitle());
+        $file_name = $ae->formatFilename($file_name) . '_' . $doc->getOriginalName();
+
+        // send back the file
+        $this->tbs->Show(OPENTBS_DOWNLOAD, $file_name);
+    }
+
+    private function mergeBlocks($fields)
+    {
         // do the field merge
         foreach ($fields as $base => $merge) {
             if ('blocks' == $base) {
                 foreach ($merge as $block => $source) {
-                    $tbs->MergeBlock($block, $source);
+                    $this->tbs->MergeBlock($block, $source);
                 }
             }
             else {
-                $tbs->MergeField($base, $merge);
+                $this->tbs->MergeField($base, $merge);
             }
         }
-
-        $ae = $this->container->get('jcs.twig.adminextension');
-
-        // file name is Client name + the original template file name
-        $file_name = $ae->formatName($data['client']->getFirstname(), $data['client']->getLastname(), $data['client']->getTitle());
-        $file_name = $ae->formatFilename($file_name) . '_' . $template->getOriginalName();
-
-        // send back the file
-        $tbs->Show(OPENTBS_DOWNLOAD, $file_name);
     }
+
     /**
      * Create the template field replace map
      *
