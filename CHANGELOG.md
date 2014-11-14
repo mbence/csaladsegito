@@ -1,3 +1,9 @@
+## 1.5.1 (2014.11.14)
+
+Fejlesztések:
+
+ - Gondozás pénztárkönyv
+
 ## 1.5.0 (2014.11.14)
 
 Fejlesztések:

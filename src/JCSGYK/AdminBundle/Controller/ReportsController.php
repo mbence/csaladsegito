@@ -137,11 +137,17 @@ class ReportsController extends Controller
             // weeks
             $this->getCateringWeeks($form_builder);
         }
-        elseif ('catering_cashbook' == $report) {
+        elseif (in_array($report, ['catering_cashbook', 'homehelp_cashbook'])) {
             // day
             $this->getDayInput($form_builder, false, 'Nap');
             // months
             $this->getInvoiceMonths($form_builder, false, 'Hónap');
+
+            if ('homehelp_cashbook' == $report) {
+                $form_builder->add('club', 'hidden', [
+                    'data' => '1'
+                ]);
+            }
         }
         elseif (in_array($report, ['catering_summary', 'catering_datacheck', 'catering_summary_detailed'])) {
             // month
@@ -312,8 +318,8 @@ class ReportsController extends Controller
         elseif (in_array($report, ['catering_stats', 'homehelp_stats'])) {
             return $this->getStats($form_data, $download);
         }
-        elseif ('catering_cashbook' == $report) {
-            return $this->getCateringCashBookReport($form_data, $download);
+        elseif (in_array($report, ['catering_cashbook', 'homehelp_cashbook'])) {
+            return $this->getCateringCashBookReport($form_data, $download, $report);
         }
         elseif ('ksh' == $report) {
             return $this->container->get('jcs.reports.ksh')->run($form_data, $download);
@@ -357,6 +363,7 @@ class ReportsController extends Controller
             ];
             $menu['Gondozás'] = [
                 ['slug' => 'homehelp_stats', 'label' => 'Gondozás statisztika'],
+                ['slug' => 'homehelp_cashbook', 'label' => 'Pénztárkönyv'],
             ];
         }
 
@@ -693,7 +700,7 @@ class ReportsController extends Controller
         }
     }
 
-    private function getCateringCashBookReport($form_data, $download)
+    private function getCateringCashBookReport($form_data, $download, $report)
     {
         $form_fields = [
             'day'   => null,
@@ -722,6 +729,8 @@ class ReportsController extends Controller
         $date = !empty($form_data['day']) ? $form_data['day']->format('Y-m-d') : $form_data['month'];
 
         // get the payments for this date
+        $invoice_types = 'homehelp_cashbook' == $report ? [Invoice::HOMEHELP] : [Invoice::MONTHLY, Invoice::DAILY];
+
         $sql = "SELECT i, c FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
                 . "WHERE i.companyId = :company_id AND i.payments LIKE :date AND i.invoicetype IN (:types)";
         if (!empty($form_data['club'])) {
@@ -729,11 +738,10 @@ class ReportsController extends Controller
         }
         $sql .=  " ORDER BY c.lastname, c.firstname ";
 
-
         $q = $em->createQuery($sql)
             ->setParameter('company_id', $company_id)
             ->setParameter('date', "%$date%")
-            ->setParameter('types', [Invoice::MONTHLY, Invoice::DAILY])
+            ->setParameter('types', $invoice_types)
         ;
         if (!empty($form_data['club'])) {
             $q->setParameter('club', $form_data['club']);
@@ -791,13 +799,20 @@ class ReportsController extends Controller
         $report_data[] = $sums;
 
         $title_date = !empty($form_data['day']) ? $ae->formatDate($form_data['day']) : $ae->formatDate(new \DateTime($form_data['month']), 'ym');
-        $title = sprintf('EBÉD Pénztárkönyv %s', $title_date);
+        $title_type = 'catering_cashbook' == $report ? 'EBÉD' : 'GONDOZÁS';
+        $title = sprintf('%s Pénztárkönyv %s', $title_type, $title_date);
         $template_file = __DIR__ . '/../Resources/public/reports/catering_cashbook.xlsx';
         $twig_tpl = '_catering_cashbook.html.twig';
 
+        if (empty($form_data['club']) || $form_data['club'] instanceof Club) {
+            $club = $form_data['club'];
+        } else {
+            $club = $em->getRepository('JCSGYKAdminBundle:Club')->find($form_data['club']);
+        }
+
         $data = [
             'ca.cim'   => $title,
-            'ca.klub'  => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
+            'ca.klub'  => empty($club) ? '' : sprintf(' (%s)', $club->getName()),
             'sp.datum' => $ae->formatDate(new \DateTime('today')),
             'blocks'   => [
                 'catering' => $report_data,
