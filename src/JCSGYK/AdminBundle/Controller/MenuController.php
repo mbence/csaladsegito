@@ -131,16 +131,6 @@ class MenuController extends Controller
                 'role'  => 'ROLE_USER',
                 'requirement' => $client->canEdit($sec)
             ],
-            // client_histroy - Template:history
-            [
-                'url'   => $this->generateUrl('client_history', ['id' => $client->getId()]),
-                'label' => 'esettörténet',
-                'title' => 'Esettörténet',
-                'class' => '',
-                'more'  => true,
-                'role'  => 'ROLE_USER',
-                'requirement' => $client->canEdit($sec)
-            ],
             // archive_client - Client:archive
             [
                 'url'   => $this->generateUrl('client_archive', ['id' => $client->getId()]),
