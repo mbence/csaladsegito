@@ -121,12 +121,12 @@ class MenuController extends Controller
         $assistance = $sec->isGranted('ROLE_ASSISTANCE') && !$sec->isGranted('ROLE_FAMILY_HELP') && !$sec->isGranted('ROLE_CHILD_WELFARE') && !$sec->isGranted('ROLE_CATERING');
 
         $items = [
-            // client_histroy - Template:history
+            // templates
             [
-                'url'   => $this->generateUrl('client_history', ['id' => $client->getId()]),
-                'label' => 'esettörténet',
-                'title' => 'Esettörténet',
-                'class' => '',
+                'url'   => $this->generateUrl('client_templates', ['client_id' => $client->getId()]),
+                'label' => 'nyomtatványok',
+                'title' => 'Nyomtatványok készítése',
+                'class' => 'templates',
                 'more'  => true,
                 'role'  => 'ROLE_USER',
                 'requirement' => $client->canEdit($sec)
@@ -275,7 +275,7 @@ class MenuController extends Controller
         $items = [
             // templates
             [
-                'url'   => $this->generateUrl('templates', ['id' => $problem->getId()]),
+                'url'   => $this->generateUrl('problem_templates', ['problem_id' => $problem->getId()]),
                 'label' => 'nyomtatványok',
                 'title' => 'Nyomtatványok készítése',
                 'class' => 'templates',

@@ -2,39 +2,38 @@
 
 <h1 class="client center">{{ 'Nyomtatványok készítése'|trans }}</h1>
 
-<form id="templateform" class="templateform" action="{{ path('templates', {'id': problem.id}) }}" method="post" novalidate {{ form_enctype(form) }}>
+{{ form_start(form, {"attr": {"id": "templateform", "class": "templateform", 'novalidate': 'novalidate' }}) }}
     {{ form_errors(form) }}
 
     <table class="client" cellspacing="0" border="0">
-    <tr>
-        <th>{{ 'Név'|trans }}:</th>
-        <td>{{ fname(problem.client.firstname, problem.client.lastname, problem.client.title) }}</td>
-    </tr>
-    <tr>
-        <th>{{ problem.client.type|caselabel }}:</th>
-        <td>{{ problem.client.caseLabel }}</td>
-    </tr>
-</table>
-<div class="errors center hidden" id="template-error">{{ 'Kérem válassza ki az elkészítendő nyomtatványt!'|trans }}</div>
-<div class="client-template-cont">
-    <div class="client-template-list">
-    {{ form_widget(form.template) }}
+        <tr>
+            <th>{{ 'Név'|trans }}:</th>
+            <td>{{ fname(client.firstname, client.lastname, client.title) }}</td>
+        </tr>
+        <tr>
+            <th>{{ client.type|caselabel }}:</th>
+            <td>{{ client.caseLabel }}</td>
+        </tr>
+    </table>
+    <div class="errors center hidden" id="template-error">{{ 'Kérem válassza ki az elkészítendő nyomtatványt!'|trans }}</div>
+    <div class="client-template-cont">
+        <div class="client-template-list">
+        {{ form_widget(form.template) }}
+        </div>
     </div>
-</div>
-<table class="client" cellspacing="0" border="0">
-    <tr>
-        <th>{{ form_errors(form.auto_event) }}{{ form_widget(form.auto_event) }}</th>
-        <td>{{ form_label(form.auto_event) }}</td>
-    </tr>
-    </td></tr>
-</table>
+    {% if form.auto_event is defined %}
+    <table class="client" cellspacing="0" border="0">
+        <tr>
+            <th>{{ form_errors(form.auto_event) }}{{ form_widget(form.auto_event) }}</th>
+            <td>{{ form_label(form.auto_event) }}</td>
+        </tr>
+        </td></tr>
+    </table>
+    {% endif %}
 
-<div class="toppad10 center">
-    <button title="{{ 'Bezárás'|trans }}" class="close greybutton" type="reset"><span>{{ 'bezárás'|trans }}</span></button>
-    <button type="submit" class="button" name="maketemplate" value="save"><span>{{ 'nyomtatvány letöltése'|trans }}</span></button>
-</div>
+    <div class="toppad10 center">
+        <button title="{{ 'Bezárás'|trans }}" class="close greybutton" type="reset"><span>{{ 'bezárás'|trans }}</span></button>
+        <button type="submit" class="button" name="maketemplate" value="save"><span>{{ 'nyomtatvány letöltése'|trans }}</span></button>
+    </div>
 
-{{ form_widget(form._token) }}
-</form>
-
-<iframe id="template-dl-frame" class="hidden"></iframe>
+{{ form_end(form) }}

@@ -4,13 +4,17 @@ namespace JCSGYK\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Form\Form;
 
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\Problem;
 use JCSGYK\AdminBundle\Entity\Event;
+use JCSGYK\AdminBundle\Entity\DocTemplate;
 
 class TemplateController extends Controller
 {
@@ -22,6 +26,9 @@ class TemplateController extends Controller
      * Uses the OpenTBS library with the OpenTBSBundle / jcs.docx service
      *
      * @param int $id Client ID
+     * @Security("has_role('ROLE_USER')")
+     * @Route("clients/history/{id}", name="client_history")
+     * @return Response
      */
     public function historyAction($id)
     {
@@ -32,7 +39,9 @@ class TemplateController extends Controller
 
             $data = $this->getHistoryData($client);
 
-            $send = $this->container->get('jcs.docx')->show(2, $data);
+            $em = $this->container->get('doctrine')->getManager();
+            $doc = $em->getRepository('JCSGYKAdminBundle:DocTemplate')->find(2);
+            $send = $this->container->get('jcs.docx')->show($doc, $data);
 
             if (!$send) {
                 throw new HttpException(400, "Bad request");
@@ -46,119 +55,187 @@ class TemplateController extends Controller
         }
     }
 
-    protected function getClient($id)
+    /**
+     * Get a client
+     * @param int $id client id
+     * @return Client
+     */
+    private function getClient($id)
     {
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
-
-        // get client data
 
         return $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')
             ->findOneBy(['id' => $id, 'companyId' => $company_id]);
     }
 
-    protected function getProblem($id)
+    /**
+     * Get a problem
+     * @param int $id problem id
+     * @return Problem
+     */
+    private function getProblem($id)
     {
         return $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem')
             ->findOneBy(['id' => $id, 'isDeleted' => 0]);
     }
 
-/**
- * Print the list of templates or generate a specific document
- *
- * The generated docx file will be sent back as a downloadable file
- *
- * Uses the OpenTBS library with the OpenTBSBundle / jcs.docx service
- *
- * @param int $id Problem ID
- */
-    public function makeAction($id = null)
+    /**
+     * Print the list of templates or generate a specific document
+     * The generated docx file will be sent back as a downloadable file
+     * Uses the OpenTBS library with the OpenTBSBundle / jcs.docx service
+     *
+     * @param Request $request
+     * @param int $problem_id Problem ID
+     * @param int $client_id client ID
+     * @Security("has_role('ROLE_USER')")
+     * @Route("/client_templates/{client_id}", name="client_templates")
+     * @Route("/problem_templates/{problem_id}", name="problem_templates")
+     * @Template("JCSGYKAdminBundle:Dialog:templates.html.twig")
+     * @return Response
+     */
+    public function makeAction(Request $request, $problem_id = null, $client_id = null)
     {
-        $request = $this->getRequest();
+        if (empty($problem_id) && empty($client_id)) {
+            throw new HttpException(400, "Bad request");
+        }
+        $client  = null;
+        $problem = null;
 
-        if (!empty($id)) {
-            // get the client
-            $problem = $this->getProblem($id);
-            if (empty($problem)) {
+        // get the problem or client
+        if (!empty($problem_id)) {
+            $problem  = $this->getProblem($problem_id);
+            $id       = $problem_id;
+        } else {
+            $client   = $this->getClient($client_id);
+            $id       = $client_id;
+        }
+
+        // check again
+        if (empty($problem) && empty($client)) {
+            throw new HttpException(400, "Bad request");
+        }
+
+        // check user rights
+        if (!empty($problem)) {
+            $this->canEdit($problem);
+        } else {
+            $this->canEdit($client);
+        }
+
+        $company_id = $this->container->get('jcs.ds')->getCompanyId();
+        $em = $this->container->get('doctrine')->getManager();
+
+        // get the template names
+        $template_list = $em->getRepository('JCSGYKAdminBundle:DocTemplate')->getTemplateList($company_id, !empty($client), !empty($problem));
+
+        // make the form url
+        $route_options = !empty($client_id) ? ['client_id' => $client_id] : ['problem_id' => $problem_id];
+        $url = $this->generateUrl($request->get('_route'), $route_options);
+
+        $form = $this->getForm($template_list, $url, !empty($problem));
+        $form->handleRequest($request);
+
+        // we will always need the client
+        if (empty($client)) {
+            $client = $problem->getClient();
+        }
+
+        // save
+        if ($form->isValid()) {
+            $form_data = $form->getData();
+            $doc = $em->getRepository('JCSGYKAdminBundle:DocTemplate')->find($form_data['template']);
+
+            // create the auto event (only for problems)
+            if (!empty($form_data['auto_event']) && !empty($problem)) {
+                $this->saveEvent($doc, $problem);
+            }
+
+            // generate the selected document
+            if (1 == $form_data['template']) {
+                // ACST kérelem
+                $data = $this->getDebtData($client, $problem);
+            }
+            elseif (2 == $form_data['template']) {
+                // Esettörténet
+                $data = $this->getHistoryData($client, $problem);
+            }
+            else {
+                $data = [
+                    'client' => $client,
+                    'problem' => $problem
+                ];
+            }
+
+            $send = $this->container->get('jcs.docx')->show($doc, $data);
+
+            if (!$send) {
                 throw new HttpException(400, "Bad request");
             }
 
-            // check user rights
-            $this->canEdit($problem);
-
-            $company_id = $this->container->get('jcs.ds')->getCompanyId();
-            $em = $this->getDoctrine()->getManager();
-
-            $form = $this->createFormBuilder(['auto_event' => true])
-                ->add('template', 'choice', [
-                    'label' => '',
-                    'choices' => $em->getRepository('JCSGYKAdminBundle:Template')->getTemplateList($company_id),
-                    'expanded' => true,
-                    'multiple' => false,
-                ])
-                ->add('auto_event', 'checkbox', [
-                    'label' => 'Automatikus esemény létrehozása',
-                ])
-                ->getForm();
-
-            // save
-            if ($request->query->get('form')) {
-                $form->bind($request);
-
-                if ($form->isValid()) {
-                    $form_data = $form->getData();
-
-                    // create the auto event
-                    if (!empty($form_data['auto_event'])) {
-                        $user= $this->get('security.context')->getToken()->getUser();
-                        // get the template name
-                        $template = $em->getRepository('JCSGYKAdminBundle:Template')->find($form_data['template']);
-
-                        $event = new Event();
-                        $event->setEventDate(new \DateTime());
-                        $event->setProblem($problem);
-                        $event->setDescription('Nyomtatvány generálás: ' . $template->getName());
-                        $event->setCreator($user);
-
-                        $em->persist($event);
-                        $em->flush();
-                    }
-
-                    // generate the selected document
-                    if (1 == $form_data['template']) {
-                        // ACST kérelem
-                        $data = $this->getDebtData($problem);
-                    }
-                    elseif (2 == $form_data['template']) {
-                        // Esettörténet
-                        $data = $this->getHistoryData($problem->getClient(), $problem);
-                    }
-                    else {
-                        $data = [
-                            'client' => $problem->getClient(),
-                            'problem' => $problem
-                        ];
-                    }
-
-                    $send = $this->container->get('jcs.docx')->show($form_data['template'], $data);
-
-                    if (!$send) {
-                        throw new HttpException(400, "Bad request");
-                    }
-
-                    exit;
-                }
-            }
-
-            return $this->render('JCSGYKAdminBundle:Dialog:templates.html.twig', [
-                'problem' => $problem,
-                'form' => $form->createView(),
-            ]);
+            exit;
         }
-        else {
-            throw new HttpException(400, "Bad request");
-        }
+
+        return [
+            'client'  => $client,
+            'problem' => $problem,
+            'form'    => $form->createView(),
+        ];
     }
 
+    /**
+     * Returns a form
+     * @param array $template_list
+     * @param int $id selected doctemplate
+     * @return Form
+     */
+    private function getForm($template_list, $url, $add_auto_event = false)
+    {
+        $builder =  $this->createFormBuilder(['auto_event' => true])
+            ->setAction($url)
+            ->setMethod('POST')
+            ->add('template', 'choice', [
+                'label' => '',
+                'choices' => $template_list,
+                'expanded' => true,
+                'multiple' => false,
+            ]);
+        // we only add auto events for PROBLEM type docTemplates
+        if ($add_auto_event) {
+            $builder->add('auto_event', 'checkbox', [
+                'label' => 'Automatikus esemény létrehozása',
+            ]);
+        }
+
+        return $builder->getForm();
+    }
+
+    /**
+     * Saves an event to the problem
+     * @param DocTemplate $doc
+     * @param Problem $problem
+     */
+    private function saveEvent(DocTemplate $doc, Problem $problem)
+    {
+        $em = $this->container->get('doctrine')->getManager();
+        $user= $this->get('security.context')->getToken()->getUser();
+
+        $event = (new Event())
+            ->setEventDate(new \DateTime())
+            ->setProblem($problem)
+            ->setDescription('Nyomtatvány generálás: ' . $doc->getName())
+            ->setCreator($user)
+        ;
+
+        $em->persist($event);
+        $em->flush();
+    }
+
+    /**
+     * Get History Data
+     * @param Client $client
+     * @param Problem $problem
+     * @return array
+     */
     private function getHistoryData(Client $client, Problem $problem = null)
     {
         $blocks = [
@@ -174,11 +251,10 @@ class TemplateController extends Controller
         }
 
         if (!empty($problems)) {
-
             // get events
             // we cant use the Doctrine relation to get the events, because we only need undeleted events and in ascending order
             $problem_repo = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Problem');
-            $events = [];
+
             foreach ($problems as $pro) {
                 $blocks['problem'][] = [
                     'problem' => $pro,
@@ -198,11 +274,20 @@ class TemplateController extends Controller
     /**
      * finds the debts of the given problems
      *
-     * @param \JCSGYK\AdminBundle\Entity\Problem $problem
+     * @param Client $client
+     * @param Problem $problem
      * @return array
      */
-    private function getDebtData(Problem $problem)
+    private function getDebtData(Client $client, Problem $problem = null)
     {
+        if (empty($problem)) {
+            return [
+                'client' => $client,
+                'problem' => null,
+                'debts' => []
+            ];
+        }
+
         $em = $this->getDoctrine()->getManager();
         // get the debt records
         $debts = $em
@@ -231,7 +316,7 @@ class TemplateController extends Controller
         }
 
         return [
-            'client' => $problem->getClient(),
+            'client' => $client,
             'problem' => $problem,
             'debts' => $debt_list
         ];
@@ -257,13 +342,13 @@ class TemplateController extends Controller
 
     /**
      * Check if this user is allowed to edit - if not we throw an exception
-     * @param \JCSGYK\AdminBundle\Entity\Problem $problem
+     * @param Problem|Client $problem
      * @return true on success
      */
-    private function canEdit(Problem $problem)
+    private function canEdit($entity)
     {
         $sec = $this->get('security.context');
-        if (!$problem->canEdit($sec)) {
+        if (!$entity->canEdit($sec)) {
 
             throw new AccessDeniedException();
         }
