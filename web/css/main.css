@@ -3538,7 +3538,7 @@ h2.order-date {
     overflow: hidden;
     display: inline-block;
     vertical-align: -4px;
-    font-size: 11px;
+    font-size: 10px;
 }
 #ordering-calendar .month-wrapper .datepicker ul li .menu:hover {
     width: 64px;
@@ -3548,8 +3548,13 @@ h2.order-date {
     background-color: transparent;
     margin: 0 -5px 0 -3px;
     padding: 0;
-    width: 68px;
     cursor: pointer;
+    font-size: 10px;
+}
+@-moz-document url-prefix() {
+    #ordering-calendar .month-wrapper .datepicker ul li .menu select.order-menu {
+        width: 68px;
+    }
 }
 .button, .greybutton {
     border-radius: 2px;
