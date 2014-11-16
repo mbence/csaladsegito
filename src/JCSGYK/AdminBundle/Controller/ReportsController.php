@@ -17,6 +17,7 @@ use JCSGYK\AdminBundle\Entity\Invoice;
 use JCSGYK\AdminBundle\Entity\StatFile;
 use JCSGYK\AdminBundle\Services\DataStore;
 use JCSGYK\AdminBundle\Entity\HomeHelp;
+use JCSGYK\AdminBundle\Entity\Relation;
 
 class ReportsController extends Controller
 {
@@ -174,6 +175,9 @@ class ReportsController extends Controller
         elseif (in_array($report, ['catering_stats', 'homehelp_stats'])) {
             $this->getClubSelect($form_builder);
         }
+        elseif (in_array($report, ['homehelp_clients'])) {
+            $this->getSocialWorkerSelect($form_builder, true, 'Mindenki');
+        }
 
         // show only debts for catering summary
         if (in_array($report, ['catering_summary', 'catering_datacheck'])) {
@@ -301,6 +305,20 @@ class ReportsController extends Controller
         $form_builder->add('club', 'entity', $c);
     }
 
+    private function getSocialWorkerSelect(&$form_builder, $required = true, $empty_value = '')
+    {
+        $c = [
+            'label'    => 'Gondozó',
+            'choices'  => $this->ds->getSocialWorkers(),
+            'required' => $required,
+        ];
+        if (!empty($empty_value)) {
+            $c['empty_value'] = $empty_value;
+        }
+
+        $form_builder->add('social_worker', 'choice', $c);
+    }
+
     private function getReport($report, $form_data, $download)
     {
         if ('clients' == $report) {
@@ -323,6 +341,9 @@ class ReportsController extends Controller
         }
         elseif ('ksh' == $report) {
             return $this->container->get('jcs.reports.ksh')->run($form_data, $download);
+        }
+        elseif ('homehelp_clients' == $report) {
+            return $this->getHomehelpClientsReport($form_data, $download);
         }
 
         return false;
@@ -364,6 +385,7 @@ class ReportsController extends Controller
             $menu['Gondozás'] = [
                 ['slug' => 'homehelp_stats', 'label' => 'Gondozás statisztika'],
                 ['slug' => 'homehelp_cashbook', 'label' => 'Pénztárkönyv'],
+                ['slug' => 'homehelp_clients', 'label' => 'Gondozottak'],
             ];
         }
 
@@ -781,7 +803,7 @@ class ReportsController extends Controller
             $data_row = [
                 'id'             => $client->getCaseLabel(),
                 'name'           => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
-                'address'        => sprintf('(%s)', $ae->formatAddress('', '', $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber())),
+                'address'        => sprintf('(%s)', $ae->formatClientAddress($client)),
                 'month'          => !empty($form_data['day']) ? $this->ds->getMonth($invoice->getStartdate()->format('n')) : implode(', ', $payment_dates),
                 'invoice_number' => 'SZ-' . $invoice->getId(),
                 //'balance'       => $ae->formatCurrency2($catering->getBalance()),
@@ -924,5 +946,82 @@ class ReportsController extends Controller
         }
 
         return false;
+    }
+
+    private function getHomehelpClientsReport($form_data, $download)
+    {
+        $form_fields = [
+            'social_worker' => null,
+        ];
+        // make sure we have all required fields
+        // 'club' => Club entity or null for all
+        $form_data   = array_merge($form_fields, $form_data);
+
+        $company_id = $this->ds->getCompanyId();
+        $em         = $this->container->get('doctrine')->getManager();
+        $ae         = $this->container->get('jcs.twig.adminextension');
+
+        // Get the names of the social workers
+        $sw = $this->ds->getSocialWorkers();
+
+        // filter the sw list
+        if (!empty($form_data['social_worker']) && isset($sw[$form_data['social_worker']])) {
+            $sw = [
+                $form_data['social_worker'] => $sw[$form_data['social_worker']]
+            ];
+        }
+
+        $clients = [];
+        foreach ($sw as $sw_id => $worker) {
+            // find all the active homehelp clients
+            $cli = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsBySocialWorker($sw_id, $company_id);
+            if (!empty($cli)) {
+                $tmp = [
+                    'sw' => $worker,
+                    'cli' => [],
+                ];
+                // client rows
+                foreach ($cli as $client) {
+                    $doc_name = '';
+                    $doc = $em->getRepository('JCSGYKAdminBundle:Client')->getRelationByType($client->getId(), Relation::DOCTOR);
+                    if (!empty($doc)) {
+                        $doc_name = $ae->formatClientName($doc->getParent());
+                    }
+
+                    $tmp['cli'][] = [
+                        'nam' => $ae->formatClientName($client),
+                        'adr' => sprintf('(%s)', $ae->formatClientAddress($client)),
+                        'doc' => $doc_name,
+                        'tel' => $client->getPhone() . ' ' . $client->getMobile(),
+                    ];
+                }
+                $clients[] = $tmp;
+                $clients[] = [
+                    'sw' => ' ',
+                    'cli' => [],
+                ];
+            }
+        }
+
+        $data = [
+            'hh.cim'   => 'Gondozottak',
+            'sp.datum' => $ae->formatDate(new \DateTime('today')),
+            'blocks'   => [
+                'clients' => $clients,
+            ]
+        ];
+
+        $twig_tpl      = '_homehelp_clients.html.twig';
+        $template_file = __DIR__ . '/../Resources/public/reports/homehelp_clients.xlsx';
+        $sw_title = !empty($form_data['social_worker']) ? sprintf(' (%s)', $this->ds->get($form_data['social_worker'])) : '';
+
+        $output_name   = $data['hh.cim'] . $sw_title . '.xlsx';
+
+        if ($download) {
+            return $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+        }
+        else {
+            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $twig_tpl, ['data' => $data]);
+        }
     }
 }

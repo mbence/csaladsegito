@@ -668,6 +668,16 @@ class AdminExtension extends \Twig_Extension
         return $re;
     }
 
+    public function formatClientAddress(Client $client, $full = false)
+    {
+        if ($full) {
+            return $this->formatAddress($client->getCountry(), $client->getZipCode(), $client->getCity(), $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber());
+        } else {
+            return $this->formatAddress('', '', '', $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber());
+        }
+
+    }
+
     /**
      * Format a date
      * @param \JCSGYK\AdminBundle\Twig\DateTime $d
