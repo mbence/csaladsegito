@@ -1,13 +1,5 @@
 {# Edit Orders #}
 <nav class="calendar-nav clearfix">
-{#    <ul>
-        <li class="prev" data-direction="prev" data-next="1">{{ 'Előző hónap'|trans }}</li>
-        <li>
-
-        </li>
-        <li class="next" data-direction="next" data-next="3">{{ 'Következő hónap'|trans }}</li>
-    </ul>
-#}
     {# Calendar monthly navigation #}
     <a href="#" class="greybutton next" data-direction="next" data-next="3"><span>{{ 'Következő hónap'|trans }} &raquo;</span></a>
     <a href="#" class="greybutton prev" data-direction="prev" data-next="1"><span>&laquo; {{ 'Előző hónap'|trans }}</span></a>
@@ -26,8 +18,8 @@
                         <li>{{ 'Szerda'|trans }}</li>
                         <li>{{ 'Csütörtök'|trans }}</li>
                         <li>{{ 'Péntek'|trans }}</li>
-                        <li{# class="weekend"#}>{{ 'Szombat'|trans }}</li>
-                        <li{# class="weekend"#}>{{ 'Vasárnap'|trans }}</li>
+                        <li>{{ 'Szombat'|trans }}</li>
+                        <li>{{ 'Vasárnap'|trans }}</li>
                     </ul>
                     {% for weeknumber,week in month %}
                     <ul class="table-body">
@@ -35,14 +27,25 @@
                         {% for index,day in week %}
                         <li class="{{ day.class }}{% if day.holiday %} holiday{% endif %}"{% if day.day is not null %} data-date="{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}" data-closed="{{ day.closed }}" data-menu="{{ param(day.menu) }}" data-order="{{ day.order }}" data-modifiable="{{ day.modifiable }}"{% endif %}>
                         {% if day.day is not null %}
+                            {% spaceless %}
                             <span class="day">{% if day.day == 1 %}{{ timestamp|fdate2('F')|capitalize }} {% endif %}{{ day.day }}.</span>
                             <input type="checkbox" name="order_{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}" value="1">
-                            {# <input type="radio" class="cancel" name="orders[{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}]" value="-1"><label>Lemondás</label> #}
-                            <span class="menu">{% if day.order == 'cancel' %}{{ 'Lemondva'|trans }}{% else %}{% if day.order != 'none' %}{{ param(day.menu) }}{% endif %}{% endif %}</span>
-                            {# <span class="status">{% if day.changed is defined and day.changed == 1 %}{{ 'Utánrendelve'|trans }}{% endif %}</span> #}
+                            <span class="menu">
+                                <span class="menu-text {% if day.order != 'cancel' %}hidden{% endif %}">{{ 'Lemondva'|trans }}</span>
+                                <select
+                                        class="order-menu {% if day.order == 'cancel' or day.order == 'none' %}hidden{% endif %}"
+                                        {% if not day.modifiable or day.order == 'cancel' or day.order == 'none' %}disabled{% endif %}
+                                        name="order_menu[{{ timestamp|date('Y-m') ~ '-' ~ '%02d'|format(day.day) }}]">
+
+                                    {% for menu in menus %}
+                                        <option value="{{ menu }}" {% if menu == day.menu %}selected{% endif %}>{{ param(menu) }}</option>
+                                    {% endfor %}
+                                </select>
+                            </span>
                             {% if day.holiday %}
                             <span class="holiday">{{ day.holiday }}</span>
                             {% endif %}
+                            {% endspaceless %}
                         {% endif %}
                         </li>
                         {% endfor %}

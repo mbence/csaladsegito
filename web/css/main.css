@@ -3532,6 +3532,25 @@ h2.order-date {
 #ordering-calendar .month-wrapper .datepicker ul li input[type=checkbox]{
     margin-left: -1px;
 }
+#ordering-calendar .month-wrapper .datepicker ul li .menu {
+    width: 50px;
+    height: 14px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: -4px;
+    font-size: 11px;
+}
+#ordering-calendar .month-wrapper .datepicker ul li .menu:hover {
+    width: 64px;
+}
+#ordering-calendar .month-wrapper .datepicker ul li .menu select.order-menu {
+    border: none;
+    background-color: transparent;
+    margin: 0 -5px 0 -3px;
+    padding: 0;
+    width: 68px;
+    cursor: pointer;
+}
 .button, .greybutton {
     border-radius: 2px;
     border: 1px solid transparent;

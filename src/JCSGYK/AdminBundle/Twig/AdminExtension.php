@@ -78,7 +78,7 @@ class AdminExtension extends \Twig_Extension
 
         $re = [];
         if ('ClientOrder' == $class && 'update' == $action) {
-            $re[] = $this->formatHistoryOrders($log);
+            $this->formatHistoryOrders($re, $log);
         }
         elseif (is_array($log_data)) {
             foreach($log_data as $field => $versions) {
@@ -284,12 +284,12 @@ class AdminExtension extends \Twig_Extension
         return $re;
     }
 
-    public function formatHistoryOrders(History $log)
+    public function formatHistoryOrders(&$re, History $log)
     {
-        $re = '';
+        $out = '';
         $log_data = $log->getData();
         // first key is the date
-        $re .= array_keys($log_data)[0];
+        $out .= array_keys($log_data)[0];
 
         $o = isset($log_data['order']) ? $log_data['order'] : [0, 0];
         $c = isset($log_data['cancel']) ? $log_data['cancel'] : [0, 0];
@@ -298,13 +298,19 @@ class AdminExtension extends \Twig_Extension
         //var_dump($log_data, $o, $c, $x);
         // 100 ->010
         if (0 == $c[0] && 1 == $c[1] ) {
-            $re .= ' - lemondás';
+            $out .= ' - lemondás';
         }
         elseif (1 == $c[0] && 0 == $c[1]) {
-            $re .= ' - megrendelés';
+            $out .= ' - megrendelés';
         }
 
-        return $re;
+        $re[] = $out;
+
+        if (!empty($log_data['menu'])) {
+            // add menu change line
+            list($class, $action) = explode(' ', $log->getEvent());
+            $this->logDetails($re, $class, 'menu', $log_data['menu']);
+        }
     }
 
     /**

@@ -85,6 +85,37 @@ class ClientOrderRepository extends EntityRepository
     }
 
     /**
+     * Change selected menus
+     * @param Client $client
+     * @param array $menus
+     * @return int number of changed records
+     */
+    public function changeMenus(Client $client, $menus)
+    {
+        $dates = array_keys($menus);
+        // get the orders
+        $orders = $this->getEntityManager()->createQuery('SELECT o FROM JCSGYKAdminBundle:ClientOrder o WHERE o.client = :client AND o.date IN (:dates)')
+            ->setParameter('client', $client)
+            ->setParameter('dates', $dates)
+            ->getResult();
+
+        // update as necessary
+        $changes = 0;
+        foreach ($orders as $order) {
+            $date = $order->getDate()->format('Y-m-d');
+            if (!empty($menus[$date]) && $menus[$date] != $order->getMenu()) {
+                $order->setMenu($menus[$date]);
+                $changes++;
+            }
+        }
+        $this->getEntityManager()->flush();
+
+        return $changes;
+    }
+
+
+
+    /**
      * Cancel or reorder all future orders. Called when clientcatering is set to inactive/active
      *
      * @param int $client_id

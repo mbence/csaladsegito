@@ -437,10 +437,13 @@ class ClientController extends Controller
         if (!empty($client)) {
 
             $orders = $this->prepareOrders($client);
+            $menus = $client->getCatering()->getClub()->getLunchTypes();
+            asort($menus);
 
             return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
                 'client' => $client,
-                'orders' => $orders
+                'orders' => $orders,
+                'menus'  => $menus,
             ]);
         }
         else {
@@ -459,6 +462,7 @@ class ClientController extends Controller
 
             // $em = $this->getDoctrine()->getManager();
             $client = $this->getClient($id);
+            $em     = $this->getDoctrine()->getManager();
 
             // save the ordering data
             if ($request->isMethod('POST')) {
@@ -470,19 +474,7 @@ class ClientController extends Controller
                     $new_orders = $this->processOrders($client, $orders);
                 }
 
-                // return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
-                //     'success'    => true,
-                //     'new_orders' => $new_orders,
-                //     'orders'     => $orders
-                // ]);
-
-                if (empty($new_orders)) {
-                    // if there are no changes, close the window and say bye-bye
-                    $this->get('session')->getFlashBag()->add('notice', 'Nem volt változás a rendelésben.');
-                }
-                else {
-
-                    $em         = $this->getDoctrine()->getManager();
+                if (!empty($new_orders)) {
                     $sec        = $this->get('security.context');
                     $user       = $sec->getToken()->getUser();
                     $company_id = $this->container->get('jcs.ds')->getCompanyId();
@@ -556,9 +548,19 @@ class ClientController extends Controller
                     $this->get('session')->getFlashBag()->add('notice', 'Rendelés elmentve');
                 }
 
+                // change menus
+                $changed_menus = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->changeMenus($client, $request->request->get('order_menu'));
+                if ($changed_menus) {
+                    $this->get('session')->getFlashBag()->add('notice', 'Rendelés elmentve');
+                }
+
+                // if there are no changes, close the window and say bye-bye
+                if (empty($new_orders) && empty($changed_menus) ) {
+                    $this->get('session')->getFlashBag()->add('notice', 'Nem volt változás a rendelésben.');
+                }
+
                 return $this->render('JCSGYKAdminBundle:Catering:orders_dialog.html.twig', [
                     'success' => true,
-                    // 'orders'  => $error
                 ]);
             }
 

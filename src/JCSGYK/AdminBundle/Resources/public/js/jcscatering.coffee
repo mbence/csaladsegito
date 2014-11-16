@@ -210,7 +210,6 @@ JcsCatering =
             else if $(this).data("order") is "cancel"
                 orders[$(this).data("date")] = -1
         $("input[name=orders]").val(JSON.stringify(orders))
-#        console.log($("input[name=orders]").val())
 
     setupHolidayInfo: ->
         $("span.holiday").mouseenter ->
@@ -234,11 +233,11 @@ JcsCatering =
             if $(this).data("modifiable")
                 order = $(this).data("order")
                 new_order = $(this).data("new_order")
-                # console.log(new_order)
 
                 if order == "cancel" && new_order == undefined
                     $(this).data("new_order", "reorder")
-                    $(this).find(".menu").text($(this).data("menu"))
+                    $(this).find(".menu .order-menu").show().prop("disabled", false)
+                    $(this).find(".menu .menu-text").hide()
                     # if it is closed, this is a reorder
                     if $(this).data("closed") == 1
                         $(this).find(".status").text("Utánrendelve")
@@ -248,7 +247,8 @@ JcsCatering =
                     $(this).find("input").attr("checked","checked")
                 else if order == "cancel" && new_order != undefined
                     $(this).removeData("new_order")
-                    $(this).find(".menu").text("Lemondva")
+                    $(this).find(".menu .order-menu").hide().prop("disabled", true)
+                    $(this).find(".menu .menu-text").show()
                     $(this).find(".status").empty()
                     $(this).removeClass("reorder").addClass("cancel")
                     $(this).find("input").removeAttr("checked")
@@ -256,47 +256,52 @@ JcsCatering =
                 # ha még nincs order az adott napon
                 if order == "none" && new_order == undefined
                     $(this).data("new_order", "reorder")
-                    $(this).find(".menu").text($(this).data("menu"))
-                    # if $(this).data("closed") == 1
-                        # $(this).find(".status").text("Utánrendelve")
+                    $(this).find(".menu .order-menu").show().prop("disabled", false)
+                    $(this).find(".menu .menu-text").hide()
                     $(this).addClass("reorder")
                     $(this).find("input").attr("checked","checked")
                 else if order == "none" && new_order is "reorder"
                     $(this).data("new_order", "cancel")
                     $(this).find(".status").empty()
-                    $(this).find(".menu").text("Lemondás")
+                    $(this).find(".menu .order-menu").hide().prop("disabled", true)
+                    $(this).find(".menu .menu-text").show()
                     $(this).removeClass("reorder").addClass("cancel")
                     $(this).find("input").removeAttr("checked")
                 else if order == "none" && new_order is "cancel"
                     $(this).removeData("new_order")
                     $(this).find(".status").empty()
-                    $(this).find(".menu").empty()
+                    $(this).find(".menu .order-menu").hide().prop("disabled", true)
+                    $(this).find(".menu .menu-text").hide()
                     $(this).removeClass("cancel")
                     # $(this).find("input").removeAttr("checked")
 
                 if order is "order" and new_order is undefined
                     $(this).data("new_order", "cancel")
                     # if $(this).data("closed") == 1
-                    $(this).find(".menu").text("Lemondva")
+                    $(this).find(".menu .order-menu").hide().prop("disabled", true)
+                    $(this).find(".menu .menu-text").show()
                     $(this).removeClass("order").addClass("cancel")
                     # else $(this).data("closed") == 0
                         # $(this).removeClass("order").addClass("cancel")
                     $(this).find("input").removeAttr("checked")
                 else if order == "order" && new_order != undefined
                     $(this).removeData("new_order")
-                    $(this).find(".menu").text($(this).data("menu"))
+                    $(this).find(".menu .order-menu").show().prop("disabled", false)
+                    $(this).find(".menu .menu-text").hide()
                     $(this).removeClass("cancel").addClass("order")
                     $(this).find("input").attr("checked","checked")
 
                 if order == "reorder" && new_order == undefined
                     $(this).data("new_order", "cancel")
-                    $(this).find(".menu").text("Lemondva")
+                    $(this).find(".menu .order-menu").hide().prop("disabled", true)
+                    $(this).find(".menu .menu-text").show()
                     $(this).find(".status").empty()
                     $(this).removeClass("reorder").addClass("cancel")
                     $(this).find("input").removeAttr("checked")
                 else if order == "reorder" && new_order != undefined
                     $(this).removeData("new_order")
-                    $(this).find(".menu").text($(this).data("menu"))
+                    $(this).find(".menu .order-menu").show().prop("disabled", false)
+                    $(this).find(".menu .menu-text").hide()
                     if $(this).data("closed") == 1
                         $(this).find(".status").text("Utánrendelve")
                     $(this).removeClass("cancel").addClass("reorder")
@@ -307,4 +312,8 @@ JcsCatering =
         $("#ordering-calendar").on "click", "li.day input[type=checkbox]", (event) ->
             $(this).parents("li.day").trigger("click")
             event.stopPropagation()
+
+        $("#ordering-calendar select.order-menu").on("click", (event) ->
+            event.stopPropagation()
+        )
 
