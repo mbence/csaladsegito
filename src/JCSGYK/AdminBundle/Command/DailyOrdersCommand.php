@@ -39,7 +39,6 @@ class DailyOrdersCommand extends ContainerAwareCommand
         // normally we only run the order for the next day
         $dates = [];
         $day_of_week = date('N');
-        $day_of_week = 5;
 
         if ($day_of_week < 4) {
             $dates[] = [

@@ -1,3 +1,9 @@
+## 1.5.2 (2014.11.16)
+
+Fejlesztések:
+
+ - Étkeztetés menüket lehessen napi szinten szerkeszteni
+
 ## 1.5.1 (2014.11.14)
 
 Fejlesztések:
