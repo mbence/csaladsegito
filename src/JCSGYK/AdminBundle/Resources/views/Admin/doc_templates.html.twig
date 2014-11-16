@@ -12,7 +12,9 @@
     <div class="rightpad fullheight nocollapse">
         {% for tpl in templates %}
             <a href="{{ path('admin_templates', {'id': tpl.id}) }}" class="tpl-list{% if act and act.id == tpl.id %} current{% endif %}">
-                {{ tpl.name }} &nbsp;&nbsp;&nbsp; {{ tpl.isActive|check }}
+                {{ tpl.name }}
+                {% if tpl.club %}<span class="grey smalltext" style="white-space:nowrap;">({{ tpl.club.name }})</span>{% endif %}
+                 &nbsp;&nbsp;&nbsp; {{ tpl.isActive|check }}
             </a>
         {% endfor %}
     </div>
@@ -41,6 +43,12 @@
                             {{ form_errors(form.problem_template) }}{{ form_widget(form.problem_template) }}{{ form_label(form.problem_template) }}
                         </td>
                     </tr>
+                    {% if form.club is defined %}
+                    <tr>
+                        <th>{{ form_label(form.club) }}:</th>
+                        <td>{{ form_errors(form.club) }}{{ form_widget(form.club) }}</td>
+                    </tr>
+                    {% endif %}
                     <tr>
                         <th>{{ form_label(form.is_active) }}:</th>
                         <td>{{ form_errors(form.is_active) }}{{ form_widget(form.is_active) }}</td>

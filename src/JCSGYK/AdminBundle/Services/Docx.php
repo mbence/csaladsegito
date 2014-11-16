@@ -5,6 +5,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use JCSGYK\AdminBundle\Entity\Client;
 use JCSGYK\AdminBundle\Entity\DocTemplate;
+use JCSGYK\AdminBundle\Entity\Catering;
+use JCSGYK\AdminBundle\Entity\HomeHelp;
 
 /**
  * Service for Generatinc Docx files from templates
@@ -184,7 +186,7 @@ class Docx
 
         // Client
         if (!empty($data['client']) && $data['client'] instanceof Client) {
-            $client = $data['client'];
+            //$client = $data['client'];
             $re['uf'] = $this->getClientMap($data['client']);
         }
 
@@ -202,6 +204,16 @@ class Docx
         // case history
         if (isset($data['history'])) {
             $re['sp']['esettortenet'] = $data['history'];
+        }
+
+        // Catering
+        if (!empty($data['catering']) && $data['catering'] instanceof Catering) {
+            $re['et'] = $this->getCateringMap($data['catering']);
+        }
+
+        // Homehelp
+        if (!empty($data['homehelp']) && $data['homehelp'] instanceof HomeHelp) {
+            $re['go'] = $this->getHomehelpMap($data['homehelp']);
         }
 
         // echo '<pre>' , print_r($re), '</pre>';
@@ -397,4 +409,45 @@ class Docx
 
         return $re;
     }
+
+    /**
+     * Return the catering related fields
+     * @return array
+     */
+    private function getCateringMap(Catering $catering)
+    {
+        $ae = $this->container->get('jcs.twig.adminextension');
+        // check the cost for the day
+        $table = $this->container->get('jcs.ds')->getOption('cateringcosts');
+        $daily_cost = $this->container->get('jcs.invoice')->getCostForADay($catering, $table);
+
+        return [
+            'jovedelem' => $ae->formatCurrency($catering->getIncome()),
+            'dij'       => $ae->formatCurrency($daily_cost),
+            'klub'      => $catering->getClub()->getName(),
+            'klubcim'   => $catering->getClub()->getAddress(),
+            'klubtel'   => $catering->getClub()->getPhone(),
+        ];
+    }
+
+    /**
+     * Return the homehelp related fields
+     * @return array
+     */
+    private function getHomehelpMap(HomeHelp $homehelp)
+    {
+        $ae = $this->container->get('jcs.twig.adminextension');
+        // check the cost for the day
+        $table = $this->container->get('jcs.ds')->getOption('homehelpcosts');
+        $daily_cost = $this->container->get('jcs.invoice')->getCostForADay($homehelp, $table);
+
+        return [
+            'jovedelem' => $ae->formatCurrency($homehelp->getIncome()),
+            'dij'       => $ae->formatCurrency($daily_cost),
+            'klub'      => $homehelp->getClub()->getName(),
+            'klubcim'   => $homehelp->getClub()->getAddress(),
+            'klubtel'   => $homehelp->getClub()->getPhone(),
+        ];
+    }
+
 }

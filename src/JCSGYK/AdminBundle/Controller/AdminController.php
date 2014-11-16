@@ -834,7 +834,7 @@ class AdminController extends Controller
         }
 
         if (!empty($doc)) {
-            $form = $this->createForm(new DocTemplateType(), $doc);
+            $form = $this->createForm(new DocTemplateType($ds), $doc);
             $form->handleRequest($request);
 
             // save the template
