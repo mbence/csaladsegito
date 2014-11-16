@@ -64,7 +64,7 @@ class DailyOrdersCommand extends ContainerAwareCommand
             $dates[] = [
                 'start' => new \DateTime('this week'),
                 'end' => new \DateTime('this week + 6 days')
-            ];        
+            ];
         }
         elseif ($day_of_week == 5) {
             // and on friday we order for the next monday
