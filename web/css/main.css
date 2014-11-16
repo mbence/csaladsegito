@@ -2766,8 +2766,11 @@ form.editform #recommended_fields label:after {
     margin: -12px 0 0 0;
     height: 12px;
 }
-.parameter-groups, #template-list, #settings-menu {
+.parameter-groups, #settings-menu {
     width: 260px;
+}
+#template-list {
+    width: 400px;
 }
 .parameter-groups ul li, #template-list a.tpl-list, #settings-menu a.menuitem, #reports-menu a.menuitem {
     text-align: right;

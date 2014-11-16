@@ -92,6 +92,14 @@ class DocTemplate
     private $upload;
 
     /**
+     * @var Club
+     *
+     * @ORM\ManyToOne(targetEntity="Club", inversedBy="clientcaterings")
+     * @ORM\JoinColumn(name="club_id", referencedColumnName="id")
+     */
+    private $club;
+
+    /**
      * Get the list of fields for change tracking
      * @return array of field names
      */
@@ -373,5 +381,29 @@ class DocTemplate
     public function getProblemTemplate()
     {
         return $this->problemTemplate;
+    }
+
+    /**
+     * Set club
+     *
+     * @param \JCSGYK\AdminBundle\Entity\Club $club
+     *
+     * @return DocTemplate
+     */
+    public function setClub(\JCSGYK\AdminBundle\Entity\Club $club = null)
+    {
+        $this->club = $club;
+
+        return $this;
+    }
+
+    /**
+     * Get club
+     *
+     * @return \JCSGYK\AdminBundle\Entity\Club
+     */
+    public function getClub()
+    {
+        return $this->club;
     }
 }

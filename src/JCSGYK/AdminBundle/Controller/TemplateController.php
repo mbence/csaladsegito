@@ -100,6 +100,7 @@ class TemplateController extends Controller
         }
         $client  = null;
         $problem = null;
+        $club    = null;
 
         // get the problem or client
         if (!empty($problem_id)) {
@@ -123,10 +124,11 @@ class TemplateController extends Controller
         }
 
         $company_id = $this->container->get('jcs.ds')->getCompanyId();
-        $em = $this->container->get('doctrine')->getManager();
+        $em         = $this->container->get('doctrine')->getManager();
+        $club       = $this->findClub($client, $problem);
 
         // get the template names
-        $template_list = $em->getRepository('JCSGYKAdminBundle:DocTemplate')->getTemplateList($company_id, !empty($client), !empty($problem));
+        $template_list = $em->getRepository('JCSGYKAdminBundle:DocTemplate')->getTemplateList($company_id, !empty($client), !empty($problem), $club);
 
         // make the form url
         $route_options = !empty($client_id) ? ['client_id' => $client_id] : ['problem_id' => $problem_id];
@@ -164,6 +166,17 @@ class TemplateController extends Controller
                     'client' => $client,
                     'problem' => $problem
                 ];
+
+                // add catering record if available
+                $catering = $client->getCatering();
+                if (!empty($catering)) {
+                    $data['catering'] = $catering;
+                }
+                // add homehelp record if available
+                $homehelp = $client->getHomehelp();
+                if (!empty($homehelp)) {
+                    $data['homehelp'] = $homehelp;
+                }
             }
 
             $send = $this->container->get('jcs.docx')->show($doc, $data);
@@ -180,6 +193,38 @@ class TemplateController extends Controller
             'problem' => $problem,
             'form'    => $form->createView(),
         ];
+    }
+
+
+    /**
+     * Try to find the club id of the client
+     * @param Client $client
+     * @param Problem $problem
+     * @return int club id or null when no club set
+     */
+    private function findClub(Client $client = null, Problem $problem = null)
+    {
+        if (empty($client) && !empty($problem)) {
+            $client = $problem->getClient();
+        }
+
+        if (!empty($client)) {
+            // try Catering
+            $catering = $client->getCatering();
+            if (!empty($catering)) {
+
+                return $catering->getClub()->getId();
+            }
+
+            // try homehelp
+            $homehelp = $client->getHomehelp();
+            if (!empty($homehelp)) {
+
+                return $homehelp->getClub()->getId();
+            }
+        }
+
+        return null;
     }
 
     /**
