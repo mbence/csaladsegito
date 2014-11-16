@@ -437,9 +437,13 @@ class Docx
     private function getHomehelpMap(HomeHelp $homehelp)
     {
         $ae = $this->container->get('jcs.twig.adminextension');
+        // check the cost for the day
+        $table = $this->container->get('jcs.ds')->getOption('homehelpcosts');
+        $daily_cost = $this->container->get('jcs.invoice')->getCostForADay($homehelp, $table);
 
         return [
             'jovedelem' => $ae->formatCurrency($homehelp->getIncome()),
+            'dij'       => $ae->formatCurrency($daily_cost),
             'klub'      => $homehelp->getClub()->getName(),
             'klubcim'   => $homehelp->getClub()->getAddress(),
             'klubtel'   => $homehelp->getClub()->getPhone(),
