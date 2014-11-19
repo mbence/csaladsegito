@@ -1,3 +1,9 @@
+## 1.5.3 (2014.11.19)
+
+Fejlesztések:
+
+ - Klubos látogatások felületén sorszám az ügyfelek előtt
+
 ## 1.5.2 (2014.11.16)
 
 Fejlesztések:

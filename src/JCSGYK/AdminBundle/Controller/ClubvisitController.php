@@ -116,8 +116,8 @@ class ClubvisitController extends Controller
             foreach ($visits_data as $vdata) {
                 $client_id = $vdata[0];
                 if (!empty($visits[$client_id])) {
-                    $visits[$client_id]->setVisit($vdata[1]);
-                    $event_data = array_slice($vdata, 2);
+                    $visits[$client_id]->setVisit($vdata[2]);
+                    $event_data = array_slice($vdata, 3);
                     // check events
                     foreach ($event_data as &$event) {
                         $event = empty($event) ? false : true;
@@ -261,6 +261,7 @@ class ClubvisitController extends Controller
      */
     private function clubVisitForm(array $visits, Club $club, \DateTime $date, $events = [])
     {
+        $ae = $this->container->get('jcs.twig.adminextension');
         $form_action = $this->generateUrl('admin_visits', ['club_id' => $club->getId(), 'date' => $date->format('Y-m-d')]);
         $visit_data = [];
         foreach ($visits as $visit) {
@@ -269,6 +270,7 @@ class ClubvisitController extends Controller
             $event_data = $visit->getEvents();
             $vdata = [
                 $client_id,
+                $ae->formatClientName($visit->getClient()),
                 $visited
             ];
             if (empty($event_data)) {
@@ -302,17 +304,24 @@ class ClubvisitController extends Controller
         $re = [
             'minSpareRows'          => 0,
             'cells'                 => false,
-            'colWidths'             => [120],
-            'colHeaders'            => ['Látogatás'],
-            'rowHeaders'            => $row_headers,
+            'colWidths'             => [180, 120],
+            'colHeaders'            => ['Név', 'Látogatás'],
+            'rowHeaders'            => [], //$row_headers,
+            'readOnlyCellClassName' => 'cv-readonly',
             'columns'               => [
                 [
                     'data' => 1,
+                    'type'     => 'text',
+                    'language' => 'hu',
+                    'readOnly' => true,
+                ],
+                [
+                    'data' => 2,
                     'type' => 'checkbox',
                 ]
             ],
         ];
-        $n = 2;
+        $n = 3;
         foreach ($events as $event) {
             $re['columns'][]    = [
                 'data'     => $n,

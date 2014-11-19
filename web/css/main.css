@@ -3380,6 +3380,9 @@ h2.menu-section {
 .homehelp-table .htCore col.rowHeader {
     width: 180px;
 }
+.clubvisit-table .htCore col.rowHeader {
+    width: 40px;
+}
 .homehelp-admin-box {
     width: 994px;
 }
@@ -3398,6 +3401,9 @@ h2.menu-section {
 }
 .ui-datepicker {
     z-index: 10000 !important;
+}
+.cv-readonly {
+    font-weight: bold;
 }
 .clearfix:after {
   content: ".";

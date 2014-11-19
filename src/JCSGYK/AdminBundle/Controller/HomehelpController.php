@@ -374,7 +374,7 @@ class HomehelpController extends Controller
             'data'     => $d,
             'type'     => 'text',
             'language' => 'hu',
-            'readonly' => true,
+            'readOnly' => true,
         ];
         // add visits col
         $re['colHeaders'][] = 'Lát.';
@@ -383,7 +383,7 @@ class HomehelpController extends Controller
             'data'     => $d + 1,
             'type'     => 'text',
             'language' => 'hu',
-            'readonly' => true,
+            'readOnly' => true,
         ];
 
         return json_encode($re);
