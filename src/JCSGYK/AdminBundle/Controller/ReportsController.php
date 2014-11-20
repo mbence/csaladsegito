@@ -753,10 +753,12 @@ class ReportsController extends Controller
         // get the payments for this date
         $invoice_types = 'homehelp_cashbook' == $report ? [Invoice::HOMEHELP] : [Invoice::MONTHLY, Invoice::DAILY];
 
-        $sql = "SELECT i, c FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a "
-                . "WHERE i.companyId = :company_id AND i.payments LIKE :date AND i.invoicetype IN (:types)";
+        $sql = "SELECT i, c, a, h FROM JCSGYKAdminBundle:Invoice i LEFT JOIN i.client c LEFT JOIN c.catering a LEFT JOIN c.homehelp h "
+                . "WHERE i.companyId = :company_id AND i.payments LIKE :date AND i.invoicetype IN (:types) ";
+
         if (!empty($form_data['club'])) {
-            $sql .= ' AND a.club = :club ';
+            $join_table = 'homehelp_cashbook' == $report ? 'h' : 'a';
+            $sql .= " AND {$join_table}.club = :club ";
         }
         $sql .=  " ORDER BY c.lastname, c.firstname ";
 
@@ -793,6 +795,9 @@ class ReportsController extends Controller
                         (empty($form_data['day']) && $date == substr($payment[0], 0, 7))) {
 
                     $amount += $payment[1];
+                    if (in_array($invoice->getId(), [4750, 4808])) {
+                        echo $invoice->getId();
+                    }
 
                     if (empty($payment_dates)) {
                         $payment_dates[] = substr($payment[0], 5);
@@ -802,7 +807,7 @@ class ReportsController extends Controller
 
             $data_row = [
                 'id'             => $client->getCaseLabel(),
-                'name'           => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
+                'name'           => $ae->formatClientName($client),
                 'address'        => sprintf('(%s)', $ae->formatClientAddress($client)),
                 'month'          => !empty($form_data['day']) ? $this->ds->getMonth($invoice->getStartdate()->format('n')) : implode(', ', $payment_dates),
                 'invoice_number' => 'SZ-' . $invoice->getId(),
