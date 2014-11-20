@@ -795,9 +795,6 @@ class ReportsController extends Controller
                         (empty($form_data['day']) && $date == substr($payment[0], 0, 7))) {
 
                     $amount += $payment[1];
-                    if (in_array($invoice->getId(), [4750, 4808])) {
-                        echo $invoice->getId();
-                    }
 
                     if (empty($payment_dates)) {
                         $payment_dates[] = substr($payment[0], 5);
