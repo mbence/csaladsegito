@@ -321,7 +321,7 @@ class AdminExtension extends \Twig_Extension
     {
         $re = [];
         $v0 = json_decode($v[0], true);
-        $v1 = json_decode($v[1], true);
+        $v1 = !empty($v[1]) ? json_decode($v[1], true) : [];
 
         // check the correct array sizes
         foreach ($v1 as $group => $val) {

@@ -16,11 +16,13 @@ To recompile the coffee assets during development, run the assetic compiler:
 php app/console assetic:watch
 ```
 
-### Mysql fulltext search settings
-If you want three-character words to be searchable, you can set the ft_min_word_len variable by putting the following lines in an option file:
+### Mysql fulltext search and packet settings
+If you want three-character words to be searchable, you can set the ```ft_min_word_len``` variable by putting the following lines in an option file.
+Also for large document templates make sure the ```max_allowed_packet``` is set to 16M.
 ```
 [mysqld]
-ft_min_word_len=3
+ft_min_word_len = 3
+max_allowed_packet = 16M
 ```
 
 FULLTEXT indexes must be rebuilt after changing this variable. Use `REPAIR TABLE client QUICK`.
