@@ -1294,3 +1294,7 @@ h2.menu-section {
 .cv-readonly {
     font-weight: bold;
 }
+.clubvisit-buttons {
+    width: 660px;
+    text-align: right;
+}

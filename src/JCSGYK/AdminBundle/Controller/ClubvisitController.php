@@ -116,8 +116,8 @@ class ClubvisitController extends Controller
             foreach ($visits_data as $vdata) {
                 $client_id = $vdata[0];
                 if (!empty($visits[$client_id])) {
-                    $visits[$client_id]->setVisit($vdata[2]);
-                    $event_data = array_slice($vdata, 3);
+                    $visits[$client_id]->setVisit($vdata[3]);
+                    $event_data = array_slice($vdata, 4);
                     // check events
                     foreach ($event_data as &$event) {
                         $event = empty($event) ? false : true;
@@ -264,12 +264,14 @@ class ClubvisitController extends Controller
         $ae = $this->container->get('jcs.twig.adminextension');
         $form_action = $this->generateUrl('admin_visits', ['club_id' => $club->getId(), 'date' => $date->format('Y-m-d')]);
         $visit_data = [];
+        $n = 1;
         foreach ($visits as $visit) {
             $client_id = $visit->getClient()->getId();
             $visited = $visit->getVisit() ? true : false;
             $event_data = $visit->getEvents();
             $vdata = [
                 $client_id,
+                $n,
                 $ae->formatClientName($visit->getClient()),
                 $visited
             ];
@@ -278,6 +280,7 @@ class ClubvisitController extends Controller
             }
             $vdata = array_merge($vdata, $event_data);
             $visit_data[] = $vdata;
+            $n++;
         }
 
         // build the form
@@ -304,9 +307,8 @@ class ClubvisitController extends Controller
         $re = [
             'minSpareRows'          => 0,
             'cells'                 => false,
-            'colWidths'             => [180, 120],
-            'colHeaders'            => ['Név', 'Látogatás'],
-            'rowHeaders'            => [], //$row_headers,
+            'colWidths'             => [40, 180, 120],
+            'colHeaders'            => ['#', 'Név', 'Látogatás'],
             'readOnlyCellClassName' => 'cv-readonly',
             'columns'               => [
                 [
@@ -317,11 +319,17 @@ class ClubvisitController extends Controller
                 ],
                 [
                     'data' => 2,
+                    'type'     => 'text',
+                    'language' => 'hu',
+                    'readOnly' => true,
+                ],
+                [
+                    'data' => 3,
                     'type' => 'checkbox',
                 ]
             ],
         ];
-        $n = 3;
+        $n = 4;
         foreach ($events as $event) {
             $re['columns'][]    = [
                 'data'     => $n,

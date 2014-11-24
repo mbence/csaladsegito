@@ -27,12 +27,14 @@
 
             {{ form_widget(form.value) }}
 
-            <div class="formbuttons floatright">
+            <br>
+            <div class="formbuttons clubvisit-buttons">
                 <button type="reset" class="cancel greybutton">
                     <span>{{ 'mégse'|trans }}</span></button>
                 <button type="submit" class="usersave button" name="usersave" value="save"><span>{{ 'mentés'|trans }}</span>
                 </button>
             </div>
+            <div class="clear"></div>
 
         {{ form_end(form) }}
         <script type="text/javascript">
