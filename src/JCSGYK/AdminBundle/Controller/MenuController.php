@@ -139,7 +139,7 @@ class MenuController extends Controller
                 'class' => 'archive_client',
                 'more'  => true,
                 'role'  => new Expression('hasRole("ROLE_ADMIN") or hasRole("ROLE_CATERING")'),
-                'requirement' => $client->getIsArchived() == 0
+                'requirement' => $client->canArchive($sec),
             ],
             // reopen_client - Client:archive
             [
@@ -149,7 +149,7 @@ class MenuController extends Controller
                 'class' => 'archive_client',
                 'more'  => true,
                 'role'  => new Expression('hasRole("ROLE_ADMIN") or hasRole("ROLE_ASSISTANCE") or hasRole("ROLE_CATERING")'),
-                'requirement' => $client->getIsArchived() == 1
+                'requirement' => $client->canActivate($sec),
             ],
             // edit_client - Client:edit
             // this is the main action for familiy help, but its only secondary for assistance

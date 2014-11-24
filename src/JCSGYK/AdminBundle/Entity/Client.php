@@ -1763,6 +1763,64 @@ class Client
         return $this->isArchived;
     }
 
+    public function canActivate(SecurityContext $sec)
+    {
+        return $this->canArchive($sec, 1);
+    }
+
+    public function canArchive(SecurityContext $sec, $client_is_archived = 0)
+    {
+        // is client already archived?
+        if ($this->getIsArchived() != $client_is_archived) {
+            return false;
+        }
+
+        // Admins can do.
+        if ($sec->isGranted('ROLE_ADMIN')) {
+            return true;
+        }
+
+        // catering clients can archived by club coordinators
+        if ($this->getType() == self::CA) {
+            $user_id = $sec->getToken()->getUser()->getId();
+            $club = $this->getClub();
+
+            return $this->checkIfUserIsClubCoordinator($user_id, $club);
+        }
+
+        return false;
+    }
+
+    private function getClub()
+    {
+        // try catering
+        $catering = $this->getCatering();
+        if ($catering) {
+            return $catering->getClub();
+        }
+
+        // try homehelp
+        $homehelp = $this->getHomehelp();
+        if ($homehelp) {
+            return $homehelp->getClub();
+        }
+
+        return null;
+    }
+
+    private function checkIfUserIsClubCoordinator($user_id, $club)
+    {
+        if ($club) {
+            $coordinators = $club->getUsers();
+            if (is_array($coordinators) && in_array($user_id, $coordinators)) {
+
+                return  true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Decide if the give user can edit this record
      *
@@ -1790,14 +1848,8 @@ class Client
 
         // check the club rights for catering users
         if (false == $re && $this->isArchived == 0 && $sec->isGranted('ROLE_CATERING')) {
-            $catering = $this->getCatering();
-            if (!empty($catering)) {
-                $club = $catering->getClub();
-                $coordinators = $club->getUsers();
-                if (is_array($coordinators) && in_array($sec->getToken()->getUser()->getId(), $coordinators)) {
-                    $re = true;
-                }
-            }
+            $club = $this->getClub();
+            $re = $this->checkIfUserIsClubCoordinator($user_id, $club);
         }
 
         // check the problems
