@@ -1741,8 +1741,8 @@ class ClientController extends Controller
                 $club_list = implode(',', $club_list);
                 if (!empty($clubs)) {
                     $sql = "SELECT c.id, c.type, c.case_year, c.case_number, c.case_label, c.company_id, c.title, c.firstname, c.lastname, c.mother_firstname, c.mother_lastname, c.zip_code, c.city, c.street, c.street_type, c.street_number, c.flat_number, c.is_archived "
-                        . " FROM client c LEFT JOIN catering a ON c.id = a.client_id WHERE"
-                        . " a.club_id IN ($club_list) AND c.is_archived = 0 AND c.type = {$client_type}"
+                        . " FROM client c LEFT JOIN catering a ON c.id = a.client_id LEFT JOIN home_help h ON c.id=h.client_id WHERE"
+                        . " (a.club_id IN ($club_list) OR h.club_id IN ($club_list)) AND c.is_archived = 0 AND c.type = {$client_type}"
                         . " ORDER BY c.lastname, c.firstname LIMIT " . $limit;
                     $re = $db->fetchAll($sql);
                 }
