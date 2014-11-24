@@ -1483,22 +1483,19 @@ class ClientController extends Controller
             }
 
             // check for any open problems, only arhivable if no problems are open
-            $open_problems = 0;
-            // get only the undeleted problems
-            $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
+            $open_problems = $this->checkClientForOpenProblems($client);
+            // for catering clients, check if an active catering or homehelp service exists
+            $cat_active = $this->checkClientForActiveCatering($client);
+            $hh_active = $this->checkClientForActiveHomeHelp($client);
 
-            foreach ($problems as $problem) {
-                if ($problem->getIsActive()) {
-                    $open_problems++;
-                }
-            }
-
-            if ($open_problems > 0) {
+            if ($open_problems > 0 || $cat_active || $hh_active) {
                 // can't archive, show the popup
 
                 return $this->render('JCSGYKAdminBundle:Dialog:client_archive.html.twig', [
-                    'client' => $client,
-                    'open_problems' => $open_problems
+                    'client'          => $client,
+                    'open_problems'   => $open_problems,
+                    'catering_active' => $cat_active,
+                    'homehelp_active' => $hh_active,
                 ]);
             }
 
@@ -1512,10 +1509,10 @@ class ClientController extends Controller
                 $operation = $form->get('operation')->getData();
                 $em = $this->getDoctrine()->getManager();
                 $user = $this->get('security.context')->getToken()->getUser();
-                $archive->setClient($client);
-                // set modifier user
-                $archive->setCreator($user);
-                $archive->setCreatedAt(new \DateTime());
+                $archive->setClient($client)
+                    ->setCreator($user)
+                    ->setCreatedAt(new \DateTime())
+                ;
 
                 $em->persist($archive);
 
@@ -1532,9 +1529,11 @@ class ClientController extends Controller
             }
 
             return $this->render('JCSGYKAdminBundle:Dialog:client_archive.html.twig', [
-                'client' => $client,
-                'form' => $form->createView(),
-                'open_problems' => $open_problems
+                'client'          => $client,
+                'form'            => $form->createView(),
+                'open_problems'   => $open_problems,
+                'catering_active' => $cat_active,
+                'homehelp_active' => $hh_active,
             ]);
         }
         else {
@@ -1542,6 +1541,46 @@ class ClientController extends Controller
         }
     }
 
+    private function checkClientForOpenProblems(Client $client)
+    {
+        $open_problems = 0;
+        // get only the undeleted problems
+        $problems      = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($client->getId());
+
+        foreach ($problems as $problem) {
+            if ($problem->getIsActive()) {
+                $open_problems++;
+            }
+        }
+
+        return $open_problems;
+    }
+
+    private function checkClientForActiveCatering(Client $client)
+    {
+        $active_catering = false;
+        if (Client::CA == $client->getType()) {
+            $catering = $client->getCatering();
+            if ($catering && $catering->getIsActive()) {
+                $active_catering = true;
+            }
+        }
+
+        return $active_catering;
+    }
+
+    private function checkClientForActiveHomeHelp(Client $client)
+    {
+        $active_homehelp = false;
+        if (Client::CA == $client->getType()) {
+            $homehelp = $client->getHomehelp();
+            if ($homehelp && $homehelp->getIsActive()) {
+                $active_homehelp = true;
+            }
+        }
+
+        return $active_homehelp;
+    }
 
     /**
      * View client details

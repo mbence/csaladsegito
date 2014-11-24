@@ -3,12 +3,18 @@
 {# if all went well, we just need to close the popup #}
 {% if success is defined and success %}
     {% include "JCSGYKAdminBundle:Elements:inflash.html.twig" %}
-{% elseif open_problems %}
+{% elseif open_problems or catering_active or homehelp_active%}
 <div class="center">
     <h1 class="client">{{ 'Hiba'|trans }}</h1>
     <br>
-    <p>
-        {{ 'Az ügyfél nem archiválható, mert %problems% nyitott problémája van.'|trans({'%problems%': open_problems}) }}
+    <p class="red">
+        {% if open_problems %}
+            {{ 'Az ügyfél nem archiválható, mert %problems% nyitott problémája van.'|trans({'%problems%': open_problems}) }}
+        {% elseif catering_active %}
+            {{ 'Az ügyfél nem archiválható, mert aktív étkeztetése van.'|trans }}
+        {% elseif homehelp_active %}
+            {{ 'Az ügyfél nem archiválható, mert aktív látogatása / gondozása van.'|trans }}
+        {% endif %}
     </p>
     <br><br>
     <p>
