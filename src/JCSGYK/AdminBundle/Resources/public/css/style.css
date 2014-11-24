@@ -1249,9 +1249,8 @@ h2.menu-section {
 .clubvisit-table tr td {
     font-size: 11px;
     text-align: center;
-}
-.clubvisit-table tr td {
     background-color: #f8f8f8;
+    line-height: 19px;
 }
 .clubvisit-table tr td:nth-child(2) {
     background-color: #fff;
@@ -1272,6 +1271,10 @@ h2.menu-section {
 .clubvisit-table .htCore col.rowHeader {
     width: 40px;
 }
+.clubvisit-table .htCore input[type=checkbox] {
+    margin-bottom: 0;
+}
+
 .homehelp-admin-box {
     width: 994px;
 }
@@ -1295,6 +1298,7 @@ h2.menu-section {
     font-weight: bold;
 }
 .clubvisit-buttons {
+    margin-top: 10px;
     width: 660px;
     text-align: right;
 }
