@@ -1,3 +1,10 @@
+## 1.5.4 (2014.11.24)
+
+Javítások:
+
+ - Gondozás / látogatás ügyfelek az alapértelmezett keresésben
+ - Látogatás rögzítése táblázat javítása windowson
+
 ## 1.5.3 (2014.11.19)
 
 Fejlesztések:
