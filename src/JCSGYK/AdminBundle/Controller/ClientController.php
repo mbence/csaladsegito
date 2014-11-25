@@ -1543,6 +1543,11 @@ class ClientController extends Controller
 
     private function checkClientForOpenProblems(Client $client)
     {
+        // only check active clients!
+        if ($client->getIsArchived() == 1) {
+            return 0;
+        }
+
         $open_problems = 0;
         // get only the undeleted problems
         $problems      = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($client->getId());
@@ -1558,6 +1563,11 @@ class ClientController extends Controller
 
     private function checkClientForActiveCatering(Client $client)
     {
+        // only check active clients!
+        if ($client->getIsArchived() == 1) {
+            return false;
+        }
+
         $active_catering = false;
         if (Client::CA == $client->getType()) {
             $catering = $client->getCatering();
@@ -1571,6 +1581,11 @@ class ClientController extends Controller
 
     private function checkClientForActiveHomeHelp(Client $client)
     {
+        // only check active clients!
+        if ($client->getIsArchived() == 1) {
+            return false;
+        }
+        
         $active_homehelp = false;
         if (Client::CA == $client->getType()) {
             $homehelp = $client->getHomehelp();
