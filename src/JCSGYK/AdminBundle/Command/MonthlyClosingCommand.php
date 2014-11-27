@@ -60,7 +60,7 @@ class MonthlyClosingCommand extends ContainerAwareCommand
         }
         // or start the homehelp stat (402)
         elseif (MonthlyClosing::HOMEHELP == $closing_type) {
-            //$this->runHomehelpStats($input, $output, $company_id, $user_id);
+            $this->runHomehelpStats($input, $output, $company_id, $user_id);
         }
 
     }
