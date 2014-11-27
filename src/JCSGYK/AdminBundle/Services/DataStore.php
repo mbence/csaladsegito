@@ -88,6 +88,8 @@ class DataStore
     ];
 
     private $vat = 0.27;
+    private $homeHelpVat = 0;
+
 
     /** cost of 1 lunch */
     private $menuCost = 856;
@@ -1033,6 +1035,11 @@ class DataStore
     public function getVat()
     {
         return $this->vat;
+    }
+
+    public function getHomeHelpVat()
+    {
+        return $this->homeHelpVat;
     }
 
     /**

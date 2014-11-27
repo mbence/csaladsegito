@@ -313,7 +313,7 @@ class InvoiceService
 
         if (!empty($days)) {
             $discount_ratio = 0;
-            $vat = $this->ds->getVat();
+            $vat = $this->ds->getHomeHelpVat();
             $homehelp = $client->getHomehelp();
 
             // check discount (50% - 100%)

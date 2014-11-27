@@ -238,7 +238,11 @@ class ClosingService
         $city = substr($client->getCity(), 0, 16);
         $city2 = substr($client->getCity(), 16);
 
-        $vat = $this->ds->getVat();
+        if (MonthlyClosing::HOMEHELP == $invoice->getInvoicetype()) {
+            $vat = $this->ds->getHomeHelpVat();
+        } else {
+            $vat = $this->ds->getVat();
+        }
 
         // deadline is the 5th day of next month
         $deadline = clone $invoice->getStartDate();
