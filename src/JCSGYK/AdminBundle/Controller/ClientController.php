@@ -822,7 +822,7 @@ class ClientController extends Controller
                         ]);
                     }
                     // no invoice cancelling for homehelp invoices
-                    if ($open_amount && $invoice->cancellable() &&  $invoicetype != Invoice::HOMEHELP) {
+                    if ($open_amount && $invoice->cancellable()){ // &&  $invoicetype != Invoice::HOMEHELP) {
                         $form_builder->add('c' . $invoice->getId(), 'button', [
                             'label' => 'sztornózás',
                             'attr'  => [
@@ -1585,7 +1585,7 @@ class ClientController extends Controller
         if ($client->getIsArchived() == 1) {
             return false;
         }
-        
+
         $active_homehelp = false;
         if (Client::CA == $client->getType()) {
             $homehelp = $client->getHomehelp();
