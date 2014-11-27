@@ -188,8 +188,8 @@ class ClientRepository extends EntityRepository
             // homehelp closing get only the homehelp clients
             $query = $this->getEntityManager()
                 ->createQuery("SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h JOIN h.club k WHERE c.companyId = :company_id AND c.isArchived = 0 "
-                        . "AND c.type = :client_type AND k.homehelptype = :club_type"
-                        . "ORDER BY h.club, c.lastname, c.firstname")
+                        . " AND c.type = :client_type AND k.homehelptype = :club_type "
+                        . " ORDER BY h.club, c.lastname, c.firstname ")
                 ->setParameter('company_id', $company_id)
                 ->setParameter('client_type', Client::CA)
                 ->setParameter('club_type', HomeHelp::HELP)
@@ -206,9 +206,9 @@ class ClientRepository extends EntityRepository
             // or have a cancelled invoice
             $query = $this->getEntityManager()
                 ->createQuery("SELECT c, a "
-                        . "FROM JCSGYKAdminBundle:Client c JOIN c.catering a LEFT JOIN c.invoices i WITH i.createdAt >= :created "
-                        . "WHERE c.companyId = :company_id AND c.isArchived = 0 AND c.type = :client_type AND ((c.createdAt >= :created AND i.id IS NULL) OR i.cancelId IS NOT NULL) "
-                        . "ORDER BY a.club, c.lastname, c.firstname")
+                        . " FROM JCSGYKAdminBundle:Client c JOIN c.catering a LEFT JOIN c.invoices i WITH i.createdAt >= :created "
+                        . " WHERE c.companyId = :company_id AND c.isArchived = 0 AND c.type = :client_type AND ((c.createdAt >= :created AND i.id IS NULL) OR i.cancelId IS NOT NULL) "
+                        . " ORDER BY a.club, c.lastname, c.firstname ")
                 ->setParameter('company_id', $company_id)
                 ->setParameter('client_type', Client::CA)
                 ->setParameter('created', new \DateTime('yesterday 10:00'))
