@@ -268,14 +268,19 @@ class ClosingService
                 'TELJDAT'       => $deadline,
                 'FIZHATIDO'     => $deadline,
                 'MEGJ'          => $comment,
-                'NETTO3'        => $net_amount,
-                'AFA3'          => $gross_amount - $net_amount,
                 'VEGOSSZEG'     => $gross_amount,
                 'KULCSSZO'      => ucfirst($title),
             ],
             'szlaatt.txt'   => [],
             'vevo.txt'      => [],
         ];
+
+        if (0 == $vat) {
+            $data['szlaatf.txt']['ADOMENTES'] = $net_amount;
+        } else {
+            $data['szlaatf.txt']['NETTO3'] = $net_amount;
+            $data['szlaatf.txt']['AFA3'] = $gross_amount - $net_amount;
+        }
 
         // cancelling invoices
         if (!empty($invoice->getCancelId())) {
