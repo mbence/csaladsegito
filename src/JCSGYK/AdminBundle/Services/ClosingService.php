@@ -277,9 +277,10 @@ class ClosingService
 
         if (0 == $vat) {
             $data['szlaatf.txt']['ADOMENTES'] = $net_amount;
+            $data['szlaatt.txt']['AFA']       = 'AM';
         } else {
             $data['szlaatf.txt']['NETTO3'] = $net_amount;
-            $data['szlaatf.txt']['AFA3'] = $gross_amount - $net_amount;
+            $data['szlaatf.txt']['AFA3']   = $gross_amount - $net_amount;
         }
 
         // cancelling invoices
