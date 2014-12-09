@@ -1,0 +1,6 @@
+{# Catering invoice required #}
+<form action="{{ path('create_invoice', {'id':client.id}) }}" method="post" name="create-invoice-form" id="create-invoice-form"></form>
+<div class="toppad invoice-required">
+    Számla készítése szükséges!
+</div>
+<button title="{{ 'Számlázás'|trans }}" id="create-invoice" class="button floatleft nomargin" type="button"><span>{{ 'számla készítése'|trans }}</span></button>

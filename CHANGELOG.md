@@ -1,3 +1,9 @@
+## 1.5.5 (2014.12.09)
+
+Fejlesztések:
+
+ - Kézi számla kiállítási lehetőség
+
 ## 1.5.4 (2014.11.24)
 
 Javítások:

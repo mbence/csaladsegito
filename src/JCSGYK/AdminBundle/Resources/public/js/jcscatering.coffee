@@ -4,6 +4,7 @@
 JcsCatering =
     init: ->
         @initButtonRow()
+        @initManualInvoice()
         true
 
     reloadCatering: ->
@@ -317,3 +318,18 @@ JcsCatering =
             event.stopPropagation()
         )
 
+    ###
+      Manual invoice button
+    ###
+    initManualInvoice: ->
+        $("#create-invoice").off("click").on("click", ->
+            if confirm("Biztos benne?")
+                $form = $("#create-invoice-form")
+                $.post($form.attr("action"), $form.serialize(), (data) ->
+                    if data
+                        AjaxBag.showNotice("A számla kiállítása sikeres")
+                        $(".catering_container a.catering_invoices").click()
+                    else
+                        AjaxBag.showError("Hiba a számla kiállítása során, kérem próbálja újra!")
+                )
+        )
