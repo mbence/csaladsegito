@@ -1,14 +1,17 @@
 {# Catering Fileds #}
 <div class="client-sub togglable">{{ 'étkeztetés'|trans }}</div>
 <div class="toppad">
+    {% if invoice_required is defined and invoice_required %}
+        {% include "JCSGYKAdminBundle:Catering:_invoice_required.html.twig" %}
+    {% endif %}
     {% render(controller('JCSGYKAdminBundle:Menu:catering', { 'client': client })) %}
     <div class="clear"></div>
-    {% if catering and not catering.isActive %}
-        <div class="catering-inactive">
-            Szüneteltetve
-        </div>
-    {% endif %}
     {% if catering is defined and catering %}
+        {% if not catering.isActive %}
+            <div class="catering-inactive">
+                Szüneteltetve
+            </div>
+        {% endif %}
     <div>
         <table class="client" cellspacing="0" border="0">
             <tr>

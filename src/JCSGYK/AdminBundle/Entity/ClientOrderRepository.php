@@ -5,6 +5,7 @@ namespace JCSGYK\AdminBundle\Entity;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use JCSGYK\AdminBundle\Entity\Invoice;
+use JCSGYK\AdminBundle\Entity\Client;
 
 /**
  * ClientOrderRepository
@@ -316,5 +317,30 @@ class ClientOrderRepository extends EntityRepository
                 ->setParameter('orders', $cancelled_days)
                 ->execute();
         }
+    }
+
+    /**
+     * Check for open orders until the end of this month
+     * @param Client $client
+     * @return int number of open orders
+     */
+    public function checkForOpenOrders(Client $client)
+    {
+        // after the monthly closing is run, we must check the orders for the next month as well
+        if (date('j') < 25) {
+            $endOfMonth = new \DateTime('last day of this month');
+        } else {
+            $endOfMonth = new \DateTime('last day of next month');
+        }
+
+        $result = $this->getEntityManager()
+            ->createQuery("SELECT COUNT(o) as orders FROM JCSGYKAdminBundle:ClientOrder o WHERE o.companyId = :company_id AND o.client = :client AND o.date <= :end "
+                    . " AND o.order = 1 AND o.cancel = 0  AND o.closed = 0")
+            ->setParameter('company_id', $client->getCompanyId())
+            ->setParameter('client', $client)
+            ->setParameter('end', $endOfMonth)
+            ->getResult();
+
+        return !empty($result[0]['orders']) ? $result[0]['orders'] : 0;
     }
 }

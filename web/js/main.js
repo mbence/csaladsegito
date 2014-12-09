@@ -1902,6 +1902,7 @@ var JcsCatering;
 JcsCatering = {
   init: function() {
     this.initButtonRow();
+    this.initManualInvoice();
     return true;
   },
   reloadCatering: function() {
@@ -2222,6 +2223,26 @@ JcsCatering = {
     });
     return $("#ordering-calendar select.order-menu").on("click", function(event) {
       return event.stopPropagation();
+    });
+  },
+
+  /*
+    Manual invoice button
+   */
+  initManualInvoice: function() {
+    return $("#create-invoice").off("click").on("click", function() {
+      var $form;
+      if (confirm("Biztos benne?")) {
+        $form = $("#create-invoice-form");
+        return $.post($form.attr("action"), $form.serialize(), function(data) {
+          if (data) {
+            AjaxBag.showNotice("A számla kiállítása sikeres");
+            return $("a.catering_invoices").click();
+          } else {
+            return AjaxBag.showError("Hiba a számla kiállítása során, kérem próbálja újra!");
+          }
+        });
+      }
     });
   }
 };

@@ -10,6 +10,12 @@ use Symfony\Component\HttpFoundation\Response;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use JMS\SecurityExtraBundle\Annotation\PreAuthorize;
 use JMS\SecurityExtraBundle\Security\Authorization\Expression\Expression;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -30,6 +36,7 @@ use JCSGYK\AdminBundle\Form\Type\ClientOrderType;
 use JCSGYK\AdminBundle\Entity\Invoice;
 use JCSGYK\AdminBundle\Entity\HomeHelp;
 use JCSGYK\AdminBundle\Form\Type\HomehelpType;
+use JCSGYK\AdminBundle\Entity\MonthlyClosing;
 
 class ClientController extends Controller
 {
@@ -280,7 +287,7 @@ class ClientController extends Controller
                 $form->bind($request);
 
                 if ($form->isValid()) {
-                    // save the new Homehelp record
+                    // save the new Catering record
                     if (empty($catering->getId())) {
                         $em->persist($catering);
                     }
@@ -296,6 +303,10 @@ class ClientController extends Controller
                     if ($original_catering->getIsActive() != $catering->getIsActive()) {
                         // we must update the future orders with this menu!
                         $update_from = new \DateTime('tomorrow');
+                        // if this happened after 10:00 we can only change the day after tomorrow
+                        if (date('H') >= 10) {
+                            $update_from->modify('+1day');
+                        }
                         $em->getRepository("JCSGYKAdminBundle:ClientOrder")->updateOrders($client->getId(), $update_from, $catering->getIsActive());
                     }
 
@@ -802,7 +813,7 @@ class ClientController extends Controller
             $field_count = 0;
 
             foreach ($invoices as $invoice) {
-                if (Invoice::OPEN == $invoice->getStatus()) {
+                if ($invoice->isOpen()) {
                     $field_count++;
                     $open_amount = $invoice->getAmount() - $invoice->getBalance();
 
@@ -851,7 +862,7 @@ class ClientController extends Controller
                 if (empty($data['cancel_id'])) {
                     // normal payments
                     foreach ($invoices as $invoice) {
-                        if (Invoice::OPEN == $invoice->getStatus()) {
+                        if ($invoice->isOpen()) {
                             $field = 'i' . $invoice->getId();
                             if (!empty($data[$field])) {
                                 $res = $invoice->addPayment($data['i' . $invoice->getId()]);
@@ -1606,7 +1617,7 @@ class ClientController extends Controller
     {
         if (!empty($id)) {
             $client = $this->getClient($id);
-            $problems = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
+            $problems = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:Client')->getProblemList($id);
         }
         if (!empty($client)) {
             // Global security check for client type
@@ -1619,7 +1630,7 @@ class ClientController extends Controller
             $relatives = [];
             $relation_types = [];
             if (in_array($client->getType(), [Client::CW, Client::CA])) {
-                $relatives = $this->getDoctrine()->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
+                $relatives = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:Client')->getRelations($id);
                 $relation_types = $this->container->get('jcs.ds')->getRelationTypes();
                 foreach ($relatives as $relative) {
                     if (isset($relation_types[$relative->getType()])) {
@@ -1628,17 +1639,23 @@ class ClientController extends Controller
                 }
             }
 
+            // check the open orders for manual invoice alert
+            if (Client::CA == $client->getType()) {
+                $open_orders = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->checkForOpenOrders($client);
+            }
+
             return $this->render('JCSGYKAdminBundle:Client:view.html.twig', [
-                'client'          => $client,
-                'problems'        => $problems,
-                'can_edit'        => $client->canEdit($sec),
-                'display_type'    => count($client_types) > 1,  // only display the client type if there are more then one types of this company
-                'relatives'       => $relatives,
-                'new_relations'   => $relation_types,
-                'client_type'     => $client->getType(),
-                'logs'            => $this->container->get('history.logger')->getLogs($client),
-                'club_type'       => $this->getClubtype($client),
-                'club_type_label' => $this->getClubTypeLabel($client),
+                'client'           => $client,
+                'problems'         => $problems,
+                'can_edit'         => $client->canEdit($sec),
+                'display_type'     => count($client_types) > 1, // only display the client type if there are more then one types of this company
+                'relatives'        => $relatives,
+                'new_relations'    => $relation_types,
+                'client_type'      => $client->getType(),
+                'logs'             => $this->container->get('history.logger')->getLogs($client),
+                'club_type'        => $this->getClubtype($client),
+                'club_type_label'  => $this->getClubTypeLabel($client),
+                'invoice_required' => !empty($open_orders),
             ]);
         }
         else {
@@ -1894,5 +1911,45 @@ class ClientController extends Controller
         $time = number_format(($time_end - $time_start) * 1000, 3, ',', ' ');
 
         return $this->render('JCSGYKAdminBundle:Client:results.html.twig', ['clients' => $re, 'time' => $time, 'sql' => $sql, 'resnum' => count($re)]);
+    }
+
+    /**
+     * Client Catering Manual Invoice creator
+     *
+     * @param Request $request
+     * @param int $id Client id
+     * @return Response
+     *
+     * @Security("has_role('ROLE_CATERING')")
+     * @Route("/clients/create-invoice/{id}", name="create_invoice")
+     */
+    public function createInvoiceAction(Request $request, $id)
+    {
+        if (!empty($id)) {
+            $client = $this->getClient($id);
+        }
+        if (empty($client)) {
+            throw new BadRequestHttpException('Invalid client id');
+        }
+        $closing_type = MonthlyClosing::DAILY;
+        $invoice_service = $this->container->get('jcs.invoice');
+
+        if (date('H') < 10) {
+            // before 10:00 we can change the next day
+            $start = new \DateTime('+1 day');
+        } else {
+            // after 10:00 we can only change the deay after tomorrow
+            $start = new \DateTime('+2 day');
+        }
+        if (date('j') < 25) {
+            $end = new \DateTime('last day of this month');
+        } else {
+            $end = new \DateTime('last day of next month');
+        }
+
+        $invoice = $invoice_service->create($client, clone $start, clone $end, $closing_type);
+        $result = !empty($invoice) ? 1 : 0;
+
+        return new Response($result, Response::HTTP_OK);
     }
 }

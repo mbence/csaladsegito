@@ -2982,6 +2982,9 @@ form.editform #recommended_fields label:after {
 .noborder {
     border: none !important;
 }
+.nomargin {
+    margin: 0 !important;
+}
 .edit-note textarea {
     margin-top: 2px;
     padding: 3px;
@@ -3307,6 +3310,13 @@ h2.menu-section {
 }
 .catering-invoice {
     cursor: pointer;
+}
+.invoice-required {
+    background-color: red;
+    padding: 4px 0 4px 10px;
+    margin: 0 0 4px 0;
+    color: #fff;
+    font-size: 14px;
 }
 .invoice-container {
     overflow: auto;

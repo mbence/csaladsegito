@@ -324,7 +324,10 @@ class ClosingService
 
         if ($res) {
             // set the invoice status to open (data exported to EcoSTAT)
-            $new_status = empty($invoice->getCancelId()) ? Invoice::OPEN : Invoice::CLOSED;
+            // or closed if is is already payed or the invoice was cancelled
+            $new_status = empty($invoice->getCancelId()) && $invoice->getAmount() != $invoice->getBalance()
+                    ? Invoice::OPEN
+                    : Invoice::CLOSED;
             $invoice->setStatus($new_status);
         }
 

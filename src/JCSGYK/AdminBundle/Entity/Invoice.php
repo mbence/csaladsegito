@@ -493,9 +493,10 @@ class Invoice
         return $this->changes;
     }
 
+    /** Invoice is open if the status is OPEN or READY_TO_SEND, and it is not payed */
     public function isOpen()
     {
-        return self::OPEN == $this->getStatus();
+        return in_array($this->getStatus(), [self::OPEN, self::READY_TO_SEND]) && 0 != $this->getAmount() - $this->getBalance();
     }
 
 
