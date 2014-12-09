@@ -2237,7 +2237,7 @@ JcsCatering = {
         return $.post($form.attr("action"), $form.serialize(), function(data) {
           if (data) {
             AjaxBag.showNotice("A számla kiállítása sikeres");
-            return $("a.catering_invoices").click();
+            return $(".catering_container a.catering_invoices").click();
           } else {
             return AjaxBag.showError("Hiba a számla kiállítása során, kérem próbálja újra!");
           }
