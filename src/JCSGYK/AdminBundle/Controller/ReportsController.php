@@ -151,8 +151,12 @@ class ReportsController extends Controller
             }
         }
         elseif (in_array($report, ['catering_summary', 'catering_datacheck', 'catering_summary_detailed'])) {
-            // month
+            // months
             $this->getInvoiceMonths($form_builder);
+        }
+        elseif (in_array($report, ['homehelp_summary'])) {
+            // months
+            $this->getHomeHelpInvoiceMonths($form_builder);
         }
         elseif (in_array($report, ['catering_stats', 'homehelp_stats'])) {
             // stat months
@@ -163,16 +167,7 @@ class ReportsController extends Controller
         }
 
         // club select for all catering reports
-        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck'])) {
-            if ($sec->isGranted('ROLE_ADMIN')) {
-                $this->getClubSelect($form_builder, false, 'mind');
-            }
-            else {
-                // no all-clubs for non-admins
-                $this->getClubSelect($form_builder);
-            }
-        }
-        elseif (in_array($report, ['catering_stats', 'homehelp_stats'])) {
+        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck', 'catering_stats', 'homehelp_stats'])) {
             $this->getClubSelect($form_builder);
         }
         elseif (in_array($report, ['homehelp_clients'])) {
@@ -220,6 +215,18 @@ class ReportsController extends Controller
         $form_builder->add('month', 'choice', [
             'label'    => $label,
             'choices'  => $this->container->get('jcs.invoice')->getMonths($company_id),
+            'required' => $required,
+        ]);
+    }
+
+    // list the months when we have invoice data
+    private function getHomeHelpInvoiceMonths(&$form_builder, $required = true, $label = 'Dátum')
+    {
+        $company_id = $this->ds->getCompanyId();
+
+        $form_builder->add('month', 'choice', [
+            'label'    => $label,
+            'choices'  => $this->container->get('jcs.invoice')->getMonths($company_id, Invoice::HOMEHELP),
             'required' => $required,
         ]);
     }
@@ -345,6 +352,9 @@ class ReportsController extends Controller
         elseif ('homehelp_clients' == $report) {
             return $this->getHomehelpClientsReport($form_data, $download);
         }
+        elseif (in_array($report, ['homehelp_summary'])) {
+            return $this->getHomehelpReport($form_data, $report, $download);
+        }
 
         return false;
     }
@@ -384,8 +394,9 @@ class ReportsController extends Controller
             ];
             $menu['Gondozás'] = [
                 ['slug' => 'homehelp_stats', 'label' => 'Gondozás statisztika'],
-                ['slug' => 'homehelp_cashbook', 'label' => 'Pénztárkönyv'],
                 ['slug' => 'homehelp_clients', 'label' => 'Gondozottak'],
+                ['slug' => 'homehelp_summary', 'label' => 'Havi gondozás összesítő'],
+                ['slug' => 'homehelp_cashbook', 'label' => 'Pénztárkönyv'],
             ];
         }
 
@@ -1026,4 +1037,70 @@ class ReportsController extends Controller
             return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $twig_tpl, ['data' => $data]);
         }
     }
+
+    private function getHomehelpReport($form_data, $report, $download)
+    {
+        $form_fields = [
+            'month' => null,
+        ];
+        // make sure we have all required fields
+        $form_data   = array_merge($form_fields, $form_data);
+
+        // check for user roles and set the params accordingly
+        $sec        = $this->container->get('security.context');
+        $ae         = $this->container->get('jcs.twig.adminextension');
+        $company_id = $this->ds->getCompanyId();
+        $months     = $this->container->get('jcs.invoice')->getMonths($company_id, Invoice::HOMEHELP);
+
+        // non admins not get all clubs
+        if (!$sec->isGranted('ROLE_ADMIN') && empty($form_data['club'])) {
+            throw new AccessDeniedHttpException();
+        }
+        // get the period
+        if (!isset($months[$form_data['month']])) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $month = new \DateTime($form_data['month']);
+
+        $report_data = $this->container->get('jcs.invoice')->getHomehelpReport($company_id, $month, $report);
+
+        if ('catering_datacheck' == $report) {
+            $title = sprintf('%s havi adategyeztető', $ae->formatDate($month, 'ym'));
+            $template_file = __DIR__ . '/../Resources/public/reports/catering_datacheck.xlsx';
+            $twig_tpl = '_datacheck.html.twig';
+        }
+        elseif ('catering_summary_detailed' == $report) {
+            $title = sprintf('%s havi étkezési napok összesítése', $ae->formatDate($month, 'ym'));
+            $template_file = __DIR__ . '/../Resources/public/reports/catering_summary_detailed.xlsx';
+            $twig_tpl = '_summary_detailed.html.twig';
+        }
+        else {
+            $title = sprintf('%s havi gondozás összesítő', $ae->formatDate($month, 'ym'));
+            $template_file = __DIR__ . '/../Resources/public/reports/homehelp_summary.xlsx';
+            $twig_tpl = '_homehelp_summary.html.twig';
+        }
+
+        $data = [
+            'ca.cim'   => $title,
+            'ca.klub'  => empty($form_data['club']) ? '' : sprintf(' (%s)', $form_data['club']->getName()),
+            'sp.datum' => $ae->formatDate(new \DateTime('today')),
+            'blocks'   => [
+                'homehelp' => $report_data,
+            ]
+        ];
+
+        $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
+
+        if ($download) {
+
+            return $this->container->get('jcs.docx')->make($template_file, $data, $output_name);
+        }
+        else {
+
+            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $twig_tpl, ['data' => $data]);
+        }
+    }
+
+
 }
