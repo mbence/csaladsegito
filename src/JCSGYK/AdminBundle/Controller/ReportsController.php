@@ -154,7 +154,7 @@ class ReportsController extends Controller
             // months
             $this->getInvoiceMonths($form_builder);
         }
-        elseif (in_array($report, ['homehelp_summary', 'homehelp_visits'])) {
+        elseif (in_array($report, ['homehelp_summary', 'homehelp_visits', 'homehelp_hours'])) {
             // months
             $this->getHomeHelpInvoiceMonths($form_builder);
         }
@@ -352,7 +352,7 @@ class ReportsController extends Controller
         elseif ('homehelp_clients' == $report) {
             return $this->getHomehelpClientsReport($form_data, $download);
         }
-        elseif (in_array($report, ['homehelp_summary', 'homehelp_visits'])) {
+        elseif (in_array($report, ['homehelp_summary', 'homehelp_visits', 'homehelp_hours'])) {
             return $this->getHomehelpReport($form_data, $report, $download);
         }
 
@@ -395,6 +395,7 @@ class ReportsController extends Controller
             $menu['Gondozás'] = [
                 ['slug' => 'homehelp_stats', 'label' => 'Gondozás statisztika'],
                 ['slug' => 'homehelp_visits', 'label' => 'Gondozási napok'],
+                ['slug' => 'homehelp_hours', 'label' => 'Gondozási órák'],
                 ['slug' => 'homehelp_clients', 'label' => 'Gondozottak'],
                 ['slug' => 'homehelp_summary', 'label' => 'Havi gondozás összesítő'],
                 ['slug' => 'homehelp_cashbook', 'label' => 'Pénztárkönyv'],
@@ -1071,6 +1072,11 @@ class ReportsController extends Controller
             $template_file = __DIR__ . '/../Resources/public/reports/homehelp_visits.xlsx';
             $twig_tpl = '_homehelp_visits.html.twig';
         }
+        elseif ('homehelp_hours' == $report) {
+            $title = sprintf('%s havi gondozási órák összesítése', $ae->formatDate($month, 'ym'));
+            $template_file = __DIR__ . '/../Resources/public/reports/homehelp_hours.xlsx';
+            $twig_tpl = '_homehelp_hours.html.twig';
+        }
         else {
             $title = sprintf('%s havi gondozás összesítő', $ae->formatDate($month, 'ym'));
             $template_file = __DIR__ . '/../Resources/public/reports/homehelp_summary.xlsx';
@@ -1085,7 +1091,7 @@ class ReportsController extends Controller
                 'homehelp' => $report_data,
             ]
         ];
-        if ('homehelp_visits' == $report) {
+        if (in_array($report, ['homehelp_visits', 'homehelp_hours'])) {
             $data['blocks']['months_days'] = range(1, 31);
         }
 

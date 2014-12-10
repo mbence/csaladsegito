@@ -3,7 +3,7 @@
     <tr>
         <th rowspan="2">Név</th>
         <th colspan="31">Naptári napok száma</th>
-        <th rowspan="2">Látogatási<br>napok<br>száma</th>
+        <th rowspan="2">Gondozási<br>órák<br>száma</th>
     </tr>
     <tr>
         {% for day in data.blocks.months_days %}
@@ -16,7 +16,7 @@
         {% for day in homehelp.calendar %}
             <td>{{ day }}</td>
         {% endfor %}
-        <td class="center"> {{ homehelp.visits }} </td>
+        <td class="center"> {{ homehelp.hours }} </td>
     </tr>
     {% endfor %}
 </table>

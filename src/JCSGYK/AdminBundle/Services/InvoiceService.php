@@ -880,7 +880,7 @@ class InvoiceService
             foreach (range(1, 31) as $d) {
                 $empty_month[$d] = '';
             }
-            if ('homehelp_visits' == $report) {
+            if (in_array($report, ['homehelp_visits', 'homehelp_hours'])) {
                 $sums['calendar'] = $empty_month;
             }
 
@@ -939,6 +939,16 @@ class InvoiceService
                         foreach ($days as $day => $o) {
                             $n = (new \DateTime($day))->format('j');
                             $data_row['calendar'][$n] = $o > 0 ? 'X' : '-';
+                        }
+                    }
+                }
+                if ('homehelp_hours' == $report) {
+                    $data_row['calendar'] = $empty_month;
+                    $days = json_decode($invoice->getDays(), true);
+                    if (is_array($days)) {
+                        foreach ($days as $day => $o) {
+                            $n = (new \DateTime($day))->format('j');
+                            $data_row['calendar'][$n] = $o;
                         }
                     }
                 }
