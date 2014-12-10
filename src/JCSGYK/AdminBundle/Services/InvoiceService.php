@@ -861,17 +861,18 @@ class InvoiceService
         if (!empty($res)) {
             // summary
             $sums = [
-                'id'            => '',
-                'name'          => 'ÖSSZESEN',
-                'address'       => '',
-                'debt'          => 0,
-                'amount'        => 0,
-                'hours'         => 0,
-                'unit_price'    => '',
-                'weekdays'      => 0,
-                'cancel_id'     => '',
-                'income' => '',
-                'orders' => '',
+                'id'         => '',
+                'name'       => 'ÖSSZESEN',
+                'address'    => '',
+                'debt'       => 0,
+                'amount'     => 0,
+                'hours'      => 0,
+                'unit_price' => '',
+                'weekdays'   => 0,
+                'cancel_id'  => '',
+                'income'     => '',
+                'orders'     => '',
+                'visits'     => 0,
             ];
 
             // empty month
@@ -879,7 +880,7 @@ class InvoiceService
             foreach (range(1, 31) as $d) {
                 $empty_month[$d] = '';
             }
-            if ('catering_summary_detailed' == $report) {
+            if ('homehelp_visits' == $report) {
                 $sums['calendar'] = $empty_month;
             }
 
@@ -916,6 +917,7 @@ class InvoiceService
                     'unit_price'    => $ae->formatCurrency2(empty($costs) ? 0 : $costs['unit_price']),
                     'weekdays'      => empty($costs) ? 0 : $costs['weekday_quantity'],
                     'cancel_id'     => $invoice->getCancelId(),
+                    'visits'        => $costs['visits'],
                 ];
 
                 // cancel invoices
@@ -930,7 +932,7 @@ class InvoiceService
 
                 $data_row['income']    = $ae->formatCurrency2($homehelp->getIncome());
                 // extra fields for detailed report
-                if ('catering_summary_detailed' == $report) {
+                if ('homehelp_visits' == $report) {
                     $data_row['calendar'] = $empty_month;
                     $days = json_decode($invoice->getDays(), true);
                     if (is_array($days)) {
@@ -948,9 +950,10 @@ class InvoiceService
                 }
                 $data[] = $data_row;
 
-                $sums['amount']     += $invoice->getAmount();
-                $sums['hours']      += $data_row['hours'];
-                $sums['weekdays']   += $data_row['weekdays'];
+                $sums['amount']   += $invoice->getAmount();
+                $sums['hours']    += $data_row['hours'];
+                $sums['weekdays'] += $data_row['weekdays'];
+                $sums['visits']   += $data_row['visits'];
             }
             // format the summary debt
             $sums['debt'] = $ae->formatCurrency2($sums['debt']);

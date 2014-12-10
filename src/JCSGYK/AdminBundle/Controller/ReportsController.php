@@ -154,7 +154,7 @@ class ReportsController extends Controller
             // months
             $this->getInvoiceMonths($form_builder);
         }
-        elseif (in_array($report, ['homehelp_summary'])) {
+        elseif (in_array($report, ['homehelp_summary', 'homehelp_visits'])) {
             // months
             $this->getHomeHelpInvoiceMonths($form_builder);
         }
@@ -352,7 +352,7 @@ class ReportsController extends Controller
         elseif ('homehelp_clients' == $report) {
             return $this->getHomehelpClientsReport($form_data, $download);
         }
-        elseif (in_array($report, ['homehelp_summary'])) {
+        elseif (in_array($report, ['homehelp_summary', 'homehelp_visits'])) {
             return $this->getHomehelpReport($form_data, $report, $download);
         }
 
@@ -394,6 +394,7 @@ class ReportsController extends Controller
             ];
             $menu['Gondozás'] = [
                 ['slug' => 'homehelp_stats', 'label' => 'Gondozás statisztika'],
+                ['slug' => 'homehelp_visits', 'label' => 'Gondozási napok'],
                 ['slug' => 'homehelp_clients', 'label' => 'Gondozottak'],
                 ['slug' => 'homehelp_summary', 'label' => 'Havi gondozás összesítő'],
                 ['slug' => 'homehelp_cashbook', 'label' => 'Pénztárkönyv'],
@@ -1065,15 +1066,10 @@ class ReportsController extends Controller
 
         $report_data = $this->container->get('jcs.invoice')->getHomehelpReport($company_id, $month, $report);
 
-        if ('catering_datacheck' == $report) {
-            $title = sprintf('%s havi adategyeztető', $ae->formatDate($month, 'ym'));
-            $template_file = __DIR__ . '/../Resources/public/reports/catering_datacheck.xlsx';
-            $twig_tpl = '_datacheck.html.twig';
-        }
-        elseif ('catering_summary_detailed' == $report) {
-            $title = sprintf('%s havi étkezési napok összesítése', $ae->formatDate($month, 'ym'));
-            $template_file = __DIR__ . '/../Resources/public/reports/catering_summary_detailed.xlsx';
-            $twig_tpl = '_summary_detailed.html.twig';
+        if ('homehelp_visits' == $report) {
+            $title = sprintf('%s havi gondozási napok összesítése', $ae->formatDate($month, 'ym'));
+            $template_file = __DIR__ . '/../Resources/public/reports/homehelp_visits.xlsx';
+            $twig_tpl = '_homehelp_visits.html.twig';
         }
         else {
             $title = sprintf('%s havi gondozás összesítő', $ae->formatDate($month, 'ym'));
@@ -1089,6 +1085,9 @@ class ReportsController extends Controller
                 'homehelp' => $report_data,
             ]
         ];
+        if ('homehelp_visits' == $report) {
+            $data['blocks']['months_days'] = range(1, 31);
+        }
 
         $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
 
