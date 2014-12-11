@@ -77,7 +77,7 @@ class ClubVisit
         if (in_array($report, ['clubvisit_days'])) {
             $form_builder->add('month', 'choice', [
                 'label'    => 'Dátum',
-                'choices'  => $this->container->get('jcs.invoice')->getMonths($company_id, Invoice::HOMEHELP),
+                'choices'  => $this->getClubVisitMonths(),
                 'required' => true,
             ]);
             $form_builder->add('club', 'entity', [
@@ -87,6 +87,23 @@ class ClubVisit
                 'required' => true,
             ]);
         }
+    }
+
+    private function getClubVisitMonths()
+    {
+        $dql = "SELECT DISTINCT(DATE_FORMAT(v.date,'%Y-%m')) as date FROM JCSGYKAdminBundle:ClubVisit v WHERE v.companyId = :company_id";
+        $res = $this->em->createQuery($dql)
+                ->setParameter('company_id', $this->ds->getCompanyId())
+                ->setMaxResults(12)
+                ->getResult();
+
+        $re = [];
+        foreach ($res as $month) {
+            $d                  = new \DateTime($month['date']);
+            $re[$month['date']] = $this->ae->formatDate($d, 'ym');
+        }
+
+        return $re;
     }
 
     public function run($report, $form_data, $download)
@@ -129,7 +146,7 @@ class ClubVisit
 
         if (in_array($this->report, ['clubvisit_days'])) {
             $sec    = $this->container->get('security.context');
-            $months = $this->container->get('jcs.invoice')->getMonths($company_id, Invoice::HOMEHELP);
+            $months = $this->getClubVisitMonths();
 
             // non admins must select a club
             if (!$sec->isGranted('ROLE_ADMIN') && empty($form_data['club'])) {
