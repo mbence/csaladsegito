@@ -1,3 +1,9 @@
+## 1.5.6 (2014.12.11)
+
+Fejlesztések:
+
+ - Gondozás kimutatások
+
 ## 1.5.5 (2014.12.09)
 
 Fejlesztések:
