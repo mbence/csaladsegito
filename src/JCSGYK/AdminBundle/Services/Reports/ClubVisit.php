@@ -91,7 +91,7 @@ class ClubVisit
 
     private function getClubVisitMonths()
     {
-        $dql = "SELECT DISTINCT(DATE_FORMAT(v.date,'%Y-%m')) as date FROM JCSGYKAdminBundle:ClubVisit v WHERE v.companyId = :company_id";
+        $dql = "SELECT DISTINCT(DATE_FORMAT(v.date,'%Y-%m')) as date FROM JCSGYKAdminBundle:ClubVisit v WHERE v.companyId = :company_id ORDER BY date DESC";
         $res = $this->em->createQuery($dql)
                 ->setParameter('company_id', $this->ds->getCompanyId())
                 ->setMaxResults(12)
