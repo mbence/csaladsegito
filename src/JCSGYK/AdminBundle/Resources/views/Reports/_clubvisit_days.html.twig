@@ -3,20 +3,20 @@
     <tr>
         <th rowspan="2">Név</th>
         <th colspan="31">Naptári napok</th>
-        <th rowspan="2">Gondozási<br>órák<br>száma</th>
+        <th rowspan="2">Látogatások<br>száma</th>
     </tr>
     <tr>
         {% for day in data.blocks.months_days %}
-        <th>{{ day }}</th>
+        <th class="report-calendar">{{ day }}</th>
         {% endfor %}
     </tr>
-    {% for homehelp in data.blocks.homehelp %}
+    {% for clubvisit in data.blocks.clubvisit %}
     <tr>
-        <td><strong>{{ homehelp.name }}</strong></td>
-        {% for day in homehelp.calendar %}
+        <td><strong>{{ clubvisit.name }}</strong></td>
+        {% for day in clubvisit.calendar %}
             <td>{{ day }}</td>
         {% endfor %}
-        <td class="center"> {{ homehelp.hours }} </td>
+        <td class="center"> {{ clubvisit.days }} </td>
     </tr>
     {% endfor %}
 </table>

@@ -1060,19 +1060,25 @@ table.task-list tr:hover td {
 }
 #reports-content form div#form > div {
     color: #5661A2;
-    padding: 2px 3px 6px 6px;
+    padding: 4px 20px 6px 0px;
     white-space: nowrap;
 }
 #reports-content #form div {
     float: left;
 }
 #reports-content .show_report {
-    margin: 0 20px;
+    margin: 0 20px 0 0;
 }
 #reports-content .reports-header {
     border-bottom: 1px solid #DDDDDD;
     font-size: 13px;
     line-height: 17px;
+}
+#reports-content .reports-header .button-row {
+    float: left;
+}
+.reports-table th.report-calendar {
+    min-width: 14px;
 }
 .reports-table td {
     font-size: 13px;

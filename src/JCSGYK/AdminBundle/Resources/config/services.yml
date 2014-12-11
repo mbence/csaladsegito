@@ -67,8 +67,13 @@ services:
         arguments:    ['@doctrine']
         tags:
             - { name: validator.constraint_validator, alias: client_validator }
+
     jcs.reports.ksh:
         class:        JCSGYK\AdminBundle\Services\Reports\Ksh
+        arguments:    ["@service_container"]
+
+    jcs.reports.clubvisit:
+        class:        JCSGYK\AdminBundle\Services\Reports\ClubVisit
         arguments:    ["@service_container"]
 
     kenyszi:

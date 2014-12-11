@@ -154,20 +154,26 @@ class ReportsController extends Controller
             // months
             $this->getInvoiceMonths($form_builder);
         }
-        elseif (in_array($report, ['homehelp_summary', 'homehelp_visits', 'homehelp_hours'])) {
+        elseif (in_array($report, ['homehelp_summary', 'homehelp_visits', 'homehelp_hours', 'clubvisit_days'])) {
             // months
             $this->getHomeHelpInvoiceMonths($form_builder);
         }
-        elseif (in_array($report, ['catering_stats', 'homehelp_stats'])) {
+        elseif (in_array($report, ['catering_stats', 'homehelp_stats', 'clubvisit_stats'])) {
             // stat months
             $this->getStatMonths($form_builder, $report);
+
+            if ('homehelp_stats' == $report) {
+                $form_builder->add('club', 'hidden', [
+                    'data' => '1'
+                ]);
+            }
         }
         elseif ('ksh' == $report) {
             $this->container->get('jcs.reports.ksh')->getForm($form_builder);
         }
 
         // club select for all catering reports
-        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck', 'catering_stats', 'homehelp_stats'])) {
+        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck', 'catering_stats', 'clubvisit_stats'])) {
             $this->getClubSelect($form_builder);
         }
         elseif (in_array($report, ['homehelp_clients'])) {
@@ -181,6 +187,11 @@ class ReportsController extends Controller
                 'required'    => false,
                 'label_attr'  => ['style' => 'float:right;margin:2px 0 0 2px;'],
             ]);
+        }
+
+        // ClubVisit Days
+        if (in_array($report, ['clubvisit_days'])) {
+            $this->container->get('jcs.reports.clubvisit')->getForm($report, $form_builder);
         }
 
         return $form_builder->getForm();
@@ -340,7 +351,7 @@ class ReportsController extends Controller
         elseif (in_array($report, ['catering_summary', 'catering_summary_detailed', 'catering_datacheck'])) {
             return $this->getCateringReport($form_data, $report, $download);
         }
-        elseif (in_array($report, ['catering_stats', 'homehelp_stats'])) {
+        elseif (in_array($report, ['catering_stats', 'homehelp_stats', 'clubvisit_stats'])) {
             return $this->getStats($form_data, $download);
         }
         elseif (in_array($report, ['catering_cashbook', 'homehelp_cashbook'])) {
@@ -354,6 +365,9 @@ class ReportsController extends Controller
         }
         elseif (in_array($report, ['homehelp_summary', 'homehelp_visits', 'homehelp_hours'])) {
             return $this->getHomehelpReport($form_data, $report, $download);
+        }
+        elseif (in_array($report, ['clubvisit_days'])) {
+            return $this->container->get('jcs.reports.clubvisit')->run($report, $form_data, $download);
         }
 
         return false;
@@ -392,13 +406,17 @@ class ReportsController extends Controller
                 ['slug' => 'catering_datacheck', 'label' => 'Adategyeztető'],
                 ['slug' => 'catering_stats', 'label' => 'Étkeztetés statisztika'],
             ];
-            $menu['Gondozás'] = [
+            $menu['Gondozás (Központ)'] = [
                 ['slug' => 'homehelp_stats', 'label' => 'Gondozás statisztika'],
                 ['slug' => 'homehelp_visits', 'label' => 'Gondozási napok'],
                 ['slug' => 'homehelp_hours', 'label' => 'Gondozási órák'],
                 ['slug' => 'homehelp_clients', 'label' => 'Gondozottak'],
                 ['slug' => 'homehelp_summary', 'label' => 'Havi gondozás összesítő'],
                 ['slug' => 'homehelp_cashbook', 'label' => 'Pénztárkönyv'],
+            ];
+            $menu['Látogatás (Klubok)'] = [
+                ['slug' => 'clubvisit_stats', 'label' => 'Látogatás statisztika'],
+                ['slug' => 'clubvisit_days', 'label' => 'Látogatási napok'],
             ];
         }
 
@@ -1065,7 +1083,11 @@ class ReportsController extends Controller
 
         $month = new \DateTime($form_data['month']);
 
-        $report_data = $this->container->get('jcs.invoice')->getHomehelpReport($company_id, $month, $report);
+        if (in_array($report, ['clubvisit_days'])) {
+            $report_data = $this->container->get('jcs.invoice')->getClubvisitReport($company_id, $month, $report);
+        } else {
+            $report_data = $this->container->get('jcs.invoice')->getHomehelpReport($company_id, $month, $report);
+        }
 
         if ('homehelp_visits' == $report) {
             $title = sprintf('%s havi gondozási napok összesítése', $ae->formatDate($month, 'ym'));
