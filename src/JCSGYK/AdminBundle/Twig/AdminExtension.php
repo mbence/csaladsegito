@@ -19,7 +19,7 @@ class AdminExtension extends \Twig_Extension
     private $translator;
     private $ds;
 
-    public function __construct(Translator $translator, DataStore $ds)
+    public function __construct($translator, DataStore $ds)
     {
         $this->translator = $translator;
         $this->ds = $ds;
