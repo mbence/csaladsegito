@@ -32,7 +32,15 @@ JcsCatering =
             @initHomeHelp()
 
         # discount datepicker
-        $('.inblock .datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
+        $('.inblock .datepicker').each ->
+            $(this).datepicker({dateFormat: 'yy-mm-dd'})
+            if $(this).data('min-date')?
+                $(this).datepicker( "option", {minDate: $(this).data('min-date')});
+
+        # clear paused dates
+        $('.clear-paused-dates').on('click', ->
+            $('#catering_pausedFrom').add('#catering_pausedTo').val('')
+        )
 
         # day selectors
         $(".day-selectors > a").on "click", ->
@@ -329,6 +337,7 @@ JcsCatering =
                     if data
                         AjaxBag.showNotice("A számla kiállítása sikeres")
                         $(".catering_container a.catering_invoices").click()
+                        JcsClient.reloadClient()
                     else
                         AjaxBag.showError("Hiba a számla kiállítása során, kérem próbálja újra!")
                 )

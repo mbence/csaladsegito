@@ -249,7 +249,7 @@ class ClientController extends Controller
     public function cateringEditAction(Request $request, $id = null)
     {
         if (!empty($id)) {
-            $em         = $this->getDoctrine()->getManager();
+            $em         = $this->container->get('doctrine')->getManager();
             $company_id = $this->container->get('jcs.ds')->getCompanyId();
             $ae         = $this->container->get('jcs.twig.adminextension');
             $ds         = $this->container->get('jcs.ds');
@@ -269,7 +269,6 @@ class ClientController extends Controller
             if (empty($catering)) {
                 $catering = new Catering();
                 $catering->setClient($client);
-                $catering->setIsActive(false);
                 $client->setCatering($catering);
                 // try to set the club
                 $my_clubs = $ds->getMyClubs();
@@ -299,16 +298,12 @@ class ClientController extends Controller
                         $em->getRepository("JCSGYKAdminBundle:ClientOrder")->updateMenu($client->getId(), $update_from, $catering->getMenu());
                     }
 
-                    // if isActive was changed we must cancel/reorder all future orders
-                    if ($original_catering->getIsActive() != $catering->getIsActive()) {
-                        // we must update the future orders with this menu!
-                        $update_from = new \DateTime('tomorrow');
-                        // if this happened after 10:00 we can only change the day after tomorrow
-                        if (date('H') >= 10) {
-                            $update_from->modify('+1day');
-                        }
-                        $em->getRepository("JCSGYKAdminBundle:ClientOrder")->updateOrders($client->getId(), $update_from, $catering->getIsActive());
+                    // check and fix paused dates
+                    if (empty($catering->getPausedFrom())) {
+                        $catering->setPausedTo(null);
                     }
+
+                    $this->updateClientOrders($catering, $original_catering);
 
                     // save client modifier
                     $client->setModifier($user);
@@ -346,6 +341,84 @@ class ClientController extends Controller
         }
     }
 
+    private function updateClientOrders(Catering $new, Catering $old)
+    {
+        $em          = $this->container->get('doctrine')->getManager();
+        $orders_repo = $em->getRepository("JCSGYKAdminBundle:ClientOrder");
+        $client_id   = $new->getClient()->getId();
+        $tomorrow    = new \DateTime('tomorrow');
+        $next_change = clone $tomorrow;
+        if (date('H') >= 10) {
+            $next_change->modify('+1Day');
+        }
+
+        // check paused changes
+        if ($old->getPausedFrom() != $new->getPausedFrom() || $old->getPausedTo() != $new->getPausedTo()) {
+            // first undo the old pause
+            $update_to = null;
+            if (!empty($old->getPausedFrom())) {
+                $update_from = $old->getPausedFrom();
+                $new_status = 1;
+                if (!empty($old->getPausedTo())) {
+                    $update_to = $old->getPausedTo();
+                }
+
+                $orders_repo->updateOrders($client_id, $new_status, $update_from, $update_to);
+            }
+
+            // then set the new pause
+            $update_to = null;
+            if (!empty($new->getPausedFrom())) {
+                // paused dates set
+                $update_from = $new->getPausedFrom();
+                $new_status = 0;
+                if (!empty($new->getPausedTo())) {
+                    $update_to = $new->getPausedTo();
+                }
+
+                $orders_repo->updateOrders($client_id, $new_status, $update_from, $update_to);
+            }
+        }
+
+        // check agreement changes
+        if (empty($old->getAgreementFrom()) && !empty($new->getAgreementFrom())) {
+            // new agreement start date ->
+
+        }
+        if ($old->getAgreementTo() != $new->getAgreementTo()) {
+            if (!empty($new->getAgreementTo())) {
+                // agreement closed, cancel all orders after that date
+                $update_from = $this->nextDay($new->getAgreementTo());
+                $new_status = 0;
+            } else {
+                // agreement reopened, check if old value was in the past
+                $update_from = $this->nextDay($old->getAgreementTo());
+                if ($update_from < $next_change) {
+                    $update_from = clone $next_change;
+                }
+                $new_status = 1;
+
+            }
+
+            $orders_repo->updateOrders($client_id, $new_status, $update_from);
+        }
+
+
+    }
+
+    /**
+     * Clone the date, clear the time part, and add one day to it
+     * @param \DateTime $date
+     * @return \DateTime
+     */
+    private function nextDay(\DateTime $date)
+    {
+        $re = clone $date;
+        $re->setTime(0, 0, 0)
+            ->modify('+1Day');
+
+        return $re;
+    }
 
     /**
      * Edit homehelp fields
@@ -376,7 +449,6 @@ class ClientController extends Controller
             if (empty($homehelp)) {
                 $homehelp = new HomeHelp();
                 $homehelp->setClient($client);
-                $homehelp->setIsActive(false);
                 $client->setHomehelp($homehelp);
                 // try to set the club
                 $my_clubs = $ds->getMyClubs();
@@ -1582,7 +1654,7 @@ class ClientController extends Controller
         $active_catering = false;
         if (Client::CA == $client->getType()) {
             $catering = $client->getCatering();
-            if ($catering && $catering->getIsActive()) {
+            if ($catering && $catering->hasAgreement()) {
                 $active_catering = true;
             }
         }
@@ -1600,7 +1672,7 @@ class ClientController extends Controller
         $active_homehelp = false;
         if (Client::CA == $client->getType()) {
             $homehelp = $client->getHomehelp();
-            if ($homehelp && $homehelp->getIsActive()) {
+            if ($homehelp && $homehelp->hasAgreement()) {
                 $active_homehelp = true;
             }
         }
@@ -1641,7 +1713,7 @@ class ClientController extends Controller
 
             // check the open orders for manual invoice alert
             if (Client::CA == $client->getType()) {
-                $open_orders = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->checkForOpenOrders($client);
+                $invoice_required = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:ClientOrder')->checkForOpenOrders($client);
             }
 
             return $this->render('JCSGYKAdminBundle:Client:view.html.twig', [
@@ -1655,7 +1727,7 @@ class ClientController extends Controller
                 'logs'             => $this->container->get('history.logger')->getLogs($client),
                 'club_type'        => $this->getClubtype($client),
                 'club_type_label'  => $this->getClubTypeLabel($client),
-                'invoice_required' => !empty($open_orders),
+                'invoice_required' => !empty($invoice_required),
             ]);
         }
         else {
@@ -1948,6 +2020,8 @@ class ClientController extends Controller
         }
 
         $invoice = $invoice_service->create($client, clone $start, clone $end, $closing_type);
+        $invoice_service->updateBalance($client->getCatering());
+
         $result = !empty($invoice) ? 1 : 0;
 
         return new Response($result, Response::HTTP_OK);

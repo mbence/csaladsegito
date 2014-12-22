@@ -42,16 +42,16 @@ class HomehelpType extends AbstractType
 
         // clubs
         $builder->add('club', 'entity', [
-            'label' => 'Klub',
-            'class' => 'JCSGYKAdminBundle:Club',
-            'choices'   => $this->clubs,
+            'label'    => 'Klub',
+            'class'    => 'JCSGYKAdminBundle:Club',
+            'choices'  => $this->clubs,
             'required' => true,
         ]);
 
         $social_workers = $this->ds->getSocialWorkers();
-        $builder->add('social_worker', 'choice', [
-            'label'   => 'Gondozó',
-            'choices' => $social_workers,
+        $builder->add('socialWorker', 'choice', [
+            'label'    => 'Gondozó',
+            'choices'  => $social_workers,
             'required' => false,
         ]);
 
@@ -78,43 +78,62 @@ class HomehelpType extends AbstractType
             'expanded' => true
         ]);
 
-        $builder->add('warning_system', 'checkbox', ['label' => 'jelzőrendszer']);
+        $builder->add('warningSystem', 'checkbox', ['label' => 'jelzőrendszer']);
         $builder->add('inpatient', 'checkbox', ['label' => 'fekvőbeteg']);
         $builder->add('hours', 'text', ['label' => 'ORSZI óra', 'required' => false]);
         $builder->add('income', 'text', ['label' => 'Jövedelem (Ft)', 'required' => false]);
         $builder->add('discount', 'text', [
-            'label'     => 'Mérséklés (%)',
-            'required'  => false,
-            'attr' => array('class' => 'short'),
-        ]);
-        $builder->add('discount_from', 'date', [
-            'label' => 'Kezdete',
-            'widget' => 'single_text',
-            'attr' => array('class' => 'datepicker', 'type' => 'text'),
+            'label'    => 'Mérséklés (%)',
             'required' => false,
+            'attr'     => array('class' => 'short'),
         ]);
-        $builder->add('discount_to', 'date', [
-            'label' => 'Vége',
-            'widget' => 'single_text',
-            'attr' => array('class' => 'datepicker'),
+        $builder->add('discountFrom', 'date', [
+            'label'    => 'Kezdete',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker'),
             'required' => false,
+                //'html5' => false,
         ]);
-        $builder->add('agreement_from', 'date', [
-            'label' => 'Megállapodás',
-            'widget' => 'single_text',
-            'attr' => array('class' => 'datepicker', 'type' => 'text'),
+        $builder->add('discountTo', 'date', [
+            'label'    => 'Vége',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker'),
             'required' => false,
+                //'html5' => false,
         ]);
-        $builder->add('agreement_to', 'date', [
-            'label' => 'Vége',
-            'widget' => 'single_text',
-            'attr' => array('class' => 'datepicker'),
+
+        $min_date = 1;
+        if (date('H') >= 10) {
+            $min_date = 2;
+        }
+
+        $builder->add('agreementFrom', 'date', [
+            'label'    => 'Megállapodás',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker'),
             'required' => false,
+                //'html5' => false,
         ]);
-        $builder->add('is_active', 'choice', [
-            'label' => '',
-            'choices' => [1 => 'Aktiválás', 0 => 'Szüneteltetés'],
-            'expanded' => true
+        $builder->add('agreementTo', 'date', [
+            'label'    => 'Vége',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker', 'data-min-date' => $min_date),
+            'required' => false,
+                //'html5' => false,
+        ]);
+        $builder->add('pausedFrom', 'date', [
+            'label'    => 'Szüneteltetés',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker', 'data-min-date' => $min_date),
+            'required' => false,
+                //'html5' => false,
+        ]);
+        $builder->add('pausedTo', 'date', [
+            'label'    => 'Vége',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker', 'data-min-date' => $min_date),
+            'required' => false,
+                //'html5' => false,
         ]);
     }
 

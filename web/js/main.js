@@ -1933,8 +1933,18 @@ JcsCatering = {
         return _this.initHomeHelp();
       };
     })(this));
-    $('.inblock .datepicker').datepicker({
-      dateFormat: 'yy-mm-dd'
+    $('.inblock .datepicker').each(function() {
+      $(this).datepicker({
+        dateFormat: 'yy-mm-dd'
+      });
+      if ($(this).data('min-date') != null) {
+        return $(this).datepicker("option", {
+          minDate: $(this).data('min-date')
+        });
+      }
+    });
+    $('.clear-paused-dates').on('click', function() {
+      return $('#catering_pausedFrom').add('#catering_pausedTo').val('');
     });
     $(".day-selectors > a").on("click", function() {
       var day, days, index, _i, _len;
@@ -2237,7 +2247,8 @@ JcsCatering = {
         return $.post($form.attr("action"), $form.serialize(), function(data) {
           if (data) {
             AjaxBag.showNotice("A számla kiállítása sikeres");
-            return $(".catering_container a.catering_invoices").click();
+            $(".catering_container a.catering_invoices").click();
+            return JcsClient.reloadClient();
           } else {
             return AjaxBag.showError("Hiba a számla kiállítása során, kérem próbálja újra!");
           }

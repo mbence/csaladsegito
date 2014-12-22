@@ -7,13 +7,26 @@
     {% render(controller('JCSGYKAdminBundle:Menu:catering', { 'client': client })) %}
     <div class="clear"></div>
     {% if catering is defined and catering %}
-        {% if not catering.isActive %}
-            <div class="catering-inactive">
-                Szüneteltetve
-            </div>
-        {% endif %}
     <div>
         <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Státus'|trans }}:</th>
+                <td colspan="3">
+                    {{ catering.status|status_text }}
+                </td>
+            </tr>
+            <tr>
+                <th>{{ 'Megállapodás'|trans }}:</th>
+                <td colspan="3">
+                    {{ from_to(catering.agreementFrom, catering.agreementTo) }}
+                </td>
+            </tr>
+            <tr>
+                <th>{{ 'Szüneteltetés'|trans }}:</th>
+                <td colspan="3">
+                    {{ from_to(catering.pausedFrom, catering.pausedTo) }}
+                </td>
+            </tr>
             <tr>
                 <th>{{ 'Heti rendelések'|trans }}:</th>
                 <td colspan="3">

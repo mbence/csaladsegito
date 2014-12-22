@@ -11,8 +11,8 @@ use JCSGYK\AdminBundle\Form\Type\ProblemType;
 use JCSGYK\AdminBundle\Entity\Paramgroup;
 use JCSGYK\AdminBundle\Services\DataStore;
 use JCSGYK\AdminBundle\Entity\Invoice;
-
 use JCSGYK\AdminBundle\Entity\History;
+use JCSGYK\AdminBundle\Entity\Catering;
 
 class AdminExtension extends \Twig_Extension
 {
@@ -47,6 +47,7 @@ class AdminExtension extends \Twig_Extension
             'order_status'   => new \Twig_Filter_Method($this, 'dailyOrderStatus'),
             'first_line'     => new \Twig_Filter_Method($this, 'firstLine'),
             'a2l'            => new \Twig_Filter_Method($this, 'array2List'),
+            'status_text'    => new \Twig_Filter_Method($this, 'statusText', ['is_safe' => ['html']]),
         ];
     }
 
@@ -68,7 +69,44 @@ class AdminExtension extends \Twig_Extension
             'getct'              => new \Twig_Function_Method($this, 'getClientTypes'),
             'log_data'           => new \Twig_Function_Method($this, 'logData', ['is_safe' => ['html']]),
             'log_event'          => new \Twig_Function_Method($this, 'logEvent', ['is_safe' => ['html']]),
+            'from_to'            => new \Twig_Function_Method($this, 'fromTo', ['is_safe' => ['html']]),
         );
+    }
+
+    public function fromTo(\DateTime $from = null, \DateTime $to = null)
+    {
+        $re = [];
+        if (!empty($from)) {
+            $re[] = substr($this->formatDate($from), 0, -1);
+        }
+        $re[] = '-';
+        if (!empty($to)) {
+            if ($from->format('Y') != $to->format('Y')) {
+                $re[] = $this->formatDate($to);
+            } elseif ($from->format('m') != $to->format('m')) {
+                $re[] = $this->formatDate($to, 'md');
+            } else {
+                $re[] = $to->format('d.');
+            }
+        }
+
+        return implode(' ', $re);
+    }
+
+    public function statusText($status)
+    {
+        if (Catering::ACTIVE == $status) {
+            $class = 'catering-active';
+            $text = 'Aktív';
+        } elseif (Catering::PAUSED == $status) {
+            $class = 'catering-paused';
+            $text = 'Szüneteltetve';
+        } elseif (Catering::CLOSED == $status) {
+            $class = 'catering-closed';
+            $text = 'Lezárva';
+        }
+
+        return sprintf('<span class="%s">%s</span>', $class, $text);
     }
 
     public function logData(History $log)
@@ -154,6 +192,8 @@ class AdminExtension extends \Twig_Extension
             'managedDebt'          => 'Kezelt',
             'agreementFrom'        => 'Megállapodás kezdete',
             'agreementTo'          => 'Megállapodás vége',
+            'pausedFrom'           => 'Szüneteltetés kezdete',
+            'pausedTo'             => 'Szüneteltetés vége',
             'warningSystem'        => 'Jelzőrendszer',
             'inpatient'            => 'Fekvőbeteg',
             'hours'                => 'ORSZI óra',

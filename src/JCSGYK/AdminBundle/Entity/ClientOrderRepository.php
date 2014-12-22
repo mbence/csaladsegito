@@ -124,9 +124,12 @@ class ClientOrderRepository extends EntityRepository
      * @param bool $new_state 1: order, 0: cancel
      * @return int number of changed records
      */
-    public function updateOrders($client_id, $start_date, $new_state)
+    public function updateOrders($client_id, $new_state, \DateTime $start_date, \DateTime $end_date = null )
     {
         $n = 0;
+        if ($new_state != 1) {
+            $new_state = 0;
+        }
 
         if ($new_state) {
             // REORDER
@@ -134,43 +137,74 @@ class ClientOrderRepository extends EntityRepository
             // 011 -> 100
             // 010 -> 100
             // 111 -> 100
-            $n += $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o '
+            $dql = 'UPDATE JCSGYKAdminBundle:ClientOrder o '
                     . 'SET o.order = 1, o.cancel = 0, o.closed = 0 '
                     . 'WHERE o.client = :client_id AND o.date >= :start_date AND '
                     . '((o.order = 0 AND o.cancel = 1 AND o.closed = 0) OR '
                     . '(o.order = 0 AND o.cancel = 1 AND o.closed = 1) OR '
-                    . '(o.order = 1 AND o.cancel = 1 AND o.closed = 1))')
+                    . '(o.order = 1 AND o.cancel = 1 AND o.closed = 1))';
+            if (!empty($end_date)) {
+                $dql .= ' AND o.date <= :end_date ';
+            }
+
+            $query = $this->getEntityManager()->createQuery($dql)
                 ->setParameter('client_id', $client_id)
-                ->setParameter('start_date', $start_date)
-                ->execute();
+                ->setParameter('start_date', $start_date);
+            if (!empty($end_date)) {
+                 $query->setParameter('end_date', $end_date);
+            }
+            $n += $query->execute();
+
             // 110 -> 101
-            $n += $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o '
+            $dql = 'UPDATE JCSGYKAdminBundle:ClientOrder o '
                     . 'SET o.order = 1, o.cancel = 0, o.closed = 1 '
                     . 'WHERE o.client = :client_id AND o.date >= :start_date AND '
-                    . 'o.order = 1 AND o.cancel = 1 AND o.closed = 0')
+                    . 'o.order = 1 AND o.cancel = 1 AND o.closed = 0';
+            if (!empty($end_date)) {
+                $dql .= ' AND o.date <= :end_date ';
+            }
+            $query = $this->getEntityManager()->createQuery($dql)
                 ->setParameter('client_id', $client_id)
-                ->setParameter('start_date', $start_date)
-                ->execute();
+                ->setParameter('start_date', $start_date);
+            if (!empty($end_date)) {
+                 $query->setParameter('end_date', $end_date);
+            }
+            $n += $query->execute();
         }
         else {
             // CANCEL
             // $new_state = 0
             // 100 -> 010
-            $n += $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o '
+            $dql = 'UPDATE JCSGYKAdminBundle:ClientOrder o '
                     . 'SET o.order = 0, o.cancel = 1, o.closed = 0 '
                     . 'WHERE o.client = :client_id AND o.date >= :start_date AND '
-                    . 'o.order = 1 AND o.cancel = 0 AND o.closed = 0')
+                    . 'o.order = 1 AND o.cancel = 0 AND o.closed = 0';
+            if (!empty($end_date)) {
+                $dql .= ' AND o.date <= :end_date ';
+            }
+            $query = $this->getEntityManager()->createQuery($dql)
                 ->setParameter('client_id', $client_id)
-                ->setParameter('start_date', $start_date)
-                ->execute();
+                ->setParameter('start_date', $start_date);
+            if (!empty($end_date)) {
+                 $query->setParameter('end_date', $end_date);
+            }
+            $n += $query->execute();
+
             // 101 -> 110
-            $n += $this->getEntityManager()->createQuery('UPDATE JCSGYKAdminBundle:ClientOrder o '
+            $dql = 'UPDATE JCSGYKAdminBundle:ClientOrder o '
                     . 'SET o.order = 1, o.cancel = 1, o.closed = 0 '
                     . 'WHERE o.client = :client_id AND o.date >= :start_date AND '
-                    . 'o.order = 1 AND o.cancel = 0 AND o.closed = 1')
+                    . 'o.order = 1 AND o.cancel = 0 AND o.closed = 1';
+            if (!empty($end_date)) {
+                $dql .= ' AND o.date <= :end_date ';
+            }
+            $query = $this->getEntityManager()->createQuery($dql)
                 ->setParameter('client_id', $client_id)
-                ->setParameter('start_date', $start_date)
-                ->execute();
+                ->setParameter('start_date', $start_date);
+            if (!empty($end_date)) {
+                 $query->setParameter('end_date', $end_date);
+            }
+            $n += $query->execute();
         }
 
         return $n;
@@ -321,6 +355,7 @@ class ClientOrderRepository extends EntityRepository
 
     /**
      * Check for open orders until the end of this month
+     * Or if no orders exist (new clients)
      * @param Client $client
      * @return int number of open orders
      */
@@ -341,6 +376,29 @@ class ClientOrderRepository extends EntityRepository
             ->setParameter('end', $endOfMonth)
             ->getResult();
 
-        return !empty($result[0]['orders']) ? $result[0]['orders'] : 0;
+        if (!empty($result[0]['orders'])) {
+
+            return true;
+        }
+
+        // also check for new clients = no orders in the time period
+        $result = $this->getEntityManager()
+            ->createQuery("SELECT COUNT(o) as orders FROM JCSGYKAdminBundle:ClientOrder o WHERE o.companyId = :company_id AND o.client = :client AND o.date >= :start AND o.date <= :end ")
+            ->setParameter('company_id', $client->getCompanyId())
+            ->setParameter('client', $client)
+            ->setParameter('start', new \DateTime('tomorrow'))
+            ->setParameter('end', $endOfMonth)
+            ->getResult();
+
+        if (empty($result[0]['orders'])) {
+            $catering = $client->getCatering();
+            // but only if catering is active and all required fields are set
+            if (!empty($catering->getAgreementFrom()) && !empty($catering->getSubscriptions())) {
+                
+                return true;
+            }
+        }
+
+        return false;
     }
 }

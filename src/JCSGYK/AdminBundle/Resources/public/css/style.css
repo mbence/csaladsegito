@@ -1174,11 +1174,20 @@ h2.menu-section {
 #catering_form .disabled {
     opacity: 0.4;
 }
-.catering-inactive {
-    margin: 10px;
-    text-align: center;
+.catering-active {
+    color: #4ac037;
+}
+.catering-paused {
     color: #d04a37;
 }
+.catering-closed {
+    color: #888;
+}
+.client-edit .catering-active, .client-edit .catering-paused, .client-edit .catering-closed{
+    padding-bottom: 4px;
+    display: block;
+}
+
 .client-edit > tbody > tr.catering-top th {
     text-align: left;
     padding-left: 0px;

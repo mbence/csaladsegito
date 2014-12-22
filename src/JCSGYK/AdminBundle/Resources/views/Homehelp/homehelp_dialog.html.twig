@@ -21,16 +21,7 @@
             </tr>
         </table>
 
-        <div>
-            {% if not client.homehelp.isActive %}
-                <div class="catering-inactive">
-                    Szüneteltetve
-                </div>
-            {% endif %}
-            {{ form_errors(form.is_active) }}{{ form_widget(form.is_active) }}
-        </div>
-
-        <div id="catering-fields" {% if not client.homehelp.isActive %}class="disabled"{% endif %}>
+        <div id="catering-fields">
             {% include "JCSGYKAdminBundle:Homehelp:_edit_homehelp.html.twig" %}
         </div>
 

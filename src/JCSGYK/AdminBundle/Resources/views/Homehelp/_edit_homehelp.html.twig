@@ -2,32 +2,47 @@
 {% form_theme form 'JCSGYKAdminBundle:Form:errors.html.twig' %}
 <div class="client-sub">{{ club_type_label|trans }}</div>
 <table class="client-edit" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Státus'|trans }}:</th>
+        <td>
+            {{ client.homehelp.status|status_text }}
+        </td>
+    </tr>
+    <tr class="visit-type">
+        <th>{{ form_label(form.agreementFrom) }}:</th>
+        <td>
+            <div class="inblock">{{ form_errors(form.agreementFrom) }}{{ form_widget(form.agreementFrom) }} - </div>
+            <div class="inblock">{{ form_errors(form.agreementTo) }}{{ form_widget(form.agreementTo) }}</div>
+        </td>
+    </tr>
+    <tr class="visit-type">
+        <th class="noborder">{{ form_label(form.pausedFrom) }}:</th>
+        <td class="noborder">
+            <div class="inblock">{{ form_errors(form.pausedFrom) }}{{ form_widget(form.pausedFrom) }} - </div>
+            <div class="inblock">{{ form_errors(form.pausedTo) }}{{ form_widget(form.pausedTo) }}</div>
+            <button title="{{ 'Szüneteltetési dátumok törlése'|trans }}" class="clear-paused-dates greybutton smallbutton" type="button"><span style="line-height: normal;">{{ 'x'|trans }}</span></button>
+        </td>
+    </tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
     <tr class="visit-type">
         <th>{{ form_label(form.club) }}:</th>
         <td>{{ form_errors(form.club) }}{{ form_widget(form.club) }}</td>
     </tr>
     <tr class="help-type">
-        <th>{{ form_label(form.social_worker) }}:</th>
-        <td>{{ form_errors(form.social_worker) }}{{ form_widget(form.social_worker) }}</td>
+        <th>{{ form_label(form.socialWorker) }}:</th>
+        <td>{{ form_errors(form.socialWorker) }}{{ form_widget(form.socialWorker) }}</td>
     </tr>
     <tr class="visit-type">
         <th>{{ form_label(form.income) }}:</th>
         <td>{{ form_errors(form.income) }}{{ form_widget(form.income) }}</td>
-    </tr>
-    <tr class="visit-type">
-        <th>{{ form_label(form.agreement_from) }}:</th>
-        <td>
-            <div class="inblock">{{ form_errors(form.agreement_from) }}{{ form_widget(form.agreement_from) }} - </div>
-            <div class="inblock">{{ form_errors(form.agreement_to) }}{{ form_widget(form.agreement_to) }}</div>
-        </td>
     </tr>
     <tr class="help-type">
         <th>{{ form_label(form.discount) }}:</th>
         <td>
             <div class="inblock">{{ form_errors(form.discount) }}{{ form_widget(form.discount) }}</div>
             <div class="inblock"> Időtartam:</div>
-            <div class="inblock">{{ form_errors(form.discount_from) }}{{ form_widget(form.discount_from) }} - </div>
-            <div class="inblock">{{ form_errors(form.discount_to) }}{{ form_widget(form.discount_to) }}</div>
+            <div class="inblock">{{ form_errors(form.discountFrom) }}{{ form_widget(form.discountFrom) }} - </div>
+            <div class="inblock">{{ form_errors(form.discountTo) }}{{ form_widget(form.discountTo) }}</div>
         </td>
     </tr>
     <tr class="help-type">
@@ -37,7 +52,7 @@
     <tr class="help-type">
         <th></th>
         <td>
-            {{ form_errors(form.warning_system) }}{{ form_widget(form.warning_system) }} {{ form_label(form.warning_system) }}
+            {{ form_errors(form.warningSystem) }}{{ form_widget(form.warningSystem) }} {{ form_label(form.warningSystem) }}
             {{ form_errors(form.inpatient) }}{{ form_widget(form.inpatient) }} {{ form_label(form.inpatient) }}
         </td>
     </tr>

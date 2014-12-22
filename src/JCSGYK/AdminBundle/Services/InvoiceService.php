@@ -501,42 +501,48 @@ class InvoiceService
         $orders = $orders_repo->getOrdersForPeriod($client->getId(), $start_date, $end_date);
 
         foreach ($days as $ISO_date => $sub) {
-            // only deal with orders at the moment
-            if ($sub == 1) {
-                $date = new \DateTime($ISO_date);
-                // check if we have any records for that day
-                if (!empty($orders[$ISO_date])) {
-                    $order = $orders[$ISO_date];
+            $date = new \DateTime($ISO_date);
+            $status = $catering->getStatus($date);
 
-                    if ($order->getClosed() == false // make sure, that we only modify open records!
-                        && $order->getCancel() == false // and we also skip records, that are already cancelled
-                    ) {
-                        $order->setOrder(true);
-                    }
+            // only deal with orders, and if that day is not closed
+            if ($sub != 1 || Catering::CLOSED == $status) {
+                continue;
+            }
+
+            // check if we have any records for that day
+            if (!empty($orders[$ISO_date])) {
+                $order = $orders[$ISO_date];
+
+                if ($order->getClosed() == false // make sure, that we only modify open records!
+                    && $order->getCancel() == false // and we also skip records, that are already cancelled
+                    && Catering::ACTIVE == $status // and we only do anything if that day is active
+                ) {
+                    $order->setOrder(true);
                 }
+            }
                 // or if no record exists, we create a new one
-                else {
-                    // no record for this day, lets create one!
-                    $order = new ClientOrder();
-                    $order->setCompanyId($company_id);
-                    $order->setClient($client);
-                    $order->setDate($date);
-                    if ($catering->getIsActive()) {
-                        $order->setOrder(true);
-                        $order->setCancel(false);
-                        $order->setClosed(false);
-                    }
-                    else {
-                        // for inactive clients we set a cancelled record
-                        $order->setOrder(false);
-                        $order->setCancel(true);
-                        $order->setClosed(false);
-                    }
-                    $order->setCreator($user);
-                    $order->setMenu($catering->getMenu());
+            else {
+                // no record for this day, lets create one!
+                $order = (new ClientOrder())
+                    ->setCompanyId($company_id)
+                    ->setClient($client)
+                    ->setDate($date)
+                    ->setCreator($user)
+                    ->setMenu($catering->getMenu())
+                ;
 
-                    $em->persist($order);
+                if (Catering::ACTIVE == $status) {
+                    $order->setOrder(true);
+                    $order->setCancel(false);
+                    $order->setClosed(false);
+                } elseif (Catering::PAUSED == $status) {
+                    // for paused days we set a cancelled record
+                    $order->setOrder(false);
+                    $order->setCancel(true);
+                    $order->setClosed(false);
                 }
+
+                $em->persist($order);
             }
         }
 
@@ -591,9 +597,9 @@ class InvoiceService
 
         $em = $this->container->get('doctrine')->getManager();
         // calculate the balance of the open invoices
-        $res = $em->createQuery("SELECT SUM(i.amount - i.balance) as balance FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client AND i.status = :status AND i.invoicetype IN (:types)")
+        $res = $em->createQuery("SELECT SUM(i.amount - i.balance) as balance FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client AND i.status IN (:status) AND i.invoicetype IN (:types)")
             ->setParameter('client', $source->getClient())
-            ->setParameter('status', Invoice::OPEN)
+            ->setParameter('status', [Invoice::READY_TO_SEND, Invoice::OPEN])
             ->setParameter('types', $types)
             ->getSingleResult();
 
@@ -617,15 +623,15 @@ class InvoiceService
 
         if (MonthlyClosing::HOMEHELP == $closing_type) {
             $types = [Invoice::HOMEHELP];
-            $dql = "UPDATE JCSGYKAdminBundle:Homehelp h SET h.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = h.client AND i.status = :status AND i.invoicetype IN (:types))";
+            $dql = "UPDATE JCSGYKAdminBundle:Homehelp h SET h.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = h.client AND i.status IN (:status) AND i.invoicetype IN (:types))";
         } else {
             $types = [Invoice::MONTHLY, Invoice::DAILY];
-            $dql = "UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status = :status AND i.invoicetype IN (:types))";
+            $dql = "UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status IN (:status) AND i.invoicetype IN (:types))";
         }
 
         // calculate the balance of the open invoices
         $em->createQuery($dql)
-            ->setParameter('status', Invoice::OPEN)
+            ->setParameter('status', [Invoice::READY_TO_SEND, Invoice::OPEN])
             ->setParameter('types', $types)
             ->execute();
         $em->flush();
