@@ -23,7 +23,9 @@
         {{ form_end(filter_form) }}
 
         <div id="handsontable" class="homehelp-table clubvisit-table"></div>
-        <div class="clear"></div>
+        {% if unsaved %}
+            <div class="right clubvisit-buttons smalltext">Az űrlap még nincsen elmentve!</div>
+        {% endif %}
         {{ form_start(form, {"attr": {"id": "homehelpform", "class": "homehelpform" }}) }}
 
             {{ form_widget(form.value) }}

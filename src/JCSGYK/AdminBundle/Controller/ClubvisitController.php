@@ -41,8 +41,14 @@ class ClubvisitController extends Controller
         $user = $ds->getUser();
         /** @var EntityManager $em */
         $em = $this->container->get('doctrine')->getManager();
+
+        if (empty($date)) {
+            $date = 'today';
+        }
+        $date = (new \DateTime($date))->setTime(0, 0, 0);
+
         // clients
-        $clients = $this->getClubClients($club_id);
+        $clients = $this->getClubClients($club_id, $date);
         // get the club entity
         /** @var Club $club */
         $club = $em->getRepository('JCSGYKAdminBundle:Club')->find($club_id);
@@ -53,14 +59,12 @@ class ClubvisitController extends Controller
         // events
         $events = $ds->getGroup('club_events');
 
-        if (empty($date)) {
-            $date = 'today';
-        }
-        $date = (new \DateTime($date))->setTime(0, 0, 0);
 
         // get the record from db
         $visits = $this->getVisits($club, $date);
 
+        // indicates if a day has no visits saved
+        $unsaved = false;
         // create new if no record found
         if (empty($visits)) {
             // create new records
@@ -75,6 +79,7 @@ class ClubvisitController extends Controller
                 ;
                 $visits[] = $visit;
             }
+            $unsaved = true;
         }
 
         // index the visits
@@ -156,6 +161,7 @@ class ClubvisitController extends Controller
             'table_defaults' => $this->getClubVisitDefaults($date, $row_headers, $events),
             'date'           => $date->format('Y-m-d'),
             'club'           => $club,
+            'unsaved'        => $unsaved,
         ];
     }
 
@@ -350,7 +356,7 @@ class ClubvisitController extends Controller
      * @param $club_id
      * @return Client[]
      */
-    private function getClubClients(&$club_id)
+    private function getClubClients(&$club_id, $date)
     {
         /** @var DataStore $ds */
         $ds = $this->container->get('jcs.ds');
@@ -365,7 +371,7 @@ class ClubvisitController extends Controller
         // find the clients of this club
         $clients = [];
         if (!empty($club_id)) {
-            $clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsByClub($club_id, $ds->getCompanyId());
+            $clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsByClub($club_id, $ds->getCompanyId(), $date);
         }
 
         return $clients;
