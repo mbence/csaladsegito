@@ -53,11 +53,11 @@ class HomeHelp
     private $socialWorker;
 
     /**
-     * @var integer
+     * @var boolean
      *
-     * @ORM\Column(name="status", type="integer", nullable=true)
+     * @ORM\Column(name="is_active", type="boolean", nullable=true)
      */
-    private $status;
+    private $isActive;
 
     /**
      * @var integer
@@ -188,24 +188,13 @@ class HomeHelp
         $this->setCreatedAt(new \DateTime());
     }
 
-    public static function loadValidatorMetadata(ClassMetadata $metadata)
-    {
-        $date = new \DateTime('today');
-        if (date('H') >= 10) {
-            $date->modify('+1Day');
-        }
-        $metadata->addPropertyConstraint('agreementTo', new Assert\GreaterThan(array('value' => $date)));
-        $metadata->addPropertyConstraint('pausedFrom', new Assert\GreaterThan(array('value' => $date)));
-        $metadata->addPropertyConstraint('pausedTo', new Assert\GreaterThan(array('value' => $date)));
-    }
-
     /**
      * Get the list of fields for change tracking
      * @return array of field names
      */
     public function getHistoryFields()
     {
-        return ['club', 'socialWorker', 'status', 'income', 'discount', 'discountFrom', 'discountTo', 'agreementFrom', 'agreementTo', 'pausedFrom', 'pausedTo', 'services', 'warningSystem', 'inpatient', 'handicap', 'hours'];
+        return ['club', 'socialWorker', 'income', 'discount', 'discountFrom', 'discountTo', 'agreementFrom', 'agreementTo', 'pausedFrom', 'pausedTo', 'services', 'warningSystem', 'inpatient', 'handicap', 'hours'];
     }
 
     /**
@@ -316,6 +305,30 @@ class HomeHelp
     public function getSocialWorker()
     {
         return $this->socialWorker;
+    }
+
+    /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     *
+     * @return HomeHelp
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
     }
 
     /**

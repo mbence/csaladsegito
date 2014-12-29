@@ -361,6 +361,12 @@ class ClientOrderRepository extends EntityRepository
      */
     public function checkForOpenOrders(Client $client)
     {
+        $catering = $client->getCatering();
+        if (empty($catering)) {
+            // no catering - no invoice
+            return false;
+        }
+
         // after the monthly closing is run, we must check the orders for the next month as well
         if (date('j') < 25) {
             $endOfMonth = new \DateTime('last day of this month');
@@ -391,10 +397,9 @@ class ClientOrderRepository extends EntityRepository
             ->getResult();
 
         if (empty($result[0]['orders'])) {
-            $catering = $client->getCatering();
-            // but only if catering is active and all required fields are set
-            if (!empty($catering->getAgreementFrom()) && !empty($catering->getSubscriptions())) {
-                
+            // but only if client is not archived, catering is active and all required fields are set
+            if (!$client->getIsArchived() && !empty($catering->getAgreementFrom()) && !empty($catering->getSubscriptions())) {
+
                 return true;
             }
         }

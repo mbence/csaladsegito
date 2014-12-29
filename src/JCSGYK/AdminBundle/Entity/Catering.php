@@ -5,7 +5,7 @@ namespace JCSGYK\AdminBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Catering
@@ -99,11 +99,11 @@ class Catering
     private $balance;
 
     /**
-     * @var integer
+     * @var boolean
      *
-     * @ORM\Column(name="status", type="integer", nullable=true)
+     * @ORM\Column(name="is_active", type="boolean", nullable=true)
      */
-    private $status;
+    private $isActive;
 
     /**
      * @var \DateTime
@@ -135,13 +135,21 @@ class Catering
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $date = new \DateTime('today');
-        if (date('H') >= 10) {
-            $date->modify('+1Day');
+        $metadata->addConstraint(new Assert\Callback('validateDates'));
+    }
+
+    public function validateDates(ExecutionContextInterface $context)
+    {
+        if (!empty($this->getAgreementTo()) && !empty($this->getAgreementFrom() && $this->getAgreementFrom() > $this->getAgreementTo())) {
+            $context->buildViolation('A megállapodás záró dátuma nem lehet korábbi a kezdő dátumnál')
+                ->atPath('agreementTo')
+                ->addViolation();
         }
-        $metadata->addPropertyConstraint('agreementTo', new Assert\GreaterThan(array('value' => $date)));
-        $metadata->addPropertyConstraint('pausedFrom', new Assert\GreaterThan(array('value' => $date)));
-        $metadata->addPropertyConstraint('pausedTo', new Assert\GreaterThan(array('value' => $date)));
+        if (!empty($this->getPausedTo()) && !empty($this->getPausedFrom() && $this->getPausedFrom() > $this->getPausedTo())) {
+            $context->buildViolation('A szüneteltetés záró dátuma nem lehet korábbi a kezdő dátumnál')
+                ->atPath('pausedTo')
+                ->addViolation();
+        }
     }
 
     /**
@@ -150,7 +158,7 @@ class Catering
      */
     public function getHistoryFields()
     {
-        return ['club', 'subscriptions', 'menu', 'isSingle', 'income', 'discount', 'discountFrom', 'discountTo', 'status', 'agreementFrom', 'agreementTo', 'pausedFrom', 'pausedTo'];
+        return ['club', 'subscriptions', 'menu', 'isSingle', 'income', 'discount', 'discountFrom', 'discountTo', 'agreementFrom', 'agreementTo', 'pausedFrom', 'pausedTo'];
     }
 
     /**
@@ -429,6 +437,29 @@ class Catering
     public function getClub()
     {
         return $this->club;
+    }
+
+    /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     * @return Parameter
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
     }
 
     /**

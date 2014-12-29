@@ -33,6 +33,7 @@ class CateringDatesFixCommand extends ContainerAwareCommand
         $session->set('company_id', $company_id);
 
         $em = $this->getContainer()->get('doctrine')->getManager();
+        $today = new \DateTime('today');
 
         $tables = ['Catering', 'HomeHelp'];
 
@@ -56,7 +57,26 @@ class CateringDatesFixCommand extends ContainerAwareCommand
                 // get the next batch
                 $records = $this->getRecords($table);
             }
+
+            $n = 0;
+            // fix the paused clients
+            $records = $this->getPausedRecords($table);
+            while (!empty($records)) {
+                foreach ($records as $record) {
+                    if ($record->isActive()) {
+                        $record->setPausedFrom($today);
+                        $n ++;
+                    }
+                }
+                $output->write(date('H:i:s: ') . $n . ' ' . $table . ' records updated', true);
+
+                $em->flush();
+
+                // get the next batch
+                $records = $this->getPausedRecords($table);
+            }
         }
+
 
         $em->flush();
         $em->clear();
@@ -70,6 +90,17 @@ class CateringDatesFixCommand extends ContainerAwareCommand
 
         // get all the catering records, that have no agreement to set and the client is archived
         return $em->createQuery("SELECT a FROM JCSGYKAdminBundle:{$table} a LEFT JOIN a.client c WHERE a.agreementTo IS NULL AND c.isArchived=1")
+            ->setMaxResults($this->queryLimit)
+            ->getResult();
+    }
+
+    private function getPausedRecords($table = 'Catering')
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+
+        // get all the catering records, that are paused but the client is not archived
+        return $em->createQuery("SELECT a FROM JCSGYKAdminBundle:{$table} a LEFT JOIN a.client c WHERE a.isActive=0 AND a.pausedFrom IS NULL AND c.isArchived=0 AND (a.agreementTo IS NULL OR a.agreementTo > :today)")
+            ->setParameter('today', new \DateTime('today'))
             ->setMaxResults($this->queryLimit)
             ->getResult();
     }

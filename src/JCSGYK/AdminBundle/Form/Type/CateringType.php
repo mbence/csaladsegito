@@ -63,24 +63,17 @@ class CateringType extends AbstractType
             'attr'     => array('class' => 'short'),
         ]);
 
-        $min_date = 1;
-        if (date('H') >= 10) {
-            $min_date = 2;
-        }
-
         $builder->add('discountFrom', 'date', [
             'label'    => 'Kezdete',
             'widget'   => 'single_text',
             'attr'     => array('class' => 'datepicker'),
             'required' => false,
-                //'html5' => false,
         ]);
         $builder->add('discountTo', 'date', [
             'label'    => 'Vége',
             'widget'   => 'single_text',
             'attr'     => array('class' => 'datepicker'),
             'required' => false,
-                //'html5' => false,
         ]);
 
         $builder->add('agreementFrom', 'date', [
@@ -88,28 +81,24 @@ class CateringType extends AbstractType
             'widget'   => 'single_text',
             'attr'     => array('class' => 'datepicker'),
             'required' => false,
-                //'html5' => false,
         ]);
         $builder->add('agreementTo', 'date', [
             'label'    => 'Vége',
             'widget'   => 'single_text',
-            'attr'     => array('class' => 'datepicker', 'data-min-date' => $min_date),
+            'attr'     => array('class' => 'datepicker'),
             'required' => false,
-                //'html5' => false,
         ]);
         $builder->add('pausedFrom', 'date', [
             'label'    => 'Szüneteltetés',
             'widget'   => 'single_text',
-            'attr'     => array('class' => 'datepicker', 'data-min-date' => $min_date),
+            'attr'     => array('class' => 'datepicker'),
             'required' => false,
-                //'html5' => false,
         ]);
         $builder->add('pausedTo', 'date', [
             'label'    => 'Vége',
             'widget'   => 'single_text',
-            'attr'     => array('class' => 'datepicker', 'data-min-date' => $min_date),
+            'attr'     => array('class' => 'datepicker'),
             'required' => false,
-                //'html5' => false,
         ]);
     }
 

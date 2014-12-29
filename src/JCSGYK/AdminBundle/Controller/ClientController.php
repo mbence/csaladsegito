@@ -282,52 +282,40 @@ class ClientController extends Controller
             $form = $this->createForm(new CateringType($ds, $clubs), $catering);
 
             // save the catering data
-            if ($request->isMethod('POST')) {
-                $form->bind($request);
+            $form->handleRequest($request);
 
-                if ($form->isValid()) {
-                    // save the new Catering record
-                    if (empty($catering->getId())) {
-                        $em->persist($catering);
-                    }
 
-                    // check if menu was changed
-                    if ($original_catering->getMenu() != $catering->getMenu()) {
-                        // we must update the future orders with this menu!
-                        $update_from = new \DateTime('tomorrow');
-                        $em->getRepository("JCSGYKAdminBundle:ClientOrder")->updateMenu($client->getId(), $update_from, $catering->getMenu());
-                    }
-
-                    // check and fix paused dates
-                    if (empty($catering->getPausedFrom())) {
-                        $catering->setPausedTo(null);
-                    }
-
-                    $this->updateClientOrders($catering, $original_catering);
-
-                    // save client modifier
-                    $client->setModifier($user);
-                    $client->setModifiedAt(new \DateTime());
-
-                    // save
-                    $em->flush();
-
-                    // turn off the logging for the rest of the process
-                    $this->container->get('history.logger')->off();
-
-                    // update Homehelp record if necessary
-                    $homehelp = $client->getHomehelp();
-                    if (!empty($homehelp)) {
-                        $homehelp->setClub($catering->getClub());
-                        $homehelp->setIncome($catering->getIncome());
-                    }
-
-                    $this->get('session')->getFlashBag()->add('notice', 'Étkeztetés elmentve');
-
-                    return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
-                        'success' => true,
-                    ]);
+            if ($form->isValid()) {
+                // save the new Catering record
+                if (empty($catering->getId())) {
+                    $em->persist($catering);
                 }
+                // check and fix paused dates
+                $this->fixDates($catering);
+                $this->updateClientOrders($catering, $original_catering);
+
+                // save client modifier
+                $client->setModifier($user);
+                $client->setModifiedAt(new \DateTime());
+
+                // save
+                $em->flush();
+
+                // turn off the logging for the rest of the process
+                $this->container->get('history.logger')->off();
+
+                // update Homehelp record if necessary
+                $homehelp = $client->getHomehelp();
+                if (!empty($homehelp)) {
+                    $homehelp->setClub($catering->getClub());
+                    $homehelp->setIncome($catering->getIncome());
+                }
+
+                $this->get('session')->getFlashBag()->add('notice', 'Étkeztetés elmentve');
+
+                return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
+                    'success' => true,
+                ]);
             }
 
             return $this->render('JCSGYKAdminBundle:Catering:catering_dialog.html.twig', [
@@ -341,69 +329,101 @@ class ClientController extends Controller
         }
     }
 
+    public function fixdates($record)
+    {
+        if (empty($record->getPausedFrom())) {
+            $record->setPausedTo(null);
+        }
+        if (!empty($record->getPausedFrom()) && !empty($record->getAgreementTo()) && $record->getPausedFrom() > $record->getAgreementTo()) {
+            $record->setPausedFrom(null);
+            $record->setPausedTo(null);
+        }
+        if (!empty($record->getPausedTo()) && !empty($record->getAgreementTo()) && $record->getPausedTo() > $record->getAgreementTo()) {
+            $record->setPausedTo($record->getAgreementTo());
+        }
+        if (!empty($record->getPausedFrom()) && !empty($record->getAgreementFrom()) && $record->getPausedFrom() < $record->getAgreementFrom()) {
+            $record->setPausedFrom($record->getAgreementFrom());
+        }
+    }
+
     private function updateClientOrders(Catering $new, Catering $old)
     {
+        // Users can change the agreement and paused dates to anything, even past dates.
+        // We will not touch any order however, that is before the allowed dates ($next_change)
+
         $em          = $this->container->get('doctrine')->getManager();
         $orders_repo = $em->getRepository("JCSGYKAdminBundle:ClientOrder");
         $client_id   = $new->getClient()->getId();
-        $tomorrow    = new \DateTime('tomorrow');
-        $next_change = clone $tomorrow;
-        if (date('H') >= 10) {
-            $next_change->modify('+1Day');
+        $next_change = $this->nextChangeDate();
+
+        // check if menu was changed
+        if ($old->getMenu() != $new->getMenu()) {
+            // we must update the future orders with this menu!
+            $orders_repo->updateMenu($client_id, $next_change, $new->getMenu());
+        }
+
+        // check agreement changes
+        if ($old->getAgreementFrom() != $new->getAgreementFrom() || $old->getAgreementTo() != $new->getAgreementTo()) {
+            // first cancel the old orders, but only if it is in the future
+            $this->updateOrders($client_id, 0, $old->getAgreementFrom(), $old->getAgreementTo());
+
+            // then set the new agreement
+            $this->updateOrders($client_id, 1, $new->getAgreementFrom(), $new->getAgreementTo());
         }
 
         // check paused changes
         if ($old->getPausedFrom() != $new->getPausedFrom() || $old->getPausedTo() != $new->getPausedTo()) {
-            // first undo the old pause
-            $update_to = null;
-            if (!empty($old->getPausedFrom())) {
-                $update_from = $old->getPausedFrom();
-                $new_status = 1;
-                if (!empty($old->getPausedTo())) {
-                    $update_to = $old->getPausedTo();
-                }
-
-                $orders_repo->updateOrders($client_id, $new_status, $update_from, $update_to);
-            }
+            // first undo the old pause, but only if it is in the future
+            $this->updateOrders($client_id, 1, $old->getPausedFrom(), $old->getPausedTo(), $new->getAgreementTo());
 
             // then set the new pause
-            $update_to = null;
-            if (!empty($new->getPausedFrom())) {
-                // paused dates set
-                $update_from = $new->getPausedFrom();
-                $new_status = 0;
-                if (!empty($new->getPausedTo())) {
-                    $update_to = $new->getPausedTo();
-                }
+            $this->updateOrders($client_id, 0, $new->getPausedFrom(), $new->getPausedTo(), $new->getAgreementTo());
+        }
+    }
 
-                $orders_repo->updateOrders($client_id, $new_status, $update_from, $update_to);
-            }
+    /**
+     * Returns the date of the next possible change
+     * Before 10:00 it's tomorrow, after that it's the day after tomorrow
+     *
+     * @return \DateTime
+     */
+    private function nextChangeDate()
+    {
+        $next_change = new \DateTime('tomorrow');
+        if (date('H') >= 10) {
+            $next_change->modify('+1Day');
         }
 
-        // check agreement changes
-        if (empty($old->getAgreementFrom()) && !empty($new->getAgreementFrom())) {
-            // new agreement start date ->
+        return $next_change;
+    }
 
+    /**
+     * Update orders to a new status in a given time period
+     * @param int $client_id
+     * @param \DateTime $from
+     * @param \DateTime $to
+     */
+    private function updateOrders($client_id, $new_status, \DateTime $from = null, \DateTime $to = null, \DateTime $max = null)
+    {
+        // if no dates were set, we return
+        if (empty($from)) {
+            return;
         }
-        if ($old->getAgreementTo() != $new->getAgreementTo()) {
-            if (!empty($new->getAgreementTo())) {
-                // agreement closed, cancel all orders after that date
-                $update_from = $this->nextDay($new->getAgreementTo());
-                $new_status = 0;
-            } else {
-                // agreement reopened, check if old value was in the past
-                $update_from = $this->nextDay($old->getAgreementTo());
-                if ($update_from < $next_change) {
-                    $update_from = clone $next_change;
-                }
-                $new_status = 1;
-
-            }
-
-            $orders_repo->updateOrders($client_id, $new_status, $update_from);
+        $next_change = $this->nextChangeDate();
+        // if this was in the past, we have nothing to do
+        if (!empty($to) && $to < $next_change) {
+            return;
         }
 
+        // don't change orders in the past
+        $update_from = $from >= $next_change ? $from : $next_change;
+        $update_to = !empty($to) ? $to : null;
+        if (!empty($max) && (empty($update_to) || $update_to > $max)) {
+            $update_to = $max;
+        }
 
+        $orders_repo = $this->container->get('doctrine')->getManager()->getRepository("JCSGYKAdminBundle:ClientOrder");
+        $orders_repo->updateOrders($client_id, $new_status, $update_from, $update_to);
     }
 
     /**
@@ -468,6 +488,8 @@ class ClientController extends Controller
                 if (empty($homehelp->getId())) {
                     $em->persist($homehelp);
                 }
+                // check and fix paused dates
+                $this->fixDates($homehelp);
 
                 // save homehelp modifier
                 $homehelp->setModifier($user);

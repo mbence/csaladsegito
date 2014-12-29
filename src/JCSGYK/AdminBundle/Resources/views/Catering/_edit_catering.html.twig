@@ -11,8 +11,9 @@
     <tr class="visit-type">
         <th>{{ form_label(form.agreementFrom) }}:</th>
         <td>
-            <div class="inblock">{{ form_errors(form.agreementFrom) }}{{ form_widget(form.agreementFrom) }} - </div>
-            <div class="inblock">{{ form_errors(form.agreementTo) }}{{ form_widget(form.agreementTo) }}</div>
+            {{ form_errors(form.agreementFrom) }}{{ form_errors(form.agreementTo) }}
+            <div class="inblock">{{ form_widget(form.agreementFrom) }} - </div>
+            <div class="inblock">{{ form_widget(form.agreementTo) }}</div>
         </td>
     </tr>
     <tr class="visit-type">

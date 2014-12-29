@@ -1934,14 +1934,9 @@ JcsCatering = {
       };
     })(this));
     $('.inblock .datepicker').each(function() {
-      $(this).datepicker({
+      return $(this).datepicker({
         dateFormat: 'yy-mm-dd'
       });
-      if ($(this).data('min-date') != null) {
-        return $(this).datepicker("option", {
-          minDate: $(this).data('min-date')
-        });
-      }
     });
     $('.clear-paused-dates').on('click', function() {
       return $('#catering_pausedFrom').add('#catering_pausedTo').val('');

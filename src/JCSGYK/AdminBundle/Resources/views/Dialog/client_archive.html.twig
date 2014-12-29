@@ -9,11 +9,13 @@
     <br>
     <p class="red">
         {% if open_problems %}
-            {{ 'Az ügyfél nem archiválható, mert %problems% nyitott problémája van.'|trans({'%problems%': open_problems}) }}
-        {% elseif catering_active %}
-            {{ 'Az ügyfél nem archiválható, mert aktív étkeztetése van.'|trans }}
-        {% elseif homehelp_active %}
-            {{ 'Az ügyfél nem archiválható, mert aktív látogatása / gondozása van.'|trans }}
+            {{ 'Az ügyfél nem archiválható, mert %problems% nyitott problémája van.'|trans({'%problems%': open_problems}) }}<br>
+        {% endif %}
+        {% if catering_active %}
+            {{ 'Az ügyfél nem archiválható, mert aktív étkeztetése van.'|trans }}<br>
+        {% endif %}
+        {% if homehelp_active %}
+            {{ 'Az ügyfél nem archiválható, mert aktív látogatása / gondozása van.'|trans }}<br>
         {% endif %}
     </p>
     <br><br>

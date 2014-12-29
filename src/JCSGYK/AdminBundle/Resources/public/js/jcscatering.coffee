@@ -34,8 +34,6 @@ JcsCatering =
         # discount datepicker
         $('.inblock .datepicker').each ->
             $(this).datepicker({dateFormat: 'yy-mm-dd'})
-            if $(this).data('min-date')?
-                $(this).datepicker( "option", {minDate: $(this).data('min-date')});
 
         # clear paused dates
         $('.clear-paused-dates').on('click', ->
