@@ -999,7 +999,14 @@ class DataStore
      */
     public function getHolidaysDetails($start_date, $end_date)
     {
-        $holidays = $this->getOption('holidays', $start_date);
+        if (substr($start_date, 0, 4) == substr($end_date, 0, 4)) {
+            $holidays = $this->getOption('holidays', $start_date);
+        }
+        else {
+            $h1       = $this->getOption('holidays', $start_date);
+            $h2       = $this->getOption('holidays', substr($end_date, 0, 4) . '-01-01');
+            $holidays = array_merge($h1, $h2);
+        }
         $re = [];
         foreach ($holidays as $day) {
             if ($day[0] >= $start_date && $day[0] <= $end_date) {
@@ -1021,7 +1028,14 @@ class DataStore
      */
     public function getHolidays($start_date, $end_date)
     {
-        $holidays = $this->getOption('holidays', $start_date);
+        if (substr($start_date, 0, 4) == substr($end_date, 0, 4)) {
+            $holidays = $this->getOption('holidays', $start_date);
+        }
+        else {
+            $h1       = $this->getOption('holidays', $start_date);
+            $h2       = $this->getOption('holidays', substr($end_date, 0, 4) . '-01-01');
+            $holidays = array_merge($h1, $h2);
+        }
         $re = [];
         foreach ($holidays as $day) {
             if ($day[0] >= $start_date && $day[0] <= $end_date) {
