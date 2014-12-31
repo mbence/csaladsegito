@@ -291,35 +291,10 @@ class StatArchiveService
         $invoices = $this->get401Invoices($club, $start, $end);
 
         // get all affected clients
-        $clients = $this->get401Clients($club, $end);
+        $clients = $this->get401Clients($club, $start, $end);
 
         foreach ($clients as $client) {
-            // check if the client was active or archived in this period
-            $archive = $this->getLastArchiveRecord($client, $end);
-            $is_archived = false;
-            if (!empty($archive)) {
-                $is_archived = $this->isArchive($archive);
-                // but if this is an archive action, and it happened in the period, then we take a note
-                if ($is_archived && $archive->getCreatedAt() >= $start) {
-                    $data['cnum.archived']++;
-                    // and because we still need this clients data, we reset the archived
-                    $is_archived = false;
-                }
-                if (!$is_archived) {
-                    // if this is a reopen, then we must see the state of the client before the period
-                    $before_archive = $this->getLastArchiveRecord($client, $start);
-                    // if she was archived, then we must count this as a reopened client
-                    if (!empty($before_archive) && $this->isArchive($before_archive)) {
-                        $data['cnum.reopened']++;
-                    }
-                }
-            }
-
-            // we skip everyone who was archived before the start of this period
-            if (!$is_archived) {
-                // calculate the base stats
-                $data = $this->get401BaseData($client, $start, $end, $data);
-            }
+            $data = $this->get401BaseData($client, $start, $end, $data);
         }
 
         // get the client orders
@@ -358,7 +333,6 @@ class StatArchiveService
             'cnum.all'        => 0,
             'cnum.active'     => [],
             'cnum.archived'   => 0,
-            'cnum.reopened'   => 0,
             'cnum.end'        => 0,
             'cnum.man'        => 0,
             'cnum.woman'      => 0,
@@ -439,21 +413,23 @@ class StatArchiveService
     }
 
     /**
-     * Get clients for 401
+     * Get clients for 401 who have an active catering record in this period
      * @param Club $club
      * @param \DateTime $end
      */
-    private function get401Clients(Club $club, \DateTime $end)
+    private function get401Clients(Club $club, \DateTime $start, \DateTime $end)
     {
         $dql = "SELECT c, a FROM JCSGYKAdminBundle:Client c JOIN c.catering a "
-                . "WHERE c.companyId = :company_id AND c.createdAt < :end ";
+                . "WHERE c.companyId = :company_id AND c.createdAt < :end AND (a.agreementTo IS NULL OR a.agreementTo >= :start)";
         if (!empty($club)) {
             $dql .= ' AND a.club = :club';
         }
 
         $query = $this->em->createQuery($dql)
             ->setParameter('company_id', $this->ds->getCompanyId())
-            ->setParameter('end', $end->format('Y-m-d'));
+            ->setParameter('start', $start->format('Y-m-d'))
+            ->setParameter('end', $end->format('Y-m-d'))
+        ;
         if (!empty($club)) {
             $query->setParameter('club', $club);
         }
@@ -501,13 +477,21 @@ class StatArchiveService
     private function get401BaseData(Client $client, \DateTime $start, \DateTime $end, $data)
     {
         $params = $client->getParams();
+        $catering = $client->getCatering();
 
-        if ($client->getCreatedAt() < $start) {
+        // month start - new/old clients
+        if ($catering->getAgreementFrom() >= $start) {
+            $data['cnum.new']++;
+        } else {
             $data['cnum.start']++;
         }
-        else {
-            $data['cnum.new']++;
+        // month end - closed clients
+        if (!$catering->hasAgreement($end)) {
+            $data['cnum.archived']++;
+        } else {
+            $data['cnum.end']++;
         }
+
         // comfort
         if (!empty($params[200])) {
             if (!isset($data['blocks']['comfort'][$params[200]])) {
@@ -541,7 +525,7 @@ class StatArchiveService
         if ($gen == 1) {
             $data['cnum.man']++;
         }
-        elseif ($gen == 2) {
+        else {
             $data['cnum.woman']++;
         }
 
@@ -637,9 +621,7 @@ class StatArchiveService
         // is active?
         $data['cnum.active'] = count($data['cnum.active']);
 
-        $data['cnum.start'] -= $data['cnum.reopened'];
-        $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'] + $data['cnum.reopened'];
-        $data['cnum.end'] = $data['cnum.all'] - $data['cnum.archived'];
+        $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'];
 
         $data['inv.sum'] = $this->ae->formatCurrency($data['inv.sum']);
 
@@ -660,35 +642,10 @@ class StatArchiveService
         $data = $this->prepare402Data($club, $start);
 
         // get all the clients that are created before the end of this period, including the archived clients
-        $clients = $this->get402Clients($club, $end);
+        $clients = $this->get402Clients($club, $start, $end);
 
         foreach ($clients as $client) {
-            // check if the client was active or archived in this period
-            $archive = $this->getLastArchiveRecord($client, $end);
-            $is_archived = false;
-            if (!empty($archive)) {
-                $is_archived = $this->isArchive($archive);
-                // but if this is an archive action, and it happened in the period, then we take a note
-                if ($is_archived && $archive->getCreatedAt() >= $start) {
-                    $data['cnum.archived']++;
-                    // and because we still need this clients data, we reset the archived
-                    $is_archived = false;
-                }
-                if (!$is_archived) {
-                    // if this is a reopen, then we must see the state of the client before the period
-                    $before_archive = $this->getLastArchiveRecord($client, $start);
-                    // if she was archived, then we must count this as a reopened client
-                    if (!empty($before_archive) && $this->isArchive($before_archive)) {
-                        $data['cnum.reopened']++;
-                    }
-                }
-            }
-
-            // we skip everyone who was archived before the start of this period
-            if (!$is_archived) {
-                // calculate the base stats
-                $data = $this->get402BaseData($client, $start, $end, $data);
-            }
+            $data = $this->get402BaseData($client, $start, $end, $data);
         }
 
         $data = $this->get402Sums($data);
@@ -729,7 +686,7 @@ class StatArchiveService
             'cnum.all'        => 0,
             'cnum.active'     => 0,
             'cnum.archived'   => 0,
-            'cnum.reopened'   => 0,
+            'cnum.reopened'   => '',
             'cnum.end'        => 0,
             'cnum.man'        => 0,
             'cnum.woman'      => 0,
@@ -789,16 +746,18 @@ class StatArchiveService
      * @param \DateTime $end_date
      * @return Client[]
      */
-    private function get402Clients(Club $club, \DateTime $end)
+    private function get402Clients(Club $club, \DateTime $start, \DateTime $end)
     {
         $dql = "SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h "
-                . "WHERE c.companyId = :company_id AND c.createdAt < :end";
+                . "WHERE c.companyId = :company_id AND c.createdAt < :end AND (h.agreementTo IS NULL OR h.agreementTo >= :start)";
+
         if (!empty($club)) {
             $dql .= ' AND h.club = :club';
         }
 
         $query = $this->em->createQuery($dql)
             ->setParameter('company_id', $this->ds->getCompanyId())
+            ->setParameter('start', $start->format('Y-m-d'))
             ->setParameter('end', $end->format('Y-m-d'))
         ;
         if (!empty($club)) {
@@ -896,12 +855,23 @@ class StatArchiveService
         /** @var HomeHelp $homehelp */
         $homehelp = $client->getHomehelp();
 
-        if ($client->getCreatedAt() < $start) {
+        // month start - new/old clients
+        if ($homehelp->getAgreementFrom() >= $start) {
+            $data['cnum.new']++;
+        } else {
             $data['cnum.start']++;
         }
-        else {
-            $data['cnum.new']++;
+        // month end - closed clients
+        if (!$homehelp->hasAgreement($end)) {
+            $data['cnum.archived']++;
+        } else {
+            $data['cnum.end']++;
         }
+        // active homehelp
+        if ($homehelp->isActive($end)) {
+            $data['cnum.active']++;
+        }
+
         // comfort
         if (!empty($params[200])) {
             if (!isset($data['blocks']['comfort'][$params[200]])) {
@@ -934,13 +904,10 @@ class StatArchiveService
         if ($gen == 1) {
             $data['cnum.man']++;
         }
-        elseif ($gen == 2) {
+        else {
             $data['cnum.woman']++;
         }
-        // active homehelp
-        if ($client->getHomehelp()->getIsActive()) {
-            $data['cnum.active']++;
-        }
+
         if ($homehelp->getInpatient()) {
             $data['cnum.inpatient']++;
         }
@@ -951,9 +918,7 @@ class StatArchiveService
     private function get402Sums($data)
     {
         // we must deduct the reopened clients from the starting numbers
-        $data['cnum.start'] -= $data['cnum.reopened'];
-        $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'] + $data['cnum.reopened'];
-        $data['cnum.end'] = $data['cnum.all'] - $data['cnum.archived'];
+        $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'];
 
         return $data;
     }
