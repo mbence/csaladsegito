@@ -1,3 +1,9 @@
+## 1.5.7 (2015.01.14)
+
+Fejlesztések:
+
+ - Szűrés esetgazda szerint a KSH statisztikákban
+
 ## 1.5.6 (2014.12.11)
 
 Fejlesztések:
