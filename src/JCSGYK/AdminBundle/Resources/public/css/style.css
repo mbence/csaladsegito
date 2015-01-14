@@ -920,10 +920,12 @@ div.multiselect label {
     cursor: pointer;
     color: #222;
 }
-table.client-edit div.multiselect label:hover {
+table.client-edit div.multiselect label:hover,
+.reports-header div.multiselect label:hover {
     background-color: #89c;
 }
-table.client-edit div.multiselect {
+table.client-edit div.multiselect,
+.reports-header div.multiselect {
     max-height: 15px;
     overflow: hidden;
 /*    transition: max-height 1s 0s;
@@ -934,11 +936,19 @@ table.client-edit div.multiselect {
     background-color: #fff;
     padding: 2px 0 4px;
 }
-table.client-edit div.multiselect.active {
+table.client-edit div.multiselect.active,
+.reports-header div.multiselect.active {
     max-height: 1000px;
     border: 1px solid #ccc;
     box-shadow: 1px 1px 3px 0 #888;
     z-index: 10001;
+}
+.reports-header div.multiselect {
+    float: none !important;
+    position: relative;
+}
+.reports-header div.multiselect div {
+    float: none !important;
 }
 /* modal dialog */
 .modal {
@@ -1072,7 +1082,9 @@ table.task-list tr:hover td {
 #reports-content .reports-header {
     border-bottom: 1px solid #DDDDDD;
     font-size: 13px;
-    line-height: 17px;
+    /*line-height: 17px;*/
+    position: relative;
+    height: 40px;
 }
 #reports-content .reports-header .button-row {
     float: left;

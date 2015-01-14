@@ -1309,6 +1309,7 @@ JcsToggle = {
     return JcsOpt.set("toggles_" + block, tg_status);
   },
   multiselect: function(parent) {
+    console.log($("div.multiselect", parent));
     $("div.multiselect", parent).off("click").on("click", function(event) {
       return event.stopPropagation();
     });
@@ -2755,9 +2756,10 @@ JcsReports = {
     $("#form_month").change(function() {
       return $("#form_day").val("");
     });
-    return $("#form_day").change(function() {
+    $("#form_day").change(function() {
       return $("#form_month").val("");
     });
+    return JcsToggle.multiselect($("#report_download"));
   }
 };
 

@@ -7,3 +7,5 @@ JcsReports =
             $("#form_day").val("")
         $("#form_day").change ->
             $("#form_month").val("")
+
+        JcsToggle.multiselect($("#report_download"))
