@@ -40,7 +40,7 @@
                             <td>{{ invoice|invoice_status }}</td>
                             <td>{{ invoice.balance|fcurr  }}</td>
                         </tr>
-                        {% if invoice.isOpen %}
+                        {% if invoice.isOpen and form['i' ~ invoice.id] is defined %}
                             {% set field = form['i' ~ invoice.id] %}
                             <tr>
                                 <td colspan="2">

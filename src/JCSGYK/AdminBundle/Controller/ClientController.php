@@ -907,7 +907,7 @@ class ClientController extends Controller
             $field_count = 0;
 
             foreach ($invoices as $invoice) {
-                if ($invoice->isOpen()) {
+                if ($invoice->isOpen() && empty($invoice->getCancelId())) {
                     $field_count++;
                     $open_amount = $invoice->getAmount() - $invoice->getBalance();
 
