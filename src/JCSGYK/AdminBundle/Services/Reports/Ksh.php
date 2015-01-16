@@ -183,7 +183,7 @@ class Ksh
         $repository = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:Event');
 
         $qb = $repository->createQueryBuilder('e');
-        $qb ->select('COUNT(DISTINCT c)')
+        $qb ->select('COUNT(DISTINCT c.id)')
             ->leftJoin('e.problem', 'p')
             ->leftJoin('p.client', 'c')
             ->where('c.companyId = :company_id')->setParameter('company_id', $this->ds->getCompanyId())
@@ -197,13 +197,13 @@ class Ksh
         if (!empty($this->endDate)){
             $qb->andWhere('e.eventDate <= :end_date')->setParameter('end_date', $this->endDate);
         }
+        if (!empty($this->caseAdmins) && $this->caseAdmins->count()){
+            $qb->andWhere('c.caseAdmin IN (:case_admin)')->setParameter('case_admin', $this->caseAdmins);
+        }
         $qb2 = clone $qb;
         if (!empty($this->startDate)){
             $qb->andWhere('c.createdAt < :start_date')->setParameter('start_date', $this->startDate);
             $qb2->andWhere('c.createdAt >= :start_date')->setParameter('start_date', $this->startDate);
-        }
-        if (!empty($this->caseAdmins) && $this->caseAdmins->count()){
-            $qb->andWhere('c.caseAdmin IN (:case_admin)')->setParameter('case_admin', $this->caseAdmins);
         }
 
         $res = $qb->getQuery()->getResult();
