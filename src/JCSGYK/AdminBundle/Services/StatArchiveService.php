@@ -996,7 +996,7 @@ class StatArchiveService
     {
         // get the invoices
         $dql = "SELECT i FROM JCSGYKAdminBundle:Invoice i JOIN i.client c JOIN c.homehelp h "
-            . "WHERE c.companyId = :company_id AND i.endDate >= :month_start AND i.endDate < :month_end AND i.invoicetype IN (:types) AND h.club = :club";
+            . "WHERE c.companyId = :company_id AND i.endDate >= :month_start AND i.endDate < :month_end AND i.invoicetype IN (:types) AND h.club = :club AND i.cancelId IS NULL AND i.status != -1 ";
 
         $query = $this->em->createQuery($dql)
             ->setParameter('company_id', $this->ds->getCompanyId())

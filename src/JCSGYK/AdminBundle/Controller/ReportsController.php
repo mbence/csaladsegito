@@ -399,6 +399,7 @@ class ReportsController extends Controller
         }
         if ($catering_on) {
             $menu['Étkeztetés'] = [
+                ['slug' => 'clients', 'label' => 'Ügyfelek'],
                 ['slug' => 'catering_orders', 'label' => 'Heti ebédrendelések'],
                 ['slug' => 'catering_cashbook', 'label' => 'Pénztárkönyv'],
                 ['slug' => 'catering_summary', 'label' => 'Havi ebédösszesítő'],

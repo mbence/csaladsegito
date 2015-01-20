@@ -850,7 +850,7 @@ class InvoiceService
         $data = [];
         // find all the invoices and clients of the given month
         $sql = "SELECT i, c, h FROM JCSGYKAdminBundle:Invoice i JOIN i.client c JOIN c.homehelp h "
-                . "WHERE i.companyId = :company_id AND i.endDate >= :month_start AND i.endDate <= :month_end AND i.invoicetype IN (:types)";
+                . "WHERE i.companyId = :company_id AND i.endDate >= :month_start AND i.endDate <= :month_end AND i.invoicetype IN (:types) AND i.cancelId IS NULL AND i.status != -1 ";
 
         $sql .= "ORDER BY c.lastname, c.firstname, i.createdAt";
 

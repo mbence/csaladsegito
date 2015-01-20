@@ -1,3 +1,9 @@
+## 1.5.8 (2015.01.20)
+
+Javítások:
+
+ - Gondozás sztornó számlák a kimutatásokban
+
 ## 1.5.7 (2015.01.14)
 
 Fejlesztések:
