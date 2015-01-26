@@ -424,7 +424,7 @@ class ReportsController extends Controller
         return $menu;
     }
 
-    private function getClientReport($form_data)
+    private function getClientReport($form_data, $download)
     {
         $form_fields = [
             'case_admin'  => null,
@@ -457,11 +457,17 @@ class ReportsController extends Controller
                 'client' => $clients,
             ]
         ];
-        $template_file = __DIR__ . '/../Resources/public/reports/clients.xlsx';
-        $output_name   = 'ugyfel_kimutatas_' . date('Ymd') . '.xlsx';
-        $send          = $this->container->get('jcs.docx')->makeReport($template_file, $data, $output_name);
 
-        return $send;
+        if ($download) {
+            $template_file = __DIR__ . '/../Resources/public/reports/clients.xlsx';
+            $output_name   = 'ugyfel_kimutatas_' . date('Ymd') . '.xlsx';
+
+            return $this->container->get('jcs.docx')->makeReport($template_file, $data, $output_name);
+        }
+        else {
+
+            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:_clients.html.twig', ['data' => $data]);
+        }
     }
 
     private function getCasecountsReport($form_data)

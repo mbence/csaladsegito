@@ -2412,6 +2412,9 @@ tr.no-cursor:hover td {
     background-color: inherit !important;
 }
 /* Client */
+tr.client-isarchived-1 td {
+    color: #d04a37;
+}
 .archived {
     font-size: 13px;
     color: #d04a37;

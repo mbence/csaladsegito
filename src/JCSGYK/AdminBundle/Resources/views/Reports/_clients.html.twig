@@ -1,0 +1,34 @@
+<table class="reports-table">
+    <tr>
+        <th>ÜSZ</th>
+        <th>Név</th>
+        <th>Születési hely</th>
+        <th>Születési idő</th>
+        <th>Lakcím</th>
+        <th>Esetgazda</th>
+        <th>TAJ szám</th>
+        <th>Státusz</th>
+        <th>Problémák</th>
+    </tr>
+    {% for client in data.blocks.client %}
+    <tr class="client-isarchived-{{ client.isArchived }}">
+        <td> <a href="{{ path('clients', {'client_id': client.id, 'client_type': client.type|ctmap}) }}">{{ client.caseLabel }}</a> </td>
+        <td> {{ fname(client.firstname, client.lastname, client.title) }} </td>
+        <td> {{ client.birthPlace }} </td>
+        <td> {{ client.birthDate|fdate }} </td>
+        <td> {{ faddr(client.country, client.zipCode, client.city, client.street, client.streetType, client.streetNumber, client.flatNumber) }} </td>
+        <td>
+            {% if client.getCaseAdmin %}
+                {{ fname(client.getCaseAdmin.firstname, client.getCaseAdmin.lastname) }}
+            {% endif %}
+        </td>
+        <td> {{ client.socialSecurityNumber }} </td>
+        <td> {% if client.isArchived %}archivált{% else %}aktív{% endif %} </td>
+        <td>
+{#            {% for problem in client.problems %}
+                {{ problem.p }} <br>
+            {% endfor %}#}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
