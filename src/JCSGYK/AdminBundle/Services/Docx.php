@@ -399,10 +399,20 @@ class Docx
             foreach ($problems as $problem) {
                 $param = $problem->getParams();
                 $param = $ae->getParam(reset($param));
-                $status = $problem->getIsActive() ? '' : 'lezárt';
+                $status = $problem->getIsActive() ? '' : '(lezárt)';
                 $assignee = !empty($problem->getAssignee()) ? $ae->formatName($problem->getAssignee()->getFirstName(), $problem->getAssignee()->getLastName()) : '';
 
-                $pl[] = ['p' => sprintf("%s - %s (%s) %s \n", $problem->getTitle(), $param, $status, $assignee)];
+                $problem_text = sprintf("%s - %s %s %s \n", $problem->getTitle(), $param, $status, $assignee);
+
+                // Extra text for Child Welfare clients
+                if ($client->getType() == Client::CW) {
+                    $client_param = $client->getParam(101);
+                    if (!empty($client_param)) {
+                        $problem_text .= " (" . $ae->getParam($client_param) . ")\n";
+                    }
+                }
+
+                $pl[] = ['p' => $problem_text];
             }
             $re['problems'] = $pl;
         }
