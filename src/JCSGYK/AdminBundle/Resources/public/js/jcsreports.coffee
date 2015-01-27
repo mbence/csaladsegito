@@ -9,3 +9,7 @@ JcsReports =
             $("#form_month").val("")
 
         JcsToggle.multiselect($("#report_download"))
+
+        $(".button.show_report").on("click", ->
+          $(this).addClass('animbutton').attr('disabled', true)
+        )

@@ -12,7 +12,7 @@
 
 {# General submit #}
         {% if button.type is defined and button.type == 'submit' %}
-            <button type="submit" class="button {{ button.class }}" title="{{ button.title|trans }}" {% if button.name is defined %}name="{{ button.name }}" value="1"{% endif %}>
+            <button type="submit" class="button {{ button.class }}" title="{{ button.title|trans }}" {% if button.name is defined %}name="{{ button.name }}" value="1"{% endif %} autocomplete="off">
                 <span>{{ button.label|trans }}</span>
             </button>
         {% endif %}

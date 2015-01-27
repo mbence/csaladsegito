@@ -2759,7 +2759,10 @@ JcsReports = {
     $("#form_day").change(function() {
       return $("#form_month").val("");
     });
-    return JcsToggle.multiselect($("#report_download"));
+    JcsToggle.multiselect($("#report_download"));
+    return $(".button.show_report").on("click", function() {
+      return $(this).addClass('animbutton').attr('disabled', true);
+    });
   }
 };
 
