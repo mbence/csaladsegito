@@ -1,3 +1,9 @@
+## 1.5.9 (2015.01.27)
+
+Fejlesztések:
+
+ - Szűrők az ügyfél kimutatásoknál
+
 ## 1.5.8 (2015.01.20)
 
 Javítások:
