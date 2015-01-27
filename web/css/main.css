@@ -2412,9 +2412,6 @@ tr.no-cursor:hover td {
     background-color: inherit !important;
 }
 /* Client */
-tr.client-isarchived-1 td {
-    color: #d04a37;
-}
 .archived {
     font-size: 13px;
     color: #d04a37;
@@ -3245,6 +3242,9 @@ table.task-list tr:hover td {
 }
 .reports-table.client-report tr:hover td {
     background-color: #f0f0f0 !important;
+}
+.reports-table.client-report tr.client-isarchived-1 td {
+    color: #d04a37;
 }
 table.tbl-right td {
     text-align: right;

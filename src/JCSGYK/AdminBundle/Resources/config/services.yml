@@ -72,6 +72,10 @@ services:
         class:        JCSGYK\AdminBundle\Services\Reports\Ksh
         arguments:    ["@service_container"]
 
+    jcs.reports.clients:
+        class:        JCSGYK\AdminBundle\Services\Reports\Clients
+        arguments:    ["@service_container"]
+
     jcs.reports.clubvisit:
         class:        JCSGYK\AdminBundle\Services\Reports\ClubVisit
         arguments:    ["@service_container"]

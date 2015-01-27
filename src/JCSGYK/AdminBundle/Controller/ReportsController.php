@@ -115,14 +115,7 @@ class ReportsController extends Controller
         //$form_builder->setData([]);
 
         if ('clients' == $report) {
-            // client types (if relevant)
-            if (count($client_type_list) > 1) {
-                $this->getClientTypeSelect($form_builder, $client_type_list);
-            }
-            // admins can select the users of this company
-            if ($sec->isGranted('ROLE_ADMIN')) {
-                $this->getCaseAdminSelect($form_builder, false, 'nincs');
-            }
+            $this->container->get('jcs.reports.clients')->getForm($form_builder);
         }
         elseif ('casecounts' == $report) {
             // client types (if relevant)
@@ -340,7 +333,7 @@ class ReportsController extends Controller
     private function getReport($report, $form_data, $download)
     {
         if ('clients' == $report) {
-            return $this->getClientReport($form_data, $download);
+            return $this->container->get('jcs.reports.clients')->run($form_data, $download);
         }
         elseif ('casecounts' == $report) {
             return $this->getCasecountsReport($form_data, $download);
@@ -422,52 +415,6 @@ class ReportsController extends Controller
         }
 
         return $menu;
-    }
-
-    private function getClientReport($form_data, $download)
-    {
-        $form_fields = [
-            'case_admin'  => null,
-            'client_type' => null,
-        ];
-        // make sure we have all required fields
-        $form_data   = array_merge($form_fields, $form_data);
-
-        // check for user roles and set the params accordingly
-        $em               = $this->getDoctrine();
-        $sec              = $this->container->get('security.context');
-        //$ae               = $this->container->get('jcs.twig.adminextension');
-        $client_type_list = $this->ds->getClientTypes();
-        $client_type_keys = array_keys($client_type_list);
-        $company_id       = $this->ds->getCompanyId();
-
-        // non admins can only see their own clients
-        if (!$sec->isGranted('ROLE_ADMIN')) {
-            $form_data['case_admin'] = $sec->getToken()->getUser()->getId();
-        }
-        // make sure the client type is correct
-        if (count($client_type_keys) < 2 && !in_array($form_data['client_type'], $client_type_keys)) {
-            $form_data['client_type'] = reset($client_type_keys);
-        }
-
-        $clients = $em->getRepository('JCSGYKAdminBundle:Client')->getClientsByCaseAdmin($company_id, $form_data['case_admin'], $form_data['client_type']);
-
-        $data = [
-            'blocks' => [
-                'client' => $clients,
-            ]
-        ];
-
-        if ($download) {
-            $template_file = __DIR__ . '/../Resources/public/reports/clients.xlsx';
-            $output_name   = 'ugyfel_kimutatas_' . date('Ymd') . '.xlsx';
-
-            return $this->container->get('jcs.docx')->makeReport($template_file, $data, $output_name);
-        }
-        else {
-
-            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:_clients.html.twig', ['data' => $data]);
-        }
     }
 
     private function getCasecountsReport($form_data)

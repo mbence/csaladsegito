@@ -152,6 +152,58 @@ class ClientRepository extends EntityRepository
         return $q->getResult();
     }
 
+    /**
+     * Find clients for the Clients Report
+     */
+    public function getClientsForReport($company_id, $filters)
+    {
+        $sql = 'SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.companyId=:company_id';
+        if (false !== $filters['case_admin']) {
+            if (is_null($filters['case_admin'])) {
+                $sql .= ' AND c.caseAdmin IS NULL';
+            }
+            else {
+                $sql .= ' AND c.caseAdmin=:case_admin';
+            }
+        }
+        if (!empty($filters['client_type'])) {
+            $sql .= ' AND c.type=:client_type';
+        }
+        if (!is_null($filters['is_archived'])) {
+            $sql .= ' AND c.isArchived=:is_archived';
+        }
+        if (!is_null($filters['birth_date'])) {
+            $sql .= ' AND c.birthDate >= :bd_from AND c.birthDate <= :bd_to ';
+        }
+
+        $sql .= ' ORDER BY c.lastname, c.firstname';
+
+        $q = $this->getEntityManager()
+            ->createQuery($sql)
+            ->setParameter('company_id', $company_id);
+
+        if (!empty($filters['case_admin'])) {
+            $q->setParameter('case_admin', $filters['case_admin']);
+        }
+        if (!empty($filters['client_type'])) {
+            $q->setParameter('client_type', $filters['client_type']);
+        }
+        if (!is_null($filters['is_archived'])) {
+            $q->setParameter('is_archived', $filters['is_archived']);
+        }
+        if (!is_null($filters['birth_date'])) {
+            $bd_from = new \DateTime('today');
+            $bd_from->modify('-' . $filters['birth_date'][1] . 'years');
+            $q->setParameter('bd_from', $bd_from);
+
+            $bd_to = new \DateTime('today');
+            $bd_to->modify('-' . $filters['birth_date'][0] . 'years');
+            $q->setParameter('bd_to', $bd_to);
+        }
+
+        return $q->getResult();
+    }
+
     public function getCaseCounts($company_id, $case_admin = null, $client_type = null)
     {
         if ($case_admin instanceof User) {
