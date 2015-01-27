@@ -11,5 +11,8 @@ JcsReports =
         JcsToggle.multiselect($("#report_download"))
 
         $(".button.show_report").on("click", ->
-          $(this).addClass('animbutton').attr('disabled', true)
+          $(this).addClass('animbutton')
+          setTimeout( ->
+            $(".button.show_report").attr('disabled', true)
+          , 500)
         )

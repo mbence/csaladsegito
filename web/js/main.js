@@ -2761,7 +2761,10 @@ JcsReports = {
     });
     JcsToggle.multiselect($("#report_download"));
     return $(".button.show_report").on("click", function() {
-      return $(this).addClass('animbutton').attr('disabled', true);
+      $(this).addClass('animbutton');
+      return setTimeout(function() {
+        return $(".button.show_report").attr('disabled', true);
+      }, 500);
     });
   }
 };
