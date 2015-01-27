@@ -2587,7 +2587,13 @@ table.problem-list td {
 .problem-has-agreement {
     width: 10px;
 }
-
+.problem-closed {
+    opacity: 0.6;
+}
+.problem-closed:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
 /* Debts */
 .problem-list tr.debt-sum {
 }
@@ -3222,6 +3228,23 @@ table.task-list tr:hover td {
 }
 .reports-table .grey {
     color: #888;
+}
+.reports-table.client-report th {
+    font-size: 15px;
+    font-weight: normal;
+    color: #039;
+    border-bottom: 2px solid #6678B1;
+    padding: 6px;
+}
+.reports-table.client-report td {
+    border: none;
+    padding: 5px 6px;
+    font-size: 13px;
+    color: #34A;
+    border-bottom: 1px solid #CCC;
+}
+.reports-table.client-report tr:hover td {
+    background-color: #f0f0f0 !important;
 }
 table.tbl-right td {
     text-align: right;

@@ -1,4 +1,7 @@
-<table class="reports-table">
+<div class="smalltext toppad"><strong>{{ data.blocks.client|length }}</strong> Ügyfél</div><br>
+
+{% if data.blocks.client|length %}
+<table class="reports-table client-report">
     <tr>
         <th>ÜSZ</th>
         <th>Név</th>
@@ -25,10 +28,11 @@
         <td> {{ client.socialSecurityNumber }} </td>
         <td> {% if client.isArchived %}archivált{% else %}aktív{% endif %} </td>
         <td>
-{#            {% for problem in client.problems %}
-                {{ problem.p }} <br>
-            {% endfor %}#}
+            {% for problem in client.problems %}
+                {{ problem|problem_summ(true)|nl2br }}
+            {% endfor %}
         </td>
     </tr>
     {% endfor %}
 </table>
+{% endif %}

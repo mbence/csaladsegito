@@ -18,11 +18,13 @@ class AdminExtension extends \Twig_Extension
 {
     private $translator;
     private $ds;
+    private $router;
 
-    public function __construct($translator, DataStore $ds)
+    public function __construct($translator, DataStore $ds, $router)
     {
         $this->translator = $translator;
-        $this->ds = $ds;
+        $this->ds         = $ds;
+        $this->router     = $router;
     }
 
     public function getFilters()
@@ -48,6 +50,7 @@ class AdminExtension extends \Twig_Extension
             'first_line'     => new \Twig_Filter_Method($this, 'firstLine'),
             'a2l'            => new \Twig_Filter_Method($this, 'array2List'),
             'status_text'    => new \Twig_Filter_Method($this, 'statusText', ['is_safe' => ['html']]),
+            'problem_summ'   => new \Twig_Filter_Method($this, 'problemSummary', ['is_safe' => ['html']]),
         ];
     }
 
@@ -131,6 +134,48 @@ class AdminExtension extends \Twig_Extension
         else {
             $re[] = $log_data;
         }
+
+        return $re;
+    }
+
+    /**
+     * Make a summary of the problems, optionally with direct links
+     * @param Problem $problem
+     * @param type $with_links
+     * @return string
+     */
+    public function problemSummary(Problem $problem, $with_links = false)
+    {
+        if ($problem->getIsDeleted()) {
+            return;
+        }
+
+        $param    = $problem->getParams();
+        $param    = $this->getParam(reset($param));
+        $status   = $problem->getIsActive() ? '' : '(lezárt)';
+        $assignee = !empty($problem->getAssignee()) ? $this->formatName($problem->getAssignee()->getFirstName(), $problem->getAssignee()->getLastName()) : '';
+
+        $re = sprintf("%s - %s %s %s", $problem->getTitle(), $param, $status, $assignee);
+
+        // Extra text for Child Welfare clients
+        if ($problem->getClient()->getType() == Client::CW) {
+            $client_param = $problem->getClient()->getParam(101);
+            if (!empty($client_param)) {
+                $re .= " (" . $this->getParam($client_param) . ')';
+            }
+        }
+        if ($with_links) {
+            $client = $problem->getClient();
+            $problem_url = $this->router->generate('clients', [
+                'client_id' => $client->getId(),
+                'client_type' => $this->clientTypeMap($client->getType()),
+                'problem_id' => $problem->getId(),
+            ]);
+            $pclass = $problem->getIsActive() ? '' : ' class="problem-closed"';
+            $re = sprintf('<a href="%s" %s>%s</a>', $problem_url, $pclass, $re);
+        }
+
+        $re .= "\n";
 
         return $re;
     }

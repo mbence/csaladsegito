@@ -55,7 +55,7 @@ services:
 
     jcs.twig.adminextension:
         class:        JCSGYK\AdminBundle\Twig\AdminExtension
-        arguments:    ["@translator", "@jcs.ds"]
+        arguments:    ["@translator", "@jcs.ds", "@router"]
         tags:
             - { name: twig.extension }
     jcs.seq:
