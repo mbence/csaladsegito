@@ -1,0 +1,25 @@
+    <br>
+    <div>{{ table_title }}</div>
+    <br>
+    {% if table_data|length %}
+    <table class="reports-table ksh-report">
+        <tr>
+            <th rowspan="2" width="35">Sor- szám</th>
+            <th rowspan="2" width="70%">Megnevezés</th>
+            <th>{{ table_header_1 }}</th>
+            <th>{{ table_header_2 }}</th>
+        </tr>
+        <tr>
+            <th>a</th>
+            <th>b</th>
+        </tr>
+        {% for col in table_data %}
+        <tr>
+            <th>{{ col['n'] }}</th>
+            <td>{{ col['label'] }}</td>
+            <td class="center">{{ col['count'] }}</td>
+            <td class="center">{{ col['clients'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
