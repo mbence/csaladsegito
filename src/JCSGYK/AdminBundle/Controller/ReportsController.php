@@ -164,6 +164,9 @@ class ReportsController extends Controller
         elseif ('ksh' == $report) {
             $this->container->get('jcs.reports.ksh')->getForm($form_builder);
         }
+        elseif ('ksh_gyk' == $report) {
+            $this->container->get('jcs.reports.ksh_gyk')->getForm($form_builder);
+        }
 
         // club select for all catering reports
         if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck', 'catering_stats', 'clubvisit_stats'])) {
@@ -353,6 +356,9 @@ class ReportsController extends Controller
         elseif ('ksh' == $report) {
             return $this->container->get('jcs.reports.ksh')->run($form_data, $download);
         }
+        elseif ('ksh_gyk' == $report) {
+            return $this->container->get('jcs.reports.ksh_gyk')->run($form_data, $download);
+        }
         elseif ('homehelp_clients' == $report) {
             return $this->getHomehelpClientsReport($form_data, $download);
         }
@@ -388,6 +394,7 @@ class ReportsController extends Controller
             $menu['Gyermekjólét'] = [
                 ['slug' => 'clients', 'label' => 'Ügyfelek'],
                 ['slug' => 'casecounts', 'label' => 'Esetszámok'],
+                ['slug' => 'ksh_gyk', 'label' => 'KSH statisztika'],
             ];
         }
         if ($catering_on) {

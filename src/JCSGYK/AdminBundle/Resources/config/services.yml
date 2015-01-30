@@ -71,6 +71,9 @@ services:
     jcs.reports.ksh:
         class:        JCSGYK\AdminBundle\Services\Reports\Ksh
         arguments:    ["@service_container"]
+    jcs.reports.ksh_gyk:
+        class:        JCSGYK\AdminBundle\Services\Reports\KshGyk
+        arguments:    ["@service_container"]
 
     jcs.reports.clients:
         class:        JCSGYK\AdminBundle\Services\Reports\Clients

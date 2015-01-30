@@ -3293,6 +3293,23 @@ h2.menu-section {
     padding: 2px 4px;
     vertical-align: middle;
 }
+table.reports-table.ksh-report {
+    width: 100%;
+    max-width: 700px;
+}
+table.reports-table.ksh-report tr th {
+    border: 1px solid #ccc;
+    font-weight: normal;
+    vertical-align: middle;
+}
+table.reports-table.ksh-report th.vert-txt {
+    width: 20px;
+    padding: 0;
+}
+table.reports-table.ksh-report th.vert-txt div {
+    transform: rotate(270deg);
+    padding: 0;
+}
 /* Caternig */
 .day-of-week {
     float: left;
