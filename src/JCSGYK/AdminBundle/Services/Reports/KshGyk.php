@@ -47,9 +47,9 @@ class KshGyk
         '04' => [14, 17],
     ];
 
-    /** Map of the problem parameters */
-    private $problemMap = [];
-
+    /** Map of the 2 endanger parameters */
+    private $endangerMap = [];
+    private $endangeredClients = [];
     private $caseAdmins = [];
 
     /** Constructor */
@@ -62,7 +62,6 @@ class KshGyk
 
         $this->template = __DIR__ . '/../../Resources/public/reports/' . $this->template;
         $this->output   = sprintf($this->output, date('Y-m-d'));
-        //$this->makeProblemMap();
     }
 
     public function getForm(&$form_builder)
@@ -124,25 +123,6 @@ class KshGyk
         return $this->output($download);
     }
 
-    /**
-     * There are 2 different param groups that represent the same problem types.
-     * We need to merge them, hence this map is created.
-     */
-    private function makeProblemMap()
-    {
-        // get the groups
-        $g105 = $this->ds->getGroup(105);
-        $g111 = $this->ds->getGroup(111);
-
-        // find the matches
-        foreach ($g111 as $k => $v) {
-            $pos = array_search($v, $g105);
-            if (false !== $pos) {
-                $this->problemMap[$k] = $pos;
-            }
-        }
-    }
-
     private function prepareDataArrays()
     {
         $this->data['blocks']['rep.1-2-heders'] = $this->ds->getGroup(101);
@@ -181,6 +161,11 @@ class KshGyk
         // 1.9. A speciális szolgáltatások adatai
         $specs = $this->container->get('jcs.ds')->getGroup(112);
         $this->data['blocks']['rep.1-9'] = $this->prepareBlock($specs);
+
+        // 1.13.  Veszélyeztetett gyermekek adatai
+        $endanger = $this->container->get('jcs.ds')->getGroup(113);
+        $this->data['blocks']['rep.1-13'] = $this->prepareBlock($endanger);
+        $this->prepareEndangerBlock();
     }
 
     private function prepareBlock($params)
@@ -204,6 +189,22 @@ class KshGyk
         ];
 
         return $re;
+    }
+
+    /**
+     * Data structure is not suitable for the stats, we must hack it and hope that all goes well
+     */
+    private function prepareEndangerBlock()
+    {
+        // Create a map for 113 and 114
+        $endanger = $this->container->get('jcs.ds')->getGroup(113);
+        $multidanger = array_flip($this->container->get('jcs.ds')->getGroup(114));
+        $this->endangerMap = [];
+        foreach ($endanger as $k => $dng) {
+            if (isset($multidanger[$dng])) {
+                $this->endangerMap[$multidanger[$dng]] = $k;
+            }
+        }
     }
 
     private function clientNumbers()
@@ -244,12 +245,16 @@ class KshGyk
             $this->countParams($res['ep'], 'rep.1-8', 107);
             // 1.9 specs
             $this->countParams($res['ep'], 'rep.1-9', 112);
+            // 1.13 endanger
+            $this->countEndangers($client);
         }
 
         // sum the families
         foreach ($this->data['blocks']['rep.1-2-09'] as &$cell) {
             $cell = array_sum($cell);
         }
+
+        $this->groupEndangerRows();
     }
 
     private function queryClients()
@@ -363,11 +368,6 @@ class KshGyk
         return $qb->getQuery()->getResult(Query::HYDRATE_ARRAY);
     }
 
-    private function problems()
-    {
-
-    }
-
     private function getRangeKey($val, $range)
     {
         foreach ($range as $k => $d) {
@@ -378,6 +378,78 @@ class KshGyk
         }
 
         return false;
+    }
+
+    private function countEndangers($client)
+    {
+        $params = json_decode($client['parameters'], true);
+        if (!empty($params[113])) {
+            $this->data['blocks']['rep.1-13'][$params[113]]['count'] ++;
+            // client count
+            if (130 != $params[113]) {
+                $this->endangeredClients[$client['id']] = 1;
+            }
+        }
+
+        if (!empty($params[114])) {
+            $this->data['blocks']['rep.1-13'][$this->endangerMap[$params[114]]]['clients'] ++;
+        }
+
+
+    }
+
+    private function groupEndangerRows()
+    {
+        // remove the non dangered
+        unset($this->data['blocks']['rep.1-13'][130]);
+        unset($this->data['blocks']['rep.1-13']['sum']);
+        $ungrpd = $this->data['blocks']['rep.1-13'];
+
+        $n = 1;
+        // add client numbers
+        $this->data['blocks']['rep.1-13'] =[[
+            'n' => str_pad($n, 2, '0', STR_PAD_LEFT),
+            'label' => 'Nyilvántartott veszélyezetetett kiskorúak száma',
+            'count' => array_sum($this->endangeredClients),
+            'clients' => '',
+            'sub' => false,
+            'colspan' => 2,
+        ]];
+
+        $groups = [
+            ['n' => 15, 'label' => 'Környezeti főcsoport összesen (a gyermek környezetéből kell kiindulni)'],
+            ['n' => 7, 'label' => 'Magatartási főcsoport összesen (az érintett gyermekre vonatkozóan)'],
+            ['n' => 3, 'label' => 'Egészségi főcsoport összesen (az érintett gyermekre vonatkozóan)'],
+        ];
+
+        foreach ($groups as $k => $g) {
+            $n++;
+            // add group summary
+            $this->data['blocks']['rep.1-13']['sum' . $k] = [
+                'n' => str_pad($n, 2, '0', STR_PAD_LEFT),
+                'label' => $g['label'],
+                'count' => 0,
+                'clients' => 0,
+                'sub' => false,
+                'colspan' => 2,
+            ];
+            $sub = true;
+            for ($i = 0; $i < $g['n']; $i++) {
+                $n++;
+                $row = array_shift($ungrpd);
+                // subheaders for the first row (rowspan)
+                $row['sub'] = $sub ? $g['n'] : false;
+                if ($row['sub']) {
+                    $row['sublabel'] = str_pad(($n-1), 2, '0', STR_PAD_LEFT);
+                    $sub = false;
+                }
+                $row['n'] = str_pad($n, 2, '0', STR_PAD_LEFT);
+
+                $this->data['blocks']['rep.1-13']['sum' . $k]['count'] += $row['count'];
+                $this->data['blocks']['rep.1-13']['sum' . $k]['clients'] += $row['clients'];
+                $this->data['blocks']['rep.1-13'][] = $row;
+            }
+        }
     }
 
     /**

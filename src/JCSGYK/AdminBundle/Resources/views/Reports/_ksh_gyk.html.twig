@@ -114,6 +114,7 @@
     </table>
     <div class="smalltext toppad">* A 01 és 02 a kérdőívtől eltérően nem egymás részhalmaza, hanem külön kategória.</div>
     {% endif %}
+    <br>
 
     {% include "JCSGYKAdminBundle:Reports:_ksh_gyk_table.html.twig" with {
       'table_title': '1.6. Gyermekjóléti szolgáltató tevékenység a kezelt probléma típusa és az ellátott gyermek száma szerint',
@@ -121,6 +122,7 @@
       'table_header_2': 'Ellátott gyermekek a fő probléma szerint',
       'table_data': data.blocks['rep.1-6']
     } %}
+    <br>
 
     {% include "JCSGYKAdminBundle:Reports:_ksh_gyk_table.html.twig" with {
       'table_title': '1.7. A gyermekjóléti szolgálat szakmai tevékenységeinek adatai',
@@ -128,6 +130,7 @@
       'table_header_2': 'Ellátott gyermekek száma',
       'table_data': data.blocks['rep.1-7']
     } %}
+    <br>
 
     {% include "JCSGYKAdminBundle:Reports:_ksh_gyk_table.html.twig" with {
       'table_title': '1.8. A prevenciós szolgáltatások adatai',
@@ -135,12 +138,22 @@
       'table_header_2': 'Szolgáltatás- ban részesülők száma',
       'table_data': data.blocks['rep.1-8']
     } %}
+    <br>
 
     {% include "JCSGYKAdminBundle:Reports:_ksh_gyk_table.html.twig" with {
-      'table_title': '1.9. A speciális szolgáltatások adatai ',
+      'table_title': '1.9. A speciális szolgáltatások adatai',
       'table_header_1': 'Szakmai tevékenységek halmozott száma',
       'table_header_2': 'Szolgáltatás- ban részesülők száma',
       'table_data': data.blocks['rep.1-9']
+    } %}
+    <br>
+
+    {% include "JCSGYKAdminBundle:Reports:_ksh_gyk_table.html.twig" with {
+      'table_title': '1.13. Veszélyeztetett gyermekek adatai (tárgyév december 31-én)',
+      'table_header_1': 'A veszélyez- tetettség fő oka',
+      'table_header_2': 'A veszélyez- tetettség halmozott okai',
+      'table_data': data.blocks['rep.1-13'],
+      'rowspans': true
     } %}
 
 </div>
