@@ -647,6 +647,7 @@ class StatArchiveService
         foreach ($clients as $client) {
             $data = $this->get402BaseData($client, $start, $end, $data);
         }
+        $data['cnum.active'] = $this->get402ActiveClientsNumber($club, $start, $end);
 
         $data = $this->get402Sums($data);
 
@@ -740,6 +741,49 @@ class StatArchiveService
     }
 
     /**
+     * Get the number of active clients for this period, active = received any service
+     * @param Club $club
+     * @param int $company_id
+     * @param \DateTime $end_date
+     * @return Client[]
+     */
+    private function get402ActiveClientsNumber(Club $club, \DateTime $start, \DateTime $end)
+    {
+        if ($club->getHomehelptype() == HomeHelp::VISIT) {
+            // client numbers for the clubs
+            $dql = "SELECT COUNT(DISTINCT c.id) as cls FROM JCSGYKAdminBundle:ClubVisit v JOIN v.client c JOIN c.homehelp h "
+                    . "WHERE c.companyId = :company_id AND v.date >= :start AND v.date <= :end";
+
+            if (!empty($club)) {
+                $dql .= ' AND h.club = :club';
+            }
+
+            $query = $this->em->createQuery($dql)
+                ->setParameter('company_id', $this->ds->getCompanyId())
+                ->setParameter('start', $start->format('Y-m-d'))
+                ->setParameter('end', $end->format('Y-m-d'))
+            ;
+            if (!empty($club)) {
+                $query->setParameter('club', $club);
+            }
+        } else {
+            // client number for club 1 (centrum)
+            $dql = "SELECT COUNT(DISTINCT c.client) as cls FROM JCSGYKAdminBundle:HomehelpMonth m JOIN m.hmClients c "
+                    . "WHERE m.companyId = :company_id AND m.date >= :start AND m.date <= :end";
+
+            $query = $this->em->createQuery($dql)
+                ->setParameter('company_id', $this->ds->getCompanyId())
+                ->setParameter('start', $start->format('Y-m-d'))
+                ->setParameter('end', $end->format('Y-m-d'))
+            ;
+        }
+
+        $res = $query->getResult();
+
+        return (!empty($res[0]['cls'])) ? $res[0]['cls'] : 0;
+    }
+
+    /**
      * Get the clients for this period
      * @param Club $club
      * @param int $company_id
@@ -749,7 +793,7 @@ class StatArchiveService
     private function get402Clients(Club $club, \DateTime $start, \DateTime $end)
     {
         $dql = "SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h "
-                . "WHERE c.companyId = :company_id AND c.createdAt < :end AND (h.agreementTo IS NULL OR h.agreementTo >= :start)";
+                . "WHERE c.companyId = :company_id AND h.agreementFrom <= :end AND (h.agreementTo IS NULL OR h.agreementTo >= :start)";
 
         if (!empty($club)) {
             $dql .= ' AND h.club = :club';
@@ -868,9 +912,9 @@ class StatArchiveService
             $data['cnum.end']++;
         }
         // active homehelp
-        if ($homehelp->isActive($end)) {
-            $data['cnum.active']++;
-        }
+        //if ($homehelp->isActive($end)) {
+        //    $data['cnum.active']++;
+        //}
 
         // comfort
         if (!empty($params[200])) {
