@@ -1309,7 +1309,6 @@ JcsToggle = {
     return JcsOpt.set("toggles_" + block, tg_status);
   },
   multiselect: function(parent) {
-    console.log($("div.multiselect", parent));
     $("div.multiselect", parent).off("click").on("click", function(event) {
       return event.stopPropagation();
     });
@@ -2241,7 +2240,7 @@ JcsCatering = {
       if (confirm("Biztos benne?")) {
         $form = $("#create-invoice-form");
         return $.post($form.attr("action"), $form.serialize(), function(data) {
-          if (data) {
+          if (data && data !== "0") {
             AjaxBag.showNotice("A számla kiállítása sikeres");
             $(".catering_container a.catering_invoices").click();
             return JcsClient.reloadClient();

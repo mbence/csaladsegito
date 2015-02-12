@@ -2028,24 +2028,51 @@ class ClientController extends Controller
         $closing_type = MonthlyClosing::DAILY;
         $invoice_service = $this->container->get('jcs.invoice');
 
-        if (date('H') < 10) {
-            // before 10:00 we can change the next day
-            $start = new \DateTime('+1 day');
+        // get global parameter for catering date check
+        $check_dates = $this->getDateCheckParam();
+        if ($check_dates) {
+            // we enforce that catering orders can only be in the future
+            if (date('H') < 10) {
+                // before 10:00 we can change the next day
+                $start = new \DateTime('+1 day');
+            } else {
+                // after 10:00 we can only change the deay after tomorrow
+                $start = new \DateTime('+2 day');
+            }
         } else {
-            // after 10:00 we can only change the deay after tomorrow
-            $start = new \DateTime('+2 day');
+            // we are allowing the creation of past date orders
+            if (!empty($client->getCatering()->getAgreementFrom())) {
+                $start = $client->getCatering()->getAgreementFrom();
+            }
         }
+
         if (date('j') < 25) {
             $end = new \DateTime('last day of this month');
         } else {
             $end = new \DateTime('last day of next month');
         }
 
-        $invoice = $invoice_service->create($client, clone $start, clone $end, $closing_type);
-        $invoice_service->updateBalance($client->getCatering());
+        // if some settings are missing, it is possible that we can not create an invoice
+        if (!empty($start)) {
+            $invoice = $invoice_service->create($client, clone $start, clone $end, $closing_type);
+            $invoice_service->updateBalance($client->getCatering());
+        }
 
         $result = !empty($invoice) ? 1 : 0;
 
         return new Response($result, Response::HTTP_OK);
+    }
+
+    /**
+     * Reads the Date Check setting from /app/config/parameters.yml if available
+     * @return bool
+     */
+    private function getDateCheckParam() {
+        $check_dates = true;
+        if ($this->container->hasParameter('catering_date_check')) {
+            $check_dates = $this->container->getParameter('catering_date_check');
+        }
+
+        return $check_dates;
     }
 }

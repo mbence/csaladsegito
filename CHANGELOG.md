@@ -1,3 +1,15 @@
+## 1.5.11 (2015.02.12)
+
+Fejlesztések:
+
+ - Visszamenőleges ebédrendelés
+
+## 1.5.10 (2015.02.03)
+
+Fejlesztések:
+
+ - Gyermekjóléti statisztikák
+
 ## 1.5.9 (2015.01.27)
 
 Fejlesztések:

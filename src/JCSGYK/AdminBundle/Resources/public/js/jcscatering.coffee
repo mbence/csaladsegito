@@ -332,7 +332,7 @@ JcsCatering =
             if confirm("Biztos benne?")
                 $form = $("#create-invoice-form")
                 $.post($form.attr("action"), $form.serialize(), (data) ->
-                    if data
+                    if data and data != "0"
                         AjaxBag.showNotice("A számla kiállítása sikeres")
                         $(".catering_container a.catering_invoices").click()
                         JcsClient.reloadClient()

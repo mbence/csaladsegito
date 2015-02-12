@@ -37,7 +37,6 @@ JcsToggle =
         JcsOpt.set("toggles_" + block, tg_status)
 
     multiselect: (parent) ->
-        console.log($("div.multiselect", parent))
         $("div.multiselect", parent).off("click").on("click", (event) ->
             event.stopPropagation()
         )
