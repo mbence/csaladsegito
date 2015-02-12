@@ -686,8 +686,17 @@ class ClientController extends Controller
      */
     private function processOrders(Client $client, $orders)
     {
+        $check_dates = $this->getDateCheckParam();
         $first_day_of_period = ( date( 'G' ) < 10 ) ? new \DateTime('tomorrow') : new \DateTime('tomorrow + 1 days');
-        //$first_day_of_period = new \DateTime('first day of this month');
+        // if we don't check dates, the beginning is the start of agreement or 2015-01-01
+        if (!$check_dates && !empty($client->getCatering()->getAgreementFrom())) {
+            $first_day_of_period = $client->getCatering()->getAgreementFrom();
+            $start_of_year = new \DateTime('2015-01-01');
+            if ($first_day_of_period < $start_of_year) {
+                $first_day_of_period = $start_of_year;
+            }
+        }
+
         $last_day_of_period  = new \DateTime('last day of this month + 2 months');
         $catering            = $client->getCatering();
         $days_of_months      = $this->container->get('jcs.ds')->getDaysOfPeriod($first_day_of_period, $last_day_of_period);
@@ -2043,6 +2052,10 @@ class ClientController extends Controller
             // we are allowing the creation of past date orders
             if (!empty($client->getCatering()->getAgreementFrom())) {
                 $start = $client->getCatering()->getAgreementFrom();
+                $start_of_year = new \DateTime('2015-01-01');
+                if ($start < $start_of_year) {
+                    $start = $start_of_year;
+                }
             }
         }
 
