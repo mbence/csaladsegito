@@ -12,7 +12,7 @@
         <th>Esetgazda</th>
         <th>TAJ szám</th>
         <th>Státusz</th>
-        <th>Látogatás státusz</th>
+        <th>Étkeztetés státusz</th>
         <th>Jövedelem</th>
         <th>Megáll. kezdete</th>
         <th>Megáll. vége</th>
@@ -33,12 +33,12 @@
         </td>
         <td> {{ client.socialSecurityNumber }} </td>
         <td> {% if client.isArchived %}archivált{% else %}aktív{% endif %} </td>
-        <td> {{ client.homehelp.status|status_text }} </td>
-        <td> {{ client.homehelp.income|fcurr }} </td>
-        <td> {{ client.homehelp.agreementFrom|fdate('sd') }} </td>
-        <td> {{ client.homehelp.agreementTo|fdate('sd') }} </td>
-        <td> {{ client.homehelp.pausedFrom|fdate('sd') }} </td>
-        <td> {{ client.homehelp.pausedTo|fdate('sd') }} </td>
+        <td> {{ client.catering.status|status_text }} </td>
+        <td> {{ client.catering.income|fcurr }} </td>
+        <td> {{ client.catering.agreementFrom|fdate('sd') }} </td>
+        <td> {{ client.catering.agreementTo|fdate('sd') }} </td>
+        <td> {{ client.catering.pausedFrom|fdate('sd') }} </td>
+        <td> {{ client.catering.pausedTo|fdate('sd') }} </td>
     </tr>
     {% endfor %}
 </table>

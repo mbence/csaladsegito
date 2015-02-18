@@ -1,0 +1,15 @@
+<div class="smalltext">Dátum: {{ data['sp.datum'] }}</div>
+<h1 class="center">{{ data['hh.cim'] }}</h1>
+<table class="reports-table">
+{% for worker in data['blocks']['clients'] %}
+    <tr><td colspan="4">{{ worker['sw'] }}</td></tr>
+    {% for cli in worker['cli'] %}
+        <tr>
+            <td style="width:20px;"></td>
+            <td>{{ cli['nam'] }} {{ cli['adr'] }}</td>
+            <td>{{ cli['doc'] }}</td>
+            <td>{{ cli['tel'] }}</td>
+        </tr>
+    {% endfor %}
+{% endfor %}
+</table>

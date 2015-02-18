@@ -31,8 +31,10 @@ class Docx
      * Generate a file from a template, merge the fields, and send the file as a download
      * No data mapping happens
      *
-     * @param string $template Template filename
+     * @param $template_file
      * @param array $data Array of merge fields
+     * @param null $file_name
+     * @return
      */
     public function make($template_file, $data, $file_name = null)
     {
@@ -72,8 +74,10 @@ class Docx
     /**
      * Generate a file from a template, merge the fields, and send the file as a download
      *
-     * @param string $template Template filename
+     * @param string $template_file Template filename
      * @param array $data Array of merge fields
+     * @param $file_name
+     * @return bool
      */
     public function makeReport($template_file, $data, $file_name)
     {
@@ -114,6 +118,7 @@ class Docx
      *
      * @param DocTemplate $doc entity
      * @param array $data Array of merge fields
+     * @return bool
      */
     public function show(DocTemplate $doc, $data)
     {
@@ -402,6 +407,17 @@ class Docx
             $re['problems'] = $pl;
         }
 
+        // check if we have a catering record and add the extra fields
+        if (!empty($client->getCatering())) {
+            $cateringMap = $this->getCateringMap($client->getCatering());
+            $re = $re + $cateringMap;
+        }
+        // check if we have a homehelp record and add the extra fields
+        if (!empty($client->getHomehelp())) {
+            $homehelpMap = $this->gethomehelpMap($client->getHomehelp());
+            $re = $re + $homehelpMap;
+        }
+
         return $re;
     }
 
@@ -422,6 +438,11 @@ class Docx
             'klub'      => $catering->getClub()->getName(),
             'klubcim'   => $catering->getClub()->getAddress(),
             'klubtel'   => $catering->getClub()->getPhone(),
+            'etkez_megall_kezdete' => $ae->formatDate($catering->getAgreementFrom(), 'sd'),
+            'etkez_megall_vege' => $ae->formatDate($catering->getAgreementTo(), 'sd'),
+            'etkez_szunet_kezdete' => $ae->formatDate($catering->getPausedFrom(), 'sd'),
+            'etkez_szunet_vege' => $ae->formatDate($catering->getPausedTo(), 'sd'),
+            'etkez_status' => $ae->statusText($catering->getStatus(), false),
         ];
     }
 
@@ -442,7 +463,11 @@ class Docx
             'klub'      => $homehelp->getClub()->getName(),
             'klubcim'   => $homehelp->getClub()->getAddress(),
             'klubtel'   => $homehelp->getClub()->getPhone(),
+            'gondoz_megall_kezdete' => $ae->formatDate($homehelp->getAgreementFrom(), 'sd'),
+            'gondoz_megall_vege' => $ae->formatDate($homehelp->getAgreementTo(), 'sd'),
+            'gondoz_szunet_kezdete' => $ae->formatDate($homehelp->getPausedFrom(), 'sd'),
+            'gondoz_szunet_vege' => $ae->formatDate($homehelp->getPausedTo(), 'sd'),
+            'gondoz_status' => $ae->statusText($homehelp->getStatus(), false),
         ];
     }
-
 }

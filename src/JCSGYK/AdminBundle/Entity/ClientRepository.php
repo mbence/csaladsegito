@@ -155,9 +155,18 @@ class ClientRepository extends EntityRepository
     /**
      * Find clients for the Clients Report
      */
-    public function getClientsForReport($company_id, $filters)
+    public function getClientsForReport($company_id, $filters, $report)
     {
-        $sql = 'SELECT c FROM JCSGYKAdminBundle:Client c WHERE c.companyId=:company_id';
+        if ('catering_clients' == $report) {
+            $join = ' JOIN c.catering a LEFT JOIN c.homehelp h ';
+        } elseif (in_array($report, ['homehelp_clients', 'clubvisit_clients'])) {
+            $join = ' JOIN c.homehelp a LEFT JOIN c.catering h';
+        } else {
+            $join = ' LEFT JOIN c.homehelp a LEFT JOIN c.catering h';
+        }
+
+        $sql = "SELECT c, a, h FROM JCSGYKAdminBundle:Client c {$join} WHERE c.companyId=:company_id";
+
         if (false !== $filters['case_admin']) {
             if (is_null($filters['case_admin'])) {
                 $sql .= ' AND c.caseAdmin IS NULL';
@@ -165,6 +174,9 @@ class ClientRepository extends EntityRepository
             else {
                 $sql .= ' AND c.caseAdmin=:case_admin';
             }
+        }
+        if (!empty($filters['club'])) {
+            $sql .= ' AND a.club=:club';
         }
         if (!empty($filters['client_type'])) {
             $sql .= ' AND c.type=:client_type';
@@ -184,6 +196,9 @@ class ClientRepository extends EntityRepository
 
         if (!empty($filters['case_admin'])) {
             $q->setParameter('case_admin', $filters['case_admin']);
+        }
+        if (!empty($filters['club'])) {
+            $q->setParameter('club', $filters['club']);
         }
         if (!empty($filters['client_type'])) {
             $q->setParameter('client_type', $filters['client_type']);

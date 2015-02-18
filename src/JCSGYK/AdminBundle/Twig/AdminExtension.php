@@ -96,7 +96,7 @@ class AdminExtension extends \Twig_Extension
         return implode(' ', $re);
     }
 
-    public function statusText($status)
+    public function statusText($status, $html = true)
     {
         if (Catering::ACTIVE == $status) {
             $class = 'catering-active';
@@ -109,7 +109,9 @@ class AdminExtension extends \Twig_Extension
             $text = 'Lezárva';
         }
 
-        return sprintf('<span class="%s">%s</span>', $class, $text);
+        $re = $html ? sprintf('<span class="%s">%s</span>', $class, $text) : $text;
+
+        return $re;
     }
 
     public function logData(History $log)

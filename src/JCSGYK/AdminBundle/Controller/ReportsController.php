@@ -114,8 +114,8 @@ class ReportsController extends Controller
         $form_builder = $this->createFormBuilder();
         //$form_builder->setData([]);
 
-        if ('clients' == $report) {
-            $this->container->get('jcs.reports.clients')->getForm($form_builder);
+        if (in_array($report, ['clients', 'catering_clients', 'homehelp_clients', 'clubvisit_clients'])) {
+            $this->container->get('jcs.reports.clients')->getForm($form_builder, $report);
         }
         elseif ('casecounts' == $report) {
             // client types (if relevant)
@@ -172,7 +172,7 @@ class ReportsController extends Controller
         if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck', 'catering_stats', 'clubvisit_stats'])) {
             $this->getClubSelect($form_builder);
         }
-        elseif (in_array($report, ['homehelp_clients'])) {
+        elseif (in_array($report, ['homehelp_clients_old'])) {
             $this->getSocialWorkerSelect($form_builder, true, 'Mindenki');
         }
 
@@ -335,8 +335,8 @@ class ReportsController extends Controller
 
     private function getReport($report, $form_data, $download)
     {
-        if ('clients' == $report) {
-            return $this->container->get('jcs.reports.clients')->run($form_data, $download);
+        if (in_array($report, ['clients', 'catering_clients', 'homehelp_clients', 'clubvisit_clients'])) {
+            return $this->container->get('jcs.reports.clients')->run($form_data, $report, $download);
         }
         elseif ('casecounts' == $report) {
             return $this->getCasecountsReport($form_data, $download);
@@ -359,7 +359,7 @@ class ReportsController extends Controller
         elseif ('ksh_gyk' == $report) {
             return $this->container->get('jcs.reports.ksh_gyk')->run($form_data, $download);
         }
-        elseif ('homehelp_clients' == $report) {
+        elseif ('homehelp_clients_old' == $report) {
             return $this->getHomehelpClientsReport($form_data, $download);
         }
         elseif (in_array($report, ['homehelp_summary', 'homehelp_visits', 'homehelp_hours'])) {
@@ -399,7 +399,7 @@ class ReportsController extends Controller
         }
         if ($catering_on) {
             $menu['Étkeztetés'] = [
-                ['slug' => 'clients', 'label' => 'Ügyfelek'],
+                ['slug' => 'catering_clients', 'label' => 'Ügyfelek'],
                 ['slug' => 'catering_orders', 'label' => 'Heti ebédrendelések'],
                 ['slug' => 'catering_cashbook', 'label' => 'Pénztárkönyv'],
                 ['slug' => 'catering_summary', 'label' => 'Havi ebédösszesítő'],
@@ -408,14 +408,16 @@ class ReportsController extends Controller
                 ['slug' => 'catering_stats', 'label' => 'Étkeztetés statisztika'],
             ];
             $menu['Gondozás (Központ)'] = [
+                ['slug' => 'homehelp_clients', 'label' => 'Gondozási ügyfelek'],
                 ['slug' => 'homehelp_stats', 'label' => 'Gondozás statisztika'],
                 ['slug' => 'homehelp_visits', 'label' => 'Gondozási napok'],
                 ['slug' => 'homehelp_hours', 'label' => 'Gondozási órák'],
-                ['slug' => 'homehelp_clients', 'label' => 'Gondozottak'],
+                ['slug' => 'homehelp_clients_old', 'label' => 'Gondozottak'],
                 ['slug' => 'homehelp_summary', 'label' => 'Havi gondozás összesítő'],
                 ['slug' => 'homehelp_cashbook', 'label' => 'Pénztárkönyv'],
             ];
             $menu['Látogatás (Klubok)'] = [
+                ['slug' => 'clubvisit_clients', 'label' => 'Látogatási ügyfelek'],
                 ['slug' => 'clubvisit_stats', 'label' => 'Látogatás statisztika'],
                 ['slug' => 'clubvisit_days', 'label' => 'Látogatási napok'],
             ];
@@ -1005,8 +1007,8 @@ class ReportsController extends Controller
             ]
         ];
 
-        $twig_tpl      = '_homehelp_clients.html.twig';
-        $template_file = __DIR__ . '/../Resources/public/reports/homehelp_clients.xlsx';
+        $twig_tpl      = '_homehelp_clients_old.html.twig';
+        $template_file = __DIR__ . '/../Resources/public/reports/homehelp_clients_old.xlsx';
         $sw_title = !empty($form_data['social_worker']) ? sprintf(' (%s)', $this->ds->get($form_data['social_worker'])) : '';
 
         $output_name   = $data['hh.cim'] . $sw_title . '.xlsx';

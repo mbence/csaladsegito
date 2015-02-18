@@ -2,6 +2,7 @@
 
 namespace JCSGYK\AdminBundle\Services\Reports;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use JCSGYK\AdminBundle\Entity\Client;
 
 /**
  * Clients Report Service
@@ -21,6 +22,8 @@ class Clients
     private $data = [];
     /** OpenTBS template file */
     private $template = 'clients.xlsx';
+    /** Twig template file */
+    private $twigTemplate = '_clients.html.twig';
     /** Output file name */
     private $output = 'ugyfel_kimutatas_%s.xlsx';
 
@@ -42,15 +45,13 @@ class Clients
         $this->ds        = $this->container->get('jcs.ds');
         $this->ae        = $this->container->get('jcs.twig.adminextension');
         $this->em        = $this->container->get('doctrine')->getManager();
-
-        $this->template = __DIR__ . '/../../Resources/public/reports/' . $this->template;
-        $this->output   = sprintf($this->output, date('Y-m-d'));
     }
 
-    public function getForm(&$form_builder)
+    public function getForm(&$form_builder, $report)
     {
         $sec              = $this->container->get('security.context');
         $client_type_list = $this->ds->getClientTypes();
+        $client_types = array_keys($client_type_list);
 
         // client types (if relevant)
         if (count($client_type_list) > 1) {
@@ -62,7 +63,7 @@ class Clients
             ]);
         }
         // admins can select the users of this company
-        if ($sec->isGranted('ROLE_ADMIN')) {
+        if ($sec->isGranted('ROLE_ADMIN') && (in_array(Client::FH, $client_types) || in_array(Client::CW, $client_types))) {
             $form_builder->add('case_admin', 'entity', [
                 'label'       => 'Esetgazda',
                 'class'       => 'JCSGYKAdminBundle:User',
@@ -71,6 +72,16 @@ class Clients
                 'empty_value' => 'nincs',
             ]);
         }
+        if (in_array(Client::CA, $client_types) && in_array($report, ['catering_clients', 'clubvisit_clients'])) {
+            // clubs
+            $form_builder->add('club', 'entity', [
+                'label'    => 'Klub',
+                'class'    => 'JCSGYKAdminBundle:Club',
+                'choices'  => $this->ds->getClubs(),
+                'required' => true,
+            ]);
+        }
+
         // Is Archived
         $form_builder->add('is_archived', 'choice', [
             'label'       => 'Státus',
@@ -94,14 +105,28 @@ class Clients
         ]);
     }
 
-    public function run($form_data, $download)
+    public function run($form_data, $report, $download)
     {
-        $form_data = $this->checkFormData($form_data);
-        $title = $this->getReportTitle($form_data);
+        if (in_array($report, ['catering_clients'])) {
+            $this->twigTemplate = '_catering_clients.html.twig';
+            $this->template = 'catering_clients.xlsx';
+            $this->output = 'etkeztetes_ugyfel_kimutatas_%s.xlsx';
+        } elseif (in_array($report, ['clubvisit_clients', 'homehelp_clients'])) {
+            $this->twigTemplate = '_homehelp_clients.html.twig';
+            $this->template = 'homehelp_clients.xlsx';
+            $this->output = 'gondozas_ugyfel_kimutatas_%s.xlsx';
+        }
+
+        $this->template = __DIR__ . '/../../Resources/public/reports/' . $this->template;
+        $this->output   = sprintf($this->output, date('Y-m-d'));
+
+
+        $form_data = $this->checkFormData($form_data, $report);
+        $title = $this->getReportTitle($form_data, $report);
 
         $company_id = $this->ds->getCompanyId();
 
-        $clients = $this->em->getRepository('JCSGYKAdminBundle:Client')->getClientsForReport($company_id, $form_data);
+        $clients = $this->em->getRepository('JCSGYKAdminBundle:Client')->getClientsForReport($company_id, $form_data, $report);
 
         $this->data = [
             'rep.title' => $title,
@@ -119,10 +144,11 @@ class Clients
      * @param array $form_data
      * @return array
      */
-    private function checkFormData($form_data)
+    private function checkFormData($form_data, $report)
     {
         $form_fields = [
-            'case_admin'  => null,
+            'case_admin'  => false,
+            'club'        => null,
             'client_type' => null,
             'is_archived' => null,
             'birth_date'  => null,
@@ -139,9 +165,9 @@ class Clients
 
         // make sure the client type is correct
         $client_type_list = $this->ds->getClientTypes();
-        $client_type_keys = array_keys($client_type_list);
-        if (count($client_type_keys) < 2 && !in_array($form_data['client_type'], $client_type_keys)) {
-            $form_data['client_type'] = reset($client_type_keys);
+        $client_types = array_keys($client_type_list);
+        if (count($client_types) < 2 && !in_array($form_data['client_type'], $client_types)) {
+            $form_data['client_type'] = reset($client_types);
         }
 
         // substitute the age range
@@ -153,19 +179,41 @@ class Clients
             }
         }
 
+        // homehelp clients can only come from club id 1
+        if ('homehelp_clients' == $report) {
+            $club = $this->em->getRepository('JCSGYKAdminBundle:Club')->findBy(['homehelptype' => 0]);
+            $form_data['club'] = $club[0];
+        }
+
         return $form_data;
     }
 
-    private function getReportTitle($form_data)
+    private function getReportTitle($form_data, $report)
     {
-        $re = ['Ügyfél kimutatás'];
-        if (empty($form_data['case_admin'])) {
-            $re[] = 'nincs esetgazda';
+
+        if ('catering_clients' == $report) {
+            $re = ['Étkeztetés ügyfelek kimutatása'];
+        } elseif ('homehelp_clients' == $report) {
+            $re = ['Gondozási ügyfelek kimutatása'];
+        } elseif ('clubvisit_clients' == $report) {
+            $re = ['Látogatási ügyfelek kimutatása'];
         } else {
-            $case_admin = $this->em->getRepository('JCSGYKAdminBundle:User')->find($form_data['case_admin']);
-            if (!empty($case_admin)) {
-                $re[] = $this->ae->formatName($case_admin->getFirstname(), $case_admin->getLastname());
+            $re = ['Ügyfél kimutatás'];
+        }
+
+        if (false !== $form_data['case_admin']) {
+            if (is_null($form_data['case_admin'])) {
+                $re[] = 'nincs esetgazda';
+            } else {
+                $case_admin = $this->em->getRepository('JCSGYKAdminBundle:User')->find($form_data['case_admin']);
+                if (!empty($case_admin)) {
+                    $re[] = $this->ae->formatName($case_admin->getFirstname(), $case_admin->getLastname());
+                }
             }
+        }
+
+        if (!empty($form_data['club'])) {
+            $re[] = $form_data['club'];
         }
 
         if (!is_null($form_data['is_archived'])) {
@@ -180,7 +228,7 @@ class Clients
     }
 
     /**
-     * Generates the output with OpenTBS
+     * Generates the output with Twig or OpenTBS
      * @return type
      */
     public function output($download)
@@ -189,7 +237,7 @@ class Clients
             return $this->container->get('jcs.docx')->makeReport($this->template, $this->data, $this->output);
         }
         else {
-            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:_clients.html.twig', ['data' => $this->data]);
+            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $this->twigTemplate, ['data' => $this->data]);
         }
     }
 }
