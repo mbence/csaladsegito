@@ -7,6 +7,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Container;
+use JCSGYK\AdminBundle\Services\DataStore;
 
 use JCSGYK\AdminBundle\Entity\StatArchive;
 use JCSGYK\AdminBundle\Entity\StatFile;
@@ -25,9 +26,7 @@ class StatArchiveService
     /** Service container */
     private $container;
 
-    /**
-     * @var JCSGYK\AdminBundle\Services\DataStore;
-     */
+    /** @var DataStore ds */
     private $ds;
     /**
      * @var Doctrine\ORM\EntityManager
@@ -82,6 +81,8 @@ class StatArchiveService
         7 =>  [80, 89],
         8 =>  [90, 999],
     ];
+
+    private $holidays = [];
 
     /** Constructor
      * @param Container $container
@@ -286,6 +287,8 @@ class StatArchiveService
     {
         // prepare the data arra
         $data = $this->prepare401Data($club, $start);
+        // prepare holidays
+        $this->prepareHolidays($start, $end);
 
         // get the invoices from db
         $invoices = $this->get401Invoices($club, $start, $end);
@@ -371,6 +374,33 @@ class StatArchiveService
         }
 
         return $data;
+    }
+
+    /**
+     * Read the holidays for this period
+     * Codes: 1 - Holiday, 2 - Working weekend, 3 - Rest day
+     * @param \DateTime $start
+     * @param \DateTime $end
+     */
+    private function prepareHolidays(\DateTime $start, \DateTime $end)
+    {
+        $this->holidays = $this->ds->getHolidays($start->format('Y-m-d'), $end->format('Y-m-d'));
+    }
+
+    /**
+     * Is this date a weekend? Also check the holidays table from the options
+     * @param \DateTime $date
+     * @return bool
+     */
+    private function weekendOrWorkday(\DateTime $date)
+    {
+        $weekend = ($date->format('N') > 5);
+        $isoDate = $date->format('Y-m-d');
+        if (isset($this->holidays[$isoDate])) {
+            $weekend = in_array($this->holidays[$isoDate], [1, 3]);
+        }
+
+        return $weekend;
     }
 
 
@@ -577,7 +607,7 @@ class StatArchiveService
             $data['inv.days'] ++;
             $data['cnum.active'][$client_id] = 1;
 
-            $weekend = ($order->getDate()->format('N') > 5);
+            $weekend = $this->weekendOrWorkday($order->getDate());
 
             if (empty($cost)) {
                 if ($weekend) {
