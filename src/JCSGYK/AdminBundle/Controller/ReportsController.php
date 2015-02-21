@@ -117,6 +117,9 @@ class ReportsController extends Controller
         if (in_array($report, ['clients', 'catering_clients', 'homehelp_clients', 'clubvisit_clients'])) {
             $this->container->get('jcs.reports.clients')->getForm($form_builder, $report);
         }
+        if (in_array($report, ['catering_summary_detailed'])) {
+            $this->container->get('jcs.reports.catering')->getForm($form_builder, $report);
+        }
         elseif ('casecounts' == $report) {
             // client types (if relevant)
             if (count($client_type_list) > 1) {
@@ -143,7 +146,7 @@ class ReportsController extends Controller
                 ]);
             }
         }
-        elseif (in_array($report, ['catering_summary', 'catering_datacheck', 'catering_summary_detailed'])) {
+        elseif (in_array($report, ['catering_summary', 'catering_datacheck'])) {
             // months
             $this->getInvoiceMonths($form_builder);
         }
@@ -169,7 +172,7 @@ class ReportsController extends Controller
         }
 
         // club select for all catering reports
-        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_summary_detailed', 'catering_datacheck', 'catering_stats', 'clubvisit_stats'])) {
+        if (in_array($report, ['catering_orders', 'catering_cashbook', 'catering_summary', 'catering_datacheck', 'catering_stats', 'clubvisit_stats'])) {
             $this->getClubSelect($form_builder);
         }
         elseif (in_array($report, ['homehelp_clients_old'])) {
@@ -338,13 +341,16 @@ class ReportsController extends Controller
         if (in_array($report, ['clients', 'catering_clients', 'homehelp_clients', 'clubvisit_clients'])) {
             return $this->container->get('jcs.reports.clients')->run($form_data, $report, $download);
         }
+        if (in_array($report, ['catering_summary_detailed'])) {
+            return $this->container->get('jcs.reports.catering')->run($form_data, $report, $download);
+        }
         elseif ('casecounts' == $report) {
             return $this->getCasecountsReport($form_data, $download);
         }
         elseif ('catering_orders' == $report) {
             return $this->getCateringOrderReport($form_data, $download);
         }
-        elseif (in_array($report, ['catering_summary', 'catering_summary_detailed', 'catering_datacheck'])) {
+        elseif (in_array($report, ['catering_summary', 'catering_datacheck'])) {
             return $this->getCateringReport($form_data, $report, $download);
         }
         elseif (in_array($report, ['catering_stats', 'homehelp_stats', 'clubvisit_stats'])) {
@@ -681,11 +687,6 @@ class ReportsController extends Controller
             $template_file = __DIR__ . '/../Resources/public/reports/catering_datacheck.xlsx';
             $twig_tpl = '_datacheck.html.twig';
         }
-        elseif ('catering_summary_detailed' == $report) {
-            $title = sprintf('%s havi étkezési napok összesítése', $ae->formatDate($month, 'ym'));
-            $template_file = __DIR__ . '/../Resources/public/reports/catering_summary_detailed.xlsx';
-            $twig_tpl = '_summary_detailed.html.twig';
-        }
         else {
             $title = sprintf('%s havi ebéd összesítő', $ae->formatDate($month, 'ym'));
             $template_file = __DIR__ . '/../Resources/public/reports/catering_summary.xlsx';
@@ -700,9 +701,6 @@ class ReportsController extends Controller
                 'catering' => $report_data,
             ]
         ];
-        if ('catering_summary_detailed' == $report) {
-            $data['blocks']['months_days'] = range(1, 31);
-        }
 
         $output_name   = $data['ca.cim'] . $data['ca.klub'] . '.xlsx';
 

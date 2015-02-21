@@ -1,10 +1,20 @@
+## 1.5.13 (2015.02.21)
+
+Fejlesztések:
+
+ - Étkezési napok kimutatása a tényleges megrendeléseket mutassa
+ 
+Javítások:
+
+ - Ünnepnapok ne munkanapként jelenjenek meg a statisztikákban
+ 
 ## 1.5.12 (2015.02.18)
 
 Fejlesztések:
 
  - Étkeztetés és gondozás ügyfelek kimutatása
  
- ## 1.5.11 (2015.02.12)
+## 1.5.11 (2015.02.12)
 
 Fejlesztések:
 

@@ -4,10 +4,7 @@
         <th rowspan="2">Név</th>
         <th colspan="31">Naptári napok</th>
         <th rowspan="2">Étkezési<br>napok<br>száma</th>
-        <th rowspan="2">Térítési<br>díj /<br>adag</th>
-        <th rowspan="2">Fizetendő</th>
         <th rowspan="2">Étkezési<br>napok<br>munkanap</th>
-        <th rowspan="2">Jóvá-<br>írások</th>
     </tr>
     <tr>
         {% for day in data.blocks.months_days %}
@@ -23,10 +20,7 @@
         <td>{{ day }}</td>
         {% endfor %}
         <td class="right"> {{ catering.days }} </td>
-        <td class="right"> {{ catering.unit_price }} </td>
-        <td class="right"> <strong>{{ catering.amount }}</strong> </td>
         <td class="right"> {{ catering.weekdays }} </td>
-        <td class="right"> {{ catering.discount_days }} </td>
     </tr>
     {% endfor %}
 </table>

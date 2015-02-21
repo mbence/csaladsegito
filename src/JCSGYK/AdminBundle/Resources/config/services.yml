@@ -83,6 +83,10 @@ services:
         class:        JCSGYK\AdminBundle\Services\Reports\ClubVisit
         arguments:    ["@service_container"]
 
+    jcs.reports.catering:
+        class:        JCSGYK\AdminBundle\Services\Reports\CateringReport
+        arguments:    ["@service_container"]
+
     kenyszi:
         class: JCSGYK\AdminBundle\Services\Kenyszi
         arguments:    ['@service_container']

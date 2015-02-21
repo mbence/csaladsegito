@@ -406,4 +406,23 @@ class ClientOrderRepository extends EntityRepository
 
         return false;
     }
+
+    /**
+     * Detailed Catering report
+     * @param $company_id
+     * @param $club
+     * @param $start
+     * @param $end
+     * @return array;
+     */
+    public function CateringDetailedReport($company_id, $club, $start, $end)
+    {
+        $sql = "SELECT c.id, c.title, c.lastname, c.firstname,
+GROUP_CONCAT(CONCAT(o.date, '|', o.order, '|', o.cancel)) as orders
+FROM client_order o JOIN client c ON o.client_id=c.id JOIN catering a ON c.id=a.client_id
+WHERE o.company_id = '{$company_id}' AND a.club_id = '{$club->getId()}' AND o.date >= '$start' AND o.date <= '$end'
+GROUP BY c.id ORDER BY c.lastname, c.firstname, o.date";
+
+        return $this->getEntityManager()->getConnection()->query($sql)->fetchAll();
+    }
 }
