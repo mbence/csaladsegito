@@ -367,6 +367,12 @@ class ClientOrderRepository extends EntityRepository
             return false;
         }
 
+        if ($client->getIsArchived() || empty($catering->isActive()) || empty($catering->getSubscriptions())) {
+
+            // if client is archive or not active or there are no subscriptions, then no invoice
+            return false;
+        }
+
         // after the monthly closing is run, we must check the orders for the next month as well
         if (date('j') < 25) {
             $endOfMonth = new \DateTime('last day of this month');
@@ -397,11 +403,8 @@ class ClientOrderRepository extends EntityRepository
             ->getResult();
 
         if (empty($result[0]['orders'])) {
-            // but only if client is not archived, catering is active and all required fields are set
-            if (!$client->getIsArchived() && !empty($catering->getAgreementFrom()) && !empty($catering->getSubscriptions())) {
 
-                return true;
-            }
+            return true;
         }
 
         return false;
