@@ -1779,10 +1779,22 @@ class ClientController extends Controller
         $club_type = HomeHelp::VISIT;
         if (Client::CA == $client->getType()) {
             // check catering record
-            if ($catering = $client->getCatering()) {
-                $club_type = $catering->getClub()->getHomehelptype();
-            } elseif ($homehelp = $client->getHomehelp()) {
-                $club_type = $homehelp->getClub()->getHomehelptype();
+            $catering = $client->getCatering();
+            if (!empty($catering)) {
+                $club = $catering->getClub();
+                if (!empty($club)) {
+
+                    return $club->getHomehelptype();
+                }
+            }
+
+            $homehelp = $client->getHomehelp();
+            if (!empty($homehelp)) {
+                $club = $homehelp->getClub();
+                if (!empty($club)) {
+
+                    return $club->getHomehelptype();
+                }
             }
         }
 
