@@ -296,7 +296,7 @@ class StatArchiveService
         $invoices = $this->get401Invoices($club, $start, $end);
 
         // get accounted balance
-        $data = $this->get401AccountedBalance($invoices, $data);
+        $data = $this->getAccountedBalance($invoices, $data);
 
         // get all affected clients
         $clients = $this->get401Clients($club, $start, $end);
@@ -450,7 +450,7 @@ class StatArchiveService
         return $invoices;
     }
 
-    private function get401AccountedBalance($invoices, $data)
+    private function getAccountedBalance($invoices, $data)
     {
         foreach ($invoices as $invoice) {
             $data['inv.acc'] += $invoice->getBalance();
@@ -721,7 +721,7 @@ class StatArchiveService
         }
         $data['cnum.active'] = $this->get402ActiveClientsNumber($club, $start, $end);
 
-        $data = $this->get402Sums($data);
+//        $data = $this->get402Sums($data);
 
         if (HomeHelp::HELP == $club->getHomehelptype()) {
             $data = $this->get402InvoiceData($club, $start, $end, $data);
@@ -730,6 +730,8 @@ class StatArchiveService
             $data = $this->get402VisitData($club, $start, $end, $data);
             $tpl_file = 'clubvisit_stats.xlsx';
         }
+
+        $data = $this->get402Sums($data);
 
         $template_file = __DIR__ . '/../Resources/public/reports/' . $tpl_file;
 
@@ -772,6 +774,8 @@ class StatArchiveService
             'inv.pay'         => 0,
             'inv.paycli'      => [],
             'inv.sum'         => 0,
+            'inv.acc'         => 0,
+            'inv.def'         => 0,
             'blocks'          => [],
             'inv.avg05'       => 0,
             'inv.avg12'       => 0,
@@ -796,8 +800,10 @@ class StatArchiveService
         $data['blocks']['age_headers'] = $this->ageHeaders;
 
         foreach ($this->ageRanges as $k => $v) {
-            $data['blocks']['age_2'][$k] = 0;
-            $data['blocks']['age_1'][$k] = 0;
+//            $data['blocks']['age_2'][$k] = 0;
+//            $data['blocks']['age_1'][$k] = 0;
+            $data['blocks']['age_2'][$k] = ['all' => 0, 'active' => 0];
+            $data['blocks']['age_1'][$k] = ['all' => 0, 'active' => 0];
         }
 
         // event names
@@ -980,7 +986,12 @@ class StatArchiveService
         }
         // month end - closed clients
         if (!$homehelp->hasAgreement($end)) {
+            // it is not real archived, it counts only clients without active agreement
             $data['cnum.archived']++;
+        } elseif ($homehelp->getStatus($start) == $homehelp::PAUSED) {
+            // count paused homehelp too
+            $data['cnum.paused']++;
+            $data['cnum.end']++;
         } else {
             $data['cnum.end']++;
         }
@@ -1015,7 +1026,11 @@ class StatArchiveService
             $age = $now->diff($bday)->format('%y');
             $k = $this->getRangeKey($age, $this->ageRanges);
             if (false !== $k) {
-                $data['blocks']['age_' . $gen][$k]++;
+//                $data['blocks']['age_' . $gen][$k]++;
+                $data['blocks']['age_' . $gen][$k]['all']++;
+                if ($homehelp->hasAgreement($end)) {
+                    $data['blocks']['age_' . $gen][$k]['active']++;
+                }
             }
         }
         if ($gen == 1) {
@@ -1037,6 +1052,25 @@ class StatArchiveService
         // we must deduct the reopened clients from the starting numbers
         $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'];
 
+        $data['inv.def'] = $this->ae->formatCurrency($data['inv.sum'] - $data['inv.acc']);
+        $data['inv.sum'] = $this->ae->formatCurrency($data['inv.sum']);
+        $data['inv.acc'] = $this->ae->formatCurrency($data['inv.acc']);
+
+        // format data for the silly openTBS cell handling method
+        $age1 = [];
+        $age2 = [];
+
+        foreach ($data['blocks']['age_1'] as $age) {
+            $age1[] = $age['active'] . ' (' . $age['all'] . ')';
+        }
+
+        foreach ($data['blocks']['age_2'] as $age) {
+            $age2[] = $age['active'] . ' (' . $age['all'] . ')';
+        }
+
+        $data['blocks']['age_1'] = $age1;
+        $data['blocks']['age_2'] = $age2;
+
         return $data;
     }
 
@@ -1051,6 +1085,9 @@ class StatArchiveService
     private function get402InvoiceData(Club $club, \DateTime $start, \DateTime $end, $data)
     {
         $invoices = $this->get402InvoiceResults($club, $start, $end);
+
+        // get accounted balance
+        $data = $this->getAccountedBalance($invoices, $data);
 
         if (!empty($invoices)) {
             foreach ($invoices as $invoice) {
@@ -1097,7 +1134,7 @@ class StatArchiveService
         $data['inv.disccli'] = count($data['inv.disccli']);
         $data['inv.paycli'] = count($data['inv.paycli']);
 
-        $data['inv.sum'] = $this->ae->formatCurrency($data['inv.sum']);
+//        $data['inv.sum'] = $this->ae->formatCurrency($data['inv.sum']);
 
         return $data;
     }
