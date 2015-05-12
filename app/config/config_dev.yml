@@ -35,7 +35,7 @@ assetic:
 # Swiftmailer Configuration
 swiftmailer:
     disable_delivery:  false
-    delivery_address:  mxbence@gmail.com
+    delivery_address:  robin@nonstopnet.org
 
 live_php:
     dirs: [., ../src, ../web]

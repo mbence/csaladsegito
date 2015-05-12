@@ -84,6 +84,8 @@ class StatArchiveService
 
     private $holidays = [];
 
+    private $clientCosts = [];
+
     /** Constructor
      * @param Container $container
      */
@@ -293,6 +295,9 @@ class StatArchiveService
         // get the invoices from db
         $invoices = $this->get401Invoices($club, $start, $end);
 
+        // get accounted balance
+        $data = $this->get401AccountedBalance($invoices, $data);
+
         // get all affected clients
         $clients = $this->get401Clients($club, $start, $end);
 
@@ -336,6 +341,7 @@ class StatArchiveService
             'cnum.all'        => 0,
             'cnum.active'     => [],
             'cnum.archived'   => 0,
+            'cnum.paused'     => 0,
             'cnum.end'        => 0,
             'cnum.man'        => 0,
             'cnum.woman'      => 0,
@@ -349,6 +355,8 @@ class StatArchiveService
             'inv.payend'      => 0,
             'inv.payendcli'   => [],
             'inv.sum'         => 0,
+            'inv.acc'         => 0,
+            'inv.def'         => 0,
             'blocks'          => [],
         ];
         // comfort
@@ -369,8 +377,8 @@ class StatArchiveService
         }
         $data['blocks']['age_headers'] = $this->ageHeaders;
         foreach ($this->ageRanges as $k => $v) {
-            $data['blocks']['age_2'][$k] = 0;
-            $data['blocks']['age_1'][$k] = 0;
+            $data['blocks']['age_2'][$k] = ['all' => 0, 'active' => 0];
+            $data['blocks']['age_1'][$k] = ['all' => 0, 'active' => 0];
         }
 
         return $data;
@@ -440,6 +448,15 @@ class StatArchiveService
         }
 
         return $invoices;
+    }
+
+    private function get401AccountedBalance($invoices, $data)
+    {
+        foreach ($invoices as $invoice) {
+            $data['inv.acc'] += $invoice->getBalance();
+        }
+
+        return $data;
     }
 
     /**
@@ -517,7 +534,12 @@ class StatArchiveService
         }
         // month end - closed clients
         if (!$catering->hasAgreement($end)) {
+            // it is not real archived, it counts only clients without active agreement
             $data['cnum.archived']++;
+        } elseif ($catering->getStatus($start) == $catering::PAUSED) {
+            // count paused catering too
+            $data['cnum.paused']++;
+            $data['cnum.end']++;
         } else {
             $data['cnum.end']++;
         }
@@ -549,7 +571,10 @@ class StatArchiveService
             $age = $now->diff($bday)->format('%y');
             $k = $this->getRangeKey($age, $this->ageRanges);
             if (false !== $k) {
-                $data['blocks']['age_' . $gen][$k]++;
+                $data['blocks']['age_' . $gen][$k]['all']++;
+                if ($catering->hasAgreement($end)) {
+                    $data['blocks']['age_' . $gen][$k]['active']++;
+                }
             }
         }
         if ($gen == 1) {
@@ -565,10 +590,10 @@ class StatArchiveService
     /**
      * Find catering cost for a client
      * @param \JCSGYK\AdminBundle\Services\clientOrder $order
-     * @param array $invocies
+     * @param array $invoices
      * @return int
      */
-    private function get401ClientCost(ClientOrder $order, $invocies)
+    private function get401ClientCost(ClientOrder $order, $invoices)
     {
         $cost = 0;
 
@@ -653,7 +678,24 @@ class StatArchiveService
 
         $data['cnum.all'] = $data['cnum.start'] + $data['cnum.new'];
 
+        $data['inv.def'] = $this->ae->formatCurrency($data['inv.sum'] - $data['inv.acc']);
         $data['inv.sum'] = $this->ae->formatCurrency($data['inv.sum']);
+        $data['inv.acc'] = $this->ae->formatCurrency($data['inv.acc']);
+
+        // format data for the silly openTBS cell handling method
+        $age1 = [];
+        $age2 = [];
+
+        foreach ($data['blocks']['age_1'] as $age) {
+            $age1[] = $age['active'] . ' (' . $age['all'] . ')';
+        }
+
+        foreach ($data['blocks']['age_2'] as $age) {
+            $age2[] = $age['active'] . ' (' . $age['all'] . ')';
+        }
+
+        $data['blocks']['age_1'] = $age1;
+        $data['blocks']['age_2'] = $age2;
 
         return $data;
     }
@@ -716,6 +758,7 @@ class StatArchiveService
             'cnum.new'        => 0,
             'cnum.all'        => 0,
             'cnum.active'     => 0,
+            'cnum.paused'     => 0,
             'cnum.archived'   => 0,
             'cnum.reopened'   => '',
             'cnum.end'        => 0,
