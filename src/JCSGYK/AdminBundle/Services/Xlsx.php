@@ -151,7 +151,7 @@ class Xlsx
             $row = $this->rowMap401[$block];
             $column = array_values($column);
 
-            for ($i = 0; $i <= count($column); $i++) {
+            for ($i = 0; $i < count($column); $i++) {
                 $this->phpExcelObject->setActiveSheetIndex(0)->setCellValue($columns[$i] . $row, $column[$i]);
             }
         }
@@ -197,7 +197,7 @@ class Xlsx
                 $row = $this->rowMap402[$block];
                 $column = array_values($column);
 
-                for ($i = 0; $i <= count($column); $i++) {
+                for ($i = 0; $i < count($column); $i++) {
                     $this->phpExcelObject->setActiveSheetIndex(0)->setCellValue($columns[$i] . $row, $column[$i]);
                 }
             }
@@ -235,7 +235,7 @@ class Xlsx
                 $columns = array_values(array_slice($this->columnMap, 1));
             }
 
-            for ($i=0; $i<=count($column); $i++) {
+            for ($i=0; $i < count($column); $i++) {
                 $this->phpExcelObject->setActiveSheetIndex(0)->setCellValue($columns[$i].$row, $column[$i]);
             }
         }
