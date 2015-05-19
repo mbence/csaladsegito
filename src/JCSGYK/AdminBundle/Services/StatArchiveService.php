@@ -320,7 +320,7 @@ class StatArchiveService
         return [
             'type' => !empty($club) ? $club->getId() : null,
             'data' => $data,
-            'file' => $this->container->get('jcs.docx')->make($template_file, $data, null)
+            'file' => $this->container->get('jcs.xlsx')->make($template_file, $data, '401', null)
         ];
     }
 
@@ -726,9 +726,11 @@ class StatArchiveService
         if (HomeHelp::HELP == $club->getHomehelptype()) {
             $data = $this->get402InvoiceData($club, $start, $end, $data);
             $tpl_file = 'homehelp_stats.xlsx';
+            $homehelp_type = 'help';
         } else {
             $data = $this->get402VisitData($club, $start, $end, $data);
             $tpl_file = 'clubvisit_stats.xlsx';
+            $homehelp_type = 'visit';
         }
 
         $data = $this->get402Sums($data);
@@ -738,7 +740,7 @@ class StatArchiveService
         return [
             'type' => !empty($club) ? $club->getId() : null,
             'data' => $data,
-            'file' => $this->container->get('jcs.docx')->make($template_file, $data, null)
+            'file' => $this->container->get('jcs.xlsx')->make($template_file, $data, '402', $homehelp_type, null)
         ];
     }
 
@@ -808,11 +810,11 @@ class StatArchiveService
 
         // event names
         $data['blocks']['eventcount'] = [];
-        $data['blocks']['eventlab'] = [];
+//        $data['blocks']['eventlab'] = [];
 //        $data['blocks']['eventmap'] = [];
         foreach ($this->ds->getGroup('club_events') as $c => $v) {
             $data['blocks']['eventcount'][] = 0;
-            $data['blocks']['eventlab'][] = $v;
+//            $data['blocks']['eventlab'][] = $v;
 //            $data['blocks']['eventmap'][] = $c;
         }
 
@@ -1166,10 +1168,12 @@ class StatArchiveService
     /**
      * Get the stat data from the ClubVisit records
      * @param Club $club
-     * @param \DateTime $start_date
-     * @param \DateTime $end_date
+     * @param \DateTime $start
+     * @param \DateTime $end
      * @param array $data
      * @return array
+     * @internal param \DateTime $start_date
+     * @internal param \DateTime $end_date
      */
     private function get402VisitData(Club $club, \DateTime $start, \DateTime $end, $data)
     {
@@ -1202,9 +1206,11 @@ class StatArchiveService
     /**
      * Get the invoices for this time period and club
      * @param Club $club
-     * @param \DateTime $start_date
-     * @param \DateTime $end_date
+     * @param \DateTime $start
+     * @param \DateTime $end
      * @return ClubVisit[]
+     * @internal param \DateTime $start_date
+     * @internal param \DateTime $end_date
      */
     private function get402VisitResults(Club $club, \DateTime $start, \DateTime $end)
     {

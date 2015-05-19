@@ -33,6 +33,10 @@ services:
         class:        JCSGYK\AdminBundle\Services\Docx
         arguments:    ["@service_container"]
 
+    jcs.xlsx:
+        class:        JCSGYK\AdminBundle\Services\Xlsx
+        arguments:    ["@service_container"]
+
     jcs.stat:
         class:        JCSGYK\AdminBundle\Services\StatService
         arguments:    ["@service_container"]
