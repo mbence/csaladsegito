@@ -3,6 +3,9 @@
 namespace JCSGYK\AdminBundle\Services\Reports;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JCSGYK\AdminBundle\Entity\Client;
+use JCSGYK\AdminBundle\Services\DataStore;
+use JCSGYK\AdminBundle\Twig\AdminExtension;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Clients Report Service
@@ -11,11 +14,11 @@ class Clients
 {
     /** Service container */
     private $container;
-    /** Datastore */
+    /** @var DataStore */
     private $ds;
-    /** Twig formatter */
+    /** @var AdminExtension Twig formatter */
     private $ae;
-    /** Doctrine Entity Manager */
+    /** @var EntityManager Doctrine Entity Manager */
     private $em;
 
     /** reports data */
@@ -64,12 +67,14 @@ class Clients
         }
         // admins can select the users of this company
         if ($sec->isGranted('ROLE_ADMIN') && (in_array(Client::FH, $client_types) || in_array(Client::CW, $client_types))) {
-            $form_builder->add('case_admin', 'entity', [
+            $caseAdmins = $this->ds->getCaseAdmins(null, false);
+            $caseAdmins = $this->ds->convertCaseAdminsToString($caseAdmins);
+            array_unshift($caseAdmins, 'nincs');
+            $form_builder->add('case_admin', 'choice', [
                 'label'       => 'Esetgazda',
-                'class'       => 'JCSGYKAdminBundle:User',
-                'choices'     => $this->ds->getCaseAdmins(null, false),
+                'choices'     => $caseAdmins,
                 'required'    => false,
-                'empty_value' => 'nincs',
+                'empty_value' => '',
             ]);
         }
         if (in_array(Client::CA, $client_types) && in_array($report, ['catering_clients', 'clubvisit_clients'])) {

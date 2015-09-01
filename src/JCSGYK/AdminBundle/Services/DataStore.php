@@ -847,6 +847,23 @@ class DataStore
         return $re;
     }
 
+
+    /**
+     * Convert the list of Case admins from User entities to plain strings
+     * @param $caseAdminList
+     * @return mixed
+     */
+    public function convertCaseAdminsToString($caseAdminList)
+    {
+        foreach ($caseAdminList as &$group) {
+            foreach ($group as &$user) {
+                $user = $user->__toString();
+            }
+        }
+
+        return $caseAdminList;
+    }
+
     /**
      * Return holiday day types
      *

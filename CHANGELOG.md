@@ -1,3 +1,10 @@
+## 1.5.14 (2015.09.01)
+
+Fejlesztések:
+
+ - Kimutatások/Ügyfelek fülnél Esetgazda - MIND lekérdezési lehetőség
+ - Kimutatások/esetszámok lista megszűnik és beolvad a Kimutatások/Ügyfelek fülnél lévő táblázatba
+
 ## 1.5.13 (2015.02.21)
 
 Fejlesztések:

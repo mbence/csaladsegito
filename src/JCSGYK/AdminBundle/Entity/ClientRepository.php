@@ -167,8 +167,8 @@ class ClientRepository extends EntityRepository
 
         $sql = "SELECT c, a, h FROM JCSGYKAdminBundle:Client c {$join} WHERE c.companyId=:company_id";
 
-        if (false !== $filters['case_admin']) {
-            if (is_null($filters['case_admin'])) {
+        if (false !== $filters['case_admin'] && !is_null($filters['case_admin'])) {
+            if (0 === $filters['case_admin']) {
                 $sql .= ' AND c.caseAdmin IS NULL';
             }
             else {
