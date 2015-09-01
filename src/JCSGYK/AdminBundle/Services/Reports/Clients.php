@@ -139,8 +139,10 @@ class Clients
                 'client' => $clients,
             ]
         ];
+        // if we select all clients, we can not display the problems
+        $reportWithProblems = (is_null($form_data['case_admin'])) ? false : true;
 
-        return $this->output($download);
+        return $this->output($download, $reportWithProblems);
     }
 
     /**
@@ -234,15 +236,17 @@ class Clients
 
     /**
      * Generates the output with Twig or OpenTBS
+     * @param $download
+     * @param bool $reportWithProblems
      * @return type
      */
-    public function output($download)
+    public function output($download, $reportWithProblems = true)
     {
         if ($download) {
             return $this->container->get('jcs.docx')->makeReport($this->template, $this->data, $this->output);
         }
         else {
-            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $this->twigTemplate, ['data' => $this->data]);
+            return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $this->twigTemplate, ['data' => $this->data, 'with_problems' => $reportWithProblems]);
         }
     }
 }

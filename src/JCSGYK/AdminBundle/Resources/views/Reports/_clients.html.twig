@@ -29,9 +29,11 @@
         <td> {{ client.socialSecurityNumber }} </td>
         <td> {% if client.isArchived %}archivált{% else %}aktív{% endif %} </td>
         <td>
-            {% for problem in client.problems %}
-                {{ problem|problem_summ(true)|nl2br }}
-            {% endfor %}
+            {% if with_problems %}
+                {% for problem in client.problems %}
+                    {{ problem|problem_summ(true)|nl2br }}
+                {% endfor %}
+            {% endif %}
         </td>
     </tr>
     {% endfor %}
