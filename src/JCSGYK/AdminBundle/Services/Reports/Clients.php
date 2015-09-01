@@ -243,7 +243,7 @@ class Clients
     public function output($download, $reportWithProblems = true)
     {
         if ($download) {
-            return $this->container->get('jcs.docx')->makeReport($this->template, $this->data, $this->output);
+            return $this->container->get('jcs.docx')->makeReport($this->template, $this->data, $this->output, $reportWithProblems);
         }
         else {
             return $this->container->get('templating')->render('JCSGYKAdminBundle:Reports:' . $this->twigTemplate, ['data' => $this->data, 'with_problems' => $reportWithProblems]);

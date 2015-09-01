@@ -77,9 +77,10 @@ class Docx
      * @param string $template_file Template filename
      * @param array $data Array of merge fields
      * @param $file_name
+     * @param bool $with_problems
      * @return bool
      */
-    public function makeReport($template_file, $data, $file_name)
+    public function makeReport($template_file, $data, $file_name, $with_problems = true)
     {
         $em = $this->container->get('doctrine')->getManager();
 
@@ -93,7 +94,7 @@ class Docx
         $tbs->LoadTemplate($template_file, OPENTBS_ALREADY_UTF8); // OPENTBS_DEFAULT, OPENTBS_ALREADY_UTF8, OPENTBS_ALREADY_XML
 
         // get the field map
-        $fields = $this->getMap($data);
+        $fields = $this->getMap($data, $with_problems);
 
         // do the field merge
         foreach ($fields as $base => $merge) {
@@ -165,9 +166,10 @@ class Docx
      * Create the template field replace map
      *
      * @param array $data
+     * @param bool $with_problems
      * @return array Field Map
      */
-    protected function getMap($data)
+    protected function getMap($data, $with_problems = true)
     {
         $re = [];
         $ae = $this->container->get('jcs.twig.adminextension');
@@ -182,7 +184,7 @@ class Docx
         if (isset($data['blocks']['client'])) {
             $re['blocks']['client'] = [];
             foreach ($data['blocks']['client'] as $client) {
-                $re['blocks']['client'][] = $this->getClientMap($client, true);
+                $re['blocks']['client'][] = $this->getClientMap($client, $with_problems);
             }
         }
         if (isset($data['blocks']['casecount'])) {
@@ -318,6 +320,7 @@ class Docx
     /**
      * Return the Client related fields
      * @param \JCSGYK\AdminBundle\Entity\Client $client
+     * @param bool $with_problems
      * @return array
      */
     private function getClientMap(Client $client, $with_problems = false)
@@ -405,6 +408,8 @@ class Docx
                 $pl[] = ['p' => $ae->problemSummary($problem)];
             }
             $re['problems'] = $pl;
+        } else {
+            $re['problems'] = [];
         }
 
         // check if we have a catering record and add the extra fields
