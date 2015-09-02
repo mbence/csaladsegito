@@ -8,7 +8,8 @@
         <th>Név</th>
         <th>Születési hely</th>
         <th>Születési idő</th>
-        <th>Lakcím</th>
+        <th>Lakóhely</th>
+        <th>Tartózkodási hely</th>
         <th>Esetgazda</th>
         <th>TAJ szám</th>
         <th>Státusz</th>
@@ -21,6 +22,7 @@
         <td> {{ client.birthPlace }} </td>
         <td> {{ client.birthDate|fdate }} </td>
         <td> {{ faddr(client.country, client.zipCode, client.city, client.street, client.streetType, client.streetNumber, client.flatNumber) }} </td>
+        <td> {{ faddr(client.locationCountry, client.locationZipCode, client.locationCity, client.locationStreet, client.locationStreetType, client.locationStreetNumber, client.locationFlatNumber) }} </td>
         <td>
             {% if client.getCaseAdmin %}
                 {{ fname(client.getCaseAdmin.firstname, client.getCaseAdmin.lastname) }}
