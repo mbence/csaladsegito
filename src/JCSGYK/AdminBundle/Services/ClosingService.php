@@ -240,13 +240,15 @@ class ClosingService
 
         if (MonthlyClosing::HOMEHELP == $invoice->getInvoicetype()) {
             $vat = $this->ds->getHomeHelpVat();
+            // deadline is today
+            $deadline = new \DateTime('today');
+            $deadline = $deadline->format('Ymd');
         } else {
             $vat = $this->ds->getVat();
+            // deadline is the 5th day of next month
+            $deadline = clone $invoice->getStartDate();
+            $deadline = $deadline->modify('+4 days')->format('Ymd');
         }
-
-        // deadline is the 5th day of next month
-        $deadline = clone $invoice->getStartDate();
-        $deadline = $deadline->modify('+4 days')->format('Ymd');
 
         $title = MonthlyClosing::HOMEHELP == $invoice->getInvoicetype() ? 'gondozás' : 'étkeztetés';
         if (empty($invoice->getCancelId())) {
@@ -278,6 +280,7 @@ class ClosingService
         if (0 == $vat) {
             $data['szlaatf.txt']['ADOMENTES'] = $net_amount;
             $data['szlaatt.txt']['AFA']       = 'AM';
+            $data['szlaatt.txt']['GYUJTOKOD'] = '321200000';
         } else {
             $data['szlaatf.txt']['NETTO3'] = $net_amount;
             $data['szlaatf.txt']['AFA3']   = $gross_amount - $net_amount;

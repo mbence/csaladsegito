@@ -31,8 +31,10 @@ class Docx
      * Generate a file from a template, merge the fields, and send the file as a download
      * No data mapping happens
      *
-     * @param string $template Template filename
+     * @param $template_file
      * @param array $data Array of merge fields
+     * @param null $file_name
+     * @return
      */
     public function make($template_file, $data, $file_name = null)
     {
@@ -72,10 +74,13 @@ class Docx
     /**
      * Generate a file from a template, merge the fields, and send the file as a download
      *
-     * @param string $template Template filename
+     * @param string $template_file Template filename
      * @param array $data Array of merge fields
+     * @param $file_name
+     * @param bool $with_problems
+     * @return bool
      */
-    public function makeReport($template_file, $data, $file_name)
+    public function makeReport($template_file, $data, $file_name, $with_problems = true)
     {
         $em = $this->container->get('doctrine')->getManager();
 
@@ -89,7 +94,7 @@ class Docx
         $tbs->LoadTemplate($template_file, OPENTBS_ALREADY_UTF8); // OPENTBS_DEFAULT, OPENTBS_ALREADY_UTF8, OPENTBS_ALREADY_XML
 
         // get the field map
-        $fields = $this->getMap($data);
+        $fields = $this->getMap($data, $with_problems);
 
         // do the field merge
         foreach ($fields as $base => $merge) {
@@ -114,6 +119,7 @@ class Docx
      *
      * @param DocTemplate $doc entity
      * @param array $data Array of merge fields
+     * @return bool
      */
     public function show(DocTemplate $doc, $data)
     {
@@ -160,9 +166,10 @@ class Docx
      * Create the template field replace map
      *
      * @param array $data
+     * @param bool $with_problems
      * @return array Field Map
      */
-    protected function getMap($data)
+    protected function getMap($data, $with_problems = true)
     {
         $re = [];
         $ae = $this->container->get('jcs.twig.adminextension');
@@ -177,7 +184,7 @@ class Docx
         if (isset($data['blocks']['client'])) {
             $re['blocks']['client'] = [];
             foreach ($data['blocks']['client'] as $client) {
-                $re['blocks']['client'][] = $this->getClientMap($client, true);
+                $re['blocks']['client'][] = $this->getClientMap($client, $with_problems);
             }
         }
         if (isset($data['blocks']['casecount'])) {
@@ -313,6 +320,7 @@ class Docx
     /**
      * Return the Client related fields
      * @param \JCSGYK\AdminBundle\Entity\Client $client
+     * @param bool $with_problems
      * @return array
      */
     private function getClientMap(Client $client, $with_problems = false)
@@ -397,14 +405,22 @@ class Docx
             $problems = $client->getProblems();
             $pl = [];
             foreach ($problems as $problem) {
-                $param = $problem->getParams();
-                $param = $ae->getParam(reset($param));
-                $status = $problem->getIsActive() ? '' : 'lezárt';
-                $assignee = !empty($problem->getAssignee()) ? $ae->formatName($problem->getAssignee()->getFirstName(), $problem->getAssignee()->getLastName()) : '';
-
-                $pl[] = ['p' => sprintf("%s - %s (%s) %s \n", $problem->getTitle(), $param, $status, $assignee)];
+                $pl[] = ['p' => $ae->problemSummary($problem)];
             }
             $re['problems'] = $pl;
+        } else {
+            $re['problems'] = [];
+        }
+
+        // check if we have a catering record and add the extra fields
+        if (!empty($client->getCatering())) {
+            $cateringMap = $this->getCateringMap($client->getCatering());
+            $re = $re + $cateringMap;
+        }
+        // check if we have a homehelp record and add the extra fields
+        if (!empty($client->getHomehelp())) {
+            $homehelpMap = $this->gethomehelpMap($client->getHomehelp());
+            $re = $re + $homehelpMap;
         }
 
         return $re;
@@ -427,6 +443,11 @@ class Docx
             'klub'      => $catering->getClub()->getName(),
             'klubcim'   => $catering->getClub()->getAddress(),
             'klubtel'   => $catering->getClub()->getPhone(),
+            'etkez_megall_kezdete' => $ae->formatDate($catering->getAgreementFrom(), 'sd'),
+            'etkez_megall_vege' => $ae->formatDate($catering->getAgreementTo(), 'sd'),
+            'etkez_szunet_kezdete' => $ae->formatDate($catering->getPausedFrom(), 'sd'),
+            'etkez_szunet_vege' => $ae->formatDate($catering->getPausedTo(), 'sd'),
+            'etkez_status' => $ae->statusText($catering->getStatus(), false),
         ];
     }
 
@@ -447,7 +468,11 @@ class Docx
             'klub'      => $homehelp->getClub()->getName(),
             'klubcim'   => $homehelp->getClub()->getAddress(),
             'klubtel'   => $homehelp->getClub()->getPhone(),
+            'gondoz_megall_kezdete' => $ae->formatDate($homehelp->getAgreementFrom(), 'sd'),
+            'gondoz_megall_vege' => $ae->formatDate($homehelp->getAgreementTo(), 'sd'),
+            'gondoz_szunet_kezdete' => $ae->formatDate($homehelp->getPausedFrom(), 'sd'),
+            'gondoz_szunet_vege' => $ae->formatDate($homehelp->getPausedTo(), 'sd'),
+            'gondoz_status' => $ae->statusText($homehelp->getStatus(), false),
         ];
     }
-
 }

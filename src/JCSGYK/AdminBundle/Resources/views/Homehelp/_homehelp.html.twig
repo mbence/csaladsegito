@@ -3,14 +3,27 @@
 <div class="toppad">
     {% render(controller('JCSGYKAdminBundle:Menu:homehelp', { 'client': client, 'label': club_type_label, 'type': club_type })) %}
     <div class="clear"></div>
-    {% if homehelp and not homehelp.isActive %}
-        <div class="catering-inactive">
-            Szüneteltetve
-        </div>
-    {% endif %}
     {% if homehelp is defined and homehelp %}
     <div>
         <table class="client" cellspacing="0" border="0">
+            <tr>
+                <th>{{ 'Státus'|trans }}:</th>
+                <td colspan="3">
+                    {{ homehelp.status|status_text }}
+                </td>
+            </tr>
+            <tr>
+                <th>{{ 'Megállapodás'|trans }}:</th>
+                <td colspan="3">
+                    {{ from_to(homehelp.agreementFrom, homehelp.agreementTo) }}
+                </td>
+            </tr>
+            <tr>
+                <th>{{ 'Szüneteltetés'|trans }}:</th>
+                <td colspan="3">
+                    {{ from_to(homehelp.pausedFrom, homehelp.pausedTo) }}
+                </td>
+            </tr>
             <tr>
                 <th>{{ 'Klub'|trans }}:</th>
                 <td colspan="3">{% if homehelp.club %}{{ homehelp.club.name }}{% endif %}</td>
@@ -25,18 +38,6 @@
             <tr>
                 <th>{{ 'Jövedelem'|trans }}:</th>
                 <td colspan="3">{{ homehelp.income|fcurr }}</td>
-            </tr>
-            <tr>
-                <th>{{ 'Megállapodás'|trans }}:</th>
-                <td colspan="3">
-                    {% if homehelp.agreementFrom %}
-                        {{ homehelp.agreementFrom|fdate }}
-                    {% endif %}
-                    -
-                    {% if homehelp.agreementTo %}
-                        {{ homehelp.agreementTo|fdate }}
-                    {% endif %}
-                </td>
             </tr>
             {# Display only for home help clubs! #}
             {% if 0 == club_type %}

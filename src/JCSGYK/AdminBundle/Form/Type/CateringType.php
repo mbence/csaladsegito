@@ -38,9 +38,9 @@ class CateringType extends AbstractType
 
         // clubs
         $builder->add('club', 'entity', [
-            'label' => 'Klub',
-            'class' => 'JCSGYKAdminBundle:Club',
-            'choices'   => $this->clubs,
+            'label'    => 'Klub',
+            'class'    => 'JCSGYKAdminBundle:Club',
+            'choices'  => $this->clubs,
             'required' => true,
         ]);
 
@@ -50,36 +50,55 @@ class CateringType extends AbstractType
         }
 
         $builder->add('menu', 'choice', [
-            'label' => 'Ebéd',
-            'choices'   => $lunch_types,
+            'label'   => 'Ebéd',
+            'choices' => $lunch_types,
         ]);
 
         $builder->add('subscriptions', 'hidden');
-        $builder->add('is_single', 'checkbox', ['label' => 'Egyedülálló']);
+        $builder->add('isSingle', 'checkbox', ['label' => 'Egyedülálló']);
         $builder->add('income', 'text', ['label' => 'Jövedelem (Ft)', 'required' => false]);
         $builder->add('discount', 'text', [
-            'label'     => 'Mérséklés (%)',
-            'required'  => false,
-            'attr' => array('class' => 'short'),
+            'label'    => 'Mérséklés (%)',
+            'required' => false,
+            'attr'     => array('class' => 'short'),
         ]);
-        $builder->add('discount_from', 'date', [
-            'label' => 'Kezdete',
-            'widget' => 'single_text',
-            'attr' => array('class' => 'datepicker', 'type' => 'text'),
+
+        $builder->add('discountFrom', 'date', [
+            'label'    => 'Kezdete',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker'),
             'required' => false,
         ]);
-        $builder->add('discount_to', 'date', [
-            'label' => 'Vége',
-            'widget' => 'single_text',
-            'attr' => array('class' => 'datepicker'),
+        $builder->add('discountTo', 'date', [
+            'label'    => 'Vége',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker'),
             'required' => false,
         ]);
 
-
-        $builder->add('is_active', 'choice', [
-            'label' => '',
-            'choices' => [1 => 'Aktiválás', 0 => 'Szüneteltetés'],
-            'expanded' => true
+        $builder->add('agreementFrom', 'date', [
+            'label'    => 'Megállapodás',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker'),
+            'required' => false,
+        ]);
+        $builder->add('agreementTo', 'date', [
+            'label'    => 'Vége',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker'),
+            'required' => false,
+        ]);
+        $builder->add('pausedFrom', 'date', [
+            'label'    => 'Szüneteltetés',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker'),
+            'required' => false,
+        ]);
+        $builder->add('pausedTo', 'date', [
+            'label'    => 'Vége',
+            'widget'   => 'single_text',
+            'attr'     => array('class' => 'datepicker'),
+            'required' => false,
         ]);
     }
 

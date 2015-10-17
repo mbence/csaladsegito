@@ -212,7 +212,7 @@ class MenuController extends Controller
                 'class' => 'greybutton catering_invoices',
                 'more'  => false,
                 'role'  => 'ROLE_CATERING',
-                'requirement' => $client->canEdit($sec) && $has_catering,
+                'requirement' => $client->canEdit($sec, true) && $has_catering,
             ]
         ];
 

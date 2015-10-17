@@ -33,6 +33,10 @@ services:
         class:        JCSGYK\AdminBundle\Services\Docx
         arguments:    ["@service_container"]
 
+    jcs.xlsx:
+        class:        JCSGYK\AdminBundle\Services\Xlsx
+        arguments:    ["@service_container"]
+
     jcs.stat:
         class:        JCSGYK\AdminBundle\Services\StatService
         arguments:    ["@service_container"]
@@ -55,7 +59,7 @@ services:
 
     jcs.twig.adminextension:
         class:        JCSGYK\AdminBundle\Twig\AdminExtension
-        arguments:    ["@translator", "@jcs.ds"]
+        arguments:    ["@translator", "@jcs.ds", "@router"]
         tags:
             - { name: twig.extension }
     jcs.seq:
@@ -67,8 +71,24 @@ services:
         arguments:    ['@doctrine']
         tags:
             - { name: validator.constraint_validator, alias: client_validator }
+
     jcs.reports.ksh:
         class:        JCSGYK\AdminBundle\Services\Reports\Ksh
+        arguments:    ["@service_container"]
+    jcs.reports.ksh_gyk:
+        class:        JCSGYK\AdminBundle\Services\Reports\KshGyk
+        arguments:    ["@service_container"]
+
+    jcs.reports.clients:
+        class:        JCSGYK\AdminBundle\Services\Reports\Clients
+        arguments:    ["@service_container"]
+
+    jcs.reports.clubvisit:
+        class:        JCSGYK\AdminBundle\Services\Reports\ClubVisit
+        arguments:    ["@service_container"]
+
+    jcs.reports.catering:
+        class:        JCSGYK\AdminBundle\Services\Reports\CateringReport
         arguments:    ["@service_container"]
 
     kenyszi:

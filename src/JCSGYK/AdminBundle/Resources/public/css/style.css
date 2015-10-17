@@ -473,7 +473,13 @@ table.problem-list td {
 .problem-has-agreement {
     width: 10px;
 }
-
+.problem-closed {
+    opacity: 0.6;
+}
+.problem-closed:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
 /* Debts */
 .problem-list tr.debt-sum {
 }
@@ -920,10 +926,12 @@ div.multiselect label {
     cursor: pointer;
     color: #222;
 }
-table.client-edit div.multiselect label:hover {
+table.client-edit div.multiselect label:hover,
+.reports-header div.multiselect label:hover {
     background-color: #89c;
 }
-table.client-edit div.multiselect {
+table.client-edit div.multiselect,
+.reports-header div.multiselect {
     max-height: 15px;
     overflow: hidden;
 /*    transition: max-height 1s 0s;
@@ -934,11 +942,19 @@ table.client-edit div.multiselect {
     background-color: #fff;
     padding: 2px 0 4px;
 }
-table.client-edit div.multiselect.active {
+table.client-edit div.multiselect.active,
+.reports-header div.multiselect.active {
     max-height: 1000px;
     border: 1px solid #ccc;
     box-shadow: 1px 1px 3px 0 #888;
     z-index: 10001;
+}
+.reports-header div.multiselect {
+    float: none !important;
+    position: relative;
+}
+.reports-header div.multiselect div {
+    float: none !important;
 }
 /* modal dialog */
 .modal {
@@ -1060,19 +1076,27 @@ table.task-list tr:hover td {
 }
 #reports-content form div#form > div {
     color: #5661A2;
-    padding: 2px 3px 6px 6px;
+    padding: 4px 20px 6px 0px;
     white-space: nowrap;
 }
 #reports-content #form div {
     float: left;
 }
 #reports-content .show_report {
-    margin: 0 20px;
+    margin: 0 20px 0 0;
 }
 #reports-content .reports-header {
     border-bottom: 1px solid #DDDDDD;
     font-size: 13px;
-    line-height: 17px;
+    /*line-height: 17px;*/
+    position: relative;
+    height: 40px;
+}
+#reports-content .reports-header .button-row {
+    float: left;
+}
+.reports-table th.report-calendar {
+    min-width: 14px;
 }
 .reports-table td {
     font-size: 13px;
@@ -1090,6 +1114,26 @@ table.task-list tr:hover td {
 }
 .reports-table .grey {
     color: #888;
+}
+.reports-table.client-report th {
+    font-size: 15px;
+    font-weight: normal;
+    color: #039;
+    border-bottom: 2px solid #6678B1;
+    padding: 6px;
+}
+.reports-table.client-report td {
+    border: none;
+    padding: 5px 6px;
+    font-size: 13px;
+    color: #34A;
+    border-bottom: 1px solid #CCC;
+}
+.reports-table.client-report tr:hover td {
+    background-color: #f0f0f0 !important;
+}
+.reports-table.client-report tr.client-isarchived-1 td {
+    color: #d04a37;
 }
 table.tbl-right td {
     text-align: right;
@@ -1138,6 +1182,23 @@ h2.menu-section {
     padding: 2px 4px;
     vertical-align: middle;
 }
+table.reports-table.ksh-report {
+    width: 100%;
+    max-width: 700px;
+}
+table.reports-table.ksh-report tr th {
+    border: 1px solid #ccc;
+    font-weight: normal;
+    vertical-align: middle;
+}
+table.reports-table.ksh-report th.vert-txt {
+    width: 20px;
+    padding: 0;
+}
+table.reports-table.ksh-report th.vert-txt div {
+    transform: rotate(270deg);
+    padding: 0;
+}
 /* Caternig */
 .day-of-week {
     float: left;
@@ -1168,11 +1229,20 @@ h2.menu-section {
 #catering_form .disabled {
     opacity: 0.4;
 }
-.catering-inactive {
-    margin: 10px;
-    text-align: center;
+.catering-active {
+    color: #4ac037;
+}
+.catering-paused {
     color: #d04a37;
 }
+.catering-closed {
+    color: #888;
+}
+.client-edit .catering-active, .client-edit .catering-paused, .client-edit .catering-closed{
+    padding-bottom: 4px;
+    display: block;
+}
+
 .client-edit > tbody > tr.catering-top th {
     text-align: left;
     padding-left: 0px;

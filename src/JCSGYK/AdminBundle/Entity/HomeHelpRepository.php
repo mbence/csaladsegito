@@ -20,15 +20,29 @@ class HomeHelpRepository extends EntityRepository
      * @param bool $active
      * @return Client[]
      */
-    public function getClientsBySocialWorker($social_worker, $company_id, $active = true, $only_ids = false)
+    public function getClientsBySocialWorker($social_worker, $company_id, $month = null, $active = true, $only_ids = false)
     {
         $selector = $only_ids ? 'c.id': 'c, h';
+        if (is_null($month)) {
+            $month = new \DateTime('first day of this month');
+        } elseif (!$month instanceof \DateTime) {
+            $month = new \DateTime($month);
+        }
+        $month_end = $month->format('Y-m-t');
 
+        if ($active) {
+            $act_dql = " AND (h.agreementFrom <= :end AND (h.agreementTo IS NULL OR h.agreementTo >= :start) "
+                    . " AND (h.pausedFrom IS NULL OR h.pausedFrom > :start OR (h.pausedTo IS NOT NULL AND h.pausedTo < :end))) ";
+        } else {
+            $act_dql = " AND (h.agreementFrom > :end OR (h.agreementTo IS NOT NULL AND h.agreementTo < :start) "
+                    . " OR (h.pausedFrom IS NOT NULL AND h.pausedFrom <= :start AND (h.pausedTo IS NULL OR h.pausedTo >= :end))) ";
+        }
         $result = $this->getEntityManager()
-            ->createQuery("SELECT {$selector} FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE h.socialWorker = :sw AND c.companyId = :co AND c.isArchived=0 AND h.isActive = :active ORDER BY c.lastname, c.firstname")
+            ->createQuery("SELECT {$selector} FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE h.socialWorker = :sw AND c.companyId = :co AND c.isArchived=0 {$act_dql} ORDER BY c.lastname, c.firstname")
             ->setParameter('sw', $social_worker)
             ->setParameter('co', $company_id)
-            ->setParameter('active', $active)
+            ->setParameter('start', $month)
+            ->setParameter('end', $month_end)
             ->getResult();
 
         // convert the results to a 1 dimension array
@@ -46,15 +60,23 @@ class HomeHelpRepository extends EntityRepository
      * @param bool $active
      * @return Client[]
      */
-    public function getClientsByClub($club, $company_id, $active = true, $only_ids = false)
+    public function getClientsByClub($club, $company_id, $date, $active = true, $only_ids = false)
     {
         $selector = $only_ids ? 'c.id': 'c, h';
 
+        if ($active) {
+            $act_dql = " AND (h.agreementFrom <= :date AND (h.agreementTo IS NULL OR h.agreementTo >= :date) "
+                    . " AND (h.pausedFrom IS NULL OR h.pausedFrom > :date OR (h.pausedTo IS NOT NULL AND h.pausedTo < :date))) ";
+        } else {
+            $act_dql = " AND (h.agreementFrom > :date OR (h.agreementTo IS NOT NULL AND h.agreementTo < :date) "
+                    . " OR (h.pausedFrom IS NOT NULL AND h.pausedFrom <= :date AND (h.pausedTo IS NULL OR h.pausedTo >= :date))) ";
+        }
+
         $result = $this->getEntityManager()
-            ->createQuery("SELECT {$selector} FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE h.club = :club AND c.companyId = :co AND c.isArchived=0 AND h.isActive = :active ORDER BY c.lastname, c.firstname")
+            ->createQuery("SELECT {$selector} FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE h.club = :club AND c.companyId = :co AND c.isArchived=0 {$act_dql} ORDER BY c.lastname, c.firstname")
             ->setParameter('club', $club)
             ->setParameter('co', $company_id)
-            ->setParameter('active', $active)
+            ->setParameter('date', $date)
             ->getResult();
 
         // convert the results to a 1 dimension array
@@ -70,11 +92,25 @@ class HomeHelpRepository extends EntityRepository
      * @param int $company_id
      * @return Client[]
      */
-    public function getActiveClients($company_id)
+    public function getActiveClients($company_id, $month)
     {
+        if (is_null($month)) {
+            $month = new \DateTime('first day of this month');
+        } elseif (!$month instanceof \DateTime) {
+            $month = new \DateTime($month);
+        }
+        $month_end = $month->format('Y-m-t');
+
+        $dql = "SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE c.companyId = :co "
+            . " AND (h.agreementFrom <= :end AND (h.agreementTo IS NULL OR h.agreementTo >= :start) "
+            . " AND (h.pausedFrom IS NULL OR h.pausedFrom > :start OR (h.pausedTo IS NOT NULL AND h.pausedTo < :end))) "
+            . " AND c.isArchived=0 ORDER BY c.lastname, c.firstname";    
+
         return $this->getEntityManager()
-            ->createQuery("SELECT c, h FROM JCSGYKAdminBundle:Client c JOIN c.homehelp h WHERE c.companyId = :co AND h.isActive = 1 AND c.isArchived=0 ORDER BY c.lastname, c.firstname")
+            ->createQuery($dql)
             ->setParameter('co', $company_id)
+            ->setParameter('start', $month)
+            ->setParameter('end', $month_end)
             ->getResult();
     }
 

@@ -1,6 +1,34 @@
 {# Edit Catering #}
-{% form_theme form 'JCSGYKAdminBundle:Form:fields.html.twig' %}
+
 <div class="client-sub">{{ 'étkeztetés'|trans }}</div>
+<table class="client-edit" cellspacing="0" border="0">
+    <tr>
+        <th>{{ 'Státus'|trans }}:</th>
+        <td>
+            {{ client.catering.status|status_text }}
+        </td>
+    </tr>
+    <tr class="visit-type">
+        <th>{{ form_label(form.agreementFrom) }}:</th>
+        <td>
+            {{ form_errors(form.agreementFrom) }}{{ form_errors(form.agreementTo) }}
+            <div class="inblock">{{ form_widget(form.agreementFrom) }} - </div>
+            <div class="inblock">{{ form_widget(form.agreementTo) }}</div>
+        </td>
+    </tr>
+    <tr class="visit-type">
+        <th class="noborder">{{ form_label(form.pausedFrom) }}:</th>
+        <td class="noborder">
+            {{ form_errors(form.pausedFrom) }}{{ form_errors(form.pausedTo) }}
+            <div class="inblock">{{ form_widget(form.pausedFrom) }} - </div>
+            <div class="inblock">{{ form_widget(form.pausedTo) }}</div>
+            <button title="{{ 'Szüneteltetési dátumok törlése'|trans }}" class="clear-paused-dates greybutton smallbutton" type="button"><span style="line-height: normal;">{{ 'x'|trans }}</span></button>
+        </td>
+    </tr>
+</table>
+
+{% include "JCSGYKAdminBundle:Catering:_edit_weekly_orders.html.twig" %}
+<br>
 <table class="client-edit" cellspacing="0" border="0">
     <tr>
         <th>{{ form_label(form.club) }}:</th>
@@ -11,8 +39,8 @@
         <td>{{ form_errors(form.menu) }}{{ form_widget(form.menu) }}</td>
     </tr>
     <tr>
-        <th>{{ form_label(form.is_single) }}:</th>
-        <td>{{ form_errors(form.is_single) }}{{ form_widget(form.is_single) }}</td>
+        <th>{{ form_label(form.isSingle) }}:</th>
+        <td>{{ form_errors(form.isSingle) }}{{ form_widget(form.isSingle) }}</td>
     </tr>
     <tr>
         <th>{{ form_label(form.income) }}:</th>
@@ -23,8 +51,8 @@
         <td>
             <div class="inblock">{{ form_errors(form.discount) }}{{ form_widget(form.discount) }}</div>
             <div class="inblock"> Időtartam:</div>
-            <div class="inblock">{{ form_errors(form.discount_from) }}{{ form_widget(form.discount_from) }} - </div>
-            <div class="inblock">{{ form_errors(form.discount_to) }}{{ form_widget(form.discount_to) }}</div>
+            <div class="inblock">{{ form_errors(form.discountFrom) }}{{ form_widget(form.discountFrom) }} - </div>
+            <div class="inblock">{{ form_errors(form.discountTo) }}{{ form_widget(form.discountTo) }}</div>
         </td>
     </tr>
 </table>

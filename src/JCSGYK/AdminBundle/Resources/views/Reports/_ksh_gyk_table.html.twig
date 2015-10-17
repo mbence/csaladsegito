@@ -1,0 +1,28 @@
+    <br>
+    <div>{{ table_title }}</div>
+    <br>
+    {% if table_data|length %}
+    <table class="reports-table ksh-report">
+        <tr>
+            <th rowspan="2" width="35">Sor- szám</th>
+            <th rowspan="2" width="70%" {% if rowspans is defined and rowspans %}colspan="2"{% endif %}>Megnevezés</th>
+            <th>{{ table_header_1 }}</th>
+            <th>{{ table_header_2 }}</th>
+        </tr>
+        <tr>
+            <th>a</th>
+            <th>b</th>
+        </tr>
+        {% for col in table_data %}
+        <tr>
+            <th>{{ col['n'] }}</th>
+            {% if rowspans is defined and rowspans and col['sub'] %}
+                <th rowspan="{{ col['sub'] }}">Ebből ({{ col['sublabel'] }}-ből)</th>
+            {% endif %}
+            <td {% if col['colspan'] is defined and col['colspan'] %}colspan="{{ col['colspan'] }}"{% endif %}>{{ col['label']|raw }}</td>
+            <td class="center">{{ col['count'] }}</td>
+            <td class="center">{{ col['clients'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}

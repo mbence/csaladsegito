@@ -501,42 +501,48 @@ class InvoiceService
         $orders = $orders_repo->getOrdersForPeriod($client->getId(), $start_date, $end_date);
 
         foreach ($days as $ISO_date => $sub) {
-            // only deal with orders at the moment
-            if ($sub == 1) {
-                $date = new \DateTime($ISO_date);
-                // check if we have any records for that day
-                if (!empty($orders[$ISO_date])) {
-                    $order = $orders[$ISO_date];
+            $date = new \DateTime($ISO_date);
+            $status = $catering->getStatus($date);
 
-                    if ($order->getClosed() == false // make sure, that we only modify open records!
-                        && $order->getCancel() == false // and we also skip records, that are already cancelled
-                    ) {
-                        $order->setOrder(true);
-                    }
+            // only deal with orders, and if that day is not closed
+            if ($sub != 1 || Catering::CLOSED == $status) {
+                continue;
+            }
+
+            // check if we have any records for that day
+            if (!empty($orders[$ISO_date])) {
+                $order = $orders[$ISO_date];
+
+                if ($order->getClosed() == false // make sure, that we only modify open records!
+                    && $order->getCancel() == false // and we also skip records, that are already cancelled
+                    && Catering::ACTIVE == $status // and we only do anything if that day is active
+                ) {
+                    $order->setOrder(true);
                 }
+            }
                 // or if no record exists, we create a new one
-                else {
-                    // no record for this day, lets create one!
-                    $order = new ClientOrder();
-                    $order->setCompanyId($company_id);
-                    $order->setClient($client);
-                    $order->setDate($date);
-                    if ($catering->getIsActive()) {
-                        $order->setOrder(true);
-                        $order->setCancel(false);
-                        $order->setClosed(false);
-                    }
-                    else {
-                        // for inactive clients we set a cancelled record
-                        $order->setOrder(false);
-                        $order->setCancel(true);
-                        $order->setClosed(false);
-                    }
-                    $order->setCreator($user);
-                    $order->setMenu($catering->getMenu());
+            else {
+                // no record for this day, lets create one!
+                $order = (new ClientOrder())
+                    ->setCompanyId($company_id)
+                    ->setClient($client)
+                    ->setDate($date)
+                    ->setCreator($user)
+                    ->setMenu($catering->getMenu())
+                ;
 
-                    $em->persist($order);
+                if (Catering::ACTIVE == $status) {
+                    $order->setOrder(true);
+                    $order->setCancel(false);
+                    $order->setClosed(false);
+                } elseif (Catering::PAUSED == $status) {
+                    // for paused days we set a cancelled record
+                    $order->setOrder(false);
+                    $order->setCancel(true);
+                    $order->setClosed(false);
                 }
+
+                $em->persist($order);
             }
         }
 
@@ -591,9 +597,9 @@ class InvoiceService
 
         $em = $this->container->get('doctrine')->getManager();
         // calculate the balance of the open invoices
-        $res = $em->createQuery("SELECT SUM(i.amount - i.balance) as balance FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client AND i.status = :status AND i.invoicetype IN (:types)")
+        $res = $em->createQuery("SELECT SUM(i.amount - i.balance) as balance FROM JCSGYKAdminBundle:Invoice i WHERE i.client = :client AND i.status IN (:status) AND i.invoicetype IN (:types)")
             ->setParameter('client', $source->getClient())
-            ->setParameter('status', Invoice::OPEN)
+            ->setParameter('status', [Invoice::READY_TO_SEND, Invoice::OPEN])
             ->setParameter('types', $types)
             ->getSingleResult();
 
@@ -617,15 +623,15 @@ class InvoiceService
 
         if (MonthlyClosing::HOMEHELP == $closing_type) {
             $types = [Invoice::HOMEHELP];
-            $dql = "UPDATE JCSGYKAdminBundle:Homehelp h SET h.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = h.client AND i.status = :status AND i.invoicetype IN (:types))";
+            $dql = "UPDATE JCSGYKAdminBundle:Homehelp h SET h.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = h.client AND i.status IN (:status) AND i.invoicetype IN (:types))";
         } else {
             $types = [Invoice::MONTHLY, Invoice::DAILY];
-            $dql = "UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status = :status AND i.invoicetype IN (:types))";
+            $dql = "UPDATE JCSGYKAdminBundle:Catering a SET a.balance = (SELECT SUM(i.amount - i.balance) FROM JCSGYKAdminBundle:Invoice i WHERE i.client = a.client AND i.status IN (:status) AND i.invoicetype IN (:types))";
         }
 
         // calculate the balance of the open invoices
         $em->createQuery($dql)
-            ->setParameter('status', Invoice::OPEN)
+            ->setParameter('status', [Invoice::READY_TO_SEND, Invoice::OPEN])
             ->setParameter('types', $types)
             ->execute();
         $em->flush();
@@ -634,15 +640,23 @@ class InvoiceService
     /**
      * Return a list of months for the reports
      * @param int $company_id
+     * @param int|array $types filter by invoicetype
      * @return array
      */
-    public function getMonths($company_id)
+    public function getMonths($company_id, $types = null)
     {
+        if (is_null($types)) {
+            $types = [Invoice::MONTHLY, Invoice::DAILY];
+        } elseif (!is_array($types)) {
+            $types = [$types];
+        }
+
         $em = $this->container->get('doctrine')->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
 
-        $res = $em->createQuery("SELECT DISTINCT(DATE_FORMAT(i.startDate, '%Y-%m')) as date FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id ORDER BY i.startDate DESC")
+        $res = $em->createQuery("SELECT DISTINCT(DATE_FORMAT(i.startDate, '%Y-%m')) as date FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id AND i.invoicetype IN (:types) ORDER BY i.startDate DESC")
                 ->setParameter('company_id', $company_id)
+                ->setParameter('types', $types)
                 ->setMaxResults(12)
                 ->getResult();
 
@@ -805,6 +819,157 @@ class InvoiceService
                 $sums['discount_days'] += $data_row['discount_days'];
                 $sums['days']       += $data_row['days'];
                 $sums['weekdays']   += $data_row['weekdays'];
+            }
+            // format the summary debt
+            $sums['debt'] = $ae->formatCurrency2($sums['debt']);
+            $sums['amount'] = $ae->formatCurrency2($sums['amount']);
+            // add the summary to the end of the report
+            $data[] = $sums;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get the monthy homehelp report
+     *
+     * @param int $company_id
+     * @param \DateTime $month
+     * @param string $report slug of the report (summary or datacheck)
+     * @return array
+     */
+    public function getHomehelpReport($company_id, \DateTime $month, $report = null)
+    {
+        // clear the time part
+        $month_end = $month->format('Y-m-t');
+        $month_start = $month->format('Y-m-01');
+
+        $em = $this->container->get('doctrine')->getManager();
+        $ae = $this->container->get('jcs.twig.adminextension');
+
+        $data = [];
+        // find all the invoices and clients of the given month
+        $sql = "SELECT i, c, h FROM JCSGYKAdminBundle:Invoice i JOIN i.client c JOIN c.homehelp h "
+                . "WHERE i.companyId = :company_id AND i.endDate >= :month_start AND i.endDate <= :month_end AND i.invoicetype IN (:types) AND i.cancelId IS NULL AND i.status != -1 ";
+
+        $sql .= "ORDER BY c.lastname, c.firstname, i.createdAt";
+
+        $q = $em->createQuery($sql)
+            ->setParameter('company_id', $company_id)
+            ->setParameter('month_start', $month_start)
+            ->setParameter('month_end', $month_end)
+            ->setParameter('types', [Invoice::HOMEHELP])
+        ;
+
+        $res = $q->getResult();
+
+        // debt, invoice items, workday / weekend
+        if (!empty($res)) {
+            // summary
+            $sums = [
+                'id'         => '',
+                'name'       => 'ÖSSZESEN',
+                'address'    => '',
+                'debt'       => 0,
+                'amount'     => 0,
+                'hours'      => 0,
+                'unit_price' => '',
+                'weekdays'   => 0,
+                'cancel_id'  => '',
+                'income'     => '',
+                'orders'     => '',
+                'visits'     => 0,
+            ];
+
+            // empty month
+            $empty_month = [];
+            foreach (range(1, 31) as $d) {
+                $empty_month[$d] = '';
+            }
+            if (in_array($report, ['homehelp_visits', 'homehelp_hours'])) {
+                $sums['calendar'] = $empty_month;
+            }
+
+            foreach ($res as $invoice) {
+                // we can skip cancelled and cancelling invoices for the catering_summary_detailed and catering_datacheck reports
+                if (in_array($report, ['catering_summary_detailed', 'catering_datacheck']) &&
+                        (!empty($invoice->getCancelId()) || Invoice::CANCELLED == $invoice->getStatus())) {
+                    continue;
+                }
+
+                $client = $invoice->getClient();
+                $homehelp = $client->getHomehelp();
+                $items = json_decode($invoice->getItems(), true);
+                // process items
+                $discount = [];
+                $costs = [];
+                foreach ($items as $item) {
+                    if ($item['unit_price'] >= 0) {
+                        $costs = $item;
+                    }
+                    else {
+                        $discount = $item;
+                    }
+                }
+
+                // normal invoices
+                $data_row = [
+                    'id'            => $client->getCaseLabel(),
+                    'name'          => $ae->formatName($client->getFirstname(), $client->getLastname(), $client->getTitle()),
+                    'address'       => sprintf('(%s)', $ae->formatAddress('', '', $client->getStreet(), $client->getStreetType(), $client->getStreetNumber(), $client->getFlatNumber())),
+                    'debt'          => $invoice->getStatus() == Invoice::OPEN && ($invoice->getAmount() - $invoice->getBalance() > 0) ? $invoice->getAmount() - $invoice->getBalance() : '',
+                    'amount'        => $ae->formatCurrency2($invoice->getAmount()),
+                    'hours'         => empty($costs) ? 0 : $costs['quantity'],
+                    'unit_price'    => $ae->formatCurrency2(empty($costs) ? 0 : $costs['unit_price']),
+                    'weekdays'      => empty($costs) ? 0 : $costs['weekday_quantity'],
+                    'cancel_id'     => $invoice->getCancelId(),
+                    'visits'        => $costs['visits'],
+                ];
+
+                // cancel invoices
+                if (!empty($data_row['cancel_id'])) {
+                    $data_row['debt']          = 'sztornó számla';
+                }
+
+                // cancelled invoices
+                if ($invoice->getStatus() == Invoice::CANCELLED) {
+                    $data_row['debt'] = 'sztornózva';
+                }
+
+                $data_row['income']    = $ae->formatCurrency2($homehelp->getIncome());
+                // extra fields for detailed report
+                if ('homehelp_visits' == $report) {
+                    $data_row['calendar'] = $empty_month;
+                    $days = json_decode($invoice->getDays(), true);
+                    if (is_array($days)) {
+                        foreach ($days as $day => $o) {
+                            $n = (new \DateTime($day))->format('j');
+                            $data_row['calendar'][$n] = $o > 0 ? 'X' : '-';
+                        }
+                    }
+                }
+                if ('homehelp_hours' == $report) {
+                    $data_row['calendar'] = $empty_month;
+                    $days = json_decode($invoice->getDays(), true);
+                    if (is_array($days)) {
+                        foreach ($days as $day => $o) {
+                            $n = (new \DateTime($day))->format('j');
+                            $data_row['calendar'][$n] = $o;
+                        }
+                    }
+                }
+
+                // debt depends on some factors above
+                if (is_numeric($data_row['debt'])) {
+                    $sums['debt']   += $data_row['debt'];
+                    $data_row['debt'] = $ae->formatCurrency2($data_row['debt']);
+                }
+                $data[] = $data_row;
+
+                $sums['amount']   += $invoice->getAmount();
+                $sums['hours']    += $data_row['hours'];
+                $sums['weekdays'] += $data_row['weekdays'];
+                $sums['visits']   += $data_row['visits'];
             }
             // format the summary debt
             $sums['debt'] = $ae->formatCurrency2($sums['debt']);

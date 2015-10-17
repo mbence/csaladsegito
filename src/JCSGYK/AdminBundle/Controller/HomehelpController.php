@@ -37,7 +37,7 @@ class HomehelpController extends Controller
         $em = $this->container->get('doctrine')->getManager();
         $ae = $this->container->get('jcs.twig.adminextension');
 
-        $clients = $this->getSocialWorkersClients($social_worker);
+        $clients = $this->getSocialWorkersClients($social_worker, $month);
 
         if (empty($month)) {
             $month = 'first day of this month';
@@ -96,7 +96,7 @@ class HomehelpController extends Controller
             $clients_to_remove = json_decode($form->get('to_remove')->getData(), true);
             if (is_array($clients_to_remove) && !empty($clients_to_remove)) {
                 // get the clients of this social worker
-                $my_clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), true, true);
+                $my_clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), $month, true, true);
 
                 $hm_clients = $hh_month->getHmClients();
                 foreach ($hm_clients as $hm_client) {
@@ -426,7 +426,7 @@ class HomehelpController extends Controller
      * @internal param $clients
      * @return array list of clients
      */
-    private function getSocialWorkersClients(&$social_worker)
+    private function getSocialWorkersClients(&$social_worker, $month)
     {
         $ds = $this->container->get('jcs.ds');
         $em = $this->container->get('doctrine')->getManager();
@@ -440,7 +440,7 @@ class HomehelpController extends Controller
         // find the clients of this social worker
         $clients = [];
         if (!empty($social_worker)) {
-            $clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsBySocialWorker($social_worker, $ds->getCompanyId());
+            $clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), $month);
         }
 
         return $clients;
@@ -736,9 +736,9 @@ class HomehelpController extends Controller
             throw new HttpException(400, "Bad request");
         }
         // get the clients of this social worker
-        $my_clients = $hh_repo->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), true, true);
+        $my_clients = $hh_repo->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), $month, true, true);
         // the the inactive clients
-        $my_inactive_clients = $hh_repo->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), false, true);
+        $my_inactive_clients = $hh_repo->getClientsBySocialWorker($social_worker, $ds->getCompanyId(), $month, false, true);
 
         // find the clients associated with this homehelp_month record
         $hh_month = $this->getHHMonth($social_worker, $month);
@@ -806,7 +806,7 @@ class HomehelpController extends Controller
         $ae = $this->container->get('jcs.twig.adminextension');
 
         // get all active home help clients
-        $clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getActiveClients($ds->getCompanyId());
+        $clients = $em->getRepository('JCSGYKAdminBundle:HomeHelp')->getActiveClients($ds->getCompanyId(), $month);
         $client_list = [];
         foreach ($clients as $client) {
             $client_list[$client->getId()] = $ae->formatClientName($client);

@@ -11,18 +11,20 @@ use JCSGYK\AdminBundle\Form\Type\ProblemType;
 use JCSGYK\AdminBundle\Entity\Paramgroup;
 use JCSGYK\AdminBundle\Services\DataStore;
 use JCSGYK\AdminBundle\Entity\Invoice;
-
 use JCSGYK\AdminBundle\Entity\History;
+use JCSGYK\AdminBundle\Entity\Catering;
 
 class AdminExtension extends \Twig_Extension
 {
     private $translator;
     private $ds;
+    private $router;
 
-    public function __construct(Translator $translator, DataStore $ds)
+    public function __construct($translator, DataStore $ds, $router)
     {
         $this->translator = $translator;
-        $this->ds = $ds;
+        $this->ds         = $ds;
+        $this->router     = $router;
     }
 
     public function getFilters()
@@ -47,6 +49,8 @@ class AdminExtension extends \Twig_Extension
             'order_status'   => new \Twig_Filter_Method($this, 'dailyOrderStatus'),
             'first_line'     => new \Twig_Filter_Method($this, 'firstLine'),
             'a2l'            => new \Twig_Filter_Method($this, 'array2List'),
+            'status_text'    => new \Twig_Filter_Method($this, 'statusText', ['is_safe' => ['html']]),
+            'problem_summ'   => new \Twig_Filter_Method($this, 'problemSummary', ['is_safe' => ['html']]),
         ];
     }
 
@@ -68,7 +72,46 @@ class AdminExtension extends \Twig_Extension
             'getct'              => new \Twig_Function_Method($this, 'getClientTypes'),
             'log_data'           => new \Twig_Function_Method($this, 'logData', ['is_safe' => ['html']]),
             'log_event'          => new \Twig_Function_Method($this, 'logEvent', ['is_safe' => ['html']]),
+            'from_to'            => new \Twig_Function_Method($this, 'fromTo', ['is_safe' => ['html']]),
         );
+    }
+
+    public function fromTo(\DateTime $from = null, \DateTime $to = null)
+    {
+        $re = [];
+        if (!empty($from)) {
+            $re[] = substr($this->formatDate($from), 0, -1);
+        }
+        $re[] = '-';
+        if (!empty($to)) {
+            if ($from->format('Y') != $to->format('Y')) {
+                $re[] = $this->formatDate($to);
+            } elseif ($from->format('m') != $to->format('m')) {
+                $re[] = $this->formatDate($to, 'md');
+            } else {
+                $re[] = $to->format('d.');
+            }
+        }
+
+        return implode(' ', $re);
+    }
+
+    public function statusText($status, $html = true)
+    {
+        if (Catering::ACTIVE == $status) {
+            $class = 'catering-active';
+            $text = 'Aktív';
+        } elseif (Catering::PAUSED == $status) {
+            $class = 'catering-paused';
+            $text = 'Szüneteltetve';
+        } elseif (Catering::CLOSED == $status) {
+            $class = 'catering-closed';
+            $text = 'Lezárva';
+        }
+
+        $re = $html ? sprintf('<span class="%s">%s</span>', $class, $text) : $text;
+
+        return $re;
     }
 
     public function logData(History $log)
@@ -93,6 +136,48 @@ class AdminExtension extends \Twig_Extension
         else {
             $re[] = $log_data;
         }
+
+        return $re;
+    }
+
+    /**
+     * Make a summary of the problems, optionally with direct links
+     * @param Problem $problem
+     * @param type $with_links
+     * @return string
+     */
+    public function problemSummary(Problem $problem, $with_links = false)
+    {
+        if ($problem->getIsDeleted()) {
+            return;
+        }
+
+        $param    = $problem->getParams();
+        $param    = $this->getParam(reset($param));
+        $status   = $problem->getIsActive() ? '' : '(lezárt)';
+        $assignee = !empty($problem->getAssignee()) ? $this->formatName($problem->getAssignee()->getFirstName(), $problem->getAssignee()->getLastName()) : '';
+
+        $re = sprintf("%s - %s %s %s", $problem->getTitle(), $param, $status, $assignee);
+
+        // Extra text for Child Welfare clients
+        if ($problem->getClient()->getType() == Client::CW) {
+            $client_param = $problem->getClient()->getParam(101);
+            if (!empty($client_param)) {
+                $re .= " (" . $this->getParam($client_param) . ')';
+            }
+        }
+        if ($with_links) {
+            $client = $problem->getClient();
+            $problem_url = $this->router->generate('clients', [
+                'client_id' => $client->getId(),
+                'client_type' => $this->clientTypeMap($client->getType()),
+                'problem_id' => $problem->getId(),
+            ]);
+            $pclass = $problem->getIsActive() ? '' : ' class="problem-closed"';
+            $re = sprintf('<a href="%s" %s>%s</a>', $problem_url, $pclass, $re);
+        }
+
+        $re .= "\n";
 
         return $re;
     }
@@ -154,6 +239,8 @@ class AdminExtension extends \Twig_Extension
             'managedDebt'          => 'Kezelt',
             'agreementFrom'        => 'Megállapodás kezdete',
             'agreementTo'          => 'Megállapodás vége',
+            'pausedFrom'           => 'Szüneteltetés kezdete',
+            'pausedTo'             => 'Szüneteltetés vége',
             'warningSystem'        => 'Jelzőrendszer',
             'inpatient'            => 'Fekvőbeteg',
             'hours'                => 'ORSZI óra',

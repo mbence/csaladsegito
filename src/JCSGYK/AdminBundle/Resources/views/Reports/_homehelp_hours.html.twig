@@ -1,0 +1,22 @@
+<h1>{{ data['ca.cim'] }} {{ data['ca.klub'] }}</h1>
+<table class="reports-table">
+    <tr>
+        <th rowspan="2">Név</th>
+        <th colspan="31">Naptári napok</th>
+        <th rowspan="2">Gondozási<br>órák<br>száma</th>
+    </tr>
+    <tr>
+        {% for day in data.blocks.months_days %}
+        <th>{{ day }}</th>
+        {% endfor %}
+    </tr>
+    {% for homehelp in data.blocks.homehelp %}
+    <tr>
+        <td><strong>{{ homehelp.name }}</strong></td>
+        {% for day in homehelp.calendar %}
+            <td>{{ day }}</td>
+        {% endfor %}
+        <td class="center"> {{ homehelp.hours }} </td>
+    </tr>
+    {% endfor %}
+</table>

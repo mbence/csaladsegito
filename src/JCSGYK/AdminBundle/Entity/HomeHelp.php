@@ -3,6 +3,8 @@
 namespace JCSGYK\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * HomeHelp
@@ -17,6 +19,9 @@ class HomeHelp
     /** Visit type (Clubs) */
     const VISIT = 1;
 
+    const ACTIVE = 1;
+    const PAUSED = -1;
+    const CLOSED = 0;
     /**
      * @var integer
      *
@@ -97,6 +102,20 @@ class HomeHelp
     private $agreementTo;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="paused_from", type="date", nullable=true)
+     */
+    private $pausedFrom;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="paused_to", type="date", nullable=true)
+     */
+    private $pausedTo;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="services", type="json_array", nullable=true)
@@ -175,7 +194,7 @@ class HomeHelp
      */
     public function getHistoryFields()
     {
-        return ['club', 'socialWorker', 'isActive', 'income', 'discount', 'discountFrom', 'discountTo', 'agreementFrom', 'agreementTo', 'services', 'warningSystem', 'inpatient', 'handicap', 'hours'];
+        return ['club', 'socialWorker', 'income', 'discount', 'discountFrom', 'discountTo', 'agreementFrom', 'agreementTo', 'pausedFrom', 'pausedTo', 'services', 'warningSystem', 'inpatient', 'handicap', 'hours'];
     }
 
     /**
@@ -196,6 +215,63 @@ class HomeHelp
         ];
     }
 
+    /**
+     * Normalize the date parameter
+     * @param mixed $date
+     * @return \DateTime
+     */
+    private function fixDate($date)
+    {
+        if (empty($date)) {
+            $date = new \DateTime('today');
+        } elseif (!$date instanceof \DateTime) {
+            $date = new \DateTime($date);
+        }
+
+        return $date;
+    }
+
+    /**
+     * Is this catering active?
+     * @param mixed $date
+     * @return boolean
+     */
+    public function isActive($date = null)
+    {
+        return $this->getStatus($date) == self::ACTIVE ? true : false;
+    }
+
+    /**
+     * Do we have an agreement?
+     * @param mixed $date
+     * @return boolean
+     */
+    public function hasAgreement($date = null)
+    {
+        return $this->getStatus($date) != self::CLOSED ? true : false;
+    }
+
+    /**
+     * Get status
+     * @param mixed $date
+     * @return integer
+     */
+    public function getStatus($date = null)
+    {
+        $date = $this->fixDate($date);
+
+        // check for agreement
+        if ((empty($this->getAgreementFrom()) || $date < $this->getAgreementFrom()) || (!empty($this->getAgreementTo()) && $date > $this->getAgreementTo())) {
+            return self::CLOSED;
+        }
+
+        // check for pause
+        if ((!empty($this->getPausedFrom()) && $date >= $this->getPausedFrom()) && (empty($this->getPausedTo()) || $date <= $this->getPausedTo())) {
+            return self::PAUSED;
+        }
+
+        return self::ACTIVE;
+    }
 
     /**
      * Get id
@@ -697,5 +773,53 @@ class HomeHelp
     public function getInpatient()
     {
         return $this->inpatient;
+    }
+
+    /**
+     * Set pausedFrom
+     *
+     * @param \DateTime $pausedFrom
+     *
+     * @return HomeHelp
+     */
+    public function setPausedFrom($pausedFrom)
+    {
+        $this->pausedFrom = $pausedFrom;
+
+        return $this;
+    }
+
+    /**
+     * Get pausedFrom
+     *
+     * @return \DateTime
+     */
+    public function getPausedFrom()
+    {
+        return $this->pausedFrom;
+    }
+
+    /**
+     * Set pausedTo
+     *
+     * @param \DateTime $pausedTo
+     *
+     * @return HomeHelp
+     */
+    public function setPausedTo($pausedTo)
+    {
+        $this->pausedTo = $pausedTo;
+
+        return $this;
+    }
+
+    /**
+     * Get pausedTo
+     *
+     * @return \DateTime
+     */
+    public function getPausedTo()
+    {
+        return $this->pausedTo;
     }
 }

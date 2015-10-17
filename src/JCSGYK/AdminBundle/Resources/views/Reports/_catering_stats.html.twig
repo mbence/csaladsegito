@@ -9,10 +9,6 @@
         <td> {{ data['cnum.new'] }} </td>
     </tr>
     <tr>
-        <th>Újra nyitott</th>
-        <td> {{ data['cnum.reopened'] }} </td>
-    </tr>
-    <tr>
         <th>Teljes havi létszám</th>
         <td> {{ data['cnum.all'] }} </td>
     </tr>
@@ -21,7 +17,11 @@
         <td> {{ data['cnum.active'] }} </td>
     </tr>
     <tr>
-        <th>Megszűntek</th>
+        <th>Szünetelők</th>
+        <td> {{ data['cnum.paused'] }} </td>
+    </tr>
+    <tr>
+        <th>Megszűntek (archiváltak)</th>
         <td> {{ data['cnum.archived'] }} </td>
     </tr>
     <tr>
@@ -56,8 +56,16 @@
         <td> {{ data['inv.payendcli'] }} </td>
     </tr>
     <tr>
-        <th>Térítési díj bevétel összesen</th>
+        <th>Várható térítési díj bevétel összesen</th>
         <td colspan="2"> {{ data['inv.sum'] }} </td>
+    </tr>
+    <tr>
+        <th>Könyvelt térítési díj bevétel összesen</th>
+        <td colspan="2"> {{ data['inv.acc'] }} </td>
+    </tr>
+    <tr>
+        <th>Térítési díj elmaradás összesen</th>
+        <td colspan="2"> {{ data['inv.def'] }} </td>
     </tr>
     <tr>
         <th>Étkezők száma NŐ</th>

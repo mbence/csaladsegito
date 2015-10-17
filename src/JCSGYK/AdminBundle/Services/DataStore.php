@@ -847,6 +847,23 @@ class DataStore
         return $re;
     }
 
+
+    /**
+     * Convert the list of Case admins from User entities to plain strings
+     * @param $caseAdminList
+     * @return mixed
+     */
+    public function convertCaseAdminsToString($caseAdminList)
+    {
+        foreach ($caseAdminList as &$group) {
+            foreach ($group as &$user) {
+                $user = $user->__toString();
+            }
+        }
+
+        return $caseAdminList;
+    }
+
     /**
      * Return holiday day types
      *
@@ -916,6 +933,9 @@ class DataStore
         $new_date->modify('+' . ($day_count-1) . ' days');
         $last_day     = $new_date->format('N');
 
+        // allow modification of past dates?
+        $check_dates = $this->getDateCheckParam();
+
         for ($i = 1; $i < $first_day; $i++) {
             $month[] = [
                 'day'     => null,
@@ -927,12 +947,16 @@ class DataStore
             if (count($month) % 7 == 0) {
                 $week++;
             }
-            $month[] = [
+            $day = [
                 'day'     => $i,
                 'week'    => $week,
                 'weekend' => (count($month) % 7 == 5 || count($month) % 7 == 6) ? true : false,
                 'modifiable' => (strtotime($actual_month . $i) < $first_modifiable_day) ? 0 : 1
             ];
+            if (!$check_dates) {
+                $day['modifiable'] = 1;
+            }
+            $month[] = $day;
         }
         for ($i = 7; $i > $last_day; $i--) {
             $month[] = [
@@ -943,6 +967,19 @@ class DataStore
         }
 
         return $month;
+    }
+
+    /**
+     * Reads the Date Check setting from /app/config/parameters.yml if available
+     * @return bool
+     */
+    public function getDateCheckParam() {
+        $check_dates = true;
+        if ($this->container->hasParameter('catering_date_check')) {
+            $check_dates = $this->container->getParameter('catering_date_check');
+        }
+
+        return $check_dates;
     }
 
     /**
@@ -999,7 +1036,14 @@ class DataStore
      */
     public function getHolidaysDetails($start_date, $end_date)
     {
-        $holidays = $this->getOption('holidays', $start_date);
+        if (substr($start_date, 0, 4) == substr($end_date, 0, 4)) {
+            $holidays = $this->getOption('holidays', $start_date);
+        }
+        else {
+            $h1       = $this->getOption('holidays', $start_date);
+            $h2       = $this->getOption('holidays', substr($end_date, 0, 4) . '-01-01');
+            $holidays = array_merge($h1, $h2);
+        }
         $re = [];
         foreach ($holidays as $day) {
             if ($day[0] >= $start_date && $day[0] <= $end_date) {
@@ -1021,7 +1065,14 @@ class DataStore
      */
     public function getHolidays($start_date, $end_date)
     {
-        $holidays = $this->getOption('holidays', $start_date);
+        if (substr($start_date, 0, 4) == substr($end_date, 0, 4)) {
+            $holidays = $this->getOption('holidays', $start_date);
+        }
+        else {
+            $h1       = $this->getOption('holidays', $start_date);
+            $h2       = $this->getOption('holidays', substr($end_date, 0, 4) . '-01-01');
+            $holidays = array_merge($h1, $h2);
+        }
         $re = [];
         foreach ($holidays as $day) {
             if ($day[0] >= $start_date && $day[0] <= $end_date) {

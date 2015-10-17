@@ -1834,13 +1834,14 @@ class Client
      * - USERS who have a problem with the client, can also edit
      *
      * @param SecurityContext $sec
+     * @param bool $ignore_archive Edit even if client is archived
      * @return bool
      */
-    public function canEdit(SecurityContext $sec)
+    public function canEdit(SecurityContext $sec, $ignore_archive = false)
     {
         $user_id = $sec->getToken()->getUser()->getId();
 
-        $re = $this->isArchived == 0 && (
+        $re = ($this->isArchived == 0 || $ignore_archive) && (
             $sec->isGranted('ROLE_ADMIN') || $sec->isGranted('ROLE_ASSISTANCE') ||
             (!empty($this->creator) && $this->creator->getID() == $user_id) ||
             (!empty($this->caseAdmin) && $this->caseAdmin->getId() == $user_id)

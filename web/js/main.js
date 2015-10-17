@@ -1933,8 +1933,13 @@ JcsCatering = {
         return _this.initHomeHelp();
       };
     })(this));
-    $('.inblock .datepicker').datepicker({
-      dateFormat: 'yy-mm-dd'
+    $('.inblock .datepicker').each(function() {
+      return $(this).datepicker({
+        dateFormat: 'yy-mm-dd'
+      });
+    });
+    $('.clear-paused-dates').on('click', function() {
+      return $('#catering_pausedFrom').add('#catering_pausedTo').val('');
     });
     $(".day-selectors > a").on("click", function() {
       var day, days, index, _i, _len;
@@ -2235,9 +2240,10 @@ JcsCatering = {
       if (confirm("Biztos benne?")) {
         $form = $("#create-invoice-form");
         return $.post($form.attr("action"), $form.serialize(), function(data) {
-          if (data) {
+          if (data && data !== "0") {
             AjaxBag.showNotice("A számla kiállítása sikeres");
-            return $("a.catering_invoices").click();
+            $(".catering_container a.catering_invoices").click();
+            return JcsClient.reloadClient();
           } else {
             return AjaxBag.showError("Hiba a számla kiállítása során, kérem próbálja újra!");
           }
@@ -2749,8 +2755,15 @@ JcsReports = {
     $("#form_month").change(function() {
       return $("#form_day").val("");
     });
-    return $("#form_day").change(function() {
+    $("#form_day").change(function() {
       return $("#form_month").val("");
+    });
+    JcsToggle.multiselect($("#report_download"));
+    return $(".button.show_report").on("click", function() {
+      $(this).addClass('animbutton');
+      return setTimeout(function() {
+        return $(".button.show_report").attr('disabled', true);
+      }, 500);
     });
   }
 };

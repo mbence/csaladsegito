@@ -45,6 +45,8 @@ class Ksh
     /** Map of the problem parameters */
     private $problemMap = [];
 
+    private $caseAdmins = [];
+
     /** Constructor */
     public function __construct($container)
     {
@@ -74,6 +76,14 @@ class Ksh
             'required' => true,
             'data'     => new \DateTime('today'),
         ]);
+        $form_builder->add('case_admin', 'entity', [
+            'label' => 'Szűrés esetgazda szerint (opcionális)',
+            'class' => 'JCSGYKAdminBundle:User',
+            'choices' => $this->ds->getCaseAdmins(),
+            'required' => false,
+            'multiple' => true,
+            'expanded' => true,
+        ]);
     }
 
     public function run($form_data, $download)
@@ -91,6 +101,9 @@ class Ksh
         if (!empty($form_data['end_date'])) {
             $this->endDate = $form_data['end_date']->format('Y-m-d');
             $this->data['sp.end_date'] = $this->ae->formatDate($form_data['end_date']);
+        }
+        if (!empty($form_data['case_admin'])) {
+            $this->caseAdmins = $form_data['case_admin'];
         }
         $this->data['sp.datum']   = $this->ae->formatDate(new \DateTime('today'));
 
@@ -153,6 +166,9 @@ class Ksh
         if (!empty($this->endDate)){
             $qb->andWhere('e.eventDate <= :end_date')->setParameter('end_date', $this->endDate);
         }
+        if (!empty($this->caseAdmins) && $this->caseAdmins->count()){
+            $qb->andWhere('c.caseAdmin IN (:case_admin)')->setParameter('case_admin', $this->caseAdmins);
+        }
 
         $res = $qb->getQuery()->getResult();
 
@@ -167,7 +183,7 @@ class Ksh
         $repository = $this->container->get('doctrine')->getRepository('JCSGYKAdminBundle:Event');
 
         $qb = $repository->createQueryBuilder('e');
-        $qb ->select('COUNT(DISTINCT c)')
+        $qb ->select('COUNT(DISTINCT c.id)')
             ->leftJoin('e.problem', 'p')
             ->leftJoin('p.client', 'c')
             ->where('c.companyId = :company_id')->setParameter('company_id', $this->ds->getCompanyId())
@@ -180,6 +196,9 @@ class Ksh
         }
         if (!empty($this->endDate)){
             $qb->andWhere('e.eventDate <= :end_date')->setParameter('end_date', $this->endDate);
+        }
+        if (!empty($this->caseAdmins) && $this->caseAdmins->count()){
+            $qb->andWhere('c.caseAdmin IN (:case_admin)')->setParameter('case_admin', $this->caseAdmins);
         }
         $qb2 = clone $qb;
         if (!empty($this->startDate)){
@@ -221,6 +240,9 @@ class Ksh
         }
         if (!empty($this->endDate)){
             $qb->andHaving('min_ed <= :end_date')->setParameter('end_date', $this->endDate);
+        }
+        if (!empty($this->caseAdmins) && $this->caseAdmins->count()){
+            $qb->andWhere('c.caseAdmin IN (:case_admin)')->setParameter('case_admin', $this->caseAdmins);
         }
 
         // reset data cells
@@ -324,6 +346,9 @@ class Ksh
         }
         if (!empty($this->endDate)){
             $qb->andWhere('e.eventDate <= :end_date')->setParameter('end_date', $this->endDate);
+        }
+        if (!empty($this->caseAdmins) && $this->caseAdmins->count()){
+            $qb->andWhere('c.caseAdmin IN (:case_admin)')->setParameter('case_admin', $this->caseAdmins);
         }
         $qb->groupBy('p.id');
         $res = $qb->getQuery()->getResult();
@@ -441,6 +466,10 @@ class Ksh
                 if (!empty($this->endDate)) {
                     $qb->andWhere('e.eventDate <= :end_date')->setParameter('end_date', $this->endDate);
                 }
+                if (!empty($this->caseAdmins) && $this->caseAdmins->count()){
+                    $qb->andWhere('c.caseAdmin IN (:case_admin)')->setParameter('case_admin', $this->caseAdmins);
+                }
+
                 $res = $qb->getQuery()->getResult();
                 if (!empty($res[0]['client_count'])) {
                     $this->data['blocks']['param' . $group_id][$pid]['count'] = $res[0]['client_count'];
@@ -470,7 +499,7 @@ class Ksh
     {
         // temp fix
         $download = true;
-                
+
         if ($download) {
             return $this->container->get('jcs.docx')->make($this->template, $this->data, $this->output);
         }

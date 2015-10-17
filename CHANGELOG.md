@@ -1,3 +1,62 @@
+## 1.5.14 (2015.09.01)
+
+Fejlesztések:
+
+ - Kimutatások/Ügyfelek fülnél Esetgazda - MIND lekérdezési lehetőség
+ - Kimutatások/esetszámok lista megszűnik és beolvad a Kimutatások/Ügyfelek fülnél lévő táblázatba
+
+## 1.5.13 (2015.02.21)
+
+Fejlesztések:
+
+ - Étkezési napok kimutatása a tényleges megrendeléseket mutassa
+ 
+Javítások:
+
+ - Ünnepnapok ne munkanapként jelenjenek meg a statisztikákban
+ 
+## 1.5.12 (2015.02.18)
+
+Fejlesztések:
+
+ - Étkeztetés és gondozás ügyfelek kimutatása
+ 
+## 1.5.11 (2015.02.12)
+
+Fejlesztések:
+
+ - Visszamenőleges ebédrendelés
+
+## 1.5.10 (2015.02.03)
+
+Fejlesztések:
+
+ - Gyermekjóléti statisztikák
+
+## 1.5.9 (2015.01.27)
+
+Fejlesztések:
+
+ - Szűrők az ügyfél kimutatásoknál
+
+## 1.5.8 (2015.01.20)
+
+Javítások:
+
+ - Gondozás sztornó számlák a kimutatásokban
+
+## 1.5.7 (2015.01.14)
+
+Fejlesztések:
+
+ - Szűrés esetgazda szerint a KSH statisztikákban
+
+## 1.5.6 (2014.12.11)
+
+Fejlesztések:
+
+ - Gondozás kimutatások
+
 ## 1.5.5 (2014.12.09)
 
 Fejlesztések:

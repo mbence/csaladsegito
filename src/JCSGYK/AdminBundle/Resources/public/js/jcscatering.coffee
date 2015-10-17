@@ -32,7 +32,13 @@ JcsCatering =
             @initHomeHelp()
 
         # discount datepicker
-        $('.inblock .datepicker').datepicker({ dateFormat: 'yy-mm-dd' })
+        $('.inblock .datepicker').each ->
+            $(this).datepicker({dateFormat: 'yy-mm-dd'})
+
+        # clear paused dates
+        $('.clear-paused-dates').on('click', ->
+            $('#catering_pausedFrom').add('#catering_pausedTo').val('')
+        )
 
         # day selectors
         $(".day-selectors > a").on "click", ->
@@ -326,9 +332,10 @@ JcsCatering =
             if confirm("Biztos benne?")
                 $form = $("#create-invoice-form")
                 $.post($form.attr("action"), $form.serialize(), (data) ->
-                    if data
+                    if data and data != "0"
                         AjaxBag.showNotice("A számla kiállítása sikeres")
                         $(".catering_container a.catering_invoices").click()
+                        JcsClient.reloadClient()
                     else
                         AjaxBag.showError("Hiba a számla kiállítása során, kérem próbálja újra!")
                 )

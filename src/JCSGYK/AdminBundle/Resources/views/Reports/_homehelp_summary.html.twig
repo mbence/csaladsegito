@@ -1,0 +1,22 @@
+<h1>{{ data['ca.cim'] }} {{ data['ca.klub'] }}</h1>
+<table class="reports-table">
+    <tr>
+        <th>Név</th>
+        <th>Jövedelem</th>
+        <th>Gondozási<br>órák</th>
+        <th>Fizetendő</th>
+        <th>Tartozás</th>
+    </tr>
+    {% for homehelp in data.blocks.homehelp %}
+    <tr>
+        <td>
+            <strong>{{ homehelp.name }}</strong>
+            {{ homehelp.address }}
+        </td>
+        <td class="right"> {{ homehelp.income }} </td>
+        <td class="center"> {{ homehelp.hours }} </td>
+        <td class="right"> <strong>{{ homehelp.amount }}</strong> </td>
+        <td class="right{% if homehelp.debt %} red{% endif %}"> {{ homehelp.debt }} </td>
+    </tr>
+    {% endfor %}
+</table>
