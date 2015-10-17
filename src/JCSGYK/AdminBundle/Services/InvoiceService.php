@@ -329,7 +329,7 @@ class InvoiceService
         // add delivery costs for home delivey
         if (595 == $delivery) {
             $items[] = [
-                'name'       => 'Házhozszállítás',
+                'name'       => 'Házhoz szállítás',
                 'quantity'   => 1,
                 'unit'       => 'db',
                 'net_price'  => 200,
