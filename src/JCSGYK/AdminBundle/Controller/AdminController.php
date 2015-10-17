@@ -31,6 +31,7 @@ use JCSGYK\AdminBundle\Entity\Option;
 use JCSGYK\AdminBundle\Form\Type\OptionType;
 use JCSGYK\AdminBundle\Entity\MonthlyClosing;
 use JCSGYK\AdminBundle\Entity\HomehelpMonth;
+use JCSGYK\AdminBundle\Services\DataStore;
 
 class AdminController extends Controller
 {
@@ -211,6 +212,7 @@ class AdminController extends Controller
     public function paramgroupsAction(Request $request, $type)
     {
         $em = $this->getDoctrine()->getManager();
+        /** @var DataStore $ds */
         $ds = $this->container->get('jcs.ds');
         $co = $ds->getCompanyId();
         $client_type_names = $ds->getClientTypeNames(true);
@@ -1234,18 +1236,18 @@ class AdminController extends Controller
     public function recommendedFieldsAction(Request $request, $tab = 0)
     {
         $em = $this->getDoctrine()->getManager();
+        /** @var DataStore $ds */
         $ds = $this->container->get('jcs.ds');
         $co = $ds->getCompanyId();
 
         $client_types = $ds->getClientTypeNames(true);
-        if (empty($type)) {
-            reset($client_types);
-            $type = key($client_types);
-        }
+        reset($client_types);
+        $type = key($client_types);
 
         $fields = [
             'birth_place'            => 'Születési hely',
             'birth_date'             => 'Születési idő',
+            'gender'                 => 'Ügyfél neme',
             'mother_lastname'        => 'Anyja vezetékneve',
             'mother_firstname'       => 'Anyja keresztneve',
             'city'                   => 'Város',
@@ -1254,6 +1256,12 @@ class AdminController extends Controller
             'street_number'          => 'Házszám',
             'social_security_number' => 'Taj szám',
         ];
+
+        // add all parameter groups
+        $groups = $ds->getParamGroup(1, true);
+        foreach ($groups as $group) {
+            $fields['param_' . $group->getId()] = $group->getName();
+        }
 
         // get recommended fields from the Options table
         $options = $em->createQuery("SELECT o FROM JCSGYKAdminBundle:Option o WHERE o.companyId = :company_id AND o.name = :name AND o.isActive = 1 ORDER BY o.validFrom DESC")

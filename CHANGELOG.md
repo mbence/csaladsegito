@@ -2,6 +2,7 @@
 
 Fejlesztések:
  - Ebéd szállítási opciók
+ - Paramétercsoportok a kitöltendő mezők között
 
 ## 1.5.14 (2015.09.01)
 

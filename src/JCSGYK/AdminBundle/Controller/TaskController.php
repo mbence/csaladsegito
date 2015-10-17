@@ -105,15 +105,27 @@ class TaskController extends Controller
         $fields = [];
         foreach ($client_types as $ct) {
             $tmp = [];
+            $grps = [];
             if (!empty($all_rec_fields[$ct])) {
                 foreach ($all_rec_fields[$ct] as $field) {
-                    $fn = $ae->toCamelCase($field);
-                    $tmp[] = "c.{$fn} = ''";
+                    // deal with parameters first
+                    if (substr($field, 0, 6) === 'param_') {
+                        $grps[] = substr($field, 6);
+                    } else {
+                        // then normal fields
+                        $fn = $ae->toCamelCase($field);
+                        $tmp[] = "c.{$fn} = ''";
+                    }
                 }
             }
             // only if we have some recommended fields
             if (!empty($tmp)) {
                 $fields[] = "c.type = '{$ct}' AND (" . implode(' OR ', $tmp) . ')';
+            }
+            if (!empty($grps)) {
+                foreacH ($grps as $grp) {
+                    $fields[] = "c.parameters NOT LIKE '%\"{$grp}\"%' OR c.parameters LIKE '%\"{$grp}\":null%'";
+                }
             }
         }
 
