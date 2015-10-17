@@ -100,6 +100,17 @@ class CateringType extends AbstractType
             'attr'     => array('class' => 'datepicker'),
             'required' => false,
         ]);
+
+        $delivery_options = $this->ds->getGroup('delivery');
+        if (empty($delivery_options)) {
+            $delivery_options = [];
+        }
+
+        $builder->add('delivery', 'choice', [
+            'label'   => 'Szállítás',
+            'choices' => $delivery_options,
+            'required' => false,
+        ]);
     }
 
     public function getName()

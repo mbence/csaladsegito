@@ -133,6 +133,13 @@ class Catering
      */
     private $pausedTo;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="delivery", type="smallint", nullable=true)
+     */
+    private $delivery;
+
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addConstraint(new Assert\Callback('validateDates'));
@@ -158,7 +165,7 @@ class Catering
      */
     public function getHistoryFields()
     {
-        return ['club', 'subscriptions', 'menu', 'isSingle', 'income', 'discount', 'discountFrom', 'discountTo', 'agreementFrom', 'agreementTo', 'pausedFrom', 'pausedTo'];
+        return ['club', 'subscriptions', 'menu', 'isSingle', 'income', 'discount', 'discountFrom', 'discountTo', 'agreementFrom', 'agreementTo', 'pausedFrom', 'pausedTo', 'delivery'];
     }
 
     /**
@@ -637,5 +644,29 @@ class Catering
     public function getAgreementTo()
     {
         return $this->agreementTo;
+    }
+
+    /**
+     * Set delivery
+     *
+     * @param integer $delivery
+     *
+     * @return Catering
+     */
+    public function setDelivery($delivery)
+    {
+        $this->delivery = $delivery;
+
+        return $this;
+    }
+
+    /**
+     * Get delivery
+     *
+     * @return integer
+     */
+    public function getDelivery()
+    {
+        return $this->delivery;
     }
 }

@@ -69,6 +69,9 @@ class InvoiceService
             list($orders, $days) = $this->getCateringOrders($client, $start_date, $end_date);
             // calculate the invoice items
             $items = $this->calculateCateringItems($client, $orders);
+
+            // TODO: enable this for delivery items
+            //$items = $this->deliveryItems($client, $items);
         }
 
         // if we have no data, we create no invoice
@@ -292,6 +295,48 @@ class InvoiceService
                     // no match in the catering cost tables, now what?
                 }
             }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Add the delivery items to the invoice item list
+     * @param Client $client
+     * @param arra $items
+     */
+    private function deliveryItems(Client $client, $items)
+    {
+        $catering = $client->getCatering();
+        $delivery = $catering->getDelivery();
+
+        // no new items needed if not set, or local delivery
+        if (empty($delivery) || 593 == $delivery) {
+            return $items;
+        }
+
+        // add pacaging costs for every other option
+        $items[] = [
+            'name'       => 'Csomagolás',
+            'quantity'   => 1,
+            'unit'       => 'db',
+            'net_price'  => 100,
+            'unit_price' => 127,
+            'value'      => 127,
+            'net_value'  => 100,
+        ];
+
+        // add delivery costs for home delivey
+        if (595 == $delivery) {
+            $items[] = [
+                'name'       => 'Házhoz szállítás',
+                'quantity'   => 1,
+                'unit'       => 'db',
+                'net_price'  => 200,
+                'unit_price' => 254,
+                'value'      => 254,
+                'net_value'  => 200,
+            ];
         }
 
         return $items;

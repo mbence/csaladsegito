@@ -1,3 +1,8 @@
+## 1.5.15 (2015.10.17)
+
+Fejlesztések:
+ - Ebéd szállítási opciók
+
 ## 1.5.14 (2015.09.01)
 
 Fejlesztések:

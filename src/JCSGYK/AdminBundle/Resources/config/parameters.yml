@@ -14,6 +14,7 @@ parameters:
         homehelp_services: ["Gondozás szolgáltatások", 0, 0]
         handicaps: ["Fogyatékosságok", 0, 0]
         club_events: ["Klub események", 0, 0]
+        delivery: ["Szállítás", 0, 0]
 
     task_status:
         1: "új"
