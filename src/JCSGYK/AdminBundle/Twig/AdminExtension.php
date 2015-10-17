@@ -308,6 +308,9 @@ class AdminExtension extends \Twig_Extension
             elseif ('socialWorker' == $field) {
                 $re[] = ['Gondozó', $this->ds->get($v[0]), $this->ds->get($v[1])];
             }
+            elseif ('delivery' == $field) {
+                $re[] = ['Szállítás', $this->ds->get($v[0]), $this->ds->get($v[1])];
+            }
             elseif ('payments' == $field) {
                 $re = array_merge($re, $this->formatHistoryPayments($v));
             }
