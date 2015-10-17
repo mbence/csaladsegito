@@ -1,4 +1,9 @@
-## 1.5.15 (2015.10.17)
+## 1.5.16 (2015.10.17)
+
+Fejlesztések:
+ - KSH statisztika opció a problémáknál
+
+ ## 1.5.15 (2015.10.17)
 
 Fejlesztések:
  - Ebéd szállítási opciók

@@ -78,6 +78,7 @@ class ProblemType extends AbstractType
             'allow_add'    => true,
             'by_reference' => false,
         ]);
+        $builder->add('is_stat', 'checkbox', ['label' => 'KSH statisztika']);
     }
 
     public function getName()

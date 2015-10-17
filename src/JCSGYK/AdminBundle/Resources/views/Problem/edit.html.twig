@@ -32,6 +32,10 @@
             </td>
         </tr>
         {% endfor %}
+        <tr>
+            <th>{{ form_label(form.is_stat) }}:</th>
+            <td colspan="3">{{ form_errors(form.is_stat) }}{{ form_widget(form.is_stat) }}</td>
+        </tr>
         {% if problem.attachment %}
             <tr>
                 <th>{{ 'Csatolt dok.'|trans }}:</th>

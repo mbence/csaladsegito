@@ -94,6 +94,7 @@ class ProblemController extends Controller
             // new problem
             $problem = new Problem();
             $problem->setIsActive(true);
+            $problem->setIsStat(true);
             $problem->setClient($client);
 
             // family help and child welfare users get the assignee set automatically

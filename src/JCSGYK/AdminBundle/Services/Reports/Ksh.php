@@ -339,6 +339,7 @@ class Ksh
 
             ->andWhere('e.isDeleted=0')
             ->andWhere('p.isDeleted=0')
+            ->andWhere('p.isStat=1')
             ->andWhere('e.clientCancel=0')
         ;
         if (!empty($this->startDate)){

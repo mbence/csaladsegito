@@ -31,6 +31,10 @@
             <td colspan="3">{{ param(problem.getParam(paramGroup.id), paramGroup.id) }} </td>
         </tr>
         {% endfor %}
+        <tr>
+            <th>{{ 'KSH'|trans }}:</th>
+            <td colspan="3">{{ problem.isStat|check }}</td>
+        </tr>
         {% if problem.attachment %}
             <tr>
                 <th>{{ 'Csatolt dok.'|trans }}:</th>

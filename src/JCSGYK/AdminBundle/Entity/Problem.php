@@ -166,6 +166,13 @@ class Problem
      */
     private $agreementExpiresAt;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="is_stat", type="boolean", nullable=true)
+     */
+    private $isStat;
+
 
     public function __construct()
     {
@@ -812,5 +819,29 @@ class Problem
         else {
             return reset($plist);
         }
+    }
+
+    /**
+     * Set isStat
+     *
+     * @param integer $isStat
+     *
+     * @return Problem
+     */
+    public function setIsStat($isStat)
+    {
+        $this->isStat = $isStat;
+
+        return $this;
+    }
+
+    /**
+     * Get isStat
+     *
+     * @return integer
+     */
+    public function getIsStat()
+    {
+        return $this->isStat;
     }
 }
