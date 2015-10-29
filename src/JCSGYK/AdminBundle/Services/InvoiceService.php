@@ -311,7 +311,7 @@ class InvoiceService
         $delivery = $catering->getDelivery();
 
         // no new items needed if not set, or local delivery
-        if (empty($delivery) || 593 == $delivery) {
+        if (empty($delivery) || 593 == $delivery || 596 == $delivery) {
             return $items;
         }
 
@@ -320,10 +320,10 @@ class InvoiceService
             'name'       => 'Csomagolás',
             'quantity'   => 1,
             'unit'       => 'db',
-            'net_price'  => 100,
-            'unit_price' => 127,
-            'value'      => 127,
-            'net_value'  => 100,
+            'net_price'  => 64,
+            'unit_price' => 81,
+            'value'      => 81,
+            'net_value'  => 64,
         ];
 
         // add delivery costs for home delivey
@@ -332,10 +332,10 @@ class InvoiceService
                 'name'       => 'Házhoz szállítás',
                 'quantity'   => 1,
                 'unit'       => 'db',
-                'net_price'  => 200,
-                'unit_price' => 254,
-                'value'      => 254,
-                'net_value'  => 200,
+                'net_price'  => 50,
+                'unit_price' => 64,
+                'value'      => 64,
+                'net_value'  => 50,
             ];
         }
 

@@ -333,10 +333,8 @@ class DailyOrdersService
             $message = \Swift_Message::newInstance()
             ->setSubject($subject)
             ->setFrom([$mailer_from => $mailer_from_name])
-            ->addTo('sodexokonyha@gmail.com')
-            ->addTo('5102.onsite.hu@sodexo.com')
-            ->addTo('oszirozsaebed@gmail.com')
-//            ->addCC('mxbence@gmail.com')
+            ->addTo('elelmezes@jszszgyk.hu')
+            ->addCC('oszirozsaebed@gmail.com')
             ->setBody($subject, 'text/plain');
 
             // add attachment
