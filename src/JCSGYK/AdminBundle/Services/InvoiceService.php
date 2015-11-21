@@ -69,9 +69,6 @@ class InvoiceService
             list($orders, $days) = $this->getCateringOrders($client, $start_date, $end_date);
             // calculate the invoice items
             $items = $this->calculateCateringItems($client, $orders);
-
-            // TODO: enable this for delivery items
-            //$items = $this->deliveryItems($client, $items);
         }
 
         // if we have no data, we create no invoice
@@ -227,6 +224,12 @@ class InvoiceService
                 // check the cost for the day
                 $daily_cost = $this->getCostForADay($catering, $table);
 
+                $packaging_cost = 81;
+                $delivery_cost = 64;
+                $net_packaging_cost = round($packaging_cost / (1 + $vat));
+                $net_delivery_cost = round($delivery_cost / (1 + $vat));
+
+
                 if (!is_null($daily_cost)) {
                     // this is a gross cost, so we must reduce it to net
                     $net_cost = number_format($daily_cost / (1 + $vat), 4, '.', '');
@@ -265,6 +268,11 @@ class InvoiceService
                             // if ordered but later cancelled, we add it only to the discounts
                             $daily_cost *= -1;
                             $net_cost *= -1;
+                            $packaging_cost *= -1;
+                            $delivery_cost *= -1;
+                            $net_packaging_cost *= -1;
+                            $net_delivery_cost *= -1;
+
                             // if cancelled and he had a discount for this day, we only add the real amount he actually payed before
                             if ($discount_is_active) {
                                 $daily_cost = $daily_cost - ($daily_cost * $discount_ratio);
@@ -289,54 +297,63 @@ class InvoiceService
                         if ($weekday) {
                             $items[$daily_cost]['weekday_quantity']++;
                         }
+
+                        // add the packaging and delivery costs
+                        $delivery = $catering->getDelivery();
+
+                        // no new items needed if not set, or local delivery
+                        if ((593 == $delivery && !$weekday) || in_array($delivery, [594, 595, 597]) ) {
+                            if (!isset($items[$packaging_cost])) {
+                                $items[$packaging_cost] = [
+                                    'name'             => $order->getCancel() ? 'Csomagolás jóváírás' : 'Csomagolás',
+                                    'quantity'         => 1,
+                                    'unit'             => 'db',
+                                    'net_price'        => $net_packaging_cost,
+                                    'unit_price'       => $packaging_cost,
+                                    'value'            => $packaging_cost,
+                                    'net_value'        => $net_packaging_cost,
+                                    'weekday_quantity' => 0,
+                                ];
+
+                            } else {
+                                $items[$packaging_cost]['quantity']++;
+                                $items[$packaging_cost]['value'] += $packaging_cost;
+                                $items[$packaging_cost]['net_value'] += $net_packaging_cost;
+                            }
+                            if ($weekday) {
+                                $items[$packaging_cost]['weekday_quantity']++;
+                            }
+
+                            // add delivery costs for home delivey but only on weekdays
+                            if (595 == $delivery) {
+                                if (!isset($items[$delivery_cost])) {
+                                    $items[$delivery_cost] = [
+                                        'name'             => $order->getCancel() ? 'Házhoz szállítás jóváírás' : 'Házhoz szállítás',
+                                        'quantity'         => 1,
+                                        'unit'             => 'db',
+                                        'net_price'        => $net_delivery_cost,
+                                        'unit_price'       => $delivery_cost,
+                                        'value'            => $delivery_cost,
+                                        'net_value'        => $net_delivery_cost,
+                                        'weekday_quantity' => 0,
+                                    ];
+
+                                } else {
+                                    $items[$delivery_cost]['quantity']++;
+                                    $items[$delivery_cost]['value'] += $delivery_cost;
+                                    $items[$delivery_cost]['net_value'] += $net_delivery_cost;
+                                }
+                                if ($weekday) {
+                                    $items[$delivery_cost]['weekday_quantity']++;
+                                }
+                            }
+                        }
                     }
                     // we dont deal with records at all, where there was no order
                 } else {
                     // no match in the catering cost tables, now what?
                 }
             }
-        }
-
-        return $items;
-    }
-
-    /**
-     * Add the delivery items to the invoice item list
-     * @param Client $client
-     * @param arra $items
-     */
-    private function deliveryItems(Client $client, $items)
-    {
-        $catering = $client->getCatering();
-        $delivery = $catering->getDelivery();
-
-        // no new items needed if not set, or local delivery
-        if (empty($delivery) || 593 == $delivery || 596 == $delivery) {
-            return $items;
-        }
-
-        // add pacaging costs for every other option
-        $items[] = [
-            'name'       => 'Csomagolás',
-            'quantity'   => 1,
-            'unit'       => 'db',
-            'net_price'  => 64,
-            'unit_price' => 81,
-            'value'      => 81,
-            'net_value'  => 64,
-        ];
-
-        // add delivery costs for home delivey
-        if (595 == $delivery) {
-            $items[] = [
-                'name'       => 'Házhoz szállítás',
-                'quantity'   => 1,
-                'unit'       => 'db',
-                'net_price'  => 50,
-                'unit_price' => 64,
-                'value'      => 64,
-                'net_value'  => 50,
-            ];
         }
 
         return $items;
