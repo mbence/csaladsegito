@@ -216,8 +216,8 @@ class InvoiceService
 
             foreach ($orders as $order) {
                 $date = $order->getDate()->format('Y-m-d');
-                // is it a weekday or weekend
-                $weekday = $order->getDate()->format('N') < 6;
+                // is this a weekday or weekend?
+                $weekday = $this->ds->isWeekday($order->getDate());
                 // get the actual catering costs table
                 // this runs a query for every day. Maybe not necessary...
                 $table = $this->ds->getOption('cateringcosts', $date);
@@ -386,7 +386,7 @@ class InvoiceService
                 }
             }
 
-            // we neet to iterate through the days in case the daily cost would change in-between
+            // we need to iterate through the days in case the daily cost would change in-between
             foreach ($days as $date => $hours) {
                 $d = (new \DateTime($date))->setTime(0, 0, 0);
                 // is it a weekday or weekend
@@ -1196,7 +1196,4 @@ class InvoiceService
 
         return $row;
     }
-
-
-
 }

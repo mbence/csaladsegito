@@ -1028,8 +1028,6 @@ class DataStore
     /**
      * Returns an array of the holidays and details in the give range
      *
-     * TODO: check if the range spans to more then one option record (year)
-     *
      * @param string $start_date
      * @param string $end_date
      * @return array
@@ -1057,8 +1055,6 @@ class DataStore
     /**
      * Returns an array of the holidays in the give range
      *
-     * TODO: check if the range spans to more then one option record (year)
-     *
      * @param string $start_date
      * @param string $end_date
      * @return array
@@ -1081,6 +1077,34 @@ class DataStore
         }
 
         return $re;
+    }
+
+    /**
+     * Is this date a weekday or weekend?
+     * Also checks the holidays in the options table
+     * @param DateTime $d
+     * @return bool
+     */
+    public function isWeekday(\DateTime $d)
+    {
+        // is it a weekday or weekend
+        $weekday = $d->format('N') < 6;
+
+        // check the holidays too
+        $date = $d->format('Y-m-d');
+
+        $holiday = $this->getHolidays($date, $date);
+        if (!empty($holiday[$date])) {
+            if ($holiday[$date] == 2) {
+                // if holiday type == 2, that means its a workday, and not a weekend
+                $weekday = true;
+            } elseif(in_array($holiday[$date], [1, 3])) {
+                // type 1 and 3 are holdays
+                $weekday = false;
+            }
+        }
+
+        return $weekday;
     }
 
     public function getVat()
