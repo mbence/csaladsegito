@@ -301,8 +301,11 @@ class InvoiceService
                         // add the packaging and delivery costs
                         $delivery = $catering->getDelivery();
 
-                        // no new items needed if not set, or local delivery
-                        if ((593 == $delivery && !$weekday) || in_array($delivery, [594, 595, 597]) ) {
+                        // in case of local delivery AND on weekends AND if he pays for the food, then we add the packaging costs
+                        if ((593 == $delivery && !$weekday && $daily_cost > 0)
+                                // or if he has any other delivery
+                                || in_array($delivery, [594, 595, 597]) ) {
+
                             if (!isset($items[$packaging_cost])) {
                                 $items[$packaging_cost] = [
                                     'name'             => $order->getCancel() ? 'Csomagolás jóváírás' : 'Csomagolás',
@@ -324,7 +327,7 @@ class InvoiceService
                                 $items[$packaging_cost]['weekday_quantity']++;
                             }
 
-                            // add delivery costs for home delivey but only on weekdays
+                            // add delivery costs for home delivey
                             if (595 == $delivery) {
                                 if (!isset($items[$delivery_cost])) {
                                     $items[$delivery_cost] = [
@@ -523,6 +526,9 @@ class InvoiceService
         if ($in instanceof Catering) {
             $income = $in->getIncome();
             $is_single = $in->getIsSingle();
+            if (empty($income)) {
+                $income = 0;
+            }
         }
         elseif ($in instanceof HomeHelp) {
             $income = $in->getIncome();
