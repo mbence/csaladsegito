@@ -245,12 +245,12 @@ class ClientOrderRepository extends EntityRepository
 
         $results = [];
         $results['weekdays'] = $this->getEntityManager()
-            ->createQuery("SELECT b.id, o.menu, COUNT(o) as orders, 0 as weekend "
+            ->createQuery("SELECT b.id, o.menu, a.delivery, COUNT(o) as orders, 0 as weekend "
                     . "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
                     . "WHERE o.companyId = :company_id AND o.order = 1 AND o.cancel = 0 "
                     . "AND o.date >= :date AND o.date <= :end_date "
                     . "AND o.date NOT IN (:weekends) "
-                    . "GROUP BY a.club, o.menu")
+                    . "GROUP BY a.club, o.menu, a.delivery")
             ->setParameter('company_id', $company_id)
             ->setParameter('date', $date)
             ->setParameter('end_date', $end_date)
@@ -294,11 +294,11 @@ class ClientOrderRepository extends EntityRepository
 
 
         return $this->getEntityManager()
-            ->createQuery("SELECT b.id, o.menu, COUNT(o) as orders, {$weekend} as weekend "
+            ->createQuery("SELECT b.id, o.menu, a.delivery, COUNT(o) as orders, {$weekend} as weekend "
                     . "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
                     . "WHERE o.companyId = :company_id AND o.order = 1 AND o.cancel = 0 "
                     . "AND o.date = :date "
-                    . "GROUP BY a.club, o.menu")
+                    . "GROUP BY a.club, o.menu, a.delivery")
             ->setParameter('company_id', $company_id)
             ->setParameter('date', $date)
             ->getResult();
