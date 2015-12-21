@@ -226,13 +226,13 @@ class InvoiceService
 
                 $packaging_cost = 81;
                 $delivery_cost = 64;
-                $net_packaging_cost = round($packaging_cost / (1 + $vat));
-                $net_delivery_cost = round($delivery_cost / (1 + $vat));
+                $net_packaging_cost = round($packaging_cost / (1 + $vat), 4);
+                $net_delivery_cost = round($delivery_cost / (1 + $vat), 4);
 
 
                 if (!is_null($daily_cost)) {
                     // this is a gross cost, so we must reduce it to net
-                    $net_cost = number_format($daily_cost / (1 + $vat), 4, '.', '');
+                    $net_cost = round($daily_cost / (1 + $vat), 4);
 
                     // check if he has discount for this day
                     $discount_is_active = $catering->discountIsActive($order->getDate());
