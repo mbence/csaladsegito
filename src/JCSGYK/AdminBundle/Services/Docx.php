@@ -48,14 +48,16 @@ class Docx
         $tbs->LoadTemplate($template_file, OPENTBS_ALREADY_UTF8); // OPENTBS_DEFAULT, OPENTBS_ALREADY_UTF8, OPENTBS_ALREADY_XML
 
         // do the field merge
-        foreach ($data as $base => $merge) {
-            if ('blocks' == $base) {
-                foreach ($merge as $block => $source) {
-                    $tbs->MergeBlock($block, $source);
+        if (!empty($data)) {
+            foreach ($data as $base => $merge) {
+                if ('blocks' == $base) {
+                    foreach ($merge as $block => $source) {
+                        $tbs->MergeBlock($block, $source);
+                    }
                 }
-            }
-            else {
-                $tbs->MergeField($base, $merge);
+                else {
+                    $tbs->MergeField($base, $merge);
+                }
             }
         }
 

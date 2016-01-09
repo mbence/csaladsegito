@@ -4,7 +4,7 @@ namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * Service for Generatinc xlsx files from templates
+ * Service for Generating xlsx files from templates
  */
 class Xlsx
 {
@@ -114,6 +114,30 @@ class Xlsx
 
         return ob_get_clean();
     }
+
+    public function makeOrder($template_file, $data)
+	{
+		// opening template file
+		$objPHPExcel =  \PHPExcel_IOFactory::load($template_file);
+		$sheet = $objPHPExcel->getActiveSheet();
+		$nextRowNum = 1;	// row number in xlsx where next element can be placed
+
+		// placing elements into xlsx
+		foreach ($data as $element) {
+			$sheet->fromArray($element, '', 'A' . $nextRowNum);
+
+			// increasing row number so that elements will be placed under each other (+1: gap between elements)
+			$nextRowNum += sizeof($element) + 1;
+		}
+
+		$objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+		$objWriter->save('ClientOrder_test_result.xlsx');
+
+		ob_start();
+		$objWriter->save('php://output');
+
+		return ob_get_clean();
+	}
 
     /**
      * Merge data into the cells

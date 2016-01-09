@@ -33,10 +33,10 @@ class DailyOrdersService
     /** Columns of the xls table */
     private $columns = [];
 
-    /** Rows of the xls table */
-    private $rows = [];
+	/** Menu types combined with delivery types */
+	private $rows = [];
 
-    /** Rows of delivery block of the xls table */
+	/** Menu types without delivery types */
     private $deliveryRows = [];
 
     /** Data array of clubs  */
@@ -100,6 +100,7 @@ class DailyOrdersService
         $this->summary = '';
         $this->columns = [];
         $this->rows = [];
+		$this->deliveryRows = [];
         $this->clubs = [];
         $this->orders = [];
 
@@ -139,7 +140,7 @@ class DailyOrdersService
         // get and build the orders from the client order table
         $this->getOrders($company_id, $date, $end_date);
 
-        $this->output(sprintf("%s: %s db megrendelés lekérdezve", date('H:i:s'), $this->orders['total']['sum']));
+        //$this->output(sprintf("%s: %s db megrendelés lekérdezve", date('H:i:s'), $this->orders['total']['sum']));
         $order->setSummary($this->summary);
         $em->flush();
 
@@ -193,10 +194,10 @@ class DailyOrdersService
         $ae = $this->container->get('jcs.twig.adminextension');
 
         // get all the menus (x)
-        $menus = $this->ds->getGroup('lunch_types');
-        $deliveryTypes = $this->ds->getGroup('delivery');
+        //$menus = $this->ds->getGroup('lunch_types');
+        //$deliveryTypes = $this->ds->getGroup('delivery');
 
-        // set rows - menus with deliveries
+        // menus combined with deliveries
         $this->rows = [
                 'normal-badell'=>'normál badellás',
                 'normal-pack'=>'normál csomagolt',
@@ -206,11 +207,12 @@ class DailyOrdersService
                 'stomach/gall-pack'=>'gyomros-epés csomagolt'
         ];
 
-        // set rows of delivery block - menus
+        // delivery block - menus
         $this->deliveryRows = [
                 'normal'=>'normál',
                 'dietary'=>'diétás',
-                'stomach/gall'=>'gyomros-epés'
+                'stomach/gall'=>'gyomros-epés',
+				'sum'=>'Összesen'
         ];
 
         // set instituions - they contain their own order array
@@ -235,34 +237,41 @@ class DailyOrdersService
                 'orders' => []
         ];
 
-        // set the header
-        $this->columns = [
-            'name' => '#intézménynév#',
-            //'address' => '#intézmény címe#',
-        ];
-
-        // add days of week as columns
-        foreach($this->ds->getDaysOfWeek() as $day) {
-            $this->columns[] = $day;
-        }
-
-        // sum column contains sum of orders of given menu (with given delivery) of given club (whole week)
-        // For this to actually show something, first it's needed to decide which days to show in table
-        // (only given day, or every day before it as well)
-        $this->columns['sum'] = 'Összesen';
-
         // initialize the order array for all clubs
         foreach ($this->clubs as $index=>$club) {
-            // the delivery block contains different rows
-            $rowsToUse = ($index !== 'deliveries') ? 'rows' : 'deliveryRows';
-            foreach ($this->$rowsToUse as $lunch_type => $name) {
-                // initializes orders of all lunch types
-                $this->clubs[$index]['orders'][$lunch_type] = 0;
-            }
-        }
+			// creates array for every day
+			for ($day = 1; $day <=7; $day++) {
+				$this->clubs[$index]['orders'][$day] = [];
+			}
+			// ... and sum of days
+			$this->clubs[$index]['orders']['weekly_sum'] = [];
+
+
+			// the delivery block contains different rows (menus without delivery type)
+			$rows = ('deliveries' !== $index) ? $this->rows : $this->deliveryRows;
+
+
+			// every array (days (1-7) and sum) contains orders for all menu types
+			foreach ($this->clubs[$index]['orders'] as $day=>$element) {
+				foreach ($rows as $menuType => $name) {
+					// initializes orders of all menu types
+					$this->clubs[$index]['orders'][$day][$menuType] = '0';
+				}
+
+				if ('deliveries' === $index) {
+					$this->clubs['deliveries']['orders'][$day][''] = '0';
+				}
+			}
+
+		}
 
         // get the orders grouped by club and menu
         $orders = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->getDailyOrders($company_id, $date, $end_date);
+
+		// filling empty days of orders table with empty arrays
+		for ($day = 1; $day <=7; $day++) {
+			$orders[$day] = !empty($orders[$day]) ? $orders[$day] : [];
+		}
 
         $weekdays_sum = 0;
         $weekdays_amount = 0;
@@ -270,85 +279,113 @@ class DailyOrdersService
         $weekend_sum = 0;
         $weekend_amount = 0;
 
-        // fill the orders matrix
-        foreach ($orders as $order) {
-            //$this->orders[$order['id']][$order['menu']] += $order['orders'];
-            $menu = '';         // name of menu
-            $delivery = '';     // name of delivery type
+		foreach ($orders as $day_of_week=>$day) {
 
-            /*
-            Menu:
-                [495] => Normál A
-                [496] => Normál B
-                [497] => Diétás
-                [498] => Gyomor
-                [499] => Epe
-            */
-            switch($order['menu']) {
-                case 495:       // Normál A
-                case 496:       // Normál B
-                    $menu = 'normal';
-                    break;
-                case 497:       // Diétás
-                    $menu = 'dietary';
-                    break;
-                case 498:       // Gyomor
-                case 499:       // Epe
-                    $menu = 'stomach/gall';
-                    break;
-                default:    // throw an Exception?
-                    break;
-            }
+			if (empty($day)) {
+				break;
+			}
+			// fill the orders matrix
+			foreach ($day as $order) {
+				//$this->orders[$order['id']][$order['menu']] += $order['orders'];
+				$menu = '';         // name of menu
+				$delivery = '';     // name of delivery type
 
-            /*
-            Delivery:
-                [593] => Helyben fogyasztás (0 Ft)
-                [594] => Elvitel (81 Ft)
-                [595] => Kiszállítás (81+64 Ft)
-                [596] => Kedvezményes kiszállítás (0 Ft)
-            */
-            switch($order['delivery']) {
-                case 593:       // Helyben fogyasztás
-                    $delivery = 'badell';
-                    break;
-                case 595:       // Elvitel
-                case 596:       // Kiszállítás
-                case 597:       // Kedvezményes kiszállítás
-                    $delivery = 'pack';
-                    break;
-                default:    // throw an Exception?
-                    break;
-            }
+				/*
+				Menu:
+					[495] => Normál A
+					[496] => Normál B
+					[497] => Diétás
+					[498] => Gyomor
+					[499] => Epe
+				*/
+				switch($order['menu']) {
+					case 495:       // Normál A
+					case 496:       // Normál B
+						$menu = 'normal';
+						break;
+					case 497:       // Diétás
+						$menu = 'dietary';
+						break;
+					case 498:       // Gyomor
+					case 499:       // Epe
+						$menu = 'stomach/gall';
+						break;
+					default:    // throw an Exception?
+						break;
+				}
 
-            // set number of orders in club object
-            if (!empty($menu) && !empty($delivery)) {
-                $this->clubs[$order['id']]['orders'][$menu.'-'.$delivery] += $order['orders'];
-                //  and add to sum
-                $this->clubs['sum']['orders'][$menu.'-'.$delivery] += $order['orders'];
-            }
+				/*
+				Delivery:
+					[593] => Helyben fogyasztás (0 Ft)
+					[594] => Elvitel (81 Ft)
+					[595] => Kiszállítás (81+64 Ft)
+					[596] => Kedvezményes kiszállítás (0 Ft)
+				*/
+				switch($order['delivery']) {
+					case 593:       // Helyben fogyasztás
+						$delivery = 'badell';
+						break;
+					case 595:       // Elvitel
+					case 596:       // Kiszállítás
+					case 597:       // Kedvezményes kiszállítás
+						$delivery = 'pack';
+						break;
+					default:    // throw an Exception?
+						break;
+				}
 
-            // increase the weekend / weekday counts
-            if (!empty($order['weekend'])) {
-                $weekend_sum += $order['orders'];
-            }
-            else {
-                $weekdays_sum += $order['orders'];
-            }
+				// set number of orders in club object
+				if (!empty($menu) && !empty($delivery)) {
 
-            // increase the delivery count
-            if ($delivery === 'pack') {
-                $this->clubs['deliveries']['orders'][$menu] += $order['orders'];
-            }
-        }
+					// format for menu and delivery types
+					// e.g. 'normal-badell'
+					$menuDelType = $menu.'-'.$delivery;
+
+					$this->clubs[$order['id']]['orders'][$day_of_week][$menuDelType] += $order['orders'];
+
+					// add to sum of given menu (weekly club sum)
+					$this->clubs[$order['id']]['orders']['weekly_sum'][$menuDelType] += $order['orders'];
+
+					// add to total daily sum of menu
+					$this->clubs['sum']['orders'][$day_of_week][$menuDelType] += $order['orders'];
+
+					// add to total weekly sum of menu
+					$this->clubs['sum']['orders']['weekly_sum'][$menuDelType] += $order['orders'];
+				}
+
+				// increase the weekend / weekday counts
+				if (!empty($order['weekend'])) {
+					$weekend_sum += $order['orders'];
+				}
+				else {
+					$weekdays_sum += $order['orders'];
+				}
+
+				// increase the delivery count
+				if ($delivery === 'pack') {
+					// given menu given day
+					$this->clubs['deliveries']['orders'][$day_of_week][$menu] += $order['orders'];
+
+					// dailys sum of all menus
+					$this->clubs['deliveries']['orders'][$day_of_week]['sum'] += $order['orders'];
+
+					//weekly sum of given menu
+					$this->clubs['deliveries']['orders']['weekly_sum'][$menu] += $order['orders'];
+
+					//weekly sum of all menus (all deliveries)
+					$this->clubs['deliveries']['orders']['weekly_sum']['sum'] += $order['orders'];
+				}
+			}
+		}
 
         // Checking...
         // Clubs contain the blocks that will be shown in the output document
-        echo 'clubs: '; print_r($this->clubs);
+        //echo 'clubs: '; print_r($this->clubs);
         //echo 'Columns: '; print_r($this->columns);
         //echo 'Rows: '; print_r($this->rows);
         //echo 'Delivery rows: '; print_r($this->deliveryRows);
         //echo 'Orders: '; print_r($orders);
-        die;
+        //die;
 
         /*
 
@@ -399,7 +436,7 @@ class DailyOrdersService
     public function export(\DateTime $date, \DateTime $end_date = null)
     {
         $ae = $this->container->get('jcs.twig.adminextension');
-        $data = [
+        /*$data = [
             'et.cim'           => empty($end_date) ? 'MEGRENDELŐ' : 'HETI SZÁMLA ÖSSZESÍTŐ',
             'sp.datum'         => $ae->formatDate(new \DateTime('today')),
             'et.het'           => $date->format('W'),
@@ -419,13 +456,86 @@ class DailyOrdersService
                 // col keys, except the first two (name and address)
                 'cols'        => array_slice(array_keys($this->columns), 2, count($this->columns) - 3),
                 'dailyorders' => $this->orders,
-            ],
+            ]
         ];
 
-        $template_file = __DIR__.'/../Resources/public/reports/dailyorder.xlsx';
+        //$template_file = __DIR__.'/../Resources/public/reports/dailyorder.xlsx';
 
         return $this->container->get('jcs.docx')->make($template_file, $data);
-    }
+        */
+
+		if (empty($this->clubs)) {
+			return null;
+		}
+
+		// set the header
+		$columns = [
+				'row_name' => '',
+		];
+
+		// add days of week as columns
+		for($day = 1; $day <=7; $day++) {
+			$columns[$day] = $this->ds->getDaysOfWeek($day);
+		}
+
+		// sum column contains sum of orders of given menu (with given delivery) of given club (whole week)
+		// For this to actually show something, first it's needed to decide which days to show in table
+		// (only given day, or every day before it as well)
+		$columns['weekly_sum'] = 'Összesen';
+
+		$data = [];
+
+		// generating 2-dimensional arrays from each club that can be placed into xlsx sheet
+		foreach ($this->clubs as $index=>$club) {
+
+			// rows:	1.	name of club and column titles
+			// 			2-	all the menus and orders
+			// the delivery block contains different rows (menus without deliveries)
+			$rows = array_merge(['column_name'=>'col_name'], ('deliveries' !== $index) ? $this->rows : $this->deliveryRows);
+
+			$clubArray = [];
+
+			foreach($rows as $row=>$row_title) {
+
+				// adds columns (name, days, sum)
+				foreach($columns as $col=>$col_title) {
+					// sets every element of the 2 dimensional array
+
+					//$clubArray[$row][$col] = ('column_name' !== $row && is_numeric($col)) ? $club['orders'][$col][$row] : $col_title;
+
+					// sets every element of the 2 dimensional array
+					if ('column_name' === $row) {
+						// first row contains column names
+						$clubArray[$row][$col] = $col_title;
+					} else if (is_numeric($col) || 'weekly_sum' === $col) {
+						// for day columns (Monday-Sunday) column names are numeric values (1-7)
+						// --> if we are not in the first row (which key is 'column_name'), we set element to the number of orders
+						// and also sets sum column
+						$clubArray[$row][$col] = $club['orders'][$col][$row];
+					} else {
+						// every other cells should be empty
+						$clubArray[$row][$col] = '';
+					}
+				}
+
+				// sets title of row (already added as part of column array, but empty string)
+				$clubArray[$row]['row_name'] = $row_title;
+
+				// next to every menu name an 'E' is required in the second cell of the xlsx that mark lunch ('Ebéd')
+				array_splice($clubArray[$row], 1, 0, ['mealType'=>('column_name' !== $row) ? 'E' : '']);
+			}
+
+			// first element of name column is name and address of club
+			$clubArray['column_name']['row_name'] = $club['name'] . (!empty($club['address']) ? ' - ' . $club['address'] : '');
+
+			$data[] = $clubArray;
+		}
+
+		// dailyorder_test.xlsx is an empty xlsx file
+		$template_file = __DIR__.'/../Resources/public/reports/dailyorder_test.xlsx';
+
+		return $this->container->get('jcs.xlsx')->makeOrder($template_file, $data);
+	}
 
     /**
      * Send the generated files to the kitchen
@@ -455,7 +565,7 @@ class DailyOrdersService
             ->setFrom([$mailer_from => $mailer_from_name])
             ->addTo('elelmezes@jszszgyk.hu')
             ->addCC('oszirozsaebed@gmail.com')
-            ->setBody($subject, 'text/plain');
+			->setBody($subject, 'text/plain');
 
             // add attachment
             $attachment = \Swift_Attachment::newInstance($attachment_contents, $attachment, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

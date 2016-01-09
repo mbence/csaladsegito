@@ -234,15 +234,49 @@ class ClientOrderRepository extends EntityRepository
         $ed = new \DateTime($end_date);
 
         $weekends = [];
+		$weekdays = [];
 
-        while ($sd <= $ed) {
+		while ($sd <= $ed) {
             // is this a weekday or a weekend?
             if ($sd->format('N') > 5) {
-                $weekends[] = $sd->format('Y-m-d');
-            }
+				// key-value pairs: key is number of day of week, value is date
+                $weekends[$sd->format('N')] = $sd->format('Y-m-d');
+            } else {
+				$weekdays[$sd->format('N')] = $sd->format('Y-m-d');
+			}
+
             $sd->modify('+1 day');
         }
 
+		$results = [];
+		foreach ($weekdays as $day_of_week=>$date) {
+			$results[$day_of_week] = $this->getEntityManager()
+					->createQuery("SELECT b.id, o.menu, a.delivery, COUNT(o) as orders, 0 as weekend "
+							. "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
+							. "WHERE o.companyId = :company_id AND o.order = 1 AND o.cancel = 0 "
+							. "AND o.date = :date "
+							. "GROUP BY a.club, o.menu, a.delivery")
+					->setParameter('company_id', $company_id)
+					->setParameter('date', $date)
+					->getResult();
+		}
+		foreach ($weekends as $day_of_week=>$date) {
+			$results[$day_of_week] = $this->getEntityManager()
+					->createQuery("SELECT b.id, o.menu, a.delivery, COUNT(o) as orders, 0 as weekend "
+							. "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
+							. "WHERE o.companyId = :company_id AND o.order = 1 AND o.cancel = 0 "
+							. "AND o.date = :date "
+							. "GROUP BY a.club, o.menu, a.delivery")
+					->setParameter('company_id', $company_id)
+					->setParameter('date', $date)
+					->getResult();
+		}
+
+		// now results array contains orders sorted according to days
+
+		return $results;
+
+		/*
         $results = [];
         $results['weekdays'] = $this->getEntityManager()
             ->createQuery("SELECT b.id, o.menu, a.delivery, COUNT(o) as orders, 0 as weekend "
@@ -258,7 +292,7 @@ class ClientOrderRepository extends EntityRepository
             ->getResult();
 
         $results['weekends'] = $this->getEntityManager()
-            ->createQuery("SELECT b.id, o.menu, COUNT(o) as orders, 1 as weekend "
+            ->createQuery("SELECT b.id, o.menu, a.delivery, COUNT(o) as orders, 1 as weekend "
                     . "FROM JCSGYKAdminBundle:ClientOrder o LEFT JOIN o.client c LEFT JOIN c.catering a JOIN a.club b "
                     . "WHERE o.companyId = :company_id AND o.order = 1 AND o.cancel = 0 "
                     . "AND o.date >= :date AND o.date <= :end_date "
@@ -273,6 +307,7 @@ class ClientOrderRepository extends EntityRepository
         // merge the weekday / weekend results arrays
 
         return array_merge($results['weekdays'], $results['weekends']);
+		*/
     }
 
     /**
