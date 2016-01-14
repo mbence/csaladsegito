@@ -164,8 +164,9 @@ class ClosingService
             $closing->setSummary($this->summary);
             $em->flush();
 
+            // Mail send removed - 2016-01-14
+            /*
             // Send the EcoSTAT files to bookkeeping
-            //$this->writeFiles();
             $mail_ok = $this->sendMails($start, $end, basename($zip), $zip_file_contents);
             if ($mail_ok) {
                 $this->output(sprintf("%s: Email sikeresen kiküldve", date('H:i:s')));
@@ -173,6 +174,7 @@ class ClosingService
             else {
                 $this->output(sprintf("%s: Email hiba!", date('H:i:s')));
             }
+            */
 
             // update the client balances
             $invoice_service->bulkUpdateBalance($closing_type);
