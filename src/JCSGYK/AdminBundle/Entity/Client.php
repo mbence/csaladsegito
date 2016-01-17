@@ -61,6 +61,10 @@ class Client
      * @var integer
      *
      * @ORM\Column(name="case_number", type="integer", nullable=true)
+     * @Assert\Type(
+     *     type="numeric",
+     *     message="Az ügyiratszám csak számokat tartalmazhat!"
+     * )
      */
     private $caseNumber;
 
