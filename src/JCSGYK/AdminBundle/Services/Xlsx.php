@@ -117,22 +117,96 @@ class Xlsx
 
     public function makeOrder($template_file, $data)
 	{
+		function addValue($startValue, $numberToAdd = 1) {
+			if (is_numeric($startValue)) {
+				return $startValue + $numberToAdd;
+			}
+
+			// only incrementing works on letters, adding does not
+			$newValue = $startValue;
+
+			if ($numberToAdd < 0) {
+				for ($i = 0; $i>$numberToAdd; $i--) {
+					$newValue--;
+				}
+			} else {
+				for ($i = 0; $i<$numberToAdd; $i++) {
+					$newValue++;
+				}
+			}
+
+			// now $lastCol = $startCol ! $colNum - 1
+			return $newValue;
+		}
+
 		// opening template file
 		$objPHPExcel =  \PHPExcel_IOFactory::load($template_file);
 		$sheet = $objPHPExcel->getActiveSheet();
 
-		$nextRowNum = 1;	// row number in xlsx where next element can be placed
+		$startCol = "A";
+		$startRow = 1;	// row number in xlsx where next element can be placed
 
-		// placing elements into xlsx
+		// place header in excel file
+		$sheet->fromArray($data['header'], $startCol . $startRow);
+		unset ($data['header']);
+
+		$startRow +=2;
+
+		// placing elements into excel file
 		foreach ($data as $element) {
-			$sheet->fromArray($element, '', 'A' . $nextRowNum);
+
+			$rowNum = count($element);
+			$colNum = max(array_map('count', $element));		// max row length (number of columns)
+
+			// placing array into excel file
+			$sheet->fromArray($element, '', $startCol . $startRow);
+
+
+			// Formatting
+
+			// autosize for first column
+			$sheet->getColumnDimension($startCol)->setAutoSize(true);
+
+			// given size for every other column
+			for ($col = addValue($startCol, 1); $col < addValue($startCol, $colNum); $col++) {
+				$sheet->getColumnDimension($col)->setWidth('10pt');
+			}
+
+			// thin border around table
+			$sheet->getStyle($startCol . $startRow . ":" . addValue($startCol, $colNum - 1) . addValue($startRow, $rowNum - 1))
+					->applyFromArray(['borders' => ['outline' => ['style' => \PHPExcel_Style_Border::BORDER_THIN]]]);
+
+			// medium border around orders
+			$sheet->getStyle(addValue($startCol, 1) . addValue($startRow, 1) . ":" . addValue($startCol, $colNum - 2) . addValue($startRow, $rowNum - 1))
+					->applyFromArray(['borders' => ['outline' => ['style' => \PHPExcel_Style_Border::BORDER_MEDIUM]]]);
+
+			// medium border around days
+			$sheet->getStyle(addValue($startCol, 2) . $startRow . ":" . addValue($startCol, $colNum - 2) . $startRow)
+					->applyFromArray(['borders' => ['outline' => ['style' => \PHPExcel_Style_Border::BORDER_MEDIUM]]]);
+
+			// dividing sum row with border and making it bold
+			if (array_key_exists('sum', $element)) {
+				$sheet->getStyle($startCol . addValue($startRow, $rowNum - 1) . ":" . addValue($startCol, $colNum - 1) . addValue($startRow, $rowNum - 1))
+						->applyFromArray([
+								'borders' => ['top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN]],
+								'font' => ['bold' => true]
+						]);
+			}
+
+			// club name is bold and two cells wide
+			$sheet->getStyle($startCol . $startRow)
+					->applyFromArray(['font' => ['bold' => true]]);
+			$sheet->mergeCells($startCol . $startRow.":".addValue($startCol, 1).$startRow);
+
+			// sum column title is bold
+			$sheet->getStyle(addValue($startCol, $colNum - 1) . $startRow)
+					->applyFromArray(['font' => ['bold' => true]]);
 
 			// increasing row number so that elements will be placed under each other (+1: gap between elements)
-			$nextRowNum += sizeof($element) + 1;
+			$startRow += sizeof($element) + 1;
 		}
 
 		$objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-		//$objWriter->save('ClientOrder_test_result.xlsx');
 
 		ob_start();
 		$objWriter->save('php://output');

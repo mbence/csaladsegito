@@ -489,10 +489,11 @@ class DailyOrdersService
 		$start_day = $date->format('N');
 		$end_day = $end_date->format('N');
 
-		$data['header'] = [
-				'date' => date('Y. m. d.'),
-				'title' => (1 == $start_day && 7 == $end_day) ? 'HETI SZÁMLA ÖSSZESÍTŐ' : 'MEGRENDELŐ'
-		];
+        $data['header'] = [
+                'date' => date('Y. m. d.'),
+				'gap' => '',
+                'title' => (1 == $start_day && 7 == $end_day) ? 'HETI SZÁMLA ÖSSZESÍTŐ' : 'MEGRENDELŐ'
+        ];
 
 		// generating 2-dimensional arrays from each club that can be placed into xlsx sheet
 		foreach ($this->clubs as $index=>$club) {
