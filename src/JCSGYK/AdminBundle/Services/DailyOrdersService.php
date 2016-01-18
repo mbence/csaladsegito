@@ -1,6 +1,7 @@
 <?php
 
 namespace JCSGYK\AdminBundle\Services;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\SecurityExtraBundle\Annotation\Secure;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -255,18 +256,25 @@ class DailyOrdersService
 			foreach ($this->clubs[$index]['orders'] as $day=>$element) {
 				foreach ($rows as $menuType => $name) {
 					// initializes orders of all menu types
-					$this->clubs[$index]['orders'][$day][$menuType] = '0';
+					$this->clubs[$index]['orders'][$day][$menuType] = 0;
 				}
 
 				if ('deliveries' === $index) {
-					$this->clubs['deliveries']['orders'][$day][''] = '0';
+					$this->clubs['deliveries']['orders'][$day][''] = 0;
 				}
 			}
 
 		}
 
-        // get the orders grouped by club and menu
-        $orders = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->getDailyOrders($company_id, $date, $end_date);
+        try {
+            // get the orders grouped by club and menu
+            $orders = $em->getRepository('JCSGYKAdminBundle:ClientOrder')->getDailyOrders($company_id, $date, $end_date);
+        } catch (Exception $e) {
+			echo "Error: " . $e->getMessage() . 'Process terminated.';
+			die;
+		}
+
+
 
 		// filling empty days of orders table with empty arrays
 		for ($day = 1; $day <=7; $day++) {
@@ -378,15 +386,6 @@ class DailyOrdersService
 			}
 		}
 
-        // Checking...
-        // Clubs contain the blocks that will be shown in the output document
-        //echo 'clubs: '; print_r($this->clubs);
-        //echo 'Columns: '; print_r($this->columns);
-        //echo 'Rows: '; print_r($this->rows);
-        //echo 'Delivery rows: '; print_r($this->deliveryRows);
-        //echo 'Orders: '; print_r($orders);
-        //die;
-
         /*
 
         $sums = [];
@@ -485,6 +484,16 @@ class DailyOrdersService
 
 		$data = [];
 
+		$end_date = !empty($end_date) ? $end_date : $date;
+
+		$start_day = $date->format('N');
+		$end_day = $end_date->format('N');
+
+		$data['header'] = [
+				'date' => date('Y. m. d.'),
+				'title' => (1 == $start_day && 7 == $end_day) ? 'HETI SZÁMLA ÖSSZESÍTŐ' : 'MEGRENDELŐ'
+		];
+
 		// generating 2-dimensional arrays from each club that can be placed into xlsx sheet
 		foreach ($this->clubs as $index=>$club) {
 
@@ -507,11 +516,18 @@ class DailyOrdersService
 					if ('column_name' === $row) {
 						// first row contains column names
 						$clubArray[$row][$col] = $col_title;
-					} else if (is_numeric($col) || 'weekly_sum' === $col) {
+					} else if (is_numeric($col)) {
 						// for day columns (Monday-Sunday) column names are numeric values (1-7)
 						// --> if we are not in the first row (which key is 'column_name'), we set element to the number of orders
-						// and also sets sum column
-						$clubArray[$row][$col] = $club['orders'][$col][$row];
+						// (if we are in a column where we need to display the number of orders)
+						$clubArray[$row][$col] = ($start_day <= $col && $col <= $end_day) ?
+								(!empty($club['orders'][$col][$row]) ? $club['orders'][$col][$row] : '0') : 0;
+					} else if ('weekly_sum' === $col) {
+						// weekly sum only needed when order request was made for whole week
+						if (1 == $start_day && 7 == $end_day) {
+							$clubArray[$row]['weekly_sum'] = !empty($club['orders']['weekly_sum'][$row]) ?
+									$club['orders']['weekly_sum'][$row] : '0';
+						}
 					} else {
 						// every other cells should be empty
 						$clubArray[$row][$col] = '';

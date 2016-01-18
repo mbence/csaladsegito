@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use JCSGYK\AdminBundle\Entity\Invoice;
 use JCSGYK\AdminBundle\Entity\Client;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 /**
  * ClientOrderRepository
@@ -212,10 +213,12 @@ class ClientOrderRepository extends EntityRepository
 
     public function getDailyOrders($company_id, $date, $end_date = null)
     {
+		/*
         // if only 1 day, then we return the simple form
         if (empty($end_date)) {
             return $this->getDailyOrdersForOneDay($company_id, $date);
         }
+		*/
 
         // remove the time part of the dates
         if ($date instanceof \DateTime) {
@@ -235,6 +238,11 @@ class ClientOrderRepository extends EntityRepository
 
         $weekends = [];
 		$weekdays = [];
+
+		// start date is earlier than end date, and both are in the same week of the year (e.g. Friday to Tuesday orders are not allowed)
+        if ($sd > $ed || $sd->format('N') > $ed->format('N')) {
+			throw new Exception('Wrong dates given.');
+		}
 
 		while ($sd <= $ed) {
             // is this a weekday or a weekend?

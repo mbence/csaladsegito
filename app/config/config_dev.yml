@@ -35,7 +35,7 @@ assetic:
 # Swiftmailer Configuration
 swiftmailer:
     disable_delivery:  false
-    delivery_address:  vsoma@port.hu
+    delivery_address:  soma.veszelovszki@mail.com
 
 live_php:
     dirs: [., ../src, ../web]

@@ -120,6 +120,7 @@ class Xlsx
 		// opening template file
 		$objPHPExcel =  \PHPExcel_IOFactory::load($template_file);
 		$sheet = $objPHPExcel->getActiveSheet();
+
 		$nextRowNum = 1;	// row number in xlsx where next element can be placed
 
 		// placing elements into xlsx
@@ -131,7 +132,7 @@ class Xlsx
 		}
 
 		$objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-		$objWriter->save('ClientOrder_test_result.xlsx');
+		//$objWriter->save('ClientOrder_test_result.xlsx');
 
 		ob_start();
 		$objWriter->save('php://output');
