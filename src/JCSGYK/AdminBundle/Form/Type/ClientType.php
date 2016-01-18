@@ -37,7 +37,7 @@ class ClientType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         // case number and year only editable for Child Welfare clients!
-        if ($this->client->getType() == Client::CW) {
+        if (in_array($this->client->getType(), [Client::CW, Client::FH])) {
             $builder->add('case_year', 'text', ['label' => '', 'required' => false]);
             $builder->add('case_number', 'text', ['label' => '', 'required' => false]);
         }

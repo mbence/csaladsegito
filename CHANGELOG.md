@@ -1,4 +1,9 @@
-## 1.5.16 (2015.10.17)
+## 1.5.17 (2016.01.17)
+
+Fejlesztések:
+ - Több ügyfél azonos ügyiratszámon a Családsegítőben is
+
+ ## 1.5.16 (2015.10.17)
 
 Fejlesztések:
  - KSH statisztika opció a problémáknál
