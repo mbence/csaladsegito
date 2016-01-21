@@ -2,6 +2,7 @@
 
 namespace JCSGYK\AdminBundle\Services;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use JCSGYK\AdminBundle\Services\CommonHelper;
 
 /**
  * Service for Generating xlsx files from templates
@@ -117,28 +118,6 @@ class Xlsx
 
     public function makeOrder($template_file, $data)
 	{
-		function addValue($startValue, $numberToAdd = 1) {
-			if (is_numeric($startValue)) {
-				return $startValue + $numberToAdd;
-			}
-
-			// only incrementing works on letters, adding does not
-			$newValue = $startValue;
-
-			if ($numberToAdd < 0) {
-				for ($i = 0; $i>$numberToAdd; $i--) {
-					$newValue--;
-				}
-			} else {
-				for ($i = 0; $i<$numberToAdd; $i++) {
-					$newValue++;
-				}
-			}
-
-			// now $lastCol = $startCol ! $colNum - 1
-			return $newValue;
-		}
-
 		// opening template file
 		$objPHPExcel =  \PHPExcel_IOFactory::load($template_file);
 		$sheet = $objPHPExcel->getActiveSheet();
@@ -168,25 +147,25 @@ class Xlsx
 			$sheet->getColumnDimension($startCol)->setAutoSize(true);
 
 			// given size for every other column
-			for ($col = addValue($startCol, 1); $col < addValue($startCol, $colNum); $col++) {
+			for ($col = CommonHelper::addValue($startCol, 1); $col < CommonHelper::addValue($startCol, $colNum); $col++) {
 				$sheet->getColumnDimension($col)->setWidth('10pt');
 			}
 
 			// thin border around table
-			$sheet->getStyle($startCol . $startRow . ":" . addValue($startCol, $colNum - 1) . addValue($startRow, $rowNum - 1))
+			$sheet->getStyle($startCol . $startRow . ":" . CommonHelper::addValue($startCol, $colNum - 1) . CommonHelper::addValue($startRow, $rowNum - 1))
 					->applyFromArray(['borders' => ['outline' => ['style' => \PHPExcel_Style_Border::BORDER_THIN]]]);
 
 			// medium border around orders
-			$sheet->getStyle(addValue($startCol, 1) . addValue($startRow, 1) . ":" . addValue($startCol, $colNum - 2) . addValue($startRow, $rowNum - 1))
+			$sheet->getStyle(CommonHelper::addValue($startCol, 1) . CommonHelper::addValue($startRow, 1) . ":" . CommonHelper::addValue($startCol, $colNum - 2) . CommonHelper::addValue($startRow, $rowNum - 1))
 					->applyFromArray(['borders' => ['outline' => ['style' => \PHPExcel_Style_Border::BORDER_MEDIUM]]]);
 
 			// medium border around days
-			$sheet->getStyle(addValue($startCol, 2) . $startRow . ":" . addValue($startCol, $colNum - 2) . $startRow)
+			$sheet->getStyle(CommonHelper::addValue($startCol, 2) . $startRow . ":" . CommonHelper::addValue($startCol, $colNum - 2) . $startRow)
 					->applyFromArray(['borders' => ['outline' => ['style' => \PHPExcel_Style_Border::BORDER_MEDIUM]]]);
 
 			// dividing sum row with border and making it bold
 			if (array_key_exists('sum', $element)) {
-				$sheet->getStyle($startCol . addValue($startRow, $rowNum - 1) . ":" . addValue($startCol, $colNum - 1) . addValue($startRow, $rowNum - 1))
+				$sheet->getStyle($startCol . CommonHelper::addValue($startRow, $rowNum - 1) . ":" . CommonHelper::addValue($startCol, $colNum - 1) . CommonHelper::addValue($startRow, $rowNum - 1))
 						->applyFromArray([
 								'borders' => ['top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN]],
 								'font' => ['bold' => true]
@@ -196,10 +175,10 @@ class Xlsx
 			// club name is bold and two cells wide
 			$sheet->getStyle($startCol . $startRow)
 					->applyFromArray(['font' => ['bold' => true]]);
-			$sheet->mergeCells($startCol . $startRow.":".addValue($startCol, 1).$startRow);
+			$sheet->mergeCells($startCol . $startRow.":".CommonHelper::addValue($startCol, 1).$startRow);
 
 			// sum column title is bold
-			$sheet->getStyle(addValue($startCol, $colNum - 1) . $startRow)
+			$sheet->getStyle(CommonHelper::addValue($startCol, $colNum - 1) . $startRow)
 					->applyFromArray(['font' => ['bold' => true]]);
 
 			// increasing row number so that elements will be placed under each other (+1: gap between elements)

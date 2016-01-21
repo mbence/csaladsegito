@@ -282,10 +282,7 @@ class DailyOrdersService
 		}
 
         $weekdays_sum = 0;
-        $weekdays_amount = 0;
-
         $weekend_sum = 0;
-        $weekend_amount = 0;
 
 		foreach ($orders as $day_of_week=>$day) {
 
@@ -333,9 +330,9 @@ class DailyOrdersService
 					case 593:       // Helyben fogyasztás
 						$delivery = 'badell';
 						break;
-					case 595:       // Elvitel
-					case 596:       // Kiszállítás
-					case 597:       // Kedvezményes kiszállítás
+					case 594:       // Elvitel
+					case 595:       // Kiszállítás
+					case 596:       // Kedvezményes kiszállítás
 						$delivery = 'pack';
 						break;
 					default:    // throw an Exception?
@@ -430,7 +427,10 @@ class DailyOrdersService
     }
 
     /**
-     * Creates the EcoStat export files in $this->files from the unsent invoices
+     * Creates xlsx file of orders and returns with it
+     * @param \DateTime $date
+     * @param \DateTime|null $end_date
+     * @return null
      */
     public function export(\DateTime $date, \DateTime $end_date = null)
     {
@@ -489,11 +489,25 @@ class DailyOrdersService
 		$start_day = $date->format('N');
 		$end_day = $end_date->format('N');
 
-        $data['header'] = [
-                'date' => date('Y. m. d.'),
-				'gap' => '',
-                'title' => (1 == $start_day && 7 == $end_day) ? 'HETI SZÁMLA ÖSSZESÍTŐ' : 'MEGRENDELŐ'
-        ];
+		if (1 == $start_day && 7 == $end_day) {
+			$data['header'] = [
+					'date' => $date->format('Y. m. d.') . ' - ' . $end_date->format('Y. m. d.'),
+					'title' => 'HETI SZÁMLA ÖSSZESÍTŐ',
+					'gap1' => '',
+					'gap2' => '',
+					'sendDate' => 'Elküldve: ' . date('Y. m. d.')
+			];
+		} else {
+			$data['header'] = [
+					'date' => $date->format('Y. m. d.') . ' (' . $this->ds->getDaysOfWeek($date->format('N')) . ')',
+					'title' => 'MEGRENDELŐ',
+					'gap1' => '',
+					'gap2' => '',
+					'sendDate' => 'Elküldve: ' . date('Y. m. d.')
+			];
+		}
+
+
 
 		// generating 2-dimensional arrays from each club that can be placed into xlsx sheet
 		foreach ($this->clubs as $index=>$club) {

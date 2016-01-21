@@ -74,7 +74,7 @@ class DailyOrdersCommand extends ContainerAwareCommand
             ];
         }
         // we wont do anyting on the weekends
-
+		
         // run the process
         foreach ($dates as $date) {
             $dailyorders_service->run($output, $date['start'], $date['end']);
