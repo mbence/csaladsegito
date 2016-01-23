@@ -325,6 +325,7 @@ class DailyOrdersService
 					[594] => Elvitel (81 Ft)
 					[595] => Kiszállítás (81+64 Ft)
 					[596] => Kedvezményes kiszállítás (0 Ft)
+				    [597] => Közös kiszállítás (81 Ft)
 				*/
 				switch($order['delivery']) {
 					case 593:       // Helyben fogyasztás
@@ -333,6 +334,7 @@ class DailyOrdersService
 					case 594:       // Elvitel
 					case 595:       // Kiszállítás
 					case 596:       // Kedvezményes kiszállítás
+                    case 597:       // Közös kiszállítás
 						$delivery = 'pack';
 						break;
 					default:    // throw an Exception?
