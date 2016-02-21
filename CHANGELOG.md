@@ -1,3 +1,8 @@
+## 1.5.18 (2016.02.21)
+
+Fejlesztések:
+ - Szállítás módja szerinti bontás az ebédrendeléseknél
+
 ## 1.5.17 (2016.01.17)
 
 Fejlesztések:
