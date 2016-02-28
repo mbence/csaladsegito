@@ -301,11 +301,25 @@ class InvoiceService
                         // add the packaging and delivery costs
                         $delivery = $catering->getDelivery();
 
-                        // in case of local delivery AND on weekends AND if he pays for the food, then we add the packaging costs
-                        if ((593 == $delivery && !$weekday && $daily_cost > 0)
-                                // or if he has any other delivery
-                                || in_array($delivery, [594, 595, 597]) ) {
+                        /*
+                        Delivery:
+                            [593] => Helyben fogyasztás (0 Ft)
+                            [594] => Elvitel (81 Ft)
+                            [595] => Kiszállítás (81+64 Ft)
+                            [596] => Kedvezményes kiszállítás (0 Ft)
+                            [597] => Közös kiszállítás (81 Ft)
+                        */
 
+                        if (
+                            // ha helyben eszik, és nem térítésmentes (vagyis fizet az ebédért), akkor a hétvégére pluszban kell csomagolást fizetnie
+                            (593 == $delivery && !$weekday && $daily_cost)
+                            // ha elviteles és fizet az ebédért, vagy nem fizet, de akkor csak hétköznap, hétvégén nem
+                            || (594 == $delivery && ($daily_cost || $weekday))
+                            // ha bármilyen házhozszállítást kér
+                            || in_array($delivery, [595, 597])
+                        ) {
+
+                            // packaging
                             if (!isset($items[$packaging_cost])) {
                                 $items[$packaging_cost] = [
                                     'name'             => $order->getCancel() ? 'Csomagolás jóváírás' : 'Csomagolás',
