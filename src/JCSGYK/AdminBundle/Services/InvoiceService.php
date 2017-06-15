@@ -739,7 +739,7 @@ class InvoiceService
         $res = $em->createQuery("SELECT DISTINCT(DATE_FORMAT(i.startDate, '%Y-%m')) as date FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id AND i.invoicetype IN (:types) ORDER BY i.startDate DESC")
                 ->setParameter('company_id', $company_id)
                 ->setParameter('types', $types)
-                ->setMaxResults(12)
+                ->setMaxResults(24)
                 ->getResult();
 
         $re = [];
