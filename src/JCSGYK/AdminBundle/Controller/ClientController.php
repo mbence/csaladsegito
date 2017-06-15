@@ -903,6 +903,7 @@ class ClientController extends Controller
 
         if (!empty($client)) {
             $types = Invoice::HOMEHELP == $invoicetype ? [Invoice::HOMEHELP] : [Invoice::MONTHLY, Invoice::DAILY];
+            
             // find the last invoices of the client
             $invoices = $em->createQuery("SELECT i FROM JCSGYKAdminBundle:Invoice i WHERE i.companyId = :company_id AND i.client= :client AND i.invoicetype IN (:types) ORDER BY i.createdAt DESC")
                 ->setParameter('company_id', $company_id)
